@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UUID 生成器 - 在线工具箱</title>
+  <meta name="description" content="免费在线 UUID/GUID 生成器，批量生成 UUID v4，一键复制。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>UUID 生成器</h1>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="generate()">生成 UUID</button>
+      <button class="btn btn-secondary" onclick="generateBatch()">批量生成 (10个)</button>
+      <button class="btn btn-secondary" onclick="copyResult()">复制</button>
+    </div>
+
+    <div style="margin-bottom: 16px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+      <label>
+        <input type="checkbox" id="upperCase" style="margin-right: 4px;"> 大写
+      </label>
+      <label>
+        <input type="checkbox" id="noDashes" style="margin-right: 4px;"> 去掉短横线
+      </label>
+      <label>
+        格式: <select id="version" style="padding: 6px 10px; border-radius: 6px; border: 2px solid #e0e0e0;">
+          <option value="v4">UUID v4 (随机)</option>
+        </select>
+      </label>
+    </div>
+
+    <div id="result" class="result-box" style="min-height: 120px;">点击上方按钮生成 UUID</div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
+    function formatUUID(uuid) {
+      if (document.getElementById('upperCase').checked) uuid = uuid.toUpperCase();
+      if (document.getElementById('noDashes').checked) uuid = uuid.replace(/-/g, '');
+      return uuid;
+    }
+
+    function generate() {
+      document.getElementById('result').textContent = formatUUID(generateUUID());
+    }
+
+    function generateBatch() {
+      const uuids = Array.from({ length: 10 }, () => formatUUID(generateUUID()));
+      document.getElementById('result').textContent = uuids.join('\n');
+    }
+
+    function copyResult() {
+      const text = document.getElementById('result').textContent;
+      if (!text || text === '点击上方按钮生成 UUID') { showToast('请先生成 UUID'); return; }
+      navigator.clipboard.writeText(text).then(() => showToast('已复制到剪贴板'));
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>

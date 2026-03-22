@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>URL 编解码 - 在线工具箱</title>
+  <meta name="description" content="免费在线 URL 编码解码工具，支持中文 URL 编码，URL 百分号编码转换。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>URL 编解码</h1>
+    </div>
+
+    <textarea id="input" placeholder="输入需要编码或解码的文本..."></textarea>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="encode()">URL 编码</button>
+      <button class="btn btn-primary" onclick="decode()">URL 解码</button>
+      <button class="btn btn-secondary" onclick="encodeComponent()">encodeURIComponent</button>
+      <button class="btn btn-secondary" onclick="decodeComponent()">decodeURIComponent</button>
+      <button class="btn btn-secondary" onclick="copyResult()">复制结果</button>
+    </div>
+
+    <div id="result" class="result-box" style="min-height: 120px;"></div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    function encode() {
+      const text = document.getElementById('input').value;
+      if (!text) { showToast('请输入文本'); return; }
+      document.getElementById('result').textContent = encodeURI(text);
+    }
+
+    function decode() {
+      const text = document.getElementById('input').value;
+      if (!text) { showToast('请输入文本'); return; }
+      try {
+        document.getElementById('result').textContent = decodeURI(text);
+      } catch (e) {
+        document.getElementById('result').textContent = '解码失败: ' + e.message;
+      }
+    }
+
+    function encodeComponent() {
+      const text = document.getElementById('input').value;
+      if (!text) { showToast('请输入文本'); return; }
+      document.getElementById('result').textContent = encodeURIComponent(text);
+    }
+
+    function decodeComponent() {
+      const text = document.getElementById('input').value;
+      if (!text) { showToast('请输入文本'); return; }
+      try {
+        document.getElementById('result').textContent = decodeURIComponent(text);
+      } catch (e) {
+        document.getElementById('result').textContent = '解码失败: ' + e.message;
+      }
+    }
+
+    function copyResult() {
+      const text = document.getElementById('result').textContent;
+      if (!text) { showToast('请先生成结果'); return; }
+      navigator.clipboard.writeText(text).then(() => showToast('已复制到剪贴板'));
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>

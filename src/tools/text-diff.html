@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文本差异对比 - 在线工具箱</title>
+  <meta name="description" content="免费在线文本差异对比工具，逐行比较两段文本差异，高亮显示增删改。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>文本差异对比</h1>
+    </div>
+
+    <div class="split-view">
+      <div>
+        <h3 style="margin-bottom: 8px;">原始文本</h3>
+        <textarea id="textA" placeholder="粘贴原始文本..."></textarea>
+      </div>
+      <div>
+        <h3 style="margin-bottom: 8px;">修改后文本</h3>
+        <textarea id="textB" placeholder="粘贴修改后的文本..."></textarea>
+      </div>
+    </div>
+
+    <div class="btn-group" style="justify-content: center; margin-top: 16px;">
+      <button class="btn btn-primary" onclick="compare()">对比差异</button>
+      <button class="btn btn-secondary" onclick="swapTexts()">交换</button>
+      <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+    </div>
+
+    <div id="stats" style="margin: 16px 0; display: flex; gap: 24px; justify-content: center;"></div>
+
+    <div id="result" class="result-box" style="min-height: 120px; max-height: 500px; overflow: auto; font-size: 0.85rem;"></div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    function diffLines(a, b) {
+      const linesA = a.split('\n');
+      const linesB = b.split('\n');
+      const result = [];
+      const usedB = new Set();
+
+      for (let i = 0; i < linesA.length; i++) {
+        if (i < linesB.length && linesA[i] === linesB[i]) {
+          result.push({ type: 'same', text: linesA[i] });
+          usedB.add(i);
+        } else {
+          const foundIdx = linesB.findIndex((line, j) => !usedB.has(j) && line === linesA[i]);
+          if (foundIdx !== -1) {
+            for (let j = i; j < foundIdx; j++) {
+              if (!usedB.has(j)) {
+                result.push({ type: 'add', text: linesB[j] });
+                usedB.add(j);
+              }
+            }
+            result.push({ type: 'same', text: linesA[i] });
+            usedB.add(foundIdx);
+          } else {
+            result.push({ type: 'remove', text: linesA[i] });
+          }
+        }
+      }
+
+      for (let i = 0; i < linesB.length; i++) {
+        if (!usedB.has(i)) {
+          result.push({ type: 'add', text: linesB[i] });
+        }
+      }
+
+      return result;
+    }
+
+    function compare() {
+      const a = document.getElementById('textA').value;
+      const b = document.getElementById('textB').value;
+
+      if (!a && !b) { showToast('请输入文本'); return; }
+
+      const diffs = diffLines(a, b);
+      const added = diffs.filter(d => d.type === 'add').length;
+      const removed = diffs.filter(d => d.type === 'remove').length;
+      const unchanged = diffs.filter(d => d.type === 'same').length;
+
+      document.getElementById('stats').innerHTML =
+        `<span style="color: #2ecc71;">+${added} 新增</span>` +
+        `<span style="color: #e74c3c;">-${removed} 删除</span>` +
+        `<span style="color: #999;">=${unchanged} 未变</span>`;
+
+      const result = document.getElementById('result');
+      result.innerHTML = diffs.map(d => {
+        const escaped = escapeHtml(d.text) || '&nbsp;';
+        if (d.type === 'add') return `<div style="background: #e8f5e9; padding: 2px 8px;">+ ${escaped}</div>`;
+        if (d.type === 'remove') return `<div style="background: #ffebee; padding: 2px 8px;">- ${escaped}</div>`;
+        return `<div style="padding: 2px 8px;">&nbsp; ${escaped}</div>`;
+      }).join('');
+    }
+
+    function swapTexts() {
+      const a = document.getElementById('textA');
+      const b = document.getElementById('textB');
+      const tmp = a.value;
+      a.value = b.value;
+      b.value = tmp;
+    }
+
+    function clearAll() {
+      document.getElementById('textA').value = '';
+      document.getElementById('textB').value = '';
+      document.getElementById('result').innerHTML = '';
+      document.getElementById('stats').innerHTML = '';
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>

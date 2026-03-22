@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lorem Ipsum 生成器 - 在线工具箱</title>
+  <meta name="description" content="免费在线 Lorem Ipsum 占位文本生成器，支持中文占位文本，可自定义段落数。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>Lorem Ipsum 生成器</h1>
+    </div>
+
+    <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin-bottom: 16px;">
+      <div>
+        <label>段落数:
+          <input type="number" id="count" value="3" min="1" max="50" style="width: 70px; margin-left: 4px;">
+        </label>
+      </div>
+      <div>
+        <label>类型:
+          <select id="type" style="padding: 6px 10px; border-radius: 6px; border: 2px solid #e0e0e0;">
+            <option value="lorem">Lorem Ipsum (英文)</option>
+            <option value="chinese">中文占位文本</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="generate()">生成</button>
+      <button class="btn btn-secondary" onclick="copyResult()">复制</button>
+    </div>
+
+    <div id="result" class="result-box" style="min-height: 150px; max-height: 500px; overflow: auto; white-space: pre-wrap; line-height: 1.8;"></div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const loremWords = 'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum'.split(' ');
+
+    const chineseParagraphs = [
+      '这是一段中文占位文本，用于在设计和开发过程中填充空白区域。在实际项目中，这部分内容将被真实的文案所替代。',
+      '互联网时代，信息传播的速度越来越快。每天都有大量的内容在各个平台上被创建和分享，形成了一个庞大而复杂的内容生态系统。',
+      '用户体验设计是现代产品开发中不可或缺的一环。好的用户体验不仅能够提升用户满意度，还能够直接影响到产品的商业表现和市场竞争力。',
+      '技术的进步推动了工具的发展。从前需要专业人员才能完成的任务，现在通过各种在线工具就可以轻松实现。这极大地降低了创作的门槛。',
+      '数据驱动决策已经成为各行各业的共识。通过对数据的收集、分析和解读，组织能够更加精准地了解用户需求，优化产品和服务。',
+      '移动设备的普及改变了人们获取信息的方式。响应式设计和移动优先的开发理念，确保用户在任何设备上都能获得良好的使用体验。',
+      '人工智能技术的快速发展为许多领域带来了革命性的变化。从自然语言处理到图像识别，AI 正在以前所未有的速度改变着我们的工作和生活方式。'
+    ];
+
+    function generateLoremParagraph() {
+      const len = 40 + Math.floor(Math.random() * 40);
+      const words = Array.from({ length: len }, () => loremWords[Math.floor(Math.random() * loremWords.length)]);
+      words[0] = words[0].charAt(0).toUpperCase() + words[0].slice(1);
+      return words.join(' ') + '.';
+    }
+
+    function generate() {
+      const count = Math.max(1, Math.min(50, parseInt(document.getElementById('count').value) || 3));
+      const type = document.getElementById('type').value;
+      let paragraphs;
+
+      if (type === 'lorem') {
+        paragraphs = Array.from({ length: count }, generateLoremParagraph);
+      } else {
+        paragraphs = Array.from({ length: count }, () => chineseParagraphs[Math.floor(Math.random() * chineseParagraphs.length)]);
+      }
+
+      document.getElementById('result').textContent = paragraphs.join('\n\n');
+    }
+
+    function copyResult() {
+      const text = document.getElementById('result').textContent;
+      if (!text) { showToast('请先生成文本'); return; }
+      navigator.clipboard.writeText(text).then(() => showToast('已复制到剪贴板'));
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    generate();
+  </script>
+</body>
+</html>

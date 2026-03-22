@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>正则表达式测试 - 在线工具箱</title>
+  <meta name="description" content="免费在线正则表达式测试工具，实时匹配高亮，支持常用正则模板。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>正则表达式测试</h1>
+    </div>
+
+    <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+      <span style="display: flex; align-items: center; font-size: 1.2rem; font-weight: 600;">/</span>
+      <input type="text" id="regex" placeholder="输入正则表达式，如: \d+" style="flex: 1; font-family: monospace;">
+      <span style="display: flex; align-items: center; font-size: 1.2rem; font-weight: 600;">/</span>
+      <input type="text" id="flags" value="g" placeholder="标志" style="width: 60px; font-family: monospace;">
+    </div>
+
+    <div style="display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;">
+      <label><input type="checkbox" id="flagG" checked onchange="syncFlags()"> g (全局)</label>
+      <label><input type="checkbox" id="flagI" onchange="syncFlags()"> i (忽略大小写)</label>
+      <label><input type="checkbox" id="flagM" onchange="syncFlags()"> m (多行)</label>
+      <label><input type="checkbox" id="flagS" onchange="syncFlags()"> s (dotAll)</label>
+    </div>
+
+    <h3 style="margin-bottom: 8px;">测试文本</h3>
+    <textarea id="testText" placeholder="输入测试文本..." style="min-height: 100px;">Hello World 123
+测试中文 abc@example.com
+2026-03-22 https://example.com</textarea>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="testRegex()">测试匹配</button>
+      <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
+      <div>
+        <h3 style="margin-bottom: 8px;">匹配结果 (高亮)</h3>
+        <div id="highlighted" class="result-box" style="min-height: 80px;"></div>
+      </div>
+      <div>
+        <h3 style="margin-bottom: 8px;">匹配列表</h3>
+        <div id="matches" class="result-box" style="min-height: 80px; font-size: 0.85rem;"></div>
+      </div>
+    </div>
+
+    <h3 style="margin: 24px 0 12px;">常用正则模板</h3>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+      <button class="btn btn-secondary" onclick="useTemplate('[\\u4e00-\\u9fff]+', 'g', '中文')">中文</button>
+      <button class="btn btn-secondary" onclick="useTemplate('\\b\\w+@[\\w.]+\\w\\b', 'g', '邮箱')">邮箱</button>
+      <button class="btn btn-secondary" onclick="useTemplate('https?://[\\w./-]+', 'g', 'URL')">URL</button>
+      <button class="btn btn-secondary" onclick="useTemplate('1[3-9]\\d{9}', 'g', '手机号')">手机号</button>
+      <button class="btn btn-secondary" onclick="useTemplate('\\d{4}-\\d{2}-\\d{2}', 'g', '日期')">日期</button>
+      <button class="btn btn-secondary" onclick="useTemplate('\\d+\\.\\d+\\.\\d+\\.\\d+', 'g', 'IP')">IP地址</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const regexInput = document.getElementById('regex');
+    const testTextInput = document.getElementById('testText');
+
+    regexInput.addEventListener('input', testRegex);
+    testTextInput.addEventListener('input', testRegex);
+
+    function syncFlags() {
+      let flags = '';
+      if (document.getElementById('flagG').checked) flags += 'g';
+      if (document.getElementById('flagI').checked) flags += 'i';
+      if (document.getElementById('flagM').checked) flags += 'm';
+      if (document.getElementById('flagS').checked) flags += 's';
+      document.getElementById('flags').value = flags;
+      testRegex();
+    }
+
+    function testRegex() {
+      const pattern = regexInput.value;
+      const text = testTextInput.value;
+      const highlighted = document.getElementById('highlighted');
+      const matches = document.getElementById('matches');
+
+      if (!pattern) {
+        highlighted.innerHTML = text;
+        matches.textContent = '';
+        return;
+      }
+
+      try {
+        const flags = document.getElementById('flags').value;
+        const regex = new RegExp(pattern, flags);
+        const matchList = [...text.matchAll(regex)];
+
+        if (matchList.length === 0) {
+          highlighted.textContent = text;
+          matches.textContent = '无匹配';
+          return;
+        }
+
+        let result = '';
+        let lastIndex = 0;
+        matchList.forEach(m => {
+          result += escapeHtml(text.substring(lastIndex, m.index));
+          result += '<mark style="background: #ffeb3b; padding: 1px 2px; border-radius: 2px;">' + escapeHtml(m[0]) + '</mark>';
+          lastIndex = m.index + m[0].length;
+        });
+        result += escapeHtml(text.substring(lastIndex));
+        highlighted.innerHTML = result;
+
+        matches.innerHTML = matchList.map((m, i) =>
+          `<div><strong>[${i}]</strong> "${escapeHtml(m[0])}" (位置 ${m.index})</div>`
+        ).join('');
+      } catch (e) {
+        highlighted.textContent = text;
+        matches.innerHTML = '<span style="color: red;">正则语法错误: ' + escapeHtml(e.message) + '</span>';
+      }
+    }
+
+    function useTemplate(pattern, flags, label) {
+      regexInput.value = pattern;
+      document.getElementById('flags').value = flags;
+      document.getElementById('flagG').checked = flags.includes('g');
+      document.getElementById('flagI').checked = flags.includes('i');
+      document.getElementById('flagM').checked = flags.includes('m');
+      testRegex();
+    }
+
+    function clearAll() {
+      regexInput.value = '';
+      testTextInput.value = '';
+      document.getElementById('highlighted').textContent = '';
+      document.getElementById('matches').textContent = '';
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>
