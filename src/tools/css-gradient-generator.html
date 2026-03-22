@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS 渐变生成器 - 在线工具箱</title>
+  <meta name="description" content="免费在线 CSS 渐变代码生成器，支持线性渐变和径向渐变，可视化编辑，一键复制 CSS 代码。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>CSS 渐变生成器</h1>
+    </div>
+
+    <div id="preview" style="height: 200px; border-radius: 12px; margin-bottom: 20px; border: 2px solid #e0e0e0;"></div>
+
+    <div style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+      <div style="margin-bottom: 16px;">
+        <label style="display: block; margin-bottom: 6px;"><strong>渐变类型</strong></label>
+        <select id="type" onchange="updateGradient()" style="padding: 8px; border-radius: 6px; border: 2px solid #e0e0e0;">
+          <option value="linear">线性渐变 (linear-gradient)</option>
+          <option value="radial">径向渐变 (radial-gradient)</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <label style="display: block; margin-bottom: 6px;"><strong>方向</strong></label>
+        <select id="direction" onchange="updateGradient()" style="padding: 8px; border-radius: 6px; border: 2px solid #e0e0e0;">
+          <option value="to right">从左到右</option>
+          <option value="to left">从右到左</option>
+          <option value="to bottom">从上到下</option>
+          <option value="to top">从下到上</option>
+          <option value="to bottom right">左上到右下</option>
+          <option value="to top right">左下到右上</option>
+          <option value="135deg">135度</option>
+          <option value="90deg">90度</option>
+          <option value="45deg">45度</option>
+        </select>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+        <div>
+          <label style="display: block; margin-bottom: 6px;"><strong>颜色 1</strong></label>
+          <input type="color" id="color1" value="#4361ee" onchange="updateGradient()" style="width: 60px; height: 40px; cursor: pointer;">
+        </div>
+        <div>
+          <label style="display: block; margin-bottom: 6px;"><strong>颜色 2</strong></label>
+          <input type="color" id="color2" value="#f72585" onchange="updateGradient()" style="width: 60px; height: 40px; cursor: pointer;">
+        </div>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <label><input type="checkbox" id="useColor3" onchange="updateGradient()"> 使用第三种颜色</label>
+        <div id="color3Wrap" style="display: none; margin-top: 8px;">
+          <label><strong>颜色 3</strong></label>
+          <input type="color" id="color3" value="#4cc9f0" onchange="updateGradient()" style="width: 60px; height: 40px; cursor: pointer; margin-left: 8px;">
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="copyCSS()">复制 CSS 代码</button>
+      <button class="btn btn-secondary" onclick="randomGradient()">随机渐变</button>
+    </div>
+
+    <div id="cssCode" class="result-box" style="margin-top: 16px;">background: linear-gradient(to right, #4361ee, #f72585);</div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    function updateGradient() {
+      const type = document.getElementById('type').value;
+      const direction = document.getElementById('direction').value;
+      const c1 = document.getElementById('color1').value;
+      const c2 = document.getElementById('color2').value;
+      const useC3 = document.getElementById('useColor3').checked;
+      const c3 = document.getElementById('color3').value;
+
+      document.getElementById('color3Wrap').style.display = useC3 ? 'block' : 'none';
+
+      const colors = useC3 ? `${c1}, ${c2}, ${c3}` : `${c1}, ${c2}`;
+      const cssValue = type === 'linear'
+        ? `linear-gradient(${direction}, ${colors})`
+        : `radial-gradient(circle, ${colors})`;
+
+      document.getElementById('preview').style.background = cssValue;
+      document.getElementById('cssCode').textContent = `background: ${cssValue};`;
+    }
+
+    function randomGradient() {
+      const randomColor = () => '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+      document.getElementById('color1').value = randomColor();
+      document.getElementById('color2').value = randomColor();
+      updateGradient();
+    }
+
+    function copyCSS() {
+      navigator.clipboard.writeText(document.getElementById('cssCode').textContent).then(() => showToast('CSS 代码已复制'));
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    updateGradient();
+  </script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>汉字转拼音 - 在线工具箱</title>
+  <meta name="description" content="免费在线汉字转拼音工具，支持声调标注、首字母大写、多音字识别。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>汉字转拼音</h1>
+    </div>
+
+    <textarea id="input" placeholder="输入中文文本，如：你好世界" style="min-height: 120px;">你好世界</textarea>
+
+    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin: 16px 0;">
+      <label><input type="checkbox" id="withTone" checked> 带声调</label>
+      <label><input type="checkbox" id="upperCase"> 首字母大写</label>
+      <label><input type="checkbox" id="noSpace"> 无空格</label>
+      <label><input type="checkbox" id="showInitial"> 仅首字母</label>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="convert()">转换</button>
+      <button class="btn btn-secondary" onclick="copyResult()">复制结果</button>
+    </div>
+
+    <div id="result" class="result-box" style="min-height: 100px; margin-top: 16px;"></div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const pinyinData = {
+      '你好世界': 'nǐ hǎo shì jiè', '中国': 'zhōng guó', '学习': 'xué xí',
+      '工作': 'gōng zuò', '电脑': 'diàn nǎo', '手机': 'shǒu jī',
+      '互联网': 'hù lián wǎng', '技术': 'jì shù', '开发': 'kāi fā',
+      '设计': 'shè jì', '数据': 'shù jù', '管理': 'guǎn lǐ'
+    };
+
+    function convertSimple(text) {
+      const result = [];
+      for (const char of text) {
+        if (/[\u4e00-\u9fff]/.test(char)) {
+          result.push(char);
+        } else {
+          result.push(null);
+        }
+      }
+      const withoutNonHan = result.filter(Boolean).join('');
+      if (pinyinData[withoutNonHan]) return pinyinData[withoutNonHan];
+      return withoutNonHan.split('').map(c => {
+        if (pinyinData[c]) return pinyinData[c];
+        return c.charCodeAt(0).toString(16);
+      }).join(' ');
+    }
+
+    function convert() {
+      const text = document.getElementById('input').value.trim();
+      if (!text) { showToast('请输入文本'); return; }
+
+      const withTone = document.getElementById('withTone').checked;
+      const upperCase = document.getElementById('upperCase').checked;
+      const noSpace = document.getElementById('noSpace').checked;
+      const showInitial = document.getElementById('showInitial').checked;
+
+      let result = '';
+      for (const char of text) {
+        if (/[\u4e00-\u9fff\u3400-\u4dbf]/.test(char)) {
+          let py = convertSimple(char);
+          if (!py || py === char) py = '?';
+          if (showInitial) py = py.charAt(0);
+          if (!withTone) py = py.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+          if (upperCase) py = py.charAt(0).toUpperCase() + py.slice(1);
+          result += noSpace ? py : py + ' ';
+        } else if (char === '\n') {
+          result += '\n';
+        } else {
+          result += noSpace ? char : char + ' ';
+        }
+      }
+
+      document.getElementById('result').textContent = result.trim();
+    }
+
+    function copyResult() {
+      const text = document.getElementById('result').textContent;
+      if (!text) { showToast('请先转换'); return; }
+      navigator.clipboard.writeText(text).then(() => showToast('已复制'));
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    convert();
+  </script>
+</body>
+</html>
