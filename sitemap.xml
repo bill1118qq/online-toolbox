@@ -29,4 +29,9 @@
   <url><loc>https://eitools.cn/src/tools/ascii-table.html</loc><priority>0.7</priority></url>
   <url><loc>https://eitools.cn/src/tools/subnet-calculator.html</loc><priority>0.7</priority></url>
   <url><loc>https://eitools.cn/src/tools/css-gradient-generator.html</loc><priority>0.7</priority></url>
+  <url><loc>https://eitools.cn/src/tools/byte-converter.html</loc><priority>0.8</priority></url>
+  <url><loc>https://eitools.cn/src/tools/date-calculator.html</loc><priority>0.8</priority></url>
+  <url><loc>https://eitools.cn/src/tools/caesar-cipher.html</loc><priority>0.7</priority></url>
+  <url><loc>https://eitools.cn/src/tools/random-number.html</loc><priority>0.7</priority></url>
+  <url><loc>https://eitools.cn/src/tools/placeholder-image.html</loc><priority>0.7</priority></url>
 </urlset>

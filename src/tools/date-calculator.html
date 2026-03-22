@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>日期计算器 - 在线工具箱</title>
+  <meta name="description" content="免费在线日期计算器，计算两个日期之间相差多少天、加减天数得到新日期。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>日期计算器</h1>
+    </div>
+
+    <div style="background: white; padding: 24px; border-radius: 12px; margin-bottom: 24px;">
+      <h3 style="margin-bottom: 12px;">两个日期相差多少天</h3>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px;">
+        <input type="date" id="date1" style="flex: 1; min-width: 140px;">
+        <span style="display: flex; align-items: center;">至</span>
+        <input type="date" id="date2" style="flex: 1; min-width: 140px;">
+        <button class="btn btn-primary" onclick="calcDiff()">计算</button>
+      </div>
+      <div id="diffResult" style="text-align: center; font-size: 1.1rem; color: #4361ee; min-height: 30px;"></div>
+    </div>
+
+    <div style="background: white; padding: 24px; border-radius: 12px; margin-bottom: 24px;">
+      <h3 style="margin-bottom: 12px;">日期加减天数</h3>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+        <input type="date" id="baseDate" style="flex: 1; min-width: 140px;">
+        <select id="addSub" style="padding: 10px; border-radius: 8px; border: 2px solid #e0e0e0;">
+          <option value="+">+</option>
+          <option value="-">-</option>
+        </select>
+        <input type="number" id="days" value="30" min="0" style="width: 80px;">
+        <span>天</span>
+        <button class="btn btn-primary" onclick="calcAdd()">计算</button>
+      </div>
+      <div id="addResult" style="text-align: center; font-size: 1.1rem; color: #4361ee; margin-top: 12px; min-height: 30px;"></div>
+    </div>
+
+    <div style="background: white; padding: 24px; border-radius: 12px;">
+      <h3 style="margin-bottom: 12px;">快速计算</h3>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button class="btn btn-secondary" onclick="quickCalc(7)">7天后</button>
+        <button class="btn btn-secondary" onclick="quickCalc(14)">14天后</button>
+        <button class="btn btn-secondary" onclick="quickCalc(30)">30天后</button>
+        <button class="btn btn-secondary" onclick="quickCalc(90)">90天后</button>
+        <button class="btn btn-secondary" onclick="quickCalc(180)">半年后</button>
+        <button class="btn btn-secondary" onclick="quickCalc(365)">一年后</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('date1').value = today;
+    document.getElementById('date2').value = today;
+    document.getElementById('baseDate').value = today;
+
+    function calcDiff() {
+      const d1 = new Date(document.getElementById('date1').value);
+      const d2 = new Date(document.getElementById('date2').value);
+      if (isNaN(d1) || isNaN(d2)) return;
+      const diffMs = Math.abs(d2 - d1);
+      const days = Math.round(diffMs / (1000 * 60 * 60 * 24));
+      const weeks = Math.floor(days / 7);
+      const months = Math.floor(days / 30.44);
+      const years = Math.floor(days / 365.25);
+      document.getElementById('diffResult').innerHTML =
+        `相差 <strong>${days}</strong> 天` +
+        (weeks > 0 ? `（约 <strong>${weeks}</strong> 周` : '') +
+        (months > 0 ? `，约 <strong>${months}</strong> 个月` : '') +
+        (years > 0 ? `，约 <strong>${years}</strong> 年` : '') +
+        (weeks > 0 || months > 0 || years > 0 ? '）' : '');
+    }
+
+    function calcAdd() {
+      const base = new Date(document.getElementById('baseDate').value);
+      const op = document.getElementById('addSub').value;
+      const days = parseInt(document.getElementById('days').value) || 0;
+      if (isNaN(base)) return;
+      const result = new Date(base);
+      result.setDate(result.getDate() + (op === '+' ? days : -days));
+      const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+      document.getElementById('addResult').innerHTML =
+        `结果日期: <strong>${result.toISOString().split('T')[0]}</strong>（星期${weekdays[result.getDay()]}）`;
+    }
+
+    function quickCalc(days) {
+      document.getElementById('baseDate').value = today;
+      document.getElementById('addSub').value = '+';
+      document.getElementById('days').value = days;
+      calcAdd();
+    }
+
+    calcDiff();
+  </script>
+</body>
+</html>

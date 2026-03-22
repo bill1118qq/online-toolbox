@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>占位图生成器 - SVG Placeholder Image - 在线工具箱</title>
+  <meta name="description" content="免费在线占位图生成器，自定义尺寸、颜色和文字，生成SVG占位图，可用于设计和开发。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>占位图生成器</h1>
+    </div>
+
+    <div style="background: white; padding: 24px; border-radius: 12px; margin-bottom: 20px;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+        <label>宽度: <input type="number" id="width" value="400" min="10" max="2000" style="width: 100%; margin-top: 4px;"></label>
+        <label>高度: <input type="number" id="height" value="300" min="10" max="2000" style="width: 100%; margin-top: 4px;"></label>
+        <label>文字: <input type="text" id="text" value="" placeholder="自动显示尺寸" style="width: 100%; margin-top: 4px;"></label>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+        <label>背景色: <input type="color" id="bgColor" value="#cccccc" style="width: 50px; height: 30px; cursor: pointer; vertical-align: middle;"></label>
+        <label>文字色: <input type="color" id="textColor" value="#666666" style="width: 50px; height: 30px; cursor: pointer; vertical-align: middle;"></label>
+        <label>格式:
+          <select id="format" style="padding: 6px; border-radius: 6px; border: 2px solid #e0e0e0;">
+            <option value="svg">SVG</option>
+            <option value="png">PNG</option>
+          </select>
+        </label>
+        <label>圆角: <input type="number" id="radius" value="0" min="0" max="500" style="width: 60px;"></label>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="generate()">生成</button>
+        <button class="btn btn-secondary" onclick="copySVG()">复制 SVG 代码</button>
+        <button class="btn btn-secondary" onclick="downloadImage()">下载图片</button>
+      </div>
+    </div>
+
+    <div id="preview" style="text-align: center; margin: 20px 0;"></div>
+
+    <h3 style="margin-bottom: 12px;">常用尺寸快捷选择</h3>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+      <button class="btn btn-secondary" onclick="setSize(150,150)">150x150</button>
+      <button class="btn btn-secondary" onclick="setSize(300,250)">300x250</button>
+      <button class="btn btn-secondary" onclick="setSize(728,90)">728x90 广告</button>
+      <button class="btn btn-secondary" onclick="setSize(320,50)">320x50 广告</button>
+      <button class="btn btn-secondary" onclick="setSize(800,600)">800x600</button>
+      <button class="btn btn-secondary" onclick="setSize(1200,630)">1200x630 OG</button>
+      <button class="btn btn-secondary" onclick="setSize(1920,1080)">1920x1080</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    function generate() {
+      const w = parseInt(document.getElementById('width').value) || 400;
+      const h = parseInt(document.getElementById('height').value) || 300;
+      const text = document.getElementById('text').value || `${w} x ${h}`;
+      const bg = document.getElementById('bgColor').value;
+      const color = document.getElementById('textColor').value;
+      const r = parseInt(document.getElementById('radius').value) || 0;
+      const fontSize = Math.max(12, Math.min(w, h) / 8);
+
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
+  <rect width="${w}" height="${h}" fill="${bg}" rx="${r}"/>
+  <text x="${w/2}" y="${h/2}" dominant-baseline="middle" text-anchor="middle" font-family="Arial,sans-serif" font-size="${fontSize}" fill="${color}">${text}</text>
+</svg>`;
+
+      document.getElementById('preview').innerHTML = svg;
+      window._currentSvg = svg;
+      window._currentW = w;
+      window._currentH = h;
+    }
+
+    function setSize(w, h) {
+      document.getElementById('width').value = w;
+      document.getElementById('height').value = h;
+      document.getElementById('text').value = '';
+      generate();
+    }
+
+    function copySVG() {
+      if (!window._currentSvg) { showToast('请先生成'); return; }
+      navigator.clipboard.writeText(window._currentSvg).then(() => showToast('SVG 代码已复制'));
+    }
+
+    function downloadImage() {
+      if (!window._currentSvg) { showToast('请先生成'); return; }
+      const blob = new Blob([window._currentSvg], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `placeholder-${window._currentW}x${window._currentH}.svg`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('图片已下载');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    generate();
+  </script>
+</body>
+</html>
