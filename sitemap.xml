@@ -37,4 +37,8 @@
   <url><loc>https://eitools.cn/tools/json-tools.html</loc><priority>0.8</priority></url>
   <url><loc>https://eitools.cn/tools/dev-tools.html</loc><priority>0.8</priority></url>
   <url><loc>https://eitools.cn/tools/text-tools.html</loc><priority>0.8</priority></url>
+  <url><loc>https://eitools.cn/guides/image-compression-guide.html</loc><priority>0.7</priority></url>
+  <url><loc>https://eitools.cn/guides/timestamp-guide.html</loc><priority>0.7</priority></url>
+  <url><loc>https://eitools.cn/guides/qrcode-guide.html</loc><priority>0.7</priority></url>
+  <url><loc>https://eitools.cn/guides/base64-guide.html</loc><priority>0.7</priority></url>
 </urlset>

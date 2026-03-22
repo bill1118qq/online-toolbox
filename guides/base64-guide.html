@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Base64编码是什么 - Base64原理与应用 - 在线工具箱</title>
+  <meta name="description" content="Base64编码是什么？本文介绍Base64编码的原理、应用场景、优缺点，以及如何进行Base64编解码。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="Base64编码原理与应用详解">
+  <meta property="og:description" content="Base64是什么？原理、应用场景、优缺点详解。">
+  <meta property="og:url" content="https://eitools.cn/guides/base64-guide.html">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://eitools.cn/guides/base64-guide.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"HowTo","name":"Base64编码原理与使用方法","description":"Base64编码原理、应用场景和编解码方法。","url":"https://eitools.cn/guides/base64-guide.html"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>Base64 编码详解</h1>
+    </div>
+    <article style="line-height: 1.8; color: #333;">
+      <h2 style="margin: 24px 0 12px;">什么是 Base64 编码？</h2>
+      <p>Base64 是一种将二进制数据转换为 64 个可打印 ASCII 字符的编码方式。它使用 A-Z、a-z、0-9、+ 和 / 共 64 个字符来表示二进制数据。</p>
+
+      <h2 style="margin: 24px 0 12px;">Base64 的常见用途</h2>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>Email 附件</strong> — MIME 编码邮件中的二进制附件（Content-Transfer-Encoding: base64）</li>
+        <li><strong>Data URL</strong> — 在 HTML/CSS 中直接嵌入图片：<code>data:image/png;base64,...</code></li>
+        <li><strong>API 认证</strong> — HTTP Basic Auth 中编码用户名密码</li>
+        <li><strong>JSON Web Token (JWT)</strong> — Token 的 Payload 和 Header 使用 Base64 编码</li>
+        <li><strong>数据传输</strong> — 在纯文本协议中传输二进制数据</li>
+      </ul>
+
+      <h2 style="margin: 24px 0 12px;">Base64 编码原理</h2>
+      <p>编码过程：</p>
+      <ol style="margin: 12px 0 12px 24px;">
+        <li>将原始数据按每 3 个字节（24 位）分组</li>
+        <li>将每组分为 4 个 6 位的单元</li>
+        <li>每个 6 位单元映射到一个 Base64 字符</li>
+        <li>不足 3 字节的用 = 补齐</li>
+      </ol>
+      <p>因此 Base64 编码后的数据比原始数据大约大 33%。</p>
+
+      <h2 style="margin: 24px 0 12px;">在线 Base64 工具</h2>
+      <p>使用 <a href="../src/tools/base64.html" style="color: #4361ee; font-weight: 600;">在线 Base64 编解码工具</a>，支持中文和特殊字符，所有计算在浏览器本地完成。
+    </article>
+  </div>
+</body>
+</html>

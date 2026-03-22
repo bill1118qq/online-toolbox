@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>时间戳是什么 - Unix时间戳详解 - 在线工具箱</title>
+  <meta name="description" content="时间戳是什么？本文详细介绍Unix时间戳的概念、作用、使用场景，以及时间戳与日期时间的互相转换方法。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="时间戳是什么 - Unix时间戳详解">
+  <meta property="og:description" content="时间戳概念、使用场景、转换方法，附带在线转换工具。">
+  <meta property="og:url" content="https://eitools.cn/guides/timestamp-guide.html">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://eitools.cn/guides/timestamp-guide.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"HowTo","name":"时间戳与日期时间互相转换","description":"时间戳概念详解及转换方法。","url":"https://eitools.cn/guides/timestamp-guide.html"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>时间戳详解</h1>
+    </div>
+    <article style="line-height: 1.8; color: #333;">
+      <h2 style="margin: 24px 0 12px;">什么是时间戳？</h2>
+      <p>时间戳（Timestamp）是指从 1970年1月1日 00:00:00 UTC 到某个时间点的总秒数（或毫秒数），也称为 Unix 时间戳（Unix Timestamp）或 POSIX 时间。</p>
+      <p>例如：<code>1700000000</code> 代表 2023年11月14日 22:13:20 UTC。</p>
+
+      <h2 style="margin: 24px 0 12px;">时间戳有什么用？</h2>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>数据库记录</strong> — 记录创建时间、更新时间</li>
+        <li><strong>API 接口</strong> — 请求签名、缓存过期控制</li>
+        <li><strong>日志系统</strong> — 标记事件发生时间</li>
+        <li><strong>版本控制</strong> — Git commit 的时间标识</li>
+        <li><strong>缓存控制</strong> — HTTP 响应头中的过期时间</li>
+      </ul>
+
+      <h2 style="margin: 24px 0 12px;">秒级 vs 毫秒级</h2>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>秒级时间戳</strong>：10 位数字，如 <code>1700000000</code>，能表示到 2033 年</li>
+        <li><strong>毫秒级时间戳</strong>：13 位数字，如 <code>1700000000000</code>，能表示到 2286 年</li>
+      </ul>
+      <p>JavaScript 中 <code>Date.now()</code> 返回的是毫秒级，而大多数后端语言（Python、Java、Go）默认使用秒级。这是前后端对接时常见的坑。</p>
+
+      <h2 style="margin: 24px 0 12px;">各语言获取当前时间戳</h2>
+      <div style="background: #f0f2f5; padding: 16px; border-radius: 8px; font-size: 0.85rem; font-family: monospace; overflow-x: auto;">
+        <p>JavaScript: Date.now() / 1000</p>
+        <p>Python: int(time.time())</p>
+        <p>Java: System.currentTimeMillis() / 1000</p>
+        <p>Go: time.Now().Unix()</p>
+        <p>PHP: time()</p>
+        <p>MySQL: UNIX_TIMESTAMP()</p>
+      </div>
+
+      <h2 style="margin: 24px 0 12px;">在线转换工具</h2>
+      <p>使用 <a href="../src/tools/timestamp.html" style="color: #4361ee; font-weight: 600;">在线时间戳转换工具</a>，实时显示当前时间戳，支持秒级和毫秒级双向转换。</p>
+    </article>
+  </div>
+</body>
+</html>
