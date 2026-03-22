@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://toolbox.example.com/</loc><priority>1.0</priority></url>
-  <url><loc>https://toolbox.example.com/src/tools/json-formatter.html</loc><priority>0.9</priority></url>
-  <url><loc>https://toolbox.example.com/src/tools/base64.html</loc><priority>0.9</priority></url>
-  <url><loc>https://toolbox.example.com/src/tools/qrcode.html</loc><priority>0.9</priority></url>
-  <url><loc>https://toolbox.example.com/src/tools/image-compressor.html</loc><priority>0.9</priority></url>
-  <url><loc>https://toolbox.example.com/src/tools/color-picker.html</loc><priority>0.8</priority></url>
-  <url><loc>https://toolbox.example.com/src/tools/markdown-editor.html</loc><priority>0.8</priority></url>
-  <url><loc>https://toolbox.example.com/src/tools/timestamp.html</loc><priority>0.8</priority></url>
-  <url><loc>https://toolbox.example.com/src/tools/word-counter.html</loc><priority>0.8</priority></url>
+  <url><loc>https://claudeearnmoney.vercel.app/</loc><priority>1.0</priority></url>
+  <url><loc>https://claudeearnmoney.vercel.app/src/tools/json-formatter.html</loc><priority>0.9</priority></url>
+  <url><loc>https://claudeearnmoney.vercel.app/src/tools/base64.html</loc><priority>0.9</priority></url>
+  <url><loc>https://claudeearnmoney.vercel.app/src/tools/qrcode.html</loc><priority>0.9</priority></url>
+  <url><loc>https://claudeearnmoney.vercel.app/src/tools/image-compressor.html</loc><priority>0.9</priority></url>
+  <url><loc>https://claudeearnmoney.vercel.app/src/tools/color-picker.html</loc><priority>0.8</priority></url>
+  <url><loc>https://claudeearnmoney.vercel.app/src/tools/markdown-editor.html</loc><priority>0.8</priority></url>
+  <url><loc>https://claudeearnmoney.vercel.app/src/tools/timestamp.html</loc><priority>0.8</priority></url>
+  <url><loc>https://claudeearnmoney.vercel.app/src/tools/word-counter.html</loc><priority>0.8</priority></url>
 </urlset>
