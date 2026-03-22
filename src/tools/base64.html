@@ -7,6 +7,17 @@
   <meta name="description" content="免费在线 Base64 编解码工具，支持文本与 Base64 互相转换。">
   <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type": "Question", "name": "什么是Base64编码？", "acceptedAnswer": {"@type": "Answer", "text": "Base64是一种将二进制数据转换为64个可打印字符的编码方式，常用于在文本协议中传输二进制数据，如电子邮件附件和图片内嵌。"}},
+      {"@type": "Question", "name": "Base64编码后数据会变大吗？", "acceptedAnswer": {"@type": "Answer", "text": "是的，Base64编码后的数据大约比原始数据大33%。因为每3个字节的原始数据会编码为4个字节的Base64字符。"}},
+      {"@type": "Question", "name": "中文可以Base64编码吗？", "acceptedAnswer": {"@type": "Answer", "text": "可以。本工具先使用encodeURIComponent将中文转为UTF-8编码，然后再进行Base64编码，可以正确处理中文字符。"}}
+    ]
+  }
+  </script>
 </head>
 <body>
   <div class="tool-page">
