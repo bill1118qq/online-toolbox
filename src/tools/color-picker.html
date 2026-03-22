@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>颜色选择器 - 在线工具箱</title>
+  <meta name="description" content="免费在线颜色选择器，支持 HEX/RGB/HSL 互转，复制色值。">
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>颜色选择器</h1>
+    </div>
+
+    <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+      <div>
+        <label style="font-weight: 600; display: block; margin-bottom: 8px;">选择颜色</label>
+        <input type="color" id="colorPicker" value="#4361ee" style="width: 120px; height: 120px; border: none; cursor: pointer; border-radius: 12px;">
+      </div>
+
+      <div style="flex: 1; min-width: 250px; display: flex; flex-direction: column; gap: 12px;">
+        <div>
+          <label style="font-weight: 600; display: block; margin-bottom: 4px;">HEX</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="hexInput" value="#4361ee" style="font-family: monospace;">
+            <button class="btn btn-secondary" onclick="copyField('hexInput')">复制</button>
+          </div>
+        </div>
+        <div>
+          <label style="font-weight: 600; display: block; margin-bottom: 4px;">RGB</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="rgbInput" value="rgb(67, 97, 238)" style="font-family: monospace;">
+            <button class="btn btn-secondary" onclick="copyField('rgbInput')">复制</button>
+          </div>
+        </div>
+        <div>
+          <label style="font-weight: 600; display: block; margin-bottom: 4px;">HSL</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="hslInput" value="" style="font-family: monospace;">
+            <button class="btn btn-secondary" onclick="copyField('hslInput')">复制</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="colorPreview" style="margin-top: 24px; height: 80px; border-radius: 12px; background: #4361ee;"></div>
+
+    <h3 style="margin-top: 32px;">常用颜色</h3>
+    <div id="presetColors" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;"></div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const colorPicker = document.getElementById('colorPicker');
+    const hexInput = document.getElementById('hexInput');
+    const rgbInput = document.getElementById('rgbInput');
+    const hslInput = document.getElementById('hslInput');
+    const colorPreview = document.getElementById('colorPreview');
+    const presetColorsDiv = document.getElementById('presetColors');
+
+    const presets = [
+      '#f44336','#e91e63','#9c27b0','#673ab7','#3f51b5','#2196f3',
+      '#03a9f4','#00bcd4','#009688','#4caf50','#8bc34a','#cddc39',
+      '#ffeb3b','#ffc107','#ff9800','#ff5722','#795548','#607d8b',
+      '#1a1a2e','#16213e','#0f3460','#e94560','#533483','#2b2d42'
+    ];
+
+    presets.forEach(color => {
+      const swatch = document.createElement('div');
+      swatch.style.cssText = `width: 36px; height: 36px; background: ${color}; border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: border-color 0.2s;`;
+      swatch.addEventListener('click', () => {
+        colorPicker.value = color;
+        updateFromHex(color);
+      });
+      swatch.addEventListener('mouseenter', () => swatch.style.borderColor = '#1a1a2e');
+      swatch.addEventListener('mouseleave', () => swatch.style.borderColor = 'transparent');
+      presetColorsDiv.appendChild(swatch);
+    });
+
+    colorPicker.addEventListener('input', () => updateFromHex(colorPicker.value));
+
+    hexInput.addEventListener('change', () => {
+      const hex = hexInput.value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(hex)) {
+        colorPicker.value = hex;
+        updateFromHex(hex);
+      }
+    });
+
+    function updateFromHex(hex) {
+      hexInput.value = hex;
+      colorPreview.style.background = hex;
+
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      rgbInput.value = `rgb(${r}, ${g}, ${b})`;
+
+      const [h, s, l] = rgbToHsl(r, g, b);
+      hslInput.value = `hsl(${h}, ${s}%, ${l}%)`;
+    }
+
+    function rgbToHsl(r, g, b) {
+      r /= 255; g /= 255; b /= 255;
+      const max = Math.max(r, g, b), min = Math.min(r, g, b);
+      let h, s, l = (max + min) / 2;
+      if (max === min) { h = s = 0; }
+      else {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+          case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+          case g: h = ((b - r) / d + 2) / 6; break;
+          case b: h = ((r - g) / d + 4) / 6; break;
+        }
+      }
+      return [Math.round(h * 360), Math.round(s * 100), Math.round(l * 100)];
+    }
+
+    function copyField(id) {
+      navigator.clipboard.writeText(document.getElementById(id).value).then(() => {
+        showToast('已复制: ' + document.getElementById(id).value);
+      });
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    updateFromHex('#4361ee');
+  </script>
+</body>
+</html>

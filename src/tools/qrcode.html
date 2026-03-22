@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>二维码生成 - 在线工具箱</title>
+  <meta name="description" content="免费在线二维码生成器，输入文字或链接即可生成二维码，支持下载。">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>二维码生成</h1>
+    </div>
+
+    <textarea id="qrInput" placeholder="输入文字或链接，例如：https://example.com" style="min-height: 80px;"></textarea>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="generateQR()">生成二维码</button>
+      <button class="btn btn-secondary" onclick="downloadQR()">下载二维码</button>
+      <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+    </div>
+
+    <div style="text-align: center; margin-top: 24px;">
+      <canvas id="qrCanvas" style="display: none; border: 1px solid #e0e0e0; border-radius: 8px;"></canvas>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const qrInput = document.getElementById('qrInput');
+    const qrCanvas = document.getElementById('qrCanvas');
+
+    function generateQR() {
+      const text = qrInput.value.trim();
+      if (!text) {
+        showToast('请输入内容');
+        return;
+      }
+
+      try {
+        const qr = qrcode(0, 'M');
+        qr.addData(text);
+        qr.make();
+
+        const moduleCount = qr.getModuleCount();
+        const cellSize = Math.max(4, Math.floor(300 / moduleCount));
+        const size = moduleCount * cellSize;
+
+        qrCanvas.width = size;
+        qrCanvas.height = size;
+        qrCanvas.style.display = 'inline-block';
+
+        const ctx = qrCanvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, size, size);
+
+        ctx.fillStyle = '#1a1a2e';
+        for (let row = 0; row < moduleCount; row++) {
+          for (let col = 0; col < moduleCount; col++) {
+            if (qr.isDark(row, col)) {
+              ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
+            }
+          }
+        }
+
+        showToast('二维码生成成功');
+      } catch (e) {
+        showToast('生成失败: ' + e.message);
+      }
+    }
+
+    function downloadQR() {
+      if (qrCanvas.style.display === 'none') {
+        showToast('请先生成二维码');
+        return;
+      }
+      const link = document.createElement('a');
+      link.download = 'qrcode.png';
+      link.href = qrCanvas.toDataURL('image/png');
+      link.click();
+      showToast('下载成功');
+    }
+
+    function clearAll() {
+      qrInput.value = '';
+      qrCanvas.style.display = 'none';
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>

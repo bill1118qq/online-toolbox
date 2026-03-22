@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>字数统计 - 在线工具箱</title>
+  <meta name="description" content="免费在线字数统计工具，统计中文字数、英文字数、字符数、段落数。">
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>字数统计</h1>
+    </div>
+
+    <textarea id="textInput" placeholder="在此输入或粘贴文本..." style="min-height: 200px;"></textarea>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; margin-top: 24px;">
+      <div style="background: white; padding: 20px; border-radius: 12px; text-align: center;">
+        <div id="totalChars" style="font-size: 2rem; font-weight: 700; color: #4361ee;">0</div>
+        <div style="color: #666; font-size: 0.9rem;">总字符数</div>
+      </div>
+      <div style="background: white; padding: 20px; border-radius: 12px; text-align: center;">
+        <div id="chineseChars" style="font-size: 2rem; font-weight: 700; color: #4361ee;">0</div>
+        <div style="color: #666; font-size: 0.9rem;">中文字数</div>
+      </div>
+      <div style="background: white; padding: 20px; border-radius: 12px; text-align: center;">
+        <div id="englishWords" style="font-size: 2rem; font-weight: 700; color: #4361ee;">0</div>
+        <div style="color: #666; font-size: 0.9rem;">英文单词数</div>
+      </div>
+      <div style="background: white; padding: 20px; border-radius: 12px; text-align: center;">
+        <div id="paragraphs" style="font-size: 2rem; font-weight: 700; color: #4361ee;">0</div>
+        <div style="color: #666; font-size: 0.9rem;">段落数</div>
+      </div>
+      <div style="background: white; padding: 20px; border-radius: 12px; text-align: center;">
+        <div id="lines" style="font-size: 2rem; font-weight: 700; color: #4361ee;">0</div>
+        <div style="color: #666; font-size: 0.9rem;">行数</div>
+      </div>
+      <div style="background: white; padding: 20px; border-radius: 12px; text-align: center;">
+        <div id="noSpaces" style="font-size: 2rem; font-weight: 700; color: #4361ee;">0</div>
+        <div style="color: #666; font-size: 0.9rem;">不含空格字符</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const textInput = document.getElementById('textInput');
+
+    textInput.addEventListener('input', countWords);
+
+    function countWords() {
+      const text = textInput.value;
+
+      const totalChars = text.length;
+      document.getElementById('totalChars').textContent = totalChars;
+
+      const chineseMatch = text.match(/[\u4e00-\u9fff\u3400-\u4dbf]/g);
+      document.getElementById('chineseChars').textContent = chineseMatch ? chineseMatch.length : 0;
+
+      const englishWords = text.match(/[a-zA-Z]+/g);
+      document.getElementById('englishWords').textContent = englishWords ? englishWords.length : 0;
+
+      const paraList = text.split(/\n\s*\n/).filter(p => p.trim().length > 0);
+      document.getElementById('paragraphs').textContent = paraList.length || (text.trim().length > 0 ? 1 : 0);
+
+      document.getElementById('lines').textContent = text ? text.split('\n').length : 0;
+
+      document.getElementById('noSpaces').textContent = text.replace(/\s/g, '').length;
+    }
+  </script>
+</body>
+</html>

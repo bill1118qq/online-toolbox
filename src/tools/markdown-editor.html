@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markdown 编辑器 - 在线工具箱</title>
+  <meta name="description" content="免费在线 Markdown 编辑器，支持实时预览，无需安装。">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>Markdown 编辑器</h1>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-secondary" onclick="insertText('**', '**')">粗体</button>
+      <button class="btn btn-secondary" onclick="insertText('*', '*')">斜体</button>
+      <button class="btn btn-secondary" onclick="insertText('## ', '')">标题</button>
+      <button class="btn btn-secondary" onclick="insertText('- ', '')">列表</button>
+      <button class="btn btn-secondary" onclick="insertText('[', '](url)')">链接</button>
+      <button class="btn btn-secondary" onclick="insertText('`', '`')">代码</button>
+      <button class="btn btn-secondary" onclick="insertText('\n```\n', '\n```\n')">代码块</button>
+      <button class="btn btn-primary" onclick="copyHTML()">复制 HTML</button>
+    </div>
+
+    <div class="split-view">
+      <textarea id="mdInput" placeholder="在此输入 Markdown 内容..."># Markdown 编辑器
+
+**支持实时预览**
+
+- 列表项 1
+- 列表项 2
+
+`行内代码`
+
+\`\`\`
+代码块
+\`\`\`</textarea>
+      <div id="mdPreview" class="result-box" style="overflow: auto; max-height: 500px;"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const mdInput = document.getElementById('mdInput');
+    const mdPreview = document.getElementById('mdPreview');
+
+    function renderMarkdown() {
+      mdPreview.innerHTML = marked.parse(mdInput.value);
+    }
+
+    mdInput.addEventListener('input', renderMarkdown);
+    renderMarkdown();
+
+    function insertText(before, after) {
+      const start = mdInput.selectionStart;
+      const end = mdInput.selectionEnd;
+      const text = mdInput.value;
+      const selected = text.substring(start, end);
+      mdInput.value = text.substring(0, start) + before + selected + after + text.substring(end);
+      mdInput.selectionStart = start + before.length;
+      mdInput.selectionEnd = start + before.length + selected.length;
+      mdInput.focus();
+      renderMarkdown();
+    }
+
+    function copyHTML() {
+      navigator.clipboard.writeText(mdPreview.innerHTML).then(() => {
+        showToast('HTML 已复制到剪贴板');
+      });
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>

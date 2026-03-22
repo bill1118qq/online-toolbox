@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON 格式化 - 在线工具箱</title>
+  <meta name="description" content="免费在线 JSON 格式化工具，支持美化、压缩、校验 JSON 数据。">
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>JSON 格式化</h1>
+    </div>
+
+    <textarea id="jsonInput" placeholder='粘贴 JSON 数据到此处，例如：{"name": "张三", "age": 25}'></textarea>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="formatJSON()">格式化（美化）</button>
+      <button class="btn btn-secondary" onclick="compressJSON()">压缩</button>
+      <button class="btn btn-secondary" onclick="validateJSON()">校验</button>
+      <button class="btn btn-secondary" onclick="copyResult()">复制结果</button>
+      <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+    </div>
+
+    <div id="resultBox" class="result-box"></div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const input = document.getElementById('jsonInput');
+    const resultBox = document.getElementById('resultBox');
+
+    function formatJSON() {
+      try {
+        const parsed = JSON.parse(input.value);
+        resultBox.textContent = JSON.stringify(parsed, null, 2);
+        resultBox.style.borderColor = '#4caf50';
+        showToast('格式化成功');
+      } catch (e) {
+        resultBox.textContent = '错误: ' + e.message;
+        resultBox.style.borderColor = '#f44336';
+      }
+    }
+
+    function compressJSON() {
+      try {
+        const parsed = JSON.parse(input.value);
+        resultBox.textContent = JSON.stringify(parsed);
+        resultBox.style.borderColor = '#4caf50';
+        showToast('压缩成功');
+      } catch (e) {
+        resultBox.textContent = '错误: ' + e.message;
+        resultBox.style.borderColor = '#f44336';
+      }
+    }
+
+    function validateJSON() {
+      try {
+        JSON.parse(input.value);
+        resultBox.textContent = 'JSON 格式正确';
+        resultBox.style.borderColor = '#4caf50';
+        showToast('校验通过');
+      } catch (e) {
+        resultBox.textContent = 'JSON 格式错误: ' + e.message;
+        resultBox.style.borderColor = '#f44336';
+      }
+    }
+
+    function copyResult() {
+      if (!resultBox.textContent) {
+        showToast('没有内容可复制');
+        return;
+      }
+      navigator.clipboard.writeText(resultBox.textContent).then(() => {
+        showToast('已复制到剪贴板');
+      });
+    }
+
+    function clearAll() {
+      input.value = '';
+      resultBox.textContent = '';
+      resultBox.style.borderColor = '#e0e0e0';
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>

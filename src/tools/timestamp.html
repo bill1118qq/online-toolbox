@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>时间戳转换 - 在线工具箱</title>
+  <meta name="description" content="免费在线时间戳转换工具，Unix 时间戳与日期时间互相转换。">
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>时间戳转换</h1>
+    </div>
+
+    <div style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 24px; text-align: center;">
+      <p style="color: #666; margin-bottom: 4px;">当前 Unix 时间戳（秒）</p>
+      <p id="currentTs" style="font-size: 2rem; font-weight: 700; font-family: monospace; color: #4361ee;"></p>
+      <p id="currentTime" style="color: #999; margin-top: 4px;"></p>
+    </div>
+
+    <h3 style="margin-bottom: 12px;">时间戳 &rarr; 日期时间</h3>
+    <div style="display: flex; gap: 10px; margin-bottom: 24px;">
+      <input type="number" id="tsInput" placeholder="输入时间戳，例如：1700000000" style="flex: 1;">
+      <button class="btn btn-primary" onclick="tsToDate()">转换</button>
+    </div>
+    <div id="tsResult" class="result-box" style="min-height: 40px;"></div>
+
+    <h3 style="margin: 24px 0 12px;">日期时间 &rarr; 时间戳</h3>
+    <div style="display: flex; gap: 10px; margin-bottom: 24px;">
+      <input type="text" id="dateInput" placeholder="例如：2026-03-22 12:00:00" style="flex: 1;">
+      <button class="btn btn-primary" onclick="dateToTs()">转换</button>
+    </div>
+    <div id="dateResult" class="result-box" style="min-height: 40px;"></div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    function updateCurrentTs() {
+      const now = Math.floor(Date.now() / 1000);
+      document.getElementById('currentTs').textContent = now;
+      document.getElementById('currentTime').textContent = new Date().toLocaleString('zh-CN');
+    }
+    updateCurrentTs();
+    setInterval(updateCurrentTs, 1000);
+
+    function tsToDate() {
+      const ts = document.getElementById('tsInput').value.trim();
+      if (!ts) { showToast('请输入时间戳'); return; }
+
+      let ms = Number(ts);
+      if (ms < 1e12) ms *= 1000;
+
+      const date = new Date(ms);
+      if (isNaN(date.getTime())) {
+        document.getElementById('tsResult').textContent = '无效的时间戳';
+        return;
+      }
+
+      document.getElementById('tsResult').innerHTML =
+        `本地时间: ${date.toLocaleString('zh-CN')}<br>` +
+        `UTC 时间: ${date.toUTCString()}<br>` +
+        `ISO 8601: ${date.toISOString()}`;
+    }
+
+    function dateToTs() {
+      const dateStr = document.getElementById('dateInput').value.trim();
+      if (!dateStr) { showToast('请输入日期时间'); return; }
+
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) {
+        document.getElementById('dateResult').textContent = '无效的日期格式，请使用: YYYY-MM-DD HH:mm:ss';
+        return;
+      }
+
+      document.getElementById('dateResult').innerHTML =
+        `秒级时间戳: ${Math.floor(date.getTime() / 1000)}<br>` +
+        `毫秒时间戳: ${date.getTime()}`;
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>
