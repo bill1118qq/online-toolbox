@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>前端代码压缩工具推荐 - 在线Minify工具 - 在线工具箱</title>
+  <meta name="description" content="2026年最佳在线代码压缩工具推荐：JSON压缩、HTML压缩、CSS压缩、JavaScript压缩。免费在线工具，无需安装。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="前端代码压缩工具推荐">
+  <meta property="og:description" content="JSON、HTML、CSS在线压缩工具推荐。">
+  <meta property="og:url" content="https://eitools.cn/guides/code-minify-guide.html">
+  <link rel="canonical" href="https://eitools.cn/guides/code-minify-guide.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"有哪些免费在线代码压缩工具？","acceptedAnswer":{"@type":"Answer","text":"推荐以下在线压缩工具：JSON压缩美化（json-minify）、HTML压缩（html-minify）、CSS压缩美化（css-minify）。这些工具均在浏览器端运行，不会上传你的代码到服务器，安全可靠。"}},{"@type":"Question","name">代码压缩后还能恢复吗？","acceptedAnswer":{"@type":"Answer","text":"代码压缩是单向操作，无法完全恢复原始格式。因此建议：1.保留原始源码备份；2.使用版本控制（Git）；3.仅在部署时使用压缩版本。JSON可以通过格式化工具重新美化，但原始的注释和空白排列无法还原。"}}]}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">← 返回首页</a>
+      <h1>前端代码压缩工具推荐</h1>
+    </div>
+    <article style="line-height:1.8;">
+      <h2>为什么要使用代码压缩？</h2>
+      <ul>
+        <li><b>提升网页速度</b>：文件越小，加载越快</li>
+        <li><b>优化SEO排名</b>：页面速度是Google排名因素之一</li>
+        <li><b>减少带宽费用</b>：节省服务器流量成本</li>
+        <li><b>改善用户体验</b>：移动端用户受益最大</li>
+      </ul>
+
+      <h2>在线压缩工具推荐</h2>
+      <table style="width:100%;border-collapse:collapse;margin:12px 0;font-size:0.9rem;">
+        <tr style="background:#f0f2f5;"><th style="padding:10px;">工具</th><th style="padding:10px;">功能</th><th style="padding:10px;">压缩率</th></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;"><a href="../src/tools/json-minify.html" style="color:#4361ee;">JSON压缩美化</a></td><td style="padding:8px 10px;">压缩/格式化/验证</td><td style="padding:8px 10px;">30-60%</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;"><a href="../src/tools/html-minify.html" style="color:#4361ee;">HTML压缩</a></td><td style="padding:8px 10px;">去空格/去注释</td><td style="padding:8px 10px;">10-30%</td></tr>
+        <tr><td style="padding:8px 10px;"><a href="../src/tools/css-minify.html" style="color:#4361ee;">CSS压缩美化</a></td><td style="padding:8px 10px;">压缩/格式化</td><td style="padding:8px 10px;">20-40%</td></tr>
+      </table>
+
+      <h2>使用建议</h2>
+      <ol>
+        <li><b>开发阶段</b>：使用格式化版本，便于调试阅读</li>
+        <li><b>构建部署</b>：使用自动化构建工具（Webpack、Vite）自动压缩</li>
+        <li><b>快速处理</b>：小文件可用在线工具手动压缩</li>
+        <li><b>备份源码</b>：压缩前保留原始格式化文件</li>
+      </ol>
+
+      <h2>自动化构建工具</h2>
+      <p>对于大型项目，建议使用构建工具自动处理：</p>
+      <ul>
+        <li><b>Vite</b>：内置代码压缩，零配置</li>
+        <li><b>Webpack</b>：配合 TerserPlugin 压缩JS</li>
+        <li><b>esbuild</b>：极速打包压缩</li>
+        <li><b>gulp</b>：配合 gulp-clean-css、gulp-htmlmin</li>
+      </ul>
+
+      <div style="margin-top:24px;padding:20px;background:#f0f4ff;border-radius:12px;border:1px solid #4361ee;">
+        <h3 style="color:#4361ee;margin-top:0;">全套在线压缩工具</h3>
+        <p>使用我们的<a href="../src/tools/json-minify.html" style="color:#4361ee;font-weight:bold;">代码压缩工具集</a>，支持JSON、HTML、CSS在线压缩和美化，完全免费。</p>
+      </div>
+    </article>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../js/share.js"></script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>字符统计增强版 - 文本字符频率分析 - 在线工具箱</title>
+  <meta name="description" content="增强版文本统计工具，统计字数、字符数、行数、段落数、句子数、阅读时间，支持中日韩字符准确统计。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="文本统计增强版 - 字数行数阅读时间">
+  <meta property="og:description" content="增强版文本统计：字数、字符、行数、阅读时间。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/text-counter-enhanced.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/text-counter-enhanced.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"文本统计增强版","description":"全面的文本统计分析工具","url":"https://eitools.cn/src/tools/text-counter-enhanced.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>文本统计（增强版）</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">粘贴或输入文本，实时统计字数、字符数、行数等。</p>
+    <div style="max-width:700px;">
+      <textarea id="text" rows="10" oninput="analyze()" placeholder="在此输入或粘贴文本..." style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:1rem;resize:vertical;"></textarea>
+      <div id="stats" style="margin-top:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;"></div>
+      <div id="details" style="margin-top:20px;"></div>
+    </div>
+  </div>
+  <script>
+    function analyze() {
+      const text = document.getElementById('text').value;
+      if (!text) { document.getElementById('stats').innerHTML = ''; document.getElementById('details').innerHTML = ''; return; }
+
+      const chars = text.length;
+      const charsNoSpace = text.replace(/\s/g, '').length;
+      const lines = text.split('\n').length;
+      const nonEmptyLines = text.split('\n').filter(l => l.trim()).length;
+      const paragraphs = text.split(/\n\s*\n/).filter(p => p.trim()).length;
+      const sentences = text.split(/[.!?。！？]+/).filter(s => s.trim()).length;
+
+      // CJK character count (Chinese/Japanese/Korean)
+      const cjkChars = (text.match(/[\u4e00-\u9fff\u3040-\u30ff\uac00-\ud7af]/g) || []).length;
+      // English words
+      const englishWords = text.match(/[a-zA-Z]+/g) || [];
+      // Numbers
+      const numbers = text.match(/\d+/g) || [];
+      // Total "words" (CJK chars count as 1 word each + English words)
+      const totalWords = cjkChars + englishWords.length + numbers.length;
+
+      // Reading time (Chinese ~500 chars/min, English ~200 words/min)
+      const readingMin = Math.max(1, Math.ceil(totalWords / (cjkChars > englishWords.length ? 500 : 200)));
+
+      // Speaking time (~150-200 words/min for Chinese, ~130 words/min English)
+      const speakingMin = Math.max(1, Math.ceil(totalWords / (cjkChars > englishWords.length ? 200 : 130)));
+
+      document.getElementById('stats').innerHTML = [
+        { label: '总字符数', value: chars.toLocaleString(), color: '#4361ee' },
+        { label: '不含空格', value: charsNoSpace.toLocaleString(), color: '#333' },
+        { label: '总字数', value: totalWords.toLocaleString(), color: '#2f9e44' },
+        { label: '中文字数', value: cjkChars.toLocaleString(), color: '#e67700' },
+        { label: '英文单词', value: englishWords.length.toLocaleString(), color: '#333' },
+        { label: '数字个数', value: numbers.length.toLocaleString(), color: '#333' },
+        { label: '行数', value: lines.toLocaleString(), color: '#333' },
+        { label: '非空行', value: nonEmptyLines.toLocaleString(), color: '#333' },
+        { label: '段落数', value: paragraphs.toLocaleString(), color: '#333' },
+        { label: '句子数', value: sentences.toLocaleString(), color: '#333' },
+        { label: '阅读时间', value: readingMin + ' 分钟', color: '#4361ee' },
+        { label: '朗读时间', value: speakingMin + ' 分钟', color: '#4361ee' },
+      ].map(s => `<div style="padding:16px;background:white;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,0.06);text-align:center;">
+        <div style="font-size:0.8rem;color:#888;">${s.label}</div>
+        <div style="font-size:1.4rem;font-weight:800;color:${s.color};">${s.value}</div>
+      </div>`).join('');
+
+      document.getElementById('details').innerHTML = `
+        <div style="background:#f0f2f5;padding:16px;border-radius:12px;font-size:0.85rem;color:#555;">
+          <p><strong>不含空格：</strong>${charsNoSpace} 字符</p>
+          <p><strong>最常见字：</strong>${getMostCommon(text)}</p>
+          <p><strong>最长行：</strong>${Math.max(...text.split('\n').map(l=>l.length))} 字符</p>
+          <p><strong>平均行长：</strong>${Math.round(charsNoSpace/nonEmptyLines)} 字符/行</p>
+        </div>`;
+    }
+
+    function getMostCommon(text) {
+      const freq = {};
+      for (const ch of text) {
+        if (/[\s]/.test(ch)) continue;
+        freq[ch] = (freq[ch] || 0) + 1;
+      }
+      const sorted = Object.entries(freq).sort((a,b) => b[1] - a[1]);
+      return sorted.slice(0, 5).map(([ch, c]) => `"${ch}"(${c}次)`).join('、');
+    }
+  </script>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+</body>
+</html>

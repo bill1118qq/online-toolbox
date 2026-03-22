@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>房贷计算器 - 在线等额本息/等额本金计算 - 在线工具箱</title>
+  <meta name="description" content="免费在线房贷计算器，支持等额本息和等额本金两种还款方式，实时计算月供、总利息和还款总额。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="房贷计算器 - 等额本息/等额本金月供计算">
+  <meta property="og:description" content="输入贷款金额、利率、年限，一键计算月供和总利息。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/mortgage-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/mortgage-calculator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"房贷计算器","description":"在线计算房贷月供、利息和还款总额","url":"https://eitools.cn/src/tools/mortgage-calculator.html","applicationCategory":"FinanceApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>房贷计算器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">计算等额本息或等额本金的月供、利息和还款总额。</p>
+    <div style="max-width:500px;">
+      <div style="margin-bottom:16px;">
+        <label style="display:block;margin-bottom:6px;font-weight:600;">贷款总额（万元）</label>
+        <input type="number" id="principal" placeholder="例如：100" min="1" max="100000" step="1" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:1rem;">
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="display:block;margin-bottom:6px;font-weight:600;">年利率（%）</label>
+        <input type="number" id="rate" placeholder="例如：3.45" min="0.01" max="30" step="0.01" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:1rem;">
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+          <button class="btn btn-secondary" onclick="document.getElementById('rate').value='3.10'" style="font-size:0.85rem;padding:6px 12px;">公积金 3.1%</button>
+          <button class="btn btn-secondary" onclick="document.getElementById('rate').value='3.45'" style="font-size:0.85rem;padding:6px 12px;">商贷首套 3.45%</button>
+          <button class="btn btn-secondary" onclick="document.getElementById('rate').value='3.95'" style="font-size:0.85rem;padding:6px 12px;">商贷二套 3.95%</button>
+        </div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="display:block;margin-bottom:6px;font-weight:600;">贷款年限</label>
+        <select id="years" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:1rem;">
+          <option value="5">5年（60期）</option>
+          <option value="10">10年（120期）</option>
+          <option value="15">15年（180期）</option>
+          <option value="20">20年（240期）</option>
+          <option value="25" selected>25年（300期）</option>
+          <option value="30">30年（360期）</option>
+        </select>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="display:block;margin-bottom:6px;font-weight:600;">还款方式</label>
+        <div style="display:flex;gap:12px;">
+          <label style="cursor:pointer;"><input type="radio" name="type" value="equal" checked> 等额本息</label>
+          <label style="cursor:pointer;"><input type="radio" name="type" value="principal"> 等额本金</label>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="calc()" style="width:100%;padding:12px;font-size:1.05rem;">开始计算</button>
+      <div id="result" style="margin-top:24px;"></div>
+    </div>
+  </div>
+  <script>
+    function calc() {
+      const P = parseFloat(document.getElementById('principal').value) * 10000;
+      const annualRate = parseFloat(document.getElementById('rate').value);
+      const n = parseInt(document.getElementById('years').value) * 12;
+      const type = document.querySelector('input[name="type"]:checked').value;
+      if (!P || !annualRate || P < 10000 || annualRate <= 0 || annualRate > 30) {
+        document.getElementById('result').innerHTML = '<p style="color:#e03131;">请输入有效的贷款金额和利率</p>';
+        return;
+      }
+      const r = annualRate / 100 / 12;
+      let html = '';
+      if (type === 'equal') {
+        const M = P * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1);
+        const totalPay = M * n;
+        const totalInterest = totalPay - P;
+        html = `<div style="padding:20px;background:#f0f2f5;border-radius:12px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div style="text-align:center;"><div style="font-size:0.85rem;color:#888;">每月还款</div><div style="font-size:1.5rem;font-weight:800;color:#4361ee;">${M.toFixed(2)} 元</div></div>
+            <div style="text-align:center;"><div style="font-size:0.85rem;color:#888;">还款总额</div><div style="font-size:1.5rem;font-weight:800;">${(totalPay / 10000).toFixed(2)} 万</div></div>
+            <div style="text-align:center;"><div style="font-size:0.85rem;color:#888;">支付利息</div><div style="font-size:1.5rem;font-weight:800;color:#e67700;">${(totalInterest / 10000).toFixed(2)} 万</div></div>
+            <div style="text-align:center;"><div style="font-size:0.85rem;color:#888;">利息占比</div><div style="font-size:1.5rem;font-weight:800;">${(totalInterest / totalPay * 100).toFixed(1)}%</div></div>
+          </div>
+        </div>`;
+      } else {
+        const monthPrincipal = P / n;
+        let totalInterest = 0;
+        let firstM, lastM;
+        for (let i = 1; i <= n; i++) {
+          const interest = (P - monthPrincipal * (i - 1)) * r;
+          totalInterest += interest;
+          if (i === 1) firstM = monthPrincipal + interest;
+          if (i === n) lastM = monthPrincipal + interest;
+        }
+        const totalPay = P + totalInterest;
+        html = `<div style="padding:20px;background:#f0f2f5;border-radius:12px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div style="text-align:center;"><div style="font-size:0.85rem;color:#888;">首月还款</div><div style="font-size:1.5rem;font-weight:800;color:#4361ee;">${firstM.toFixed(2)} 元</div></div>
+            <div style="text-align:center;"><div style="font-size:0.85rem;color:#888;">末月还款</div><div style="font-size:1.5rem;font-weight:800;">${lastM.toFixed(2)} 元</div></div>
+            <div style="text-align:center;"><div style="font-size:0.85rem;color:#888;">每月递减</div><div style="font-size:1.5rem;font-weight:800;">${(monthPrincipal * r).toFixed(2)} 元</div></div>
+            <div style="text-align:center;"><div style="font-size:0.85rem;color:#888;">支付利息</div><div style="font-size:1.5rem;font-weight:800;color:#e67700;">${(totalInterest / 10000).toFixed(2)} 万</div></div>
+          </div>
+          <div style="text-align:center;margin-top:16px;"><div style="font-size:0.85rem;color:#888;">还款总额</div><div style="font-size:1.3rem;font-weight:700;">${(totalPay / 10000).toFixed(2)} 万元</div></div>
+        </div>`;
+      }
+      document.getElementById('result').innerHTML = html;
+    }
+  </script>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+</body>
+</html>

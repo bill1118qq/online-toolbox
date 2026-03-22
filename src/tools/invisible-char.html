@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>隐藏字符检测 - 查找不可见字符 - 在线工具箱</title>
+  <meta name="description" content="免费在线隐藏字符检测工具，快速查找文本中的零宽字符、不可见空格、控制字符等。粘贴文本即可检测并高亮显示隐藏字符。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="隐藏字符检测 - 查找不可见字符">
+  <meta property="og:description" content="检测文本中的零宽字符、控制字符等不可见字符。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/invisible-char.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/invisible-char.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"隐藏字符检测","description":"在线检测文本中的不可见字符","url":"https://eitools.cn/src/tools/invisible-char.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>隐藏字符检测</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">粘贴文本，检测其中的零宽字符、控制字符、不可见空格等隐藏字符。</p>
+    <div style="max-width:700px;">
+      <textarea id="text" rows="8" placeholder="在此粘贴要检测的文本..." oninput="detect()" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.9rem;resize:vertical;margin-bottom:16px;"></textarea>
+      <button class="btn btn-primary" onclick="removeAll()">清除所有隐藏字符</button>
+      <button class="btn" onclick="removeSelected()" style="margin-left:8px;">清除选中的类型</button>
+      <div id="result" style="margin-top:16px;"></div>
+    </div>
+  </div>
+  <script>
+    const invisibleChars = [
+      { name: '零宽空格 (ZWSP)', regex: /\u200B/g, color: '#e6162d' },
+      { name: '零宽非连接符 (ZWNJ)', regex: /\u200C/g, color: '#e67700' },
+      { name: '零宽连接符 (ZWNJ)', regex: /\u200D/g, color: '#12b7f5' },
+      { name: '零宽不连字 (ZWJ)', regex: /\uFEFF/g, color: '#9c36b5' },
+      { name: '不换行空格 (NBSP)', regex: /\u00A0/g, color: '#2f9e44' },
+      { name: 'En空格', regex: /\u2002/g, color: '#333' },
+      { name: 'Em空格', regex: /\u2003/g, color: '#333' },
+      { name: '窄不换行空格 (NNBSP)', regex: /\u202F/g, color: '#333' },
+      { name: '制表符 (Tab)', regex: /\t/g, color: '#868e96' },
+      { name: '回车符 (CR)', regex: /\r/g, color: '#868e96' },
+    ];
+
+    function detect() {
+      const text = document.getElementById('text').value;
+      const el = document.getElementById('result');
+      if (!text) { el.innerHTML = ''; return; }
+
+      let found = [];
+      invisibleChars.forEach(ch => {
+        const matches = text.match(ch.regex);
+        if (matches) found.push({ ...ch, count: matches.length });
+      });
+
+      // Also detect other control characters
+      const controlChars = [];
+      for (let i = 0; i < text.length; i++) {
+        const code = text.charCodeAt(i);
+        if (code < 32 && code !== 10 && code !== 13 && code !== 9) {
+          controlChars.push({ char: text[i], code, pos: i });
+        }
+      }
+
+      let html = '';
+      if (found.length === 0 && controlChars.length === 0) {
+        html = '<div style="padding:16px;background:#e8f5e9;border-radius:12px;color:#2f9e44;font-weight:600;">未检测到隐藏字符</div>';
+      } else {
+        html = '<div style="padding:16px;background:#fee;border-radius:12px;">';
+        html += `<p style="font-weight:600;color:#c92a2a;margin-bottom:8px;">检测到 ${found.length + (controlChars.length > 0 ? 1 : 0)} 种隐藏字符</p>`;
+        found.forEach(f => {
+          html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f5c6cb;">
+            <span><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${f.color};margin-right:8px;"></span>${f.name}</span>
+            <span style="font-weight:700;color:${f.color};">${f.count} 个</span>
+          </div>`;
+        });
+        if (controlChars.length > 0) {
+          const unique = [...new Set(controlChars.map(c => c.code))];
+          html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;">
+            <span>其他控制字符 (Unicode: ${unique.map(c => 'U+' + c.toString(16).toUpperCase().padStart(4, '0')).join(', ')})</span>
+            <span style="font-weight:700;color:#c92a2a;">${controlChars.length} 个</span>
+          </div>`;
+        }
+        html += '</div>';
+
+        // Highlighted preview
+        html += '<div style="margin-top:16px;"><p style="font-size:0.85rem;color:#888;margin-bottom:8px;">高亮预览（隐藏字符用彩色方块标记）</p>';
+        html += '<div style="padding:16px;background:white;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.9rem;word-break:break-all;white-space:pre-wrap;max-height:300px;overflow-y:auto;">';
+        for (const ch of text) {
+          const code = ch.charCodeAt(0);
+          const found2 = invisibleChars.find(ic => ic.regex.test(ch));
+          if (found2) {
+            html += `<span style="background:${found2.color};color:white;padding:1px 3px;border-radius:3px;font-size:0.7rem;" title="${found2.name}">[${found2.name.substring(0,4)}]</span>`;
+          } else if (code < 32 && code !== 10 && code !== 13) {
+            html += `<span style="background:#c92a2a;color:white;padding:1px 3px;border-radius:3px;font-size:0.7rem;" title="控制字符 U+${code.toString(16).toUpperCase().padStart(4,'0')}">[CTRL]</span>`;
+          } else {
+            html += escapeHtml(ch);
+          }
+        }
+        html += '</div></div>';
+      }
+      el.innerHTML = html;
+    }
+
+    function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    function removeAll() {
+      let text = document.getElementById('text').value;
+      invisibleChars.forEach(ch => { text = text.replace(ch.regex, ''); });
+      // Remove all control chars except newline
+      text = text.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
+      document.getElementById('text').value = text;
+      detect();
+    }
+
+    function removeSelected() {
+      let text = document.getElementById('text').value;
+      // Remove common problematic ones
+      text = text.replace(/[\u200B\u200C\u200D\uFEFF\u00A0\u2002\u2003\u202F]/g, '');
+      text = text.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
+      document.getElementById('text').value = text;
+      detect();
+    }
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

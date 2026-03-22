@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>在线画板 - 免费绘画工具 - 在线工具箱</title>
+  <meta name="description" content="免费在线画板工具，支持画笔、橡皮擦、形状、文字、填充颜色。无需安装，打开即用，可下载PNG图片。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="在线画板 - 免费绘画工具">
+  <meta property="og:description" content="在线画板，支持画笔、形状、文字，可下载图片。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/drawing-board.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/drawing-board.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"在线画板","description":"免费在线绘画工具","url":"https://eitools.cn/src/tools/drawing-board.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>在线画板</h1>
+    </div>
+    <div style="max-width:100%;">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;align-items:center;">
+        <button onclick="setTool('pen')" class="tool-btn active" data-t="pen" title="画笔">✏️ 画笔</button>
+        <button onclick="setTool('eraser')" class="tool-btn" data-t="eraser" title="橡皮擦">🧹 橡皮</button>
+        <button onclick="setTool('line')" class="tool-btn" data-t="line" title="直线">╱ 直线</button>
+        <button onclick="setTool('rect')" class="tool-btn" data-t="rect" title="矩形">▭ 矩形</button>
+        <button onclick="setTool('circle')" class="tool-btn" data-t="circle" title="圆形">○ 圆形</button>
+        <button onclick="setTool('text')" class="tool-btn" data-t="text" title="文字">A 文字</button>
+        <span style="width:1px;height:24px;background:#ddd;margin:0 4px;"></span>
+        <input type="color" id="colorPicker" value="#000000" onchange="currentColor=this.value" style="width:32px;height:32px;border:none;cursor:pointer;" title="颜色">
+        <select id="sizeSelect" onchange="currentSize=parseInt(this.value)" style="padding:4px 8px;border:1px solid #ddd;border-radius:6px;">
+          <option value="2">2px</option><option value="4">4px</option><option value="6" selected>6px</option><option value="10">10px</option><option value="16">16px</option><option value="24">24px</option>
+        </select>
+        <span style="width:1px;height:24px;background:#ddd;margin:0 4px;"></span>
+        <button onclick="undo()" class="tool-btn" title="撤销">↩ 撤销</button>
+        <button onclick="clearCanvas()" class="tool-btn" title="清空">🗑 清空</button>
+        <button onclick="downloadCanvas()" class="btn btn-primary" style="padding:6px 16px;font-size:0.85rem;">下载</button>
+      </div>
+      <div style="border:2px solid #ddd;border-radius:8px;overflow:hidden;background:white;">
+        <canvas id="canvas" style="display:block;cursor:crosshair;width:100%;"></canvas>
+      </div>
+    </div>
+  </div>
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let currentTool = 'pen', currentColor = '#000000', currentSize = 6;
+    let drawing = false, startX = 0, startY = 0, lastX = 0, lastY = 0;
+    let history = [];
+
+    function resize() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const w = Math.floor(rect.width);
+      const h = Math.max(400, Math.floor(window.innerHeight * 0.6));
+      const imgData = canvas.width > 0 ? ctx.getImageData(0, 0, canvas.width, canvas.height) : null;
+      canvas.width = w; canvas.height = h;
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, w, h);
+      if (imgData) ctx.putImageData(imgData, 0, 0);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const style = document.createElement('style');
+    style.textContent = '.tool-btn{padding:6px 12px;border:1px solid #ddd;border-radius:6px;cursor:pointer;background:white;font-size:0.85rem;}.tool-btn.active{background:#4361ee;color:white;border-color:#4361ee;}';
+    document.head.appendChild(style);
+
+    function setTool(t) { currentTool = t; document.querySelectorAll('.tool-btn').forEach(b => b.classList.toggle('active', b.dataset.t === t)); canvas.style.cursor = t === 'eraser' ? 'cell' : t === 'text' ? 'text' : 'crosshair'; }
+
+    function saveState() { if (history.length > 30) history.shift(); history.push(ctx.getImageData(0, 0, canvas.width, canvas.height)); }
+    function undo() { if (history.length) { ctx.putImageData(history.pop(), 0, 0); } }
+
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
+      const touch = e.touches ? e.touches[0] : e;
+      return [(touch.clientX - rect.left) * scaleX, (touch.clientY - rect.top) * scaleY];
+    }
+
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', drawingMove);
+    canvas.addEventListener('mouseup', endDraw);
+    canvas.addEventListener('mouseleave', endDraw);
+    canvas.addEventListener('touchstart', e => { e.preventDefault(); startDraw(e); }, {passive: false});
+    canvas.addEventListener('touchmove', e => { e.preventDefault(); drawingMove(e); }, {passive: false});
+    canvas.addEventListener('touchend', e => { e.preventDefault(); endDraw(e); }, {passive: false});
+
+    let tempCanvas, tempCtx;
+    function startDraw(e) {
+      drawing = true;
+      [startX, startY] = getPos(e);
+      lastX = startX; lastY = startY;
+      saveState();
+      if (currentTool === 'text') {
+        drawing = false;
+        const text = prompt('请输入文字：');
+        if (text) {
+          ctx.fillStyle = currentColor;
+          ctx.font = `${Math.max(currentSize * 3, 16)}px sans-serif`;
+          ctx.fillText(text, startX, startY);
+        }
+        return;
+      }
+      if (['line', 'rect', 'circle'].includes(currentTool)) {
+        tempCanvas = document.createElement('canvas');
+        tempCanvas.width = canvas.width; tempCanvas.height = canvas.height;
+        tempCtx = tempCanvas.getContext('2d');
+        tempCtx.drawImage(canvas, 0, 0);
+      }
+      if (currentTool === 'pen' || currentTool === 'eraser') {
+        ctx.beginPath(); ctx.moveTo(startX, startY);
+        ctx.strokeStyle = currentTool === 'eraser' ? '#ffffff' : currentColor;
+        ctx.lineWidth = currentTool === 'eraser' ? currentSize * 3 : currentSize;
+        ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      }
+    }
+
+    function drawingMove(e) {
+      if (!drawing) return;
+      const [x, y] = getPos(e);
+      if (currentTool === 'pen' || currentTool === 'eraser') {
+        ctx.lineTo(x, y); ctx.stroke();
+      } else if (tempCanvas) {
+        ctx.putImageData(tempCtx.getImageData(0, 0, canvas.width, canvas.height), 0, 0);
+        ctx.strokeStyle = currentColor; ctx.lineWidth = currentSize; ctx.lineCap = 'round';
+        ctx.beginPath();
+        if (currentTool === 'line') { ctx.moveTo(startX, startY); ctx.lineTo(x, y); }
+        else if (currentTool === 'rect') { ctx.rect(startX, startY, x - startX, y - startY); }
+        else if (currentTool === 'circle') { const rx = Math.abs(x - startX) / 2, ry = Math.abs(y - startY) / 2; ctx.ellipse((startX + x) / 2, (startY + y) / 2, rx, ry, 0, 0, Math.PI * 2); }
+        ctx.stroke();
+      }
+      lastX = x; lastY = y;
+    }
+
+    function endDraw() {
+      if (!drawing) return;
+      drawing = false;
+      tempCanvas = null; tempCtx = null;
+      ctx.beginPath();
+    }
+
+    function clearCanvas() { saveState(); ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
+    function downloadCanvas() { canvas.toBlob(blob => { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'drawing.png'; a.click(); }, 'image/png'); }
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>利润计算器 - 成本利润计算 - 在线工具箱</title>
+  <meta name="description" content="免费在线利润计算器。输入成本价和售价，计算利润、利润率、毛利率、加价率。支持批量计算。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="利润计算器 - 成本利润率">
+  <meta property="og:description" content="计算利润、利润率、毛利率。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/profit-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/profit-calculator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"利润计算器","description":"成本利润率计算","url":"https://eitools.cn/src/tools/profit-calculator.html","applicationCategory":"FinanceApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>利润计算器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">输入成本和售价，快速计算利润和利润率。</p>
+    <div style="max-width:700px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+        <div>
+          <label style="font-size:0.85rem;color:#888;">成本价（元）</label>
+          <input type="number" id="cost" value="100" step="any" oninput="calc()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:1rem;margin-top:4px;">
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">售价（元）</label>
+          <input type="number" id="price" value="150" step="any" oninput="calc()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:1rem;margin-top:4px;">
+        </div>
+      </div>
+      <div id="result" style="padding:20px;background:#f8f9fa;border-radius:12px;margin-bottom:20px;"></div>
+      <h3 style="margin-bottom:12px;">反推计算</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+        <div>
+          <label style="font-size:0.85rem;color:#888;">已知成本和目标利润率，计算售价</label>
+          <div style="display:flex;gap:8px;margin-top:4px;">
+            <input type="number" id="rcost" value="100" step="any" style="flex:1;padding:8px;border:1px solid #ddd;border-radius:8px;" oninput="reverseCalc('price')">
+            <input type="number" id="rrate" value="30" step="any" style="width:80px;padding:8px;border:1px solid #ddd;border-radius:8px;" oninput="reverseCalc('price')">
+            <span style="padding:8px;">%</span>
+          </div>
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">已知售价和目标利润率，计算最高成本</label>
+          <div style="display:flex;gap:8px;margin-top:4px;">
+            <input type="number" id="rprice2" value="150" step="any" style="flex:1;padding:8px;border:1px solid #ddd;border-radius:8px;" oninput="reverseCalc('cost')">
+            <input type="number" id="rrate2" value="30" step="any" style="width:80px;padding:8px;border:1px solid #ddd;border-radius:8px;" oninput="reverseCalc('cost')">
+            <span style="padding:8px;">%</span>
+          </div>
+        </div>
+      </div>
+      <div id="reverseResult" style="padding:16px;background:#e8f4fd;border-radius:12px;font-size:0.9rem;"></div>
+    </div>
+  </div>
+  <script>
+    function calc() {
+      const cost = parseFloat(document.getElementById('cost').value) || 0;
+      const price = parseFloat(document.getElementById('price').value) || 0;
+      const profit = price - cost;
+      const profitRate = cost > 0 ? (profit / cost * 100) : 0;
+      const margin = price > 0 ? (profit / price * 100) : 0;
+      const markup = cost > 0 ? (profit / cost * 100) : 0;
+      const isProfit = profit >= 0;
+      document.getElementById('result').innerHTML = `
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
+          <div style="text-align:center;">
+            <div style="font-size:2rem;font-weight:700;color:${isProfit?'#2f9e44':'#c92a2a'};">¥${profit.toFixed(2)}</div>
+            <div style="color:#888;font-size:0.85rem;">${isProfit?'利润':'亏损'}</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:2rem;font-weight:700;color:${isProfit?'#2f9e44':'#c92a2a'};">${profitRate.toFixed(2)}%</div>
+            <div style="color:#888;font-size:0.85rem;">利润率（成本利润率）</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:1.5rem;font-weight:700;">${margin.toFixed(2)}%</div>
+            <div style="color:#888;font-size:0.85rem;">毛利率（销售毛利率）</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:1.5rem;font-weight:700;">${markup.toFixed(2)}%</div>
+            <div style="color:#888;font-size:0.85rem;">加价率</div>
+          </div>
+        </div>`;
+    }
+    function reverseCalc(type) {
+      if (type === 'price') {
+        const cost = parseFloat(document.getElementById('rcost').value) || 0;
+        const rate = parseFloat(document.getElementById('rrate').value) || 0;
+        const price = cost * (1 + rate / 100);
+        document.getElementById('reverseResult').innerHTML = `成本 ¥${cost.toFixed(2)} + 利润率 ${rate}% → 售价 <strong>¥${price.toFixed(2)}</strong>`;
+      } else {
+        const price = parseFloat(document.getElementById('rprice2').value) || 0;
+        const rate = parseFloat(document.getElementById('rrate2').value) || 0;
+        const cost = price / (1 + rate / 100);
+        document.getElementById('reverseResult').innerHTML = `售价 ¥${price.toFixed(2)} - 利润率 ${rate}% → 最高成本 <strong>¥${cost.toFixed(2)}</strong>`;
+      }
+    }
+    calc();
+    reverseCalc('price');
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

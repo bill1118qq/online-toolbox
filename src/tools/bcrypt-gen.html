@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>在线JSON编辑器 - JSON可视化编辑 - 在线工具箱</title>
+  <meta name="description" content="在线JSON编辑器：可视化编辑JSON数据、添加/删除/修改键值对、JSON树形结构查看、实时格式化和语法校验。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="在线JSON编辑器">
+  <meta property="og:description" content="可视化编辑JSON，树形结构查看，实时校验。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/json-editor.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/json-editor.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"在线JSON编辑器","url":"https://eitools.cn/src/tools/json-editor.html","description":"可视化JSON编辑器，支持树形结构查看和实时校验","applicationCategory":"DeveloperApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>在线JSON编辑器</h1>
+    </div>
+    <div style="display:flex;gap:8px;margin:16px 0;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="formatJSON()">格式化</button>
+      <button class="btn btn-primary" onclick="minifyJSON()">压缩</button>
+      <button class="btn btn-primary" onclick="sortByKey()">按Key排序</button>
+      <button class="btn btn-secondary" onclick="copyResult()">复制</button>
+      <button class="btn btn-secondary" onclick="loadSample()">加载示例</button>
+      <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+    </div>
+    <div class="split-view">
+      <div class="split-panel">
+        <h3>JSON编辑区</h3>
+        <textarea id="input" rows="18" placeholder="粘贴或输入JSON..." style="font-family:monospace;font-size:0.9rem;" oninput="onInputChange()"></textarea>
+      </div>
+      <div class="split-panel">
+        <h3>树形结构</h3>
+        <div id="treeView" style="background:#f8f9fa;border:2px solid #ddd;border-radius:8px;padding:12px;overflow:auto;height:420px;font-size:0.9rem;font-family:monospace;"></div>
+      </div>
+    </div>
+    <div id="result-box" style="display:none;padding:12px;border-radius:8px;margin-top:12px;font-size:0.9rem;"></div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    const inputEl = document.getElementById('input');
+    const treeEl = document.getElementById('treeView');
+    const resultBox = document.getElementById('result-box');
+
+    function showResult(msg, isError) {
+      resultBox.style.display = 'block';
+      resultBox.style.border = isError ? '2px solid #f44' : '2px solid #4ade80';
+      resultBox.style.background = isError ? '#fff5f5' : '#f0fff4';
+      resultBox.textContent = msg;
+    }
+    function hideResult() { resultBox.style.display = 'none'; }
+
+    function onInputChange() {
+      try {
+        const parsed = JSON.parse(inputEl.value);
+        renderTree(parsed);
+        hideResult();
+      } catch (e) {
+        treeEl.innerHTML = '<span style="color:#f44;">JSON语法错误: ' + escapeHtml(e.message) + '</span>';
+      }
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function renderTree(obj, depth) {
+      depth = depth || 0;
+      const indent = '&nbsp;&nbsp;'.repeat(depth);
+      if (obj === null) return indent + '<span style="color:#999;">null</span>';
+      if (typeof obj === 'boolean') return indent + '<span style="color:#f59e0b;">' + obj + '</span>';
+      if (typeof obj === 'number') return indent + '<span style="color:#4361ee;">' + obj + '</span>';
+      if (typeof obj === 'string') return indent + '<span style="color:#10b981;">"' + escapeHtml(obj.substring(0, 80)) + (obj.length > 80 ? '...' : '') + '"</span>';
+      if (Array.isArray(obj)) {
+        if (obj.length === 0) return indent + '<span style="color:#666;">[]</span>';
+        let html = indent + '<span style="color:#666;cursor:pointer;" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'">[' + obj.length + ']</span><div style="display:block;margin-left:16px;border-left:1px solid #e0e0e0;padding-left:8px;">';
+        obj.forEach((item, i) => { html += '<div>' + renderTree(item, 0) + (i < obj.length - 1 ? ',' : '') + '</div>'; });
+        html += '</div>';
+        return html;
+      }
+      if (typeof obj === 'object') {
+        const keys = Object.keys(obj);
+        if (keys.length === 0) return indent + '<span style="color:#666;">{}</span>';
+        let html = indent + '<span style="color:#666;cursor:pointer;" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'">{' + keys.length + '}</span><div style="display:block;margin-left:16px;border-left:1px solid #e0e0e0;padding-left:8px;">';
+        keys.forEach((key, i) => {
+          html += '<div><span style="color:#e11d48;">"' + escapeHtml(key) + '"</span>: ' + renderTree(obj[key], 0) + (i < keys.length - 1 ? ',' : '') + '</div>';
+        });
+        html += '</div>';
+        return html;
+      }
+      return indent + String(obj);
+    }
+
+    function formatJSON() {
+      hideResult();
+      try {
+        const parsed = JSON.parse(inputEl.value);
+        inputEl.value = JSON.stringify(parsed, null, 2);
+        renderTree(parsed);
+        showResult('格式化成功！', false);
+      } catch (e) { showResult('JSON语法错误: ' + e.message, true); }
+    }
+
+    function minifyJSON() {
+      hideResult();
+      try {
+        const parsed = JSON.parse(inputEl.value);
+        inputEl.value = JSON.stringify(parsed);
+        showResult('压缩成功！', false);
+      } catch (e) { showResult('JSON语法错误: ' + e.message, true); }
+    }
+
+    function sortByKey() {
+      hideResult();
+      try {
+        const parsed = JSON.parse(inputEl.value);
+        const sorted = sortObject(parsed);
+        inputEl.value = JSON.stringify(sorted, null, 2);
+        renderTree(sorted);
+        showResult('已按键名排序！', false);
+      } catch (e) { showResult('JSON语法错误: ' + e.message, true); }
+    }
+
+    function sortObject(obj) {
+      if (Array.isArray(obj)) return obj.map(sortObject);
+      if (obj !== null && typeof obj === 'object') {
+        const sorted = {};
+        Object.keys(obj).sort().forEach(k => { sorted[k] = sortObject(obj[k]); });
+        return sorted;
+      }
+      return obj;
+    }
+
+    function loadSample() {
+      inputEl.value = JSON.stringify({
+        "名称": "在线工具箱",
+        "版本": "2.0",
+        "工具数量": 145,
+        "分类": ["计算器", "开发工具", "文本工具", "图片工具"],
+        "开源": false,
+        "配置": {
+          "主题": "浅色",
+          "语言": "zh-CN",
+          "广告": true
+        }
+      }, null, 2);
+      onInputChange();
+    }
+
+    function copyResult() {
+      if (!inputEl.value) { showToast('没有内容'); return; }
+      navigator.clipboard.writeText(inputEl.value).then(() => showToast('已复制'));
+    }
+
+    function clearAll() {
+      inputEl.value = '';
+      treeEl.innerHTML = '';
+      hideResult();
+    }
+  </script>
+</body>
+</html>

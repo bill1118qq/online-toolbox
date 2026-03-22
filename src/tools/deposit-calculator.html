@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>存款利息计算器 - 定期存款收益计算 - 在线工具箱</title>
+  <meta name="description" content="存款利息计算器：支持活期、定期、大额存单利息计算，对比不同存款方案收益。2026年最新存款利率参考。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="存款利息计算器">
+  <meta property="og:description" content="活期定期存款利息计算，多方案收益对比。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/deposit-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/deposit-calculator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"存款利息计算器","description":"活期定期存款利息和收益计算","url":"https://eitools.cn/src/tools/deposit-calculator.html","applicationCategory":"FinanceApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>存款利息计算器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">计算活期、定期存款利息，支持大额存单利率。</p>
+    <div style="max-width:900px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;">
+        <div>
+          <label style="font-size:0.85rem;color:#888;">存款金额（元）</label>
+          <input type="number" id="amount" value="100000" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;" oninput="calc()">
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">存款类型</label>
+          <select id="type" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;" onchange="onTypeChange()">
+            <option value="current">活期存款</option>
+            <option value="demand">定期整存整取</option>
+            <option value="large">大额存单</option>
+            <option value="custom">自定义利率</option>
+          </select>
+        </div>
+        <div id="termGroup">
+          <label style="font-size:0.85rem;color:#888;">存款期限</label>
+          <select id="term" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;" onchange="calc()">
+            <option value="3">3个月</option>
+            <option value="6">6个月</option>
+            <option value="12" selected>1年</option>
+            <option value="24">2年</option>
+            <option value="36">3年</option>
+            <option value="60">5年</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+        <div id="rateGroup">
+          <label style="font-size:0.85rem;color:#888;">年利率（%）</label>
+          <input type="number" id="rate" step="0.01" value="1.50" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;" oninput="calc()">
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">计息方式</label>
+          <select id="method" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;" onchange="calc()">
+            <option value="simple">单利（到期一次付息）</option>
+            <option value="compound">复利（利滚利）</option>
+          </select>
+        </div>
+      </div>
+      <div style="overflow-x:auto;margin-bottom:20px;">
+        <table style="width:100%;border-collapse:collapse;font-size:0.9rem;">
+          <tr style="background:#f0f2f5;"><th style="padding:10px;text-align:left;">期限</th><th style="padding:10px;text-align:right;">活期利率</th><th style="padding:10px;text-align:right;">定期利率</th><th style="padding:10px;text-align:right;">大额存单</th></tr>
+          <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">活期</td><td style="padding:8px 10px;text-align:right;">0.20%</td><td style="padding:8px 10px;text-align:right;">-</td><td style="padding:8px 10px;text-align:right;">-</td></tr>
+          <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">3个月</td><td style="padding:8px 10px;text-align:right;">0.20%</td><td style="padding:8px 10px;text-align:right;">1.15%</td><td style="padding:8px 10px;text-align:right;">1.40%</td></tr>
+          <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">6个月</td><td style="padding:8px 10px;text-align:right;">0.20%</td><td style="padding:8px 10px;text-align:right;">1.35%</td><td style="padding:8px 10px;text-align:right;">1.60%</td></tr>
+          <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">1年</td><td style="padding:8px 10px;text-align:right;">0.20%</td><td style="padding:8px 10px;text-align:right;">1.50%</td><td style="padding:8px 10px;text-align:right;">1.80%</td></tr>
+          <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">2年</td><td style="padding:8px 10px;text-align:right;">0.20%</td><td style="padding:8px 10px;text-align:right;">2.10%</td><td style="padding:8px 10px;text-align:right;">2.20%</td></tr>
+          <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">3年</td><td style="padding:8px 10px;text-align:right;">0.20%</td><td style="padding:8px 10px;text-align:right;">2.60%</td><td style="padding:8px 10px;text-align:right;">2.65%</td></tr>
+          <tr><td style="padding:8px 10px;">5年</td><td style="padding:8px 10px;text-align:right;">0.20%</td><td style="padding:8px 10px;text-align:right;">2.65%</td><td style="padding:8px 10px;text-align:right;">-</td></tr>
+        </table>
+        <p style="font-size:0.8rem;color:#999;margin-top:4px;">* 利率仅供参考，实际以各银行公布为准</p>
+      </div>
+      <div id="result" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;">
+        <div style="padding:20px;background:#e3f2fd;border-radius:12px;text-align:center;">
+          <div style="font-size:0.8rem;color:#888;">存款本金</div>
+          <div id="rPrincipal" style="font-size:1.5rem;font-weight:bold;color:#1565c0;">-</div>
+        </div>
+        <div style="padding:20px;background:#e8f5e9;border-radius:12px;text-align:center;">
+          <div style="font-size:0.8rem;color:#888;">利息总额</div>
+          <div id="rInterest" style="font-size:1.5rem;font-weight:bold;color:#2e7d32;">-</div>
+        </div>
+        <div style="padding:20px;background:#fff3e0;border-radius:12px;text-align:center;">
+          <div style="font-size:0.8rem;color:#888;">本息合计</div>
+          <div id="rTotal" style="font-size:1.5rem;font-weight:bold;color:#f57c00;">-</div>
+        </div>
+      </div>
+      <div style="padding:16px;background:#f9f9f9;border-radius:12px;margin-bottom:20px;">
+        <h3 style="font-size:0.95rem;margin-bottom:8px;">利息 = 本金 × 年利率 × 存期（年）</h3>
+        <p id="formula" style="color:#666;font-family:monospace;font-size:0.9rem;"></p>
+      </div>
+    </div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    var DEMAND_RATES = { '3': 1.15, '6': 1.35, '12': 1.50, '24': 2.10, '36': 2.60, '60': 2.65 };
+    var LARGE_RATES = { '3': 1.40, '6': 1.60, '12': 1.80, '24': 2.20, '36': 2.65, '60': 2.65 };
+
+    function onTypeChange() {
+      var type = document.getElementById('type').value;
+      var termGroup = document.getElementById('termGroup');
+      var rateInput = document.getElementById('rate');
+      if (type === 'current') {
+        termGroup.style.display = 'none';
+        rateInput.value = '0.20';
+      } else if (type === 'custom') {
+        termGroup.style.display = 'block';
+      } else {
+        termGroup.style.display = 'block';
+        var term = document.getElementById('term').value;
+        if (type === 'demand') rateInput.value = DEMAND_RATES[term] || 1.50;
+        else if (type === 'large') rateInput.value = LARGE_RATES[term] || 1.80;
+      }
+      calc();
+    }
+
+    function calc() {
+      var amount = parseFloat(document.getElementById('amount').value) || 0;
+      var rate = parseFloat(document.getElementById('rate').value) / 100 || 0;
+      var type = document.getElementById('type').value;
+      var method = document.getElementById('method').value;
+
+      if (amount <= 0 || rate <= 0) {
+        document.getElementById('rPrincipal').textContent = '0.00';
+        document.getElementById('rInterest').textContent = '0.00';
+        document.getElementById('rTotal').textContent = '0.00';
+        return;
+      }
+
+      var years = type === 'current' ? 1 : parseInt(document.getElementById('term').value) / 12;
+      var interest;
+      if (method === 'compound') {
+        interest = amount * Math.pow(1 + rate, years) - amount;
+      } else {
+        interest = amount * rate * years;
+      }
+
+      document.getElementById('rPrincipal').textContent = amount.toLocaleString('zh-CN', { minimumFractionDigits: 2 });
+      document.getElementById('rInterest').textContent = interest.toLocaleString('zh-CN', { minimumFractionDigits: 2 });
+      document.getElementById('rTotal').textContent = (amount + interest).toLocaleString('zh-CN', { minimumFractionDigits: 2 });
+      document.getElementById('formula').textContent = amount.toFixed(2) + ' × ' + (rate * 100).toFixed(2) + '% × ' + years.toFixed(2) + '年 = ' + interest.toFixed(2) + ' 元';
+    }
+
+    onTypeChange();
+  </script>
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>网页SEO检测 - 网站SEO评分工具 - 在线工具箱</title>
+  <meta name="description" content="网页SEO检测工具：输入网址自动检测Title、Description、H1标签、图片Alt属性、Open Graph标签等SEO要素，给出优化建议和评分。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="网页SEO检测工具">
+  <meta property="og:description" content="自动检测网页SEO要素，给出优化建议。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/seo-checker.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/seo-checker.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"网页SEO检测","description":"检测网页SEO要素并给出优化建议","url":"https://eitools.cn/src/tools/seo-checker.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any"}
+  </script>
+  <style>
+    .seo-item { padding:12px 16px;border:1px solid #eee;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center; }
+    .seo-item.pass { border-left:4px solid #4caf50;background:#f1f8e9; }
+    .seo-item.fail { border-left:4px solid #f44336;background:#fef1f1; }
+    .seo-item.warn { border-left:4px solid #ff9800;background:#fff8e1; }
+    .seo-score { font-size:3rem;font-weight:bold;text-align:center;padding:24px;border-radius:16px;margin-bottom:20px; }
+    .seo-category { font-size:0.9rem;font-weight:600;color:#666;margin:16px 0 8px;padding-bottom:4px;border-bottom:2px solid #f0f2f5; }
+  </style>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>网页SEO检测</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">输入HTML代码，检测SEO要素并给出优化建议。（注意：跨域限制无法直接抓取网页，请粘贴HTML源码）</p>
+    <div style="max-width:800px;">
+      <div style="margin-bottom:16px;">
+        <textarea id="htmlInput" placeholder="在此粘贴网页HTML源码（右键查看源代码 → 全选复制）..." style="width:100%;height:150px;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:0.85rem;font-family:monospace;resize:vertical;"></textarea>
+      </div>
+      <button onclick="analyze()" style="padding:12px 32px;background:#4361ee;color:white;border:none;border-radius:8px;cursor:pointer;font-size:1rem;margin-bottom:20px;">开始检测</button>
+      <div id="result" style="display:none;">
+        <div id="scoreBox" class="seo-score"></div>
+        <div id="report"></div>
+      </div>
+    </div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    function analyze() {
+      var html = document.getElementById('htmlInput').value;
+      if (!html.trim()) { alert('请粘贴HTML代码'); return; }
+      var parser = new DOMParser();
+      var doc = parser.parseFromString(html, 'text/html');
+      var checks = [];
+      var totalScore = 0;
+      var maxScore = 0;
+
+      // Title
+      maxScore += 15;
+      var title = doc.querySelector('title');
+      if (title && title.textContent.trim()) {
+        var tLen = title.textContent.trim().length;
+        if (tLen >= 10 && tLen <= 60) {
+          totalScore += 15;
+          checks.push({ cat: '标题标签', item: '<title>标签', status: 'pass', detail: '内容: ' + escapeHtml(title.textContent.trim().substring(0,80)) + '（' + tLen + '字）' });
+        } else {
+          totalScore += 8;
+          checks.push({ cat: '标题标签', item: '<title>长度', status: 'warn', detail: tLen + '字，建议10-60字' });
+        }
+      } else {
+        checks.push({ cat: '标题标签', item: '<title>标签', status: 'fail', detail: '未找到title标签' });
+      }
+
+      // Meta Description
+      maxScore += 15;
+      var desc = doc.querySelector('meta[name="description"]');
+      if (desc && desc.content) {
+        var dLen = desc.content.length;
+        if (dLen >= 50 && dLen <= 160) {
+          totalScore += 15;
+          checks.push({ cat: '元描述', item: 'Meta Description', status: 'pass', detail: '长度' + dLen + '字（50-160字理想）' });
+        } else {
+          totalScore += 7;
+          checks.push({ cat: '元描述', item: 'Meta Description', status: 'warn', detail: dLen + '字，建议50-160字' });
+        }
+      } else {
+        checks.push({ cat: '元描述', item: 'Meta Description', status: 'fail', detail: '未设置meta description' });
+      }
+
+      // H1
+      maxScore += 10;
+      var h1s = doc.querySelectorAll('h1');
+      if (h1s.length === 1) {
+        totalScore += 10;
+        checks.push({ cat: '标题层级', item: 'H1标签', status: 'pass', detail: '找到1个H1标签（推荐1个）' });
+      } else if (h1s.length === 0) {
+        checks.push({ cat: '标题层级', item: 'H1标签', status: 'fail', detail: '未找到H1标签' });
+      } else {
+        totalScore += 5;
+        checks.push({ cat: '标题层级', item: 'H1标签', status: 'warn', detail: '找到' + h1s.length + '个H1标签（建议只用1个）' });
+      }
+
+      // H2-H3
+      maxScore += 5;
+      var h2s = doc.querySelectorAll('h2');
+      var h3s = doc.querySelectorAll('h3');
+      if (h2s.length > 0) {
+        totalScore += 5;
+        checks.push({ cat: '标题层级', item: 'H2/H3标签', status: 'pass', detail: 'H2: ' + h2s.length + '个, H3: ' + h3s.length + '个' });
+      } else {
+        checks.push({ cat: '标题层级', item: 'H2标签', status: 'warn', detail: '未找到H2标签，建议使用标题层级结构' });
+      }
+
+      // Images Alt
+      maxScore += 10;
+      var imgs = doc.querySelectorAll('img');
+      var imgsNoAlt = 0;
+      imgs.forEach(function(img) { if (!img.getAttribute('alt') || img.getAttribute('alt').trim() === '') imgsNoAlt++; });
+      if (imgs.length === 0) {
+        totalScore += 10;
+        checks.push({ cat: '图片优化', item: 'Alt属性', status: 'pass', detail: '页面无图片' });
+      } else if (imgsNoAlt === 0) {
+        totalScore += 10;
+        checks.push({ cat: '图片优化', item: 'Alt属性', status: 'pass', detail: '所有' + imgs.length + '张图片都有Alt属性' });
+      } else {
+        totalScore += Math.max(0, Math.round(10 * (1 - imgsNoAlt / imgs.length)));
+        checks.push({ cat: '图片优化', item: 'Alt属性', status: 'fail', detail: imgsNoAlt + '/' + imgs.length + '张图片缺少Alt属性' });
+      }
+
+      // Canonical
+      maxScore += 10;
+      var canonical = doc.querySelector('link[rel="canonical"]');
+      if (canonical && canonical.href) {
+        totalScore += 10;
+        checks.push({ cat: '链接优化', item: 'Canonical标签', status: 'pass', detail: canonical.href });
+      } else {
+        checks.push({ cat: '链接优化', item: 'Canonical标签', status: 'warn', detail: '建议添加canonical标签防止重复内容' });
+      }
+
+      // OG Tags
+      maxScore += 10;
+      var ogTitle = doc.querySelector('meta[property="og:title"]');
+      var ogDesc = doc.querySelector('meta[property="og:description"]');
+      var ogCount = (ogTitle ? 1 : 0) + (ogDesc ? 1 : 0);
+      if (ogCount >= 2) {
+        totalScore += 10;
+        checks.push({ cat: '社交媒体', item: 'Open Graph标签', status: 'pass', detail: '已设置og:title和og:description' });
+      } else if (ogCount === 1) {
+        totalScore += 5;
+        checks.push({ cat: '社交媒体', item: 'Open Graph标签', status: 'warn', detail: '仅设置了部分OG标签' });
+      } else {
+        checks.push({ cat: '社交媒体', item: 'Open Graph标签', status: 'fail', detail: '未设置Open Graph标签，影响社交分享效果' });
+      }
+
+      // Schema.org
+      maxScore += 10;
+      var schemas = doc.querySelectorAll('script[type="application/ld+json"]');
+      if (schemas.length > 0) {
+        totalScore += 10;
+        checks.push({ cat: '结构化数据', item: 'Schema.org', status: 'pass', detail: '找到' + schemas.length + '个结构化数据' });
+      } else {
+        checks.push({ cat: '结构化数据', item: 'Schema.org', status: 'warn', detail: '未找到Schema.org结构化数据，建议添加以获得搜索富文本展示' });
+      }
+
+      // Viewport
+      maxScore += 5;
+      var viewport = doc.querySelector('meta[name="viewport"]');
+      if (viewport) {
+        totalScore += 5;
+        checks.push({ cat: '移动端', item: 'Viewport标签', status: 'pass', detail: viewport.content });
+      } else {
+        checks.push({ cat: '移动端', item: 'Viewport标签', status: 'fail', detail: '未设置viewport，移动端体验差' });
+      }
+
+      // Lang
+      maxScore += 5;
+      var lang = doc.documentElement.getAttribute('lang');
+      if (lang) {
+        totalScore += 5;
+        checks.push({ cat: '基础设置', item: 'Lang属性', status: 'pass', detail: '语言: ' + lang });
+      } else {
+        checks.push({ cat: '基础设置', item: 'Lang属性', status: 'warn', detail: '未设置html lang属性' });
+      }
+
+      // Favicon
+      maxScore += 5;
+      var favicon = doc.querySelector('link[rel*="icon"]');
+      if (favicon) {
+        totalScore += 5;
+        checks.push({ cat: '基础设置', item: 'Favicon', status: 'pass', detail: '已设置网站图标' });
+      } else {
+        checks.push({ cat: '基础设置', item: 'Favicon', status: 'warn', detail: '未设置Favicon' });
+      }
+
+      // Render
+      var score = Math.round(totalScore / maxScore * 100);
+      var scoreColor = score >= 80 ? '#4caf50' : (score >= 60 ? '#ff9800' : '#f44336');
+      var scoreBg = score >= 80 ? '#e8f5e9' : (score >= 60 ? '#fff8e1' : '#fef1f1');
+      document.getElementById('scoreBox').innerHTML = '<div style="color:' + scoreColor + '">' + score + '</div><div style="font-size:0.9rem;color:#888;">SEO评分（满分100）</div>';
+      document.getElementById('scoreBox').style.background = scoreBg;
+
+      var html2 = '';
+      var lastCat = '';
+      for (var i = 0; i < checks.length; i++) {
+        var c = checks[i];
+        if (c.cat !== lastCat) {
+          html2 += '<div class="seo-category">' + c.cat + '</div>';
+          lastCat = c.cat;
+        }
+        html2 += '<div class="seo-item ' + c.status + '">';
+        html2 += '<div><div style="font-weight:600;font-size:0.95rem;">' + c.item + '</div><div style="font-size:0.85rem;color:#666;margin-top:2px;">' + c.detail + '</div></div>';
+        var statusText = c.status === 'pass' ? '通过' : (c.status === 'warn' ? '警告' : '未通过');
+        var statusColor = c.status === 'pass' ? '#4caf50' : (c.status === 'warn' ? '#ff9800' : '#f44336');
+        html2 += '<span style="color:' + statusColor + ';font-weight:600;font-size:0.9rem;">' + statusText + '</span>';
+        html2 += '</div>';
+      }
+      document.getElementById('report').innerHTML = html2;
+      document.getElementById('result').style.display = 'block';
+    }
+
+    function escapeHtml(str) {
+      var div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>

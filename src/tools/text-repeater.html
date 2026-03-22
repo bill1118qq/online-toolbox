@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文本重复生成器 - 复制多行文字 - 在线工具箱</title>
+  <meta name="description" content="免费在线文本重复生成器，输入文字设置重复次数，一键生成重复文本。支持换行重复、分隔符、倒序排列。适用于测试数据、占位文本等场景。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="文本重复生成器 - 快速复制多行文字">
+  <meta property="og:description" content="输入文字和重复次数，一键生成重复文本。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/text-repeater.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/text-repeater.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"文本重复生成器","description":"在线生成重复文本","url":"https://eitools.cn/src/tools/text-repeater.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>文本重复生成器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">输入文字，设置重复次数和方式，生成重复文本。</p>
+    <div style="max-width:600px;">
+      <div style="margin-bottom:12px;"><label style="font-size:0.85rem;color:#888;">要重复的文字</label>
+        <textarea id="text" rows="3" placeholder="输入要重复的文字..." oninput="generate()" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;margin-top:4px;">你好</textarea></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+        <div><label style="font-size:0.85rem;color:#888;">重复次数</label>
+          <input type="number" id="count" value="10" min="1" max="10000" oninput="generate()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:4px;"></div>
+        <div><label style="font-size:0.85rem;color:#888;">分隔方式</label>
+          <select id="separator" onchange="generate()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:4px;">
+            <option value="newline">换行</option><option value="space">空格</option><option value="comma">逗号</option><option value="none">无分隔</option><option value="custom">自定义</option>
+          </select></div>
+      </div>
+      <div id="custom-sep-row" style="display:none;margin-bottom:12px;">
+        <label style="font-size:0.85rem;color:#888;">自定义分隔符</label>
+        <input type="text" id="customSep" value=" | " oninput="generate()" style="width:100px;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:4px;">
+      </div>
+      <label style="font-size:0.85rem;color:#888;"><input type="checkbox" id="numbered" onchange="generate()"> 添加序号</label>
+      <label style="font-size:0.85rem;color:#888;margin-left:16px;"><input type="checkbox" id="reverse" onchange="generate()"> 倒序</label>
+      <button class="btn btn-primary" onclick="generate()" style="margin-top:12px;">生成</button>
+      <div style="margin-top:12px;">
+        <label style="font-size:0.85rem;color:#888;">生成结果（<span id="charCount">0</span> 字符）</label>
+        <textarea id="output" rows="10" readonly style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.85rem;resize:vertical;margin-top:4px;"></textarea>
+      </div>
+      <button class="btn" onclick="navigator.clipboard.writeText(document.getElementById('output').value)" style="margin-top:8px;">复制结果</button>
+    </div>
+  </div>
+  <script>
+    document.getElementById('separator').addEventListener('change', function() {
+      document.getElementById('custom-sep-row').style.display = this.value === 'custom' ? 'block' : 'none';
+    });
+    function generate() {
+      const text = document.getElementById('text').value;
+      const count = Math.min(parseInt(document.getElementById('count').value) || 1, 10000);
+      const sepVal = document.getElementById('separator').value;
+      const sep = sepVal === 'newline' ? '\n' : sepVal === 'space' ? ' ' : sepVal === 'comma' ? ',' : sepVal === 'none' ? '' : (document.getElementById('customSep').value || '');
+      const numbered = document.getElementById('numbered').checked;
+      const reverse = document.getElementById('reverse').checked;
+      let lines = [];
+      for (let i = 1; i <= count; i++) {
+        lines.push(numbered ? `${i}. ${text}` : text);
+      }
+      if (reverse) lines.reverse();
+      document.getElementById('output').value = lines.join(sep);
+      document.getElementById('charCount').textContent = document.getElementById('output').value.length.toLocaleString();
+    }
+    generate();
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

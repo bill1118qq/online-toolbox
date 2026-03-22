@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文字时钟 - 时间文字显示 - 在线工具箱</title>
+  <meta name="description" content="在线文字时钟，将当前时间以优美的文字形式显示。适合桌面装饰、PPT展示、创意设计。免费使用。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="文字时钟">
+  <meta property="og:description" content="将当前时间以优美文字形式显示。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/text-clock.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/text-clock.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"文字时钟","url":"https://eitools.cn/src/tools/text-clock.html","description":"当前时间以优美文字形式实时显示。","applicationCategory":"UtilityApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0"}}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>文字时钟</h1>
+    </div>
+
+    <div style="background:white;border-radius:16px;padding:40px;margin-bottom:20px;border:1px solid #eee;text-align:center;">
+      <div id="textClock" style="font-size:2.5rem;font-weight:bold;color:#4361ee;line-height:1.6;min-height:120px;display:flex;align-items:center;justify-content:center;flex-direction:column;"></div>
+      <div id="dateDisplay" style="font-size:1.1rem;color:#999;margin-top:16px;"></div>
+      <div id="greeting" style="font-size:1.3rem;color:#333;margin-top:8px;"></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+      <div style="background:white;border-radius:12px;padding:20px;border:1px solid #eee;">
+        <h3 style="margin-bottom:12px;">显示样式</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          <button onclick="setStyle('chinese')" class="style-btn" style="padding:8px 16px;border:1px solid #4361ee;border-radius:20px;background:#4361ee;color:white;cursor:pointer;font-size:0.9rem;">中文</button>
+          <button onclick="setStyle('english')" class="style-btn" style="padding:8px 16px;border:1px solid #ddd;border-radius:20px;background:white;color:#333;cursor:pointer;font-size:0.9rem;">English</button>
+          <button onclick="setStyle('mix')" class="style-btn" style="padding:8px 16px;border:1px solid #ddd;border-radius:20px;background:white;color:#333;cursor:pointer;font-size:0.9rem;">混合</button>
+          <button onclick="setStyle('poetic')" class="style-btn" style="padding:8px 16px;border:1px solid #ddd;border-radius:20px;background:white;color:#333;cursor:pointer;font-size:0.9rem;">诗意</button>
+        </div>
+      </div>
+      <div style="background:white;border-radius:12px;padding:20px;border:1px solid #eee;">
+        <h3 style="margin-bottom:12px;">主题颜色</h3>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button onclick="setColor('#4361ee')" style="width:36px;height:36px;border-radius:50%;background:#4361ee;border:2px solid #4361ee;cursor:pointer;"></button>
+          <button onclick="setColor('#1a1a2e')" style="width:36px;height:36px;border-radius:50%;background:#1a1a2e;border:2px solid #1a1a2e;cursor:pointer;"></button>
+          <button onclick="setColor('#2d6a4f')" style="width:36px;height:36px;border-radius:50%;background:#2d6a4f;border:2px solid #2d6a4f;cursor:pointer;"></button>
+          <button onclick="setColor('#c0392b')" style="width:36px;height:36px;border-radius:50%;background:#c0392b;border:2px solid #c0392b;cursor:pointer;"></button>
+          <button onclick="setColor('#8e44ad')" style="width:36px;height:36px;border-radius:50%;background:#8e44ad;border:2px solid #8e44ad;cursor:pointer;"></button>
+          <button onclick="setColor('#f39c12')" style="width:36px;height:36px;border-radius:50%;background:#f39c12;border:2px solid #f39c12;cursor:pointer;"></button>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:white;border-radius:12px;padding:24px;border:1px solid #eee;">
+      <h3 style="margin-bottom:12px;">时间进制对照</h3>
+      <div id="timeInfo" style="font-size:0.9rem;line-height:2;color:#666;"></div>
+    </div>
+  </div>
+  <script>
+    let style = 'chinese';
+    let color = '#4361ee';
+
+    const CN_NUMS = ['零','一','二','三','四','五','六','七','八','九','十','十一','十二'];
+    const CN_MIN = ['零','一','二','三','四','五','六','七','八','九','十','十一','十二','十三','十四','十五','十六','十七','十八','十九','二十','二十一','二十二','二十三','二十四','二十五','二十六','二十七','二十八','二十九','三十','三十一','三十二','三十三','三十四','三十五','三十六','三十七','三十八','三十九','四十','四十一','四十二','四十三','四十四','四十五','四十六','四十七','四十八','四十九','五十','五十一','五十二','五十三','五十四','五十五','五十六','五十七','五十八','五十九'];
+    const POETIC = ['子时','丑时','寅时','卯时','辰时','巳时','午时','未时','申时','酉时','戌时','亥时'];
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function toChineseHour(h) {
+      if (h === 0) return '零点';
+      if (h < 10) return CN_NUMS[h] + '点';
+      if (h === 10) return '十点';
+      if (h < 20) return '十' + CN_NUMS[h - 10] + '点';
+      if (h === 20) return '二十点';
+      if (h < 24) return '二十' + CN_NUMS[h - 20] + '点';
+      return h + '点';
+    }
+
+    function formatTime() {
+      const now = new Date();
+      const h = now.getHours();
+      const m = now.getMinutes();
+      const s = now.getSeconds();
+      const clock = document.getElementById('textClock');
+
+      let text = '';
+      switch (style) {
+        case 'chinese':
+          text = toChineseHour(h) + CN_MIN[m] + '分' + CN_MIN[s] + '秒';
+          break;
+        case 'english':
+          const period = h >= 12 ? 'PM' : 'AM';
+          const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+          text = `${h12}:${pad(m)}:${pad(s)} ${period}`;
+          break;
+        case 'mix':
+          text = `${pad(h)}时${pad(m)}分${pad(s)}秒`;
+          break;
+        case 'poetic':
+          const shiChen = POETIC[Math.floor((h + 1) % 12)];
+          text = `现在是${shiChen}，${toChineseHour(h)}${CN_MIN[m]}分${CN_MIN[s]}秒`;
+          break;
+      }
+      clock.textContent = text;
+
+      const days = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+      document.getElementById('dateDisplay').textContent = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 ${days[now.getDay()]}`;
+
+      let greeting = '';
+      if (h < 6) greeting = '夜深了，注意休息';
+      else if (h < 9) greeting = '早安，新的一天开始了';
+      else if (h < 12) greeting = '上午好，工作加油';
+      else if (h < 14) greeting = '中午好，记得午休';
+      else if (h < 18) greeting = '下午好，继续努力';
+      else if (h < 22) greeting = '晚上好，放松身心';
+      else greeting = '夜深了，早些休息';
+      document.getElementById('greeting').textContent = greeting;
+
+      // Time info
+      const totalSec = h * 3600 + m * 60 + s;
+      const dayProgress = (totalSec / 86400 * 100).toFixed(1);
+      const yearProgress = ((now - new Date(now.getFullYear(), 0, 1)) / (new Date(now.getFullYear() + 1, 0, 1) - new Date(now.getFullYear(), 0, 1)) * 100).toFixed(1);
+      const remaining = 86400 - totalSec;
+      const rh = Math.floor(remaining / 3600);
+      const rm = Math.floor((remaining % 3600) / 60);
+      document.getElementById('timeInfo').innerHTML =
+        `今日进度：<b>${dayProgress}%</b>（还剩 ${rh}小时${rm}分钟）<br>` +
+        `今年进度：<b>${yearProgress}%</b><br>` +
+        `今日已过：<b>${totalSec}</b> 秒<br>` +
+        `Unix时间戳：<b>${Math.floor(now.getTime() / 1000)}</b>`;
+    }
+
+    function setStyle(s) {
+      style = s;
+      document.querySelectorAll('.style-btn').forEach(btn => {
+        btn.style.background = 'white';
+        btn.style.color = '#333';
+        btn.style.borderColor = '#ddd';
+      });
+      event.target.style.background = '#4361ee';
+      event.target.style.color = 'white';
+      event.target.style.borderColor = '#4361ee';
+      formatTime();
+    }
+
+    function setColor(c) {
+      color = c;
+      document.getElementById('textClock').style.color = c;
+    }
+
+    formatTime();
+    setInterval(formatTime, 1000);
+  </script>
+</body>
+</html>

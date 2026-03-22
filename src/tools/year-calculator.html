@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>年份计算器 - 在线日期年份差计算 - 在线工具箱</title>
+  <meta name="description" content="在线年份计算器，计算两个年份之间的差值、天数、周数。支持年月日精确计算。免费在线使用。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="年份计算器">
+  <meta property="og:description" content="在线计算两个日期之间的年份差、天数、周数。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/year-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/year-calculator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "年份计算器",
+    "url": "https://eitools.cn/src/tools/year-calculator.html",
+    "description": "在线计算两个日期之间的年份差、天数、周数。",
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "Any",
+    "offers": {"@type": "Offer", "price": "0"}
+  }
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>年份计算器</h1>
+    </div>
+
+    <div style="background:white;border-radius:12px;padding:24px;margin-bottom:20px;border:1px solid #eee;">
+      <h3 style="margin-bottom:16px;">年份差计算</h3>
+      <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:end;">
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">起始日期</label>
+          <input type="date" id="startDate" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+        <span style="padding-bottom:8px;color:#999;">至</span>
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">结束日期</label>
+          <input type="date" id="endDate" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="calcDiff()" style="margin-top:12px;width:100%;">计算</button>
+      <div id="diffResult" class="result-box" style="margin-top:12px;padding:16px;font-size:0.95rem;line-height:2;"></div>
+    </div>
+
+    <div style="background:white;border-radius:12px;padding:24px;margin-bottom:20px;border:1px solid #eee;">
+      <h3 style="margin-bottom:16px;">年份加减</h3>
+      <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:end;">
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">起始日期</label>
+          <input type="date" id="baseDate" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+        <span style="padding-bottom:8px;color:#999;">±</span>
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">年数</label>
+          <input type="number" id="addYears" placeholder="如 3 或 -5" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="calcAdd()" style="margin-top:12px;width:100%;">计算</button>
+      <div id="addResult" class="result-box" style="margin-top:12px;padding:16px;font-size:0.95rem;line-height:2;"></div>
+    </div>
+
+    <div style="background:white;border-radius:12px;padding:24px;margin-bottom:20px;border:1px solid #eee;">
+      <h3 style="margin-bottom:16px;">某年有多少天</h3>
+      <div style="display:flex;gap:12px;align-items:end;">
+        <div style="flex:0 0 150px;">
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">年份</label>
+          <input type="number" id="checkYear" placeholder="如 2024" min="1" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+        <button class="btn btn-primary" onclick="checkYearDays()">查询</button>
+      </div>
+      <div id="yearDaysResult" class="result-box" style="margin-top:12px;padding:16px;font-size:0.95rem;line-height:2;"></div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
+
+    function calcDiff() {
+      const s = document.getElementById('startDate').value;
+      const e = document.getElementById('endDate').value;
+      if (!s || !e) { showToast('请选择两个日期'); return; }
+
+      const start = new Date(s);
+      const end = new Date(e);
+      if (start > end) { showToast('起始日期不能晚于结束日期'); return; }
+
+      const diffMs = end - start;
+      const totalDays = Math.floor(diffMs / 86400000);
+      const totalWeeks = Math.floor(totalDays / 7);
+      const remainDays = totalDays % 7;
+      const totalMonths = (end.getFullYear() - start.getFullYear()) * 12 + end.getMonth() - start.getMonth();
+
+      let exactYears = end.getFullYear() - start.getFullYear();
+      let exactMonths = end.getMonth() - start.getMonth();
+      let exactDays = end.getDate() - start.getDate();
+      if (exactDays < 0) {
+        exactMonths--;
+        const prevMonth = new Date(end.getFullYear(), end.getMonth(), 0);
+        exactDays += prevMonth.getDate();
+      }
+      if (exactMonths < 0) { exactYears--; exactMonths += 12; }
+
+      document.getElementById('diffResult').innerHTML =
+        `<b>精确差值：</b>${exactYears} 年 ${exactMonths} 个月 ${exactDays} 天<br>` +
+        `<b>总天数：</b>${totalDays} 天<br>` +
+        `<b>总周数：</b>${totalWeeks} 周${remainDays > 0 ? ' ' + remainDays + ' 天' : ''}<br>` +
+        `<b>总月数：</b>${totalMonths} 个月<br>` +
+        `<b>起始日：</b>星期${weekDays[start.getDay()]}<br>` +
+        `<b>结束日：</b>星期${weekDays[end.getDay()]}`;
+    }
+
+    function calcAdd() {
+      const base = document.getElementById('baseDate').value;
+      const years = parseInt(document.getElementById('addYears').value);
+      if (!base) { showToast('请选择起始日期'); return; }
+      if (isNaN(years)) { showToast('请输入年数'); return; }
+
+      const d = new Date(base);
+      const result = new Date(d);
+      result.setFullYear(result.getFullYear() + years);
+
+      const diffDays = Math.round((result - d) / 86400000);
+
+      document.getElementById('addResult').innerHTML =
+        `<b>结果日期：</b>${formatDate(result)}<br>` +
+        `<b>星期：</b>星期${weekDays[result.getDay()]}<br>` +
+        `<b>相差天数：</b>${Math.abs(diffDays)} 天`;
+    }
+
+    function checkYearDays() {
+      const year = parseInt(document.getElementById('checkYear').value);
+      if (isNaN(year) || year < 1) { showToast('请输入有效年份'); return; }
+
+      const isLeap = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+      const days = isLeap ? 366 : 365;
+      const febDays = isLeap ? 29 : 28;
+
+      document.getElementById('yearDaysResult').innerHTML =
+        `<b>${year} 年</b> ${isLeap ? '是闰年' : '是平年'}<br>` +
+        `<b>全年天数：</b>${days} 天<br>` +
+        `<b>2月天数：</b>${febDays} 天<br>` +
+        `<b>元旦：</b>星期${weekDays[new Date(year, 0, 1).getDay()]}<br>` +
+        `<b>除夕：</b>星期${weekDays[new Date(year, 11, 31).getDay()]}`;
+    }
+
+    function formatDate(d) {
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>

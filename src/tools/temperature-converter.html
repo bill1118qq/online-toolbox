@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>温度换算 - 摄氏度华氏度开尔文转换 - 在线工具箱</title>
+  <meta name="description" content="在线温度换算工具，支持摄氏度(℃)、华氏度(℉)、开尔文(K)三种温标实时互转。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="温度换算器 - 摄氏度/华氏度/开尔文转换">
+  <meta property="og:description" content="摄氏度、华氏度、开尔文温度快速互转。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/temperature-converter.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/temperature-converter.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"温度换算器","description":"摄氏度华氏度开尔文在线互转","url":"https://eitools.cn/src/tools/temperature-converter.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>温度换算器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">输入温度值，实时换算摄氏度、华氏度和开尔文。</p>
+    <div style="max-width:500px;">
+      <div style="display:flex;gap:12px;margin-bottom:16px;align-items:center;flex-wrap:wrap;">
+        <input type="number" id="value" placeholder="输入温度值" step="any" style="flex:1;min-width:150px;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:1.1rem;">
+        <select id="unit" style="padding:12px;border:1px solid #ddd;border-radius:8px;font-size:1rem;">
+          <option value="C">℃ 摄氏度</option>
+          <option value="F">℉ 华氏度</option>
+          <option value="K">K 开尔文</option>
+        </select>
+      </div>
+      <div id="result" style="margin-top:16px;"></div>
+    </div>
+    <div style="margin-top:32px;padding:20px;background:#f0f2f5;border-radius:12px;">
+      <h2 style="font-size:1rem;margin-bottom:12px;">换算公式</h2>
+      <div style="font-size:0.9rem;color:#555;line-height:2;font-family:monospace;">
+        <p>℉ = ℃ × 9/5 + 32</p>
+        <p>℃ = (℉ - 32) × 5/9</p>
+        <p>K = ℃ + 273.15</p>
+      </div>
+      <h2 style="font-size:1rem;margin:16px 0 12px;">常见温度参考</h2>
+      <table style="width:100%;border-collapse:collapse;font-size:0.9rem;">
+        <tr style="background:#e8eaed;"><th style="padding:8px;text-align:left;">描述</th><th style="padding:8px;">℃</th><th style="padding:8px;">℉</th></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 12px;">绝对零度</td><td style="padding:6px 12px;">-273.15</td><td style="padding:6px 12px;">-459.67</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 12px;">水的冰点</td><td style="padding:6px 12px;">0</td><td style="padding:6px 12px;">32</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 12px;">室温</td><td style="padding:6px 12px;">25</td><td style="padding:6px 12px;">77</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 12px;">体温</td><td style="padding:6px 12px;">37</td><td style="padding:6px 12px;">98.6</td></tr>
+        <tr><td style="padding:6px 12px;">水的沸点</td><td style="padding:6px 12px;">100</td><td style="padding:6px 12px;">212</td></tr>
+      </table>
+    </div>
+  </div>
+  <script>
+    function update() {
+      const v = parseFloat(document.getElementById('value').value);
+      const u = document.getElementById('unit').value;
+      if (isNaN(v)) { document.getElementById('result').innerHTML = ''; return; }
+      let c, f, k;
+      if (u === 'C') { c = v; f = v * 9/5 + 32; k = v + 273.15; }
+      else if (u === 'F') { c = (v - 32) * 5/9; f = v; k = c + 273.15; }
+      else { c = v - 273.15; f = c * 9/5 + 32; k = v; }
+      document.getElementById('result').innerHTML = `
+        <div style="display:grid;gap:12px;">
+          <div style="padding:16px;background:linear-gradient(135deg,#ff6b6b22,#ff6b6b11);border-left:4px solid #ff6b6b;border-radius:0 12px 12px 0;">
+            <div style="font-size:0.85rem;color:#888;">摄氏度</div>
+            <div style="font-size:1.6rem;font-weight:800;">${c.toFixed(2)} ℃</div>
+          </div>
+          <div style="padding:16px;background:linear-gradient(135deg,#4361ee22,#4361ee11);border-left:4px solid #4361ee;border-radius:0 12px 12px 0;">
+            <div style="font-size:0.85rem;color:#888;">华氏度</div>
+            <div style="font-size:1.6rem;font-weight:800;">${f.toFixed(2)} ℉</div>
+          </div>
+          <div style="padding:16px;background:linear-gradient(135deg,#2f9e4422,#2f9e4411);border-left:4px solid #2f9e44;border-radius:0 12px 12px 0;">
+            <div style="font-size:0.85rem;color:#888;">开尔文</div>
+            <div style="font-size:1.6rem;font-weight:800;">${k.toFixed(2)} K</div>
+          </div>
+        </div>`;
+    }
+    document.getElementById('value').addEventListener('input', update);
+    document.getElementById('unit').addEventListener('change', update);
+  </script>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>条形码生成器 - EAN/Code128 - 在线工具箱</title>
+  <meta name="description" content="免费在线条形码生成器。支持Code128、EAN-13、EAN-8、Code39等编码格式。输入数字或文字即可生成条形码图片。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="条形码生成器 - Code128/EAN">
+  <meta property="og:description" content="在线生成多种格式条形码。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/barcode-generator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/barcode-generator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"条形码生成器","description":"在线生成条形码图片","url":"https://eitools.cn/src/tools/barcode-generator.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>条形码生成器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">输入内容生成条形码，支持多种编码格式。</p>
+    <div style="max-width:600px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+        <div>
+          <label style="font-size:0.85rem;color:#888;">编码格式</label>
+          <select id="format" onchange="generate()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;margin-top:4px;">
+            <option value="CODE128">CODE128（通用）</option>
+            <option value="EAN13">EAN-13（商品条码）</option>
+            <option value="EAN8">EAN-8</option>
+            <option value="CODE39">CODE39</option>
+            <option value="UPC">UPC-A</option>
+            <option value="ITF14">ITF-14</option>
+            <option value="pharmacode">Pharmacode</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">线条宽度</label>
+          <input type="number" id="width" value="2" min="1" max="5" onchange="generate()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;margin-top:4px;">
+        </div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="font-size:0.85rem;color:#888;">条形码内容</label>
+        <input type="text" id="input" value="Hello 2024" oninput="generate()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:1rem;margin-top:4px;">
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap;">
+        <label style="font-size:0.85rem;">显示文字：</label>
+        <input type="checkbox" id="showText" checked onchange="generate()">
+        <label style="font-size:0.85rem;margin-left:12px;">高度：</label>
+        <input type="number" id="height" value="80" min="30" max="200" onchange="generate()" style="width:70px;padding:6px;border:1px solid #ddd;border-radius:6px;">
+      </div>
+      <div style="padding:24px;background:white;border:1px solid #ddd;border-radius:12px;text-align:center;margin-bottom:16px;">
+        <svg id="barcode"></svg>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="downloadBarcode('svg')" style="padding:8px 20px;background:#4361ee;color:white;border:none;border-radius:8px;cursor:pointer;">下载 SVG</button>
+        <button onclick="downloadBarcode('png')" style="padding:8px 20px;background:#2f9e44;color:white;border:none;border-radius:8px;cursor:pointer;">下载 PNG</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    function generate() {
+      const format = document.getElementById('format').value;
+      const input = document.getElementById('input').value;
+      const width = parseInt(document.getElementById('width').value) || 2;
+      const height = parseInt(document.getElementById('height').value) || 80;
+      const showText = document.getElementById('showText').checked;
+      try {
+        JsBarcode('#barcode', input, {
+          format: format,
+          width: width,
+          height: height,
+          displayValue: showText,
+          fontSize: 14,
+          margin: 10,
+          background: '#ffffff'
+        });
+      } catch(e) {
+        document.getElementById('barcode').innerHTML = `<text x="50%" y="50%" text-anchor="middle" fill="#c92a2a" font-size="14">${escapeHtml(e.message)}</text>`;
+      }
+    }
+    function downloadBarcode(type) {
+      if (type === 'svg') {
+        const svg = document.getElementById('barcode').outerHTML;
+        const blob = new Blob([svg], {type: 'image/svg+xml'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'barcode.svg';
+        a.click();
+      } else {
+        const svg = document.getElementById('barcode');
+        const svgData = new XMLSerializer().serializeToString(svg);
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        img.onload = () => {
+          canvas.width = img.width * 2;
+          canvas.height = img.height * 2;
+          ctx.scale(2, 2);
+          ctx.drawImage(img, 0, 0);
+          const a = document.createElement('a');
+          a.href = canvas.toDataURL('image/png');
+          a.download = 'barcode.png';
+          a.click();
+        };
+        img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+      }
+    }
+    function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+    generate();
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

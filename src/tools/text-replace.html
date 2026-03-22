@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文本替换 - 在线查找替换工具 - 在线工具箱</title>
+  <meta name="description" content="在线文本查找替换工具，支持正则表达式、批量替换、区分大小写、全局替换。免费使用，数据不上传服务器。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="文本替换 - 在线查找替换工具">
+  <meta property="og:description" content="在线文本查找替换工具，支持正则表达式、批量替换、区分大小写。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/text-replace.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/text-replace.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "文本替换工具",
+    "url": "https://eitools.cn/src/tools/text-replace.html",
+    "description": "在线文本查找替换工具，支持正则表达式、批量替换、区分大小写。",
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "Any",
+    "offers": {"@type": "Offer", "price": "0"}
+  }
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>文本替换工具</h1>
+    </div>
+
+    <div style="margin-bottom:16px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;">
+      <label style="display:flex;align-items:center;gap:6px;font-size:0.9rem;">
+        <input type="checkbox" id="caseSensitive"> 区分大小写
+      </label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:0.9rem;">
+        <input type="checkbox" id="useRegex"> 使用正则表达式
+      </label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:0.9rem;">
+        <input type="checkbox" id="replaceAll" checked> 全部替换
+      </label>
+    </div>
+
+    <div class="split-view">
+      <div>
+        <label style="font-weight:600;margin-bottom:8px;display:block;">输入文本</label>
+        <textarea id="inputText" rows="12" placeholder="在此粘贴需要处理的文本..." style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;resize:vertical;font-family:inherit;"></textarea>
+      </div>
+      <div>
+        <label style="font-weight:600;margin-bottom:8px;display:block;">替换结果</label>
+        <textarea id="resultText" rows="12" readonly style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;resize:vertical;background:#fafafa;font-family:inherit;"></textarea>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;margin:16px 0;flex-wrap:wrap;">
+      <input type="text" id="findText" placeholder="查找内容..." style="flex:1;min-width:200px;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+      <input type="text" id="replaceText" placeholder="替换为..." style="flex:1;min-width:200px;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="doReplace()">替换</button>
+      <button class="btn btn-secondary" onclick="highlightMatches()">高亮匹配</button>
+      <button class="btn btn-secondary" onclick="copyResult()">复制结果</button>
+      <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+    </div>
+
+    <div id="stats" style="margin-top:12px;padding:12px;background:#f0f2f5;border-radius:8px;font-size:0.9rem;color:#666;"></div>
+
+    <div id="toast" class="toast"></div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    function doReplace() {
+      const input = document.getElementById('inputText').value;
+      const find = document.getElementById('findText').value;
+      const replace = document.getElementById('replaceText').value;
+      if (!find) { showToast('请输入查找内容'); return; }
+
+      const caseSensitive = document.getElementById('caseSensitive').checked;
+      const useRegex = document.getElementById('useRegex').checked;
+      const replaceAll = document.getElementById('replaceAll').checked;
+
+      try {
+        let regex;
+        if (useRegex) {
+          regex = new RegExp(find, caseSensitive ? (replaceAll ? 'g' : '') : (replaceAll ? 'gi' : 'i'));
+        } else {
+          const escaped = find.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          regex = new RegExp(escaped, caseSensitive ? (replaceAll ? 'g' : '') : (replaceAll ? 'gi' : 'i'));
+        }
+
+        const matches = input.match(new RegExp(regex.source, 'g' + (caseSensitive ? '' : 'i')));
+        const count = matches ? matches.length : 0;
+        const result = input.replace(regex, replace);
+
+        document.getElementById('resultText').value = result;
+        document.getElementById('stats').textContent = `共替换 ${count} 处匹配`;
+        document.getElementById('resultText').style.borderColor = '#4caf50';
+      } catch (e) {
+        showToast('正则表达式错误：' + e.message);
+        document.getElementById('resultText').style.borderColor = '#f44336';
+      }
+    }
+
+    function highlightMatches() {
+      const input = document.getElementById('inputText').value;
+      const find = document.getElementById('findText').value;
+      if (!find) { showToast('请输入查找内容'); return; }
+
+      const caseSensitive = document.getElementById('caseSensitive').checked;
+      const useRegex = document.getElementById('useRegex').checked;
+
+      try {
+        let regex;
+        if (useRegex) {
+          regex = new RegExp(find, caseSensitive ? 'g' : 'gi');
+        } else {
+          const escaped = find.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          regex = new RegExp(escaped, caseSensitive ? 'g' : 'gi');
+        }
+
+        const matches = input.match(regex);
+        const count = matches ? matches.length : 0;
+        const highlighted = input.replace(regex, '【$&】');
+
+        document.getElementById('resultText').value = highlighted;
+        document.getElementById('stats').textContent = `找到 ${count} 处匹配（已用【】标记）`;
+      } catch (e) {
+        showToast('正则表达式错误：' + e.message);
+      }
+    }
+
+    function copyResult() {
+      const text = document.getElementById('resultText').value;
+      if (!text) { showToast('没有可复制的内容'); return; }
+      navigator.clipboard.writeText(text).then(() => showToast('已复制到剪贴板'));
+    }
+
+    function clearAll() {
+      document.getElementById('inputText').value = '';
+      document.getElementById('resultText').value = '';
+      document.getElementById('findText').value = '';
+      document.getElementById('replaceText').value = '';
+      document.getElementById('stats').textContent = '';
+      document.getElementById('resultText').style.borderColor = '#ddd';
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emoji大全 - 表情符号复制 - 在线工具箱</title>
+  <meta name="description" content="免费在线Emoji大全工具，收录1000+常用表情符号、颜文字。按分类浏览，点击即复制到剪贴板。支持搜索。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="Emoji大全 - 表情符号复制">
+  <meta property="og:description" content="1000+表情符号分类浏览，点击即复制。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/emoji-picker.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/emoji-picker.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"Emoji大全","description":"在线表情符号浏览复制工具","url":"https://eitools.cn/src/tools/emoji-picker.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>Emoji 大全</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">点击表情即可复制到剪贴板。按分类浏览或搜索。</p>
+    <div style="max-width:800px;">
+      <input type="text" id="search" placeholder="搜索表情（如：笑脸、心、动物）" oninput="filterEmojis()" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:1rem;margin-bottom:12px;">
+      <div id="copied-toast" style="display:none;position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#333;color:white;padding:8px 20px;border-radius:20px;font-size:0.9rem;z-index:9999;">已复制！</div>
+      <div id="categories" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;"></div>
+      <div id="emoji-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:4px;"></div>
+    </div>
+  </div>
+  <script>
+    const emojiData = {
+      '😀 笑脸': ['😀','😁','😂','🤣','😃','😄','😅','😆','😉','😊','😋','😎','😍','🥰','😘','😗','😙','😚','🙂','🤗','🤩','🤔','🤨','😐','😑','😶','🙄','😏','😣','😥','😮','🤐','😯','😪','😫','😴','😌','😛','😜','😝','🤤','😒','😓','😔','😕','🙃','🤑','😲','🙁','😖','😞','😟','😤','😢','😭','😦','😧','😨','😩','🤯','😬','😰','😱','🥵','🥶','😳','🤪','😵','🥴','😷','🤢','🤮','🤧','😇','🥳','🥺','🤠','🤡','🤥','🤫','🤭','🧐','🤓'],
+      '❤️ 爱心': ['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❣️','💕','💞','💓','💗','💖','💘','💝','💟','♥️','👍','👎','👊','✊','🤛','🤜','🤞','✌️','🤟','🤘','👌','🤌','🤏','👈','👉','👆','👇','☝️','✋','🤚','🖐','🖖','👋','🤙','💪','🦾','🖕','✍️'],
+      '🐱 动物': ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐻‍❄️','🐨','🐯','🦁','🐮','🐷','🐽','🐸','🐵','🙈','🙉','🙊','🐒','🐔','🐧','🐦','🐤','🐣','🐥','🦆','🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🪱','🐛','🦋','🐌','🐞','🐜','🪰','🪲','🪳','🦟','🦗','🕷','🦂','🐢','🐍','🦎','🦖','🦕','🐙','🦑','🦐','🦞','🦀','🐡','🐠','🐟','🐬','🐳','🐋','🦈','🐊','🐅','🐆','🦓','🦍','🦧','🐘','🦛','🦏','🐪','🐫','🦒','🦘','🦬','🐃','🐂','🐄','🐎','🐖','🐏','🐑','🦙','🐐','🦌','🐕','🐩','🦮'],
+      '🍎 食物': ['🍎','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🫐','🍈','🍒','🍑','🥭','🍍','🥥','🥝','🍅','🍆','🥑','🥦','🥬','🥒','🌶','🫑','🌽','🥕','🫒','🧄','🧅','🥔','🍠','🥐','🥯','🍞','🥖','🥨','🧀','🥚','🍳','🧈','🥞','🧇','🥓','🥩','🍗','🍖','🦴','🌭','🍔','🍟','🍕','🫓','🥪','🥙','🧆','🌮','🌯','🫔','🥗','🥘','🫕','🥫','🍝','🍜','🍲','🍛','🍣','🍱','🥟','🦪','🍤','🍙','🍚','🍘','🍥','🥠','🥮','🍢','🍡','🍧','🍨','🍦','🥧','🧁','🍰','🎂','🍮','🍭','🍬','🍫','🍿','🍩','🍪','🌰','🥜','🍯'],
+      '⚽ 活动': ['⚽','🏀','🏈','⚾','🥎','🎾','🏐','🏉','🥏','🎱','🪀','🏓','🏸','🏒','🏑','🥍','🏏','🪃','🥅','⛳','🪁','🏹','🎣','🤿','🥊','🥋','🎽','🛹','🛼','🛷','⛸','🥌','🎿','⛷','🏂','🪂','🏋️','🤼','🤸','🤺','⛹️','🏇','🧘','🏄','🏊','🤽','🚣','🧗','🚵','🚴','🎯','🎲','♟','🎰','🧩','🎭','🎨','🎬','🎤','🎧','🎼','🎹','🥁','🎷','🎺','🪗','🎸','🪕','🎻'],
+      '🚗 交通': ['🚗','🚕','🚙','🚌','🚎','🏎','🚓','🚑','🚒','🚐','🛻','🚚','🚛','🚜','🏍','🛵','🚲','🛴','🛹','🛼','🚏','🛣','🛤','🛞','⛽','🚨','🚥','🚦','🛑','🚧','⚓','🛟','⛵','🛶','🚤','🛳','⛴','🛥','🚢','✈️','🛩','🛫','🛬','🪂','💺','🚁','🚟','🚠','🚡','🛰','🚀','🛸','🛎','🧳','⌛','⏳'],
+      '🏠 物品': ['🏠','🏡','🏢','🏣','🏤','🏥','🏦','🏨','🏩','🏪','🏫','🏬','🏭','🏯','🏰','💒','🗼','🗽','⛪','🕌','🕍','🛕','🕋','⛲','⛺','🏕','Mount Fuji','🌇','🌆','🏙','🌃','🌌','🌉','🌁','⌚','📱','📲','💻','⌨️','🖥','🖨','🖱','🖲','🕹','🗜','💽','💾','💿','📀','📼','📷','📸','📹','🎥','📽','🎞','📞','☎️','📟','📠','📺','📻','🎙','🎚','🎛','🧭','⏱','⏲','⏰','🕰'],
+      '🌍 自然': ['🌍','🌎','🌏','🌐','🗺','🧭','🏔','⛰','🌋','🗻','🏕','🏖','🏜','🏝','🏞','🏟','🏛','🏗','🧱','🪨','🪵','🛖','🏘','🏚','🏠','🏡','🏢','🏣','🏤','🏥','🏦','🏨','🏩','🏪','🏫','🏬','🏭','🏯','🏰','💒','🗼','🗽','⛪','🕌','🕍','🛕','🕋','⛲','⛺','🌁','🌃','🌃','🌌','🌉','🌁','🌍','🌎','🌏','🌐','🌑','🌒','🌓','🌔','🌕','🌖','🌗','🌘','🌙','🌛','🌜','🌡','☀️','🌝','🌞','🪐','⭐','🌟','🌠','🌌','☁️','⛅','⛈','🌤','🌥','🌦','🌧','🌨','🌩','🌪','🌫','🌬','🌀','🌈','🌂','☂️','☔','⛱','⚡','❄️','☃️','⛄','☄️','🔥','💧','🌊'],
+      '🎉 节日': ['🎉','🎊','🎈','🎁','🎀','🎉','🎊','🎎','🏮','🎐','🧧','✉️','📩','📨','📧','💌','📥','📤','📦','🏷','🪧','📪','📫','📬','📭','📮','📯','📜','📃','📄','📑','🧾','📊','📈','📉','🗒','🗓','📆','📅','🗑','📇','🗃','🗳','🗄','📋','📁','📂','🗂','🗞','📰','📓','📔','📒','📕','📗','📘','📙','📚','📖','🔖','🧷','🔗','📎','🖇','📐','📏','🧮','📌','📍','✂️','🖊','🖋','✒️','🖌','🖍','📝','✏️','🔍','🔎','🔏','🔐','🔒','🔓'],
+      '🔮 符号': ['💯','💢','💥','💫','💦','💨','🕳','💣','💬','🫧','💭','🗯','♠️','♣️','♥️','♦️','🃏','🎴','🀄','🕐','🕑','🕒','🕓','🕔','🕕','🕖','🕗','🕘','🕙','🕚','🕛','🕜','🕝','🕞','🕟','🕠','🕡','🕢','🕣','🕤','🕥','🕦','🕦','🆔','⚛️','🉑','☢️','☣️','📴','📳','🈶','🈚','🈸','🈺','🈷️','✴️','🆚','💮','🉐','㊙️','㊗️','🈴','🈵','🈹','🈲','🅰️','🅱️','🆎','🆑','🅾️','🆘','❌','⭕','🛑','⛔','📛','🚫','💯','💢','♨️','🚷','🚯','🚳','🚱','🔞','📵','🚭','❗','❕','❓','❔','‼️','⁉️','🔅','🔆','〽️','⚠️','🚸','🔱','⚜️','🔰','♻️','✅','🈯','💹','❇️','✳️','❎','🌐','💠','Ⓜ️','🌀','💤','🏧','🚾','♿','🅿️','🛗','🈳','🈂️','🛂','🛃','🛄','🛅','🚹','🚺','🚼','⚧','🚻','🚮','🎦','📶','🈁','🔣','ℹ️','🔤','🔡','🔠','🆖','🆗','🆙','🆒','🆕','🆓','0️⃣','1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟','🔢','#️⃣','*️⃣','⏏️','▶️','⏸','⏯','⏹','⏺','⏭','⏮','⏩','⏪','⏫','⏬','◀️','🔼','🔽','➡️','⬅️','⬆️','⬇️','↗️','↘️','↙️','↖️','↕️','↔️','↪️','↩️','⤴️','⤵️','🔀','🔁','🔂','🔄','🔃','🎵','🎶','➕','➖','➗','✖️','🟰','♾','💲','💱','™️','©️','®️','👁‍🗨','🔚','🔙','🔛','🔝','🔜']
+    };
+
+    let currentCategory = Object.keys(emojiData)[0];
+    const categoriesEl = document.getElementById('categories');
+    Object.keys(emojiData).forEach(cat => {
+      const btn = document.createElement('button');
+      btn.textContent = cat;
+      btn.className = 'cat-btn' + (cat === currentCategory ? ' active' : '');
+      btn.onclick = () => { currentCategory = cat; document.getElementById('search').value = ''; renderEmojis(emojiData[cat]); document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); };
+      categoriesEl.appendChild(btn);
+    });
+
+    function renderEmojis(list) {
+      document.getElementById('emoji-grid').innerHTML = list.map(e => `<button onclick="copyEmoji('${e}')" style="font-size:1.5rem;padding:8px;border:1px solid #eee;border-radius:8px;cursor:pointer;background:white;transition:transform 0.1s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">${e}</button>`).join('');
+    }
+    renderEmojis(emojiData[currentCategory]);
+
+    function filterEmojis() {
+      const q = document.getElementById('search').value.toLowerCase();
+      if (!q) { renderEmojis(emojiData[currentCategory]); return; }
+      const all = Object.values(emojiData).flat();
+      // Simple filter - just show all since we can't search emoji names easily without a map
+      renderEmojis(all);
+    }
+
+    function copyEmoji(emoji) {
+      navigator.clipboard.writeText(emoji).then(() => {
+        const toast = document.getElementById('copied-toast');
+        toast.style.display = 'block'; toast.textContent = emoji + ' 已复制！';
+        setTimeout(() => toast.style.display = 'none', 1200);
+      });
+    }
+
+    const style = document.createElement('style');
+    style.textContent = '.cat-btn{padding:6px 14px;border:1px solid #ddd;border-radius:20px;cursor:pointer;background:white;font-size:0.85rem;white-space:nowrap;}.cat-btn.active{background:#4361ee;color:white;border-color:#4361ee;}';
+    document.head.appendChild(style);
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

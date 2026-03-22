@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>血型遗传计算器 - 孩子血型预测 - 在线工具箱</title>
+  <meta name="description" content="在线血型遗传计算器，输入父母血型即可预测孩子可能的血型及概率，支持ABO血型系统。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="血型遗传计算器 - 预测孩子血型">
+  <meta property="og:description" content="输入父母血型，预测孩子可能的血型和概率。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/blood-type-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/blood-type-calculator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"血型遗传计算器","description":"根据父母血型预测孩子可能的血型","url":"https://eitools.cn/src/tools/blood-type-calculator.html","applicationCategory":"HealthApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>血型遗传计算器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">输入父母血型，预测孩子可能的血型和概率（ABO血型系统）。</p>
+    <div style="max-width:500px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+        <div style="text-align:center;padding:20px;background:#eef1ff;border-radius:12px;">
+          <div style="font-size:0.85rem;color:#888;margin-bottom:8px;">父亲血型</div>
+          <select id="father" style="font-size:1.5rem;font-weight:700;padding:8px;border:2px solid #4361ee;border-radius:8px;text-align:center;min-width:80px;">
+            <option value="A">A型</option><option value="B">B型</option><option value="AB">AB型</option><option value="O">O型</option>
+          </select>
+        </div>
+        <div style="text-align:center;padding:20px;background:#fff1f0;border-radius:12px;">
+          <div style="font-size:0.85rem;color:#888;margin-bottom:8px;">母亲血型</div>
+          <select id="mother" style="font-size:1.5rem;font-weight:700;padding:8px;border:2px solid #e67700;border-radius:8px;text-align:center;min-width:80px;">
+            <option value="A">A型</option><option value="B">B型</option><option value="AB">AB型</option><option value="O">O型</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="calc()" style="width:100%;padding:12px;font-size:1.05rem;">预测孩子血型</button>
+      <div id="result" style="margin-top:24px;"></div>
+    </div>
+    <div style="margin-top:32px;padding:20px;background:#f0f2f5;border-radius:12px;">
+      <h2 style="font-size:1rem;margin-bottom:12px;">血型遗传规律</h2>
+      <p style="font-size:0.9rem;color:#555;line-height:1.8;">
+        ABO血型由第9对染色体上的 ABO 基因决定。A 和 B 为显性基因，O 为隐性基因。
+        因此 AA 和 AO 都表现为 A 型，BB 和 BO 表现为 B 型，AB 表现为 AB 型，OO 表现为 O 型。
+      </p>
+    </div>
+  </div>
+  <script>
+    function calc() {
+      const f = document.getElementById('father').value;
+      const m = document.getElementById('mother').value;
+      const genotypes = {
+        A: ['AA','AO'], B: ['BB','BO'], AB: ['AB'], O: ['OO']
+      };
+      const fGens = genotypes[f], mGens = genotypes[m];
+      const count = {};
+      for (const fg of fGens) for (const mg of mGens) {
+        let child = '';
+        if (fg === 'AB' && mg === 'AB') { child = ['A','B','AB'][Math.floor(Math.random()*3)]; }
+        else if (fg === 'AB' || mg === 'AB') { child = ['A','B','AB'][Math.floor(Math.random()*3)]; }
+        else {
+          const alleles = (fg+mg).split('').filter(a => a !== 'O');
+          if (alleles.length === 0) child = 'O';
+          else if (alleles.length === 1) child = alleles[0];
+          else if (alleles[0] === alleles[1]) child = alleles[0];
+          else child = 'AB';
+        }
+        // Actually let's do proper genetics
+      }
+      // Proper ABO genetics
+      const results = {};
+      const total = fGens.length * mGens.length;
+      for (const fg of fGens) for (const mg of mGens) {
+        let alleles = [fg[0], fg[1], mg[0], mg[1]].filter(a => a !== 'O' || a === 'O');
+        // Cross
+        const childAlleles = [];
+        for (let i = 0; i < fg.length; i++) for (let j = 0; j < mg.length; j++) {
+          const pair = [fg[i], mg[j]];
+          if (pair.includes('A') && pair.includes('B')) childAlleles.push('AB');
+          else if (pair.includes('A')) childAlleles.push('A');
+          else if (pair.includes('B')) childAlleles.push('B');
+          else childAlleles.push('O');
+        }
+        for (const bt of childAlleles) results[bt] = (results[bt] || 0) + 1;
+      }
+      const all = Object.values(results).reduce((a,b) => a+b, 0);
+      const colors = { A: '#4361ee', B: '#2f9e44', AB: '#e67700', O: '#e03131' };
+      let html = '<div style="text-align:center;margin-bottom:16px;font-size:1.1rem;font-weight:600;">孩子可能的血型</div><div style="display:grid;gap:10px;">';
+      for (const [bt, cnt] of Object.entries(results).sort((a,b) => b[1]-a[1])) {
+        const pct = (cnt/all*100).toFixed(0);
+        html += `<div style="padding:14px;background:${colors[bt]}11;border-left:4px solid ${colors[bt]};border-radius:0 10px 10px 0;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:1.2rem;font-weight:700;color:${colors[bt]}">${bt}型</span>
+          <div style="width:60%;background:#e0e0e0;border-radius:4px;height:20px;overflow:hidden;"><div style="height:100%;background:${colors[bt]};width:${pct}%;border-radius:4px;"></div></div>
+          <span style="font-weight:700;color:${colors[bt]}">${pct}%</span></div>`;
+      }
+      html += '</div>';
+      document.getElementById('result').innerHTML = html;
+    }
+  </script>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+</body>
+</html>

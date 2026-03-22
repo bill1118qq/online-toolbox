@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加密解密教程 - ROT13/凯撒/Base64/摩尔斯码 - 在线工具箱</title>
+  <meta name="description" content="常见加密方式详解：ROT13替换密码原理、凯撒密码历史与使用、Base64编码用途、摩尔斯码对照表。在线加密解密工具推荐。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="常见加密方式教程">
+  <meta property="og:description" content="ROT13、凯撒、Base64、摩尔斯码详解。">
+  <meta property="og:url" content="https://eitools.cn/guides/cipher-guide.html">
+  <link rel="canonical" href="https://eitools.cn/guides/cipher-guide.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"ROT13和凯撒密码有什么区别？","acceptedAnswer":{"@type":"Answer","text":"ROT13是凯撒密码的特例，固定偏移量为13。凯撒密码的偏移量可以是1-25的任意值。ROT13的特殊之处在于加密和解密操作相同，执行两次就恢复原文。"}}]}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">← 返回首页</a>
+      <h1>常见加密方式教程</h1>
+    </div>
+    <article style="line-height:1.8;">
+      <h2>ROT13 替换密码</h2>
+      <p>ROT13是最简单的替换密码之一，将每个字母替换为字母表中后面第13个：</p>
+      <div style="background:#f0f2f5;padding:16px;border-radius:8px;margin:12px 0;font-family:monospace;text-align:center;">
+        A↔N  B↔O  C↔P  D↔Q  E↔R  F↔S  G↔T  H↔U  I↔V  J↔W  K↔X  L↔Y  M↔Z
+      </div>
+      <p>特点：加密和解密操作完全相同，执行两次即可恢复原文。</p>
+
+      <h2>凯撒密码</h2>
+      <p>凯撒密码由古罗马凯撒大帝发明，将字母按固定偏移量移动：</p>
+      <div style="background:#1a1a2e;padding:12px;border-radius:8px;font-family:monospace;font-size:0.85rem;color:#4ade80;overflow-x:auto;margin:8px 0;">
+        <pre style="margin:0;">// 偏移量3:
+原始: A B C D E F G H I J K L M
+加密: D E F G H I J K L M N O P
+
+原始: HELLO WORLD
+加密: KHOOR ZRUOG</pre>
+      </div>
+
+      <h2>Base64 编码</h2>
+      <p>Base64不是加密算法，而是编码方式，用于将二进制数据转为ASCII文本：</p>
+      <ul>
+        <li>常用于电子邮件附件（MIME）</li>
+        <li>URL中的数据传输（Data URL）</li>
+        <li>API中传输二进制数据</li>
+        <li>HTML中嵌入图片（Data URI）</li>
+      </ul>
+      <p>Base64编码后体积增大约33%，可以被任何人解码，不具有保密性。</p>
+
+      <h2>摩尔斯码</h2>
+      <p>摩尔斯码通过点和划（• 和 —）表示字母和数字，1837年发明：</p>
+      <div style="background:#f0f2f5;padding:16px;border-radius:8px;margin:12px 0;font-size:0.9rem;">
+        A: ·−  B: −···  C: −·−·  D: −··  E: ·  F: ··−·<br>
+        G: −−·  H: ····  I: ··  J: ·−−−  K: −·−  L: ·−··<br>
+        1: ·−−−−  2: ··−−−  3: ···−−  4: ····−  5: ·····<br>
+        SOS: ··· −−− ···（国际求救信号）
+      </div>
+
+      <div style="margin-top:24px;padding:20px;background:#f0f4ff;border-radius:12px;border:1px solid #4361ee;">
+        <h3 style="color:#4361ee;margin-top:0;">在线加密解密工具</h3>
+        <p>使用我们的<a href="../src/tools/rot13-cipher.html" style="color:#4361ee;font-weight:bold;">文本加密解密工具</a>，支持ROT13、凯撒密码、Base64、摩尔斯码等多种方式。</p>
+      </div>
+    </article>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../js/share.js"></script>
+</body>
+</html>

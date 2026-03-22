@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文本加密解密 - ROT13/Base64/AES - 在线工具箱</title>
+  <meta name="description" content="在线文本加密解密工具：ROT13替换密码、Base64编解码、URL编解码、凯撒密码。支持中英文文本加密，完全在浏览器本地处理。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="文本加密解密工具">
+  <meta property="og:description" content="ROT13/Base64/凯撒密码在线加密解密。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/rot13-cipher.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/rot13-cipher.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"文本加密解密","description":"ROT13/Base64/凯撒密码加密解密","url":"https://eitools.cn/src/tools/rot13-cipher.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>文本加密解密</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">支持多种常见加密方式，完全在浏览器本地处理。</p>
+    <div style="max-width:900px;">
+      <div style="margin-bottom:16px;">
+        <label style="font-size:0.85rem;color:#888;">加密方式</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+          <button onclick="setMethod('rot13')" id="btn-rot13" class="method-btn active" style="padding:8px 16px;background:#4361ee;color:white;border:2px solid #4361ee;border-radius:8px;cursor:pointer;">ROT13</button>
+          <button onclick="setMethod('caesar')" id="btn-caesar" class="method-btn" style="padding:8px 16px;background:white;color:#333;border:2px solid #ddd;border-radius:8px;cursor:pointer;">凯撒密码</button>
+          <button onclick="setMethod('base64')" id="btn-base64" class="method-btn" style="padding:8px 16px;background:white;color:#333;border:2px solid #ddd;border-radius:8px;cursor:pointer;">Base64</button>
+          <button onclick="setMethod('url')" id="btn-url" class="method-btn" style="padding:8px 16px;background:white;color:#333;border:2px solid #ddd;border-radius:8px;cursor:pointer;">URL编码</button>
+          <button onclick="setMethod('reverse')" id="btn-reverse" class="method-btn" style="padding:8px 16px;background:white;color:#333;border:2px solid #ddd;border-radius:8px;cursor:pointer;">反转文本</button>
+          <button onclick="setMethod('morse')" id="btn-morse" class="method-btn" style="padding:8px 16px;background:white;color:#333;border:2px solid #ddd;border-radius:8px;cursor:pointer;">摩尔斯码</button>
+        </div>
+      </div>
+      <div id="caesarOption" style="display:none;margin-bottom:16px;">
+        <label style="font-size:0.85rem;color:#888;">偏移量（1-25）</label>
+        <input type="number" id="caesarShift" value="3" min="1" max="25" style="padding:8px;border:1px solid #ddd;border-radius:8px;margin-left:8px;width:80px;" oninput="process()">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+        <div>
+          <label style="font-size:0.85rem;color:#888;">输入文本</label>
+          <textarea id="input" placeholder="输入需要加密/解密的文本..." style="width:100%;height:200px;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:0.95rem;line-height:1.6;resize:vertical;" oninput="process()"></textarea>
+        </div>
+        <div style="position:relative;">
+          <label style="font-size:0.85rem;color:#888;">输出结果</label>
+          <textarea id="output" readonly style="width:100%;height:200px;padding:12px;border:1px solid #4361ee;border-radius:8px;font-size:0.95rem;line-height:1.6;resize:vertical;background:#f8f9ff;" placeholder="加密/解密结果..."></textarea>
+          <button onclick="copyResult()" style="position:absolute;top:28px;right:8px;padding:4px 12px;background:#4361ee;color:white;border:none;border-radius:6px;cursor:pointer;font-size:0.8rem;">复制</button>
+        </div>
+      </div>
+      <div id="description" style="padding:16px;background:#f5f5f5;border-radius:12px;font-size:0.85rem;color:#666;line-height:1.6;">
+        <b>ROT13</b>：将字母替换为字母表中后面第13个字母，是一种简单的替换密码。A→N, B→O, ... 同样的操作既可加密也可解密。
+      </div>
+    </div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    var currentMethod = 'rot13';
+    var DESCS = {
+      rot13: '<b>ROT13</b>：将字母替换为字母表中后面第13个字母。A→N, B→O, ... 同样的操作既可加密也可解密。',
+      caesar: '<b>凯撒密码</b>：将字母按指定偏移量向后移动。偏移量为3时：A→D, B→E, ... 是古罗马凯撒大帝使用的密码。',
+      base64: '<b>Base64</b>：将二进制数据编码为ASCII字符串。常用于电子邮件附件、URL中的数据传输。不是加密，只是编码。',
+      url: '<b>URL编码</b>：将特殊字符转换为%XX格式。如空格变为%20，中文变为%E4%B8%AD等。',
+      reverse: '<b>反转文本</b>：将文本完全倒序。hello → olleh。中英文均支持。',
+      morse: '<b>摩尔斯码</b>：用点和划表示字母和数字。如 SOS → ... --- ... 是国际通用的求救信号。'
+    };
+
+    function setMethod(method) {
+      currentMethod = method;
+      document.querySelectorAll('.method-btn').forEach(function(btn) {
+        btn.style.background = 'white';
+        btn.style.color = '#333';
+        btn.style.borderColor = '#ddd';
+      });
+      var btn = document.getElementById('btn-' + method);
+      btn.style.background = '#4361ee';
+      btn.style.color = 'white';
+      btn.style.borderColor = '#4361ee';
+      document.getElementById('caesarOption').style.display = method === 'caesar' ? 'block' : 'none';
+      document.getElementById('description').innerHTML = DESCS[method];
+      process();
+    }
+
+    var MORSE_MAP = { 'A':'.-','B':'-...','C':'-.-.','D':'-..','E':'.','F':'..-.','G':'--.','H':'....','I':'..','J':'.---','K':'-.-','L':'.-..','M':'--','N':'-.','O':'---','P':'.--.','Q':'--.-','R':'.-.','S':'...','T':'-','U':'..-','V':'...-','W':'.--','X':'-..-','Y':'-.--','Z':'--..','0':'-----','1':'.----','2':'..---','3':'...--','4':'....-','5':'.....','6':'-....','7':'--...','8':'---..','9':'----.' };
+    var MORSE_REV = {};
+    Object.keys(MORSE_MAP).forEach(function(k) { MORSE_REV[MORSE_MAP[k]] = k; });
+
+    function process() {
+      var text = document.getElementById('input').value;
+      var result = '';
+      switch (currentMethod) {
+        case 'rot13':
+          result = text.replace(/[a-zA-Z]/g, function(c) {
+            var base = c <= 'Z' ? 65 : 97;
+            return String.fromCharCode((c.charCodeAt(0) - base + 13) % 26 + base);
+          });
+          break;
+        case 'caesar':
+          var shift = parseInt(document.getElementById('caesarShift').value) || 3;
+          result = text.replace(/[a-zA-Z]/g, function(c) {
+            var base = c <= 'Z' ? 65 : 97;
+            return String.fromCharCode((c.charCodeAt(0) - base + shift) % 26 + base);
+          });
+          break;
+        case 'base64':
+          try { result = btoa(unescape(encodeURIComponent(text))); } catch(e) { result = '编码失败'; }
+          break;
+        case 'url':
+          try { result = encodeURIComponent(text); } catch(e) { result = '编码失败'; }
+          break;
+        case 'reverse':
+          result = text.split('').reverse().join('');
+          break;
+        case 'morse':
+          var isMorse = /^[.\-\/\s]+$/.test(text.trim());
+          if (isMorse) {
+            result = text.split(' / ').map(function(word) {
+              return word.split(' ').map(function(code) { return MORSE_REV[code] || '?'; }).join('');
+            }).join(' ');
+          } else {
+            result = text.toUpperCase().split(' ').map(function(word) {
+              return word.split('').map(function(c) { return MORSE_MAP[c] || c; }).join(' ');
+            }).join(' / ');
+          }
+          break;
+      }
+      document.getElementById('output').value = result;
+    }
+
+    function copyResult() {
+      navigator.clipboard.writeText(document.getElementById('output').value).then(function() {
+        var btn = event.target;
+        btn.textContent = '已复制';
+        setTimeout(function() { btn.textContent = '复制'; }, 1500);
+      });
+    }
+  </script>
+</body>
+</html>

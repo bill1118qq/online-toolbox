@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>随机颜色生成器 - 配色方案 - 在线工具箱</title>
+  <meta name="description" content="在线随机颜色生成器：一键生成随机颜色、HEX/RGB/HSL转换、色彩调和方案、渐变色生成。设计师配色必备工具。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="随机颜色生成器">
+  <meta property="og:description" content="随机颜色生成、色彩调和、渐变色工具。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/random-color.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/random-color.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"随机颜色生成器","url":"https://eitools.cn/src/tools/random-color.html","description":"在线随机颜色生成、色彩调和方案、渐变色生成","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>随机颜色生成器</h1>
+    </div>
+    <div style="text-align:center;margin:20px 0;">
+      <div id="mainColor" style="width:200px;height:200px;border-radius:16px;margin:0 auto 16px;border:4px solid #eee;cursor:pointer;transition:background 0.3s;" onclick="generateColor()"></div>
+      <div id="colorInfo" style="font-size:1rem;">
+        <div style="margin:4px 0;"><b>HEX:</b> <span id="hexVal" style="cursor:pointer;" onclick="copyText(this.textContent)">-</span></div>
+        <div style="margin:4px 0;"><b>RGB:</b> <span id="rgbVal" style="cursor:pointer;" onclick="copyText(this.textContent)">-</span></div>
+        <div style="margin:4px 0;"><b>HSL:</b> <span id="hslVal" style="cursor:pointer;" onclick="copyText(this.textContent)">-</span></div>
+      </div>
+      <button class="btn btn-primary" onclick="generateColor()" style="margin-top:16px;">随机生成颜色</button>
+    </div>
+
+    <h2>色彩调和方案</h2>
+    <div id="harmony" style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;"></div>
+
+    <h2>渐变色</h2>
+    <div id="gradient" style="height:60px;border-radius:10px;margin:12px 0;border:1px solid #eee;"></div>
+    <div id="gradientCSS" style="background:#f0f2f5;padding:10px;border-radius:8px;font-family:monospace;font-size:0.85rem;cursor:pointer;" onclick="copyText(this.textContent)"></div>
+
+    <div style="margin-top:24px;">
+      <h2>生成配色板</h2>
+      <button class="btn btn-primary" onclick="generatePalette()" style="margin-bottom:12px;">生成5色配色板</button>
+      <div id="palette" style="display:flex;gap:0;border-radius:10px;overflow:hidden;height:80px;"></div>
+    </div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    function hslToRgb(h, s, l) {
+      s /= 100; l /= 100;
+      const a = s * Math.min(l, 1 - l);
+      const f = n => { const k = (n + h / 30) % 12; return l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1); };
+      return [Math.round(f(0) * 255), Math.round(f(8) * 255), Math.round(f(4) * 255)];
+    }
+
+    function rgbToHex(r, g, b) {
+      return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
+    }
+
+    function generateColor() {
+      const h = Math.floor(Math.random() * 360);
+      const s = Math.floor(Math.random() * 40) + 50;
+      const l = Math.floor(Math.random() * 30) + 35;
+      const [r, g, b] = hslToRgb(h, s, l);
+      const hex = rgbToHex(r, g, b);
+
+      document.getElementById('mainColor').style.background = hex;
+      document.getElementById('hexVal').textContent = hex;
+      document.getElementById('rgbVal').textContent = `rgb(${r}, ${g}, ${b})`;
+      document.getElementById('hslVal').textContent = `hsl(${h}, ${s}%, ${l}%)`;
+
+      // 调和方案
+      const harmonies = [
+        { name: '互补', h: (h + 180) % 360 },
+        { name: '类似', h: (h + 30) % 360 },
+        { name: '三色', h: (h + 120) % 360 },
+        { name: '分裂互补', h: (h + 150) % 360 },
+        { name: '四色', h: (h + 90) % 360 },
+      ];
+      document.getElementById('harmony').innerHTML = harmonies.map(item => {
+        const [rr, gg, bb] = hslToRgb(item.h, s, l);
+        const hh = rgbToHex(rr, gg, bb);
+        return `<div style="flex:1;min-width:80px;text-align:center;">
+          <div style="height:50px;background:${hh};border-radius:8px;cursor:pointer;" onclick="copyText('${hh}')"></div>
+          <div style="font-size:0.75rem;margin-top:4px;">${item.name}<br>${hh}</div>
+        </div>`;
+      }).join('');
+
+      // 渐变
+      const [r2, g2, b2] = hslToRgb((h + 120) % 360, s, l);
+      const hex2 = rgbToHex(r2, g2, b2);
+      document.getElementById('gradient').style.background = `linear-gradient(to right, ${hex}, ${hex2})`;
+      document.getElementById('gradientCSS').textContent = `background: linear-gradient(to right, ${hex}, ${hex2});`;
+    }
+
+    function generatePalette() {
+      const baseHue = Math.floor(Math.random() * 360);
+      let html = '';
+      for (let i = 0; i < 5; i++) {
+        const h = (baseHue + i * 15) % 360;
+        const s = 60 + Math.random() * 20;
+        const l = 40 + i * 10;
+        const [r, g, b] = hslToRgb(h, s, l);
+        const hex = rgbToHex(r, g, b);
+        html += `<div style="flex:1;display:flex;align-items:end;justify-content:center;padding-bottom:8px;cursor:pointer;background:${hex};" onclick="copyText('${hex}')">
+          <span style="font-size:0.75rem;background:rgba(255,255,255,0.8);padding:2px 6px;border-radius:4px;">${hex}</span>
+        </div>`;
+      }
+      document.getElementById('palette').innerHTML = html;
+    }
+
+    function copyText(text) {
+      navigator.clipboard.writeText(text).then(() => showToast('已复制: ' + text));
+    }
+
+    generateColor();
+    generatePalette();
+  </script>
+</body>
+</html>

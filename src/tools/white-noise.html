@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>白噪音生成器 - 在线环境音效 - 在线工具箱</title>
+  <meta name="description" content="在线白噪音生成器，提供雨声、海浪、风声、鸟鸣等自然环境音效。支持混合播放、定时关闭。助眠、专注必备。免费使用。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="白噪音生成器">
+  <meta property="og:description" content="在线白噪音生成器，雨声、海浪、风声、鸟鸣等环境音效，支持混合播放和定时关闭。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/white-noise.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/white-noise.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "白噪音生成器",
+    "url": "https://eitools.cn/src/tools/white-noise.html",
+    "description": "在线白噪音生成器，自然环境音效混合播放。",
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "Any",
+    "offers": {"@type": "Offer", "price": "0"}
+  }
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>白噪音生成器</h1>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:24px;">
+      <div class="noise-card" data-type="rain" style="background:white;border-radius:12px;padding:20px;text-align:center;border:2px solid #eee;cursor:pointer;transition:all .2s;">
+        <div style="font-size:2.5rem;margin-bottom:8px;">🌧️</div>
+        <div style="font-weight:600;margin-bottom:8px;">雨声</div>
+        <input type="range" class="volume-slider" min="0" max="100" value="50" style="width:100%;">
+        <div style="font-size:0.8rem;color:#999;margin-top:4px;">50%</div>
+      </div>
+      <div class="noise-card" data-type="thunder" style="background:white;border-radius:12px;padding:20px;text-align:center;border:2px solid #eee;cursor:pointer;transition:all .2s;">
+        <div style="font-size:2.5rem;margin-bottom:8px;">⛈️</div>
+        <div style="font-weight:600;margin-bottom:8px;">雷雨</div>
+        <input type="range" class="volume-slider" min="0" max="100" value="50" style="width:100%;">
+        <div style="font-size:0.8rem;color:#999;margin-top:4px;">50%</div>
+      </div>
+      <div class="noise-card" data-type="ocean" style="background:white;border-radius:12px;padding:20px;text-align:center;border:2px solid #eee;cursor:pointer;transition:all .2s;">
+        <div style="font-size:2.5rem;margin-bottom:8px;">🌊</div>
+        <div style="font-weight:600;margin-bottom:8px;">海浪</div>
+        <input type="range" class="volume-slider" min="0" max="100" value="50" style="width:100%;">
+        <div style="font-size:0.8rem;color:#999;margin-top:4px;">50%</div>
+      </div>
+      <div class="noise-card" data-type="wind" style="background:white;border-radius:12px;padding:20px;text-align:center;border:2px solid #eee;cursor:pointer;transition:all .2s;">
+        <div style="font-size:2.5rem;margin-bottom:8px;">💨</div>
+        <div style="font-weight:600;margin-bottom:8px;">风声</div>
+        <input type="range" class="volume-slider" min="0" max="100" value="50" style="width:100%;">
+        <div style="font-size:0.8rem;color:#999;margin-top:4px;">50%</div>
+      </div>
+      <div class="noise-card" data-type="birds" style="background:white;border-radius:12px;padding:20px;text-align:center;border:2px solid #eee;cursor:pointer;transition:all .2s;">
+        <div style="font-size:2.5rem;margin-bottom:8px;">🐦</div>
+        <div style="font-weight:600;margin-bottom:8px;">鸟鸣</div>
+        <input type="range" class="volume-slider" min="0" max="100" value="50" style="width:100%;">
+        <div style="font-size:0.8rem;color:#999;margin-top:4px;">50%</div>
+      </div>
+      <div class="noise-card" data-type="fire" style="background:white;border-radius:12px;padding:20px;text-align:center;border:2px solid #eee;cursor:pointer;transition:all .2s;">
+        <div style="font-size:2.5rem;margin-bottom:8px;">🔥</div>
+        <div style="font-weight:600;margin-bottom:8px;">壁炉</div>
+        <input type="range" class="volume-slider" min="0" max="100" value="50" style="width:100%;">
+        <div style="font-size:0.8rem;color:#999;margin-top:4px;">50%</div>
+      </div>
+      <div class="noise-card" data-type="stream" style="background:white;border-radius:12px;padding:20px;text-align:center;border:2px solid #eee;cursor:pointer;transition:all .2s;">
+        <div style="font-size:2.5rem;margin-bottom:8px;">🏞️</div>
+        <div style="font-weight:600;margin-bottom:8px;">溪流</div>
+        <input type="range" class="volume-slider" min="0" max="100" value="50" style="width:100%;">
+        <div style="font-size:0.8rem;color:#999;margin-top:4px;">50%</div>
+      </div>
+      <div class="noise-card" data-type="white" style="background:white;border-radius:12px;padding:20px;text-align:center;border:2px solid #eee;cursor:pointer;transition:all .2s;">
+        <div style="font-size:2.5rem;margin-bottom:8px;">📻</div>
+        <div style="font-weight:600;margin-bottom:8px;">白噪音</div>
+        <input type="range" class="volume-slider" min="0" max="100" value="50" style="width:100%;">
+        <div style="font-size:0.8rem;color:#999;margin-top:4px;">50%</div>
+      </div>
+    </div>
+
+    <div style="background:white;border-radius:12px;padding:24px;margin-bottom:20px;border:1px solid #eee;">
+      <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:200px;">
+          <label style="font-size:0.9rem;white-space:nowrap;">总音量</label>
+          <input type="range" id="masterVolume" min="0" max="100" value="80" style="flex:1;">
+          <span id="masterVolLabel" style="font-size:0.9rem;min-width:36px;">80%</span>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;">
+          <label style="font-size:0.9rem;">定时关闭：</label>
+          <select id="timer" style="padding:8px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+            <option value="0">不定时</option>
+            <option value="15">15分钟</option>
+            <option value="30">30分钟</option>
+            <option value="60">1小时</option>
+            <option value="90">1.5小时</option>
+            <option value="120">2小时</option>
+          </select>
+          <span id="timerDisplay" style="font-size:0.9rem;color:#666;"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-group" style="justify-content:center;">
+      <button class="btn btn-primary" id="playAllBtn" onclick="toggleAll()">全部播放</button>
+      <button class="btn btn-secondary" onclick="stopAll()">全部停止</button>
+    </div>
+
+    <div id="toast" class="toast"></div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    let audioCtx = null;
+    let activeSounds = {};
+    let masterGain = null;
+    let timerInterval = null;
+    let remainingSeconds = 0;
+
+    function getAudioCtx() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        masterGain = audioCtx.createGain();
+        masterGain.connect(audioCtx.destination);
+        masterGain.gain.value = 0.8;
+      }
+      return audioCtx;
+    }
+
+    // 白噪音生成
+    function createNoiseBuffer(ctx, duration, type) {
+      const sampleRate = ctx.sampleRate;
+      const length = sampleRate * duration;
+      const buffer = ctx.createBuffer(1, length, sampleRate);
+      const data = buffer.getChannelData(0);
+
+      if (type === 'white') {
+        for (let i = 0; i < length; i++) data[i] = Math.random() * 2 - 1;
+      } else if (type === 'brown') {
+        let last = 0;
+        for (let i = 0; i < length; i++) {
+          const white = Math.random() * 2 - 1;
+          data[i] = (last + 0.02 * white) / 1.02;
+          last = data[i];
+          data[i] *= 3.5;
+        }
+      } else if (type === 'pink') {
+        let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+        for (let i = 0; i < length; i++) {
+          const white = Math.random() * 2 - 1;
+          b0 = 0.99886*b0 + white*0.0555179;
+          b1 = 0.99332*b1 + white*0.0750759;
+          b2 = 0.96900*b2 + white*0.1538520;
+          b3 = 0.86650*b3 + white*0.3104856;
+          b4 = 0.55000*b4 + white*0.5329522;
+          b5 = -0.7616*b5 - white*0.0168980;
+          data[i] = (b0+b1+b2+b3+b4+b5+b6+white*0.5362) * 0.11;
+          b6 = white * 0.115926;
+        }
+      }
+      return buffer;
+    }
+
+    // 为不同类型创建不同特色的噪音
+    function getNoiseType(type) {
+      const map = { rain:'brown', thunder:'white', ocean:'pink', wind:'brown', birds:'white', fire:'brown', stream:'pink', white:'white' };
+      return map[type] || 'white';
+    }
+
+    function toggleSound(type) {
+      const card = document.querySelector(`.noise-card[data-type="${type}"]`);
+      const slider = card.querySelector('.volume-slider');
+
+      if (activeSounds[type]) {
+        // Stop
+        activeSounds[type].gain.gain.linearRampToValueAtTime(0, getAudioCtx().currentTime + 0.5);
+        setTimeout(() => {
+          if (activeSounds[type]) {
+            activeSounds[type].source.stop();
+            delete activeSounds[type];
+          }
+        }, 600);
+        card.style.borderColor = '#eee';
+        card.style.background = 'white';
+      } else {
+        // Play
+        const ctx = getAudioCtx();
+        const noiseType = getNoiseType(type);
+        const buffer = createNoiseBuffer(ctx, 4, noiseType);
+        const source = ctx.createBufferSource();
+        source.buffer = buffer;
+        source.loop = true;
+
+        const gain = ctx.createGain();
+        gain.gain.value = slider.value / 100 * 0.5;
+
+        // Add filter for different sound characteristics
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        const filterFreqs = { rain:800, thunder:200, ocean:500, wind:400, birds:3000, fire:300, stream:1500, white:10000 };
+        filter.frequency.value = filterFreqs[type] || 1000;
+        if (type === 'birds') filter.type = 'bandpass';
+
+        source.connect(filter);
+        filter.connect(gain);
+        gain.connect(masterGain);
+        source.start();
+
+        activeSounds[type] = { source, gain, filter };
+        card.style.borderColor = '#4361ee';
+        card.style.background = '#f0f4ff';
+      }
+    }
+
+    function toggleAll() {
+      const allCards = document.querySelectorAll('.noise-card');
+      const anyActive = Object.keys(activeSounds).length > 0;
+      if (anyActive) {
+        stopAll();
+        document.getElementById('playAllBtn').textContent = '全部播放';
+      } else {
+        allCards.forEach(card => {
+          const type = card.dataset.type;
+          if (!activeSounds[type]) toggleSound(type);
+        });
+        document.getElementById('playAllBtn').textContent = '全部暂停';
+      }
+    }
+
+    function stopAll() {
+      Object.keys(activeSounds).forEach(type => {
+        if (activeSounds[type]) {
+          activeSounds[type].gain.gain.linearRampToValueAtTime(0, getAudioCtx().currentTime + 0.3);
+          const s = activeSounds[type];
+          setTimeout(() => s.source.stop(), 400);
+        }
+      });
+      activeSounds = {};
+      document.querySelectorAll('.noise-card').forEach(card => {
+        card.style.borderColor = '#eee';
+        card.style.background = 'white';
+      });
+      document.getElementById('playAllBtn').textContent = '全部播放';
+    }
+
+    // Volume sliders
+    document.querySelectorAll('.noise-card').forEach(card => {
+      card.addEventListener('click', e => {
+        if (e.target.type === 'range') return;
+        toggleSound(card.dataset.type);
+        updatePlayBtn();
+      });
+      card.querySelector('.volume-slider').addEventListener('input', e => {
+        const type = card.dataset.type;
+        e.target.nextElementSibling.textContent = e.target.value + '%';
+        if (activeSounds[type]) {
+          activeSounds[type].gain.gain.value = e.target.value / 100 * 0.5;
+        }
+      });
+    });
+
+    document.getElementById('masterVolume').addEventListener('input', e => {
+      const val = e.target.value;
+      document.getElementById('masterVolLabel').textContent = val + '%';
+      if (masterGain) masterGain.gain.value = val / 100;
+    });
+
+    // Timer
+    document.getElementById('timer').addEventListener('change', e => {
+      const minutes = parseInt(e.target.value);
+      if (timerInterval) clearInterval(timerInterval);
+      document.getElementById('timerDisplay').textContent = '';
+
+      if (minutes > 0) {
+        remainingSeconds = minutes * 60;
+        timerInterval = setInterval(() => {
+          remainingSeconds--;
+          const m = Math.floor(remainingSeconds / 60);
+          const s = remainingSeconds % 60;
+          document.getElementById('timerDisplay').textContent = `${m}:${String(s).padStart(2, '0')}`;
+          if (remainingSeconds <= 0) {
+            clearInterval(timerInterval);
+            stopAll();
+            document.getElementById('timerDisplay').textContent = '已停止';
+            showToast('定时结束，已自动停止播放');
+          }
+        }, 1000);
+        showToast(`${minutes}分钟后自动停止`);
+      }
+    });
+
+    function updatePlayBtn() {
+      const btn = document.getElementById('playAllBtn');
+      btn.textContent = Object.keys(activeSounds).length > 0 ? '全部暂停' : '全部播放';
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>

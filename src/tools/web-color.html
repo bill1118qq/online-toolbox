@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>网页颜色检查 - 对比度检测 - 在线工具箱</title>
+  <meta name="description" content="免费在线颜色对比度检测工具。检查文字颜色和背景色是否符合WCAG无障碍标准，确保网页可访问性。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="颜色对比度检测 - WCAG无障碍">
+  <meta property="og:description" content="检查颜色对比度是否符合WCAG标准。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/color-contrast.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/color-contrast.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"颜色对比度检测","description":"WCAG无障碍颜色对比度检查","url":"https://eitools.cn/src/tools/color-contrast.html","applicationCategory":"DesignerApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>颜色对比度检测</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">检查前景色和背景色的对比度是否符合 WCAG 无障碍标准。</p>
+    <div style="max-width:800px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+        <div>
+          <label style="font-size:0.85rem;color:#888;">前景色（文字）</label>
+          <div style="display:flex;gap:8px;margin-top:4px;">
+            <input type="color" id="fgColor" value="#333333" oninput="check()" style="width:50px;height:40px;border:1px solid #ddd;border-radius:6px;cursor:pointer;">
+            <input type="text" id="fgHex" value="#333333" oninput="syncColor('fg')" style="flex:1;padding:8px;border:1px solid #ddd;border-radius:8px;font-family:monospace;">
+          </div>
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">背景色</label>
+          <div style="display:flex;gap:8px;margin-top:4px;">
+            <input type="color" id="bgColor" value="#FFFFFF" oninput="check()" style="width:50px;height:40px;border:1px solid #ddd;border-radius:6px;cursor:pointer;">
+            <input type="text" id="bgHex" value="#FFFFFF" oninput="syncColor('bg')" style="flex:1;padding:8px;border:1px solid #ddd;border-radius:8px;font-family:monospace;">
+          </div>
+        </div>
+      </div>
+      <div id="preview" style="padding:32px;border-radius:12px;text-align:center;margin-bottom:20px;font-size:1.2rem;line-height:1.6;border:1px solid #ddd;">
+        示例文字 Preview Text
+      </div>
+      <div id="result" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button onclick="swapColors()" style="padding:8px 16px;background:#6c757d;color:white;border:none;border-radius:8px;cursor:pointer;">交换颜色</button>
+        <button onclick="setColors('#000000','#FFFFFF')" style="padding:8px 16px;background:#dee2e6;border:1px solid #ccc;border-radius:8px;cursor:pointer;font-size:0.85rem;">黑白</button>
+        <button onclick="setColors('#4361EE','#FFFFFF')" style="padding:8px 16px;background:#dee2e6;border:1px solid #ccc;border-radius:8px;cursor:pointer;font-size:0.85rem;">蓝白</button>
+        <button onclick="setColors('#FFFFFF','#333333')" style="padding:8px 16px;background:#dee2e6;border:1px solid #ccc;border-radius:8px;cursor:pointer;font-size:0.85rem;">白黑</button>
+        <button onclick="setColors('#E67700','#FFFFFF')" style="padding:8px 16px;background:#dee2e6;border:1px solid #ccc;border-radius:8px;cursor:pointer;font-size:0.85rem;">橙白</button>
+        <button onclick="setColors('#C92A2A','#FFFFFF')" style="padding:8px 16px;background:#dee2e6;border:1px solid #ccc;border-radius:8px;cursor:pointer;font-size:0.85rem;">红白</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    function hexToRgb(hex) {
+      hex = hex.replace('#', '');
+      if (hex.length === 3) hex = hex.split('').map(c => c+c).join('');
+      return [parseInt(hex.substr(0,2),16), parseInt(hex.substr(2,2),16), parseInt(hex.substr(4,2),16)];
+    }
+    function relativeLuminance(r, g, b) {
+      const [rs, gs, bs] = [r, g, b].map(c => {
+        c /= 255;
+        return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+      });
+      return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
+    }
+    function contrastRatio(l1, l2) {
+      const lighter = Math.max(l1, l2), darker = Math.min(l1, l2);
+      return (lighter + 0.05) / (darker + 0.05);
+    }
+    function syncColor(which) {
+      const hex = document.getElementById(which === 'fg' ? 'fgHex' : 'bgHex').value;
+      if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+        document.getElementById(which === 'fg' ? 'fgColor' : 'bgColor').value = hex;
+        check();
+      }
+    }
+    function setColors(fg, bg) {
+      document.getElementById('fgColor').value = fg;
+      document.getElementById('fgHex').value = fg;
+      document.getElementById('bgColor').value = bg;
+      document.getElementById('bgHex').value = bg;
+      check();
+    }
+    function swapColors() {
+      const fg = document.getElementById('fgHex').value;
+      const bg = document.getElementById('bgHex').value;
+      setColors(bg, fg);
+    }
+    function check() {
+      document.getElementById('fgHex').value = document.getElementById('fgColor').value;
+      document.getElementById('bgHex').value = document.getElementById('bgColor').value;
+      const fg = hexToRgb(document.getElementById('fgColor').value);
+      const bg = hexToRgb(document.getElementById('bgColor').value);
+      const fgL = relativeLuminance(fg[0], fg[1], fg[2]);
+      const bgL = relativeLuminance(bg[0], bg[1], bg[2]);
+      const ratio = contrastRatio(fgL, bgL);
+      const preview = document.getElementById('preview');
+      preview.style.backgroundColor = document.getElementById('bgColor').value;
+      preview.style.color = document.getElementById('fgColor').value;
+      const aaNormal = ratio >= 4.5;
+      const aaLarge = ratio >= 3;
+      const aaaNormal = ratio >= 7;
+      const level = aaaNormal ? 'AAA' : aaNormal ? 'AA' : aaLarge ? 'AA (大字)' : '不通过';
+      const color = aaaNormal ? '#2f9e44' : aaNormal ? '#4361ee' : aaLarge ? '#e67700' : '#c92a2a';
+      document.getElementById('result').innerHTML = `
+        <div style="padding:20px;background:#f8f9fa;border-radius:12px;text-align:center;">
+          <div style="font-size:0.85rem;color:#888;">对比度</div>
+          <div style="font-size:2.5rem;font-weight:700;color:${color};">${ratio.toFixed(2)}:1</div>
+          <div style="font-size:0.9rem;margin-top:4px;font-weight:600;color:${color};">${level}</div>
+        </div>
+        <div style="padding:16px;background:${aaNormal?'#e8f5e9':'#fee'};border-radius:12px;text-align:center;">
+          <div style="font-size:0.85rem;color:#888;">WCAG AA 正常文字</div>
+          <div style="font-size:1.5rem;font-weight:700;">${aaNormal ? '通过' : '不通过'}</div>
+          <div style="font-size:0.8rem;color:#888;">需要 4.5:1</div>
+        </div>
+        <div style="padding:16px;background:${aaaNormal?'#e8f5e9':'#fee'};border-radius:12px;text-align:center;">
+          <div style="font-size:0.85rem;color:#888;">WCAG AAA 正常文字</div>
+          <div style="font-size:1.5rem;font-weight:700;">${aaaNormal ? '通过' : '不通过'}</div>
+          <div style="font-size:0.8rem;color:#888;">需要 7:1</div>
+        </div>`;
+    }
+    check();
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

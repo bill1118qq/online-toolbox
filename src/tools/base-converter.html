@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IP地址转换 - IP转整数/整数转IP - 在线工具箱</title>
+  <meta name="description" content="免费在线IP地址转换工具。IP地址转十进制整数、整数转IP、子网掩码转换、CIDR表示法转换。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="IP地址转换 - IP/整数互转">
+  <meta property="og:description" content="IP地址转整数、子网掩码、CIDR转换。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/ip-converter.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/ip-converter.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"IP地址转换","description":"IP地址转整数、子网掩码转换","url":"https://eitools.cn/src/tools/ip-converter.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>IP 地址转换</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">IP 地址与整数互转，子网掩码/CIDR 转换。</p>
+    <div style="max-width:700px;">
+      <div style="margin-bottom:20px;">
+        <label style="font-size:0.85rem;color:#888;">输入 IP 地址或整数</label>
+        <input type="text" id="input" value="192.168.1.1" oninput="convert()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:1rem;margin-top:4px;">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+        <div style="padding:12px;background:#e8f4fd;border-radius:8px;">
+          <div style="font-size:0.75rem;color:#888;">十进制整数</div>
+          <div id="decimal" style="font-family:monospace;font-size:1.1rem;">3232235777</div>
+        </div>
+        <div style="padding:12px;background:#e8f5e9;border-radius:8px;">
+          <div style="font-size:0.75rem;color:#888;">十六进制</div>
+          <div id="hex" style="font-family:monospace;font-size:1.1rem;">C0A80101</div>
+        </div>
+        <div style="padding:12px;background:#fff3cd;border-radius:8px;">
+          <div style="font-size:0.75rem;color:#888;">二进制</div>
+          <div id="binary" style="font-family:monospace;font-size:1.1rem;">11000000.10101000.00000001.00000001</div>
+        </div>
+        <div style="padding:12px;background:#fee;border-radius:8px;">
+          <div style="font-size:0.75rem;color:#888;">八进制</div>
+          <div id="octal" style="font-family:monospace;font-size:1.1rem;">602.524.1.1</div>
+        </div>
+      </div>
+      <hr style="border:none;border-top:1px solid #eee;margin:24px 0;">
+      <h3 style="margin-bottom:12px;">子网掩码转换</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+        <div>
+          <label style="font-size:0.85rem;color:#888;">CIDR 前缀长度</label>
+          <input type="number" id="cidr" value="24" min="0" max="32" oninput="cidrToMask()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;margin-top:4px;">
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">子网掩码</label>
+          <input type="text" id="mask" value="255.255.255.0" oninput="maskToCidr()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;font-family:monospace;margin-top:4px;">
+        </div>
+      </div>
+      <div id="subnetInfo" style="padding:16px;background:#f8f9fa;border-radius:12px;font-size:0.85rem;"></div>
+      <hr style="border:none;border-top:1px solid #eee;margin:24px 0;">
+      <h3 style="margin-bottom:12px;">IP 范围计算</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+        <div>
+          <label style="font-size:0.85rem;color:#888;">起始 IP</label>
+          <input type="text" id="startIp" value="192.168.1.0" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;font-family:monospace;margin-top:4px;">
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">结束 IP</label>
+          <input type="text" id="endIp" value="192.168.1.255" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;font-family:monospace;margin-top:4px;">
+        </div>
+      </div>
+      <button onclick="calcRange()" style="padding:8px 20px;background:#4361ee;color:white;border:none;border-radius:8px;cursor:pointer;">计算</button>
+      <div id="rangeResult" style="margin-top:12px;padding:16px;background:#f8f9fa;border-radius:12px;font-size:0.85rem;"></div>
+    </div>
+  </div>
+  <script>
+    function ipToNum(ip) {
+      const parts = ip.split('.').map(Number);
+      if (parts.length !== 4 || parts.some(p => isNaN(p) || p < 0 || p > 255)) return NaN;
+      return ((parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3]) >>> 0;
+    }
+    function numToIp(num) {
+      return [(num >>> 24) & 255, (num >>> 16) & 255, (num >>> 8) & 255, num & 255].join('.');
+    }
+    function convert() {
+      const val = document.getElementById('input').value.trim();
+      if (!val) return;
+      let num;
+      if (/^\d{1,10}$/.test(val)) {
+        num = parseInt(val, 10);
+      } else {
+        num = ipToNum(val);
+      }
+      if (isNaN(num)) { document.getElementById('decimal').textContent = '无效输入'; return; }
+      document.getElementById('decimal').textContent = num;
+      document.getElementById('hex').textContent = num.toString(16).toUpperCase().padStart(8, '0');
+      document.getElementById('binary').textContent = [
+        (num >>> 24).toString(2).padStart(8, '0'),
+        (num >>> 16).toString(2).padStart(8, '0'),
+        (num >>> 8).toString(2).padStart(8, '0'),
+        num.toString(2).padStart(8, '0')
+      ].join('.');
+      document.getElementById('octal').textContent = [
+        (num >>> 24).toString(8),
+        (num >>> 16).toString(8),
+        (num >>> 8).toString(8),
+        num.toString(8)
+      ].join('.');
+    }
+    function cidrToMask() {
+      const cidr = parseInt(document.getElementById('cidr').value);
+      if (isNaN(cidr) || cidr < 0 || cidr > 32) return;
+      const mask = cidr === 0 ? 0 : (~0 << (32 - cidr)) >>> 0;
+      document.getElementById('mask').value = numToIp(mask);
+      updateSubnetInfo(cidr, mask);
+    }
+    function maskToCidr() {
+      const num = ipToNum(document.getElementById('mask').value);
+      if (isNaN(num)) return;
+      let cidr = 0, n = num;
+      while (n > 0) { cidr += n & 1; n >>>= 1; }
+      cidr = 32 - cidr;
+      document.getElementById('cidr').value = cidr;
+      updateSubnetInfo(cidr, num);
+    }
+    function updateSubnetInfo(cidr, mask) {
+      const total = Math.pow(2, 32 - cidr);
+      const usable = cidr >= 31 ? (cidr === 32 ? 1 : 2) : total - 2;
+      document.getElementById('subnetInfo').innerHTML = `CIDR /${cidr} · 掩码 ${numToIp(mask)}<br>总地址数: <strong>${total.toLocaleString()}</strong> · 可用主机数: <strong>${usable.toLocaleString()}</strong>`;
+    }
+    function calcRange() {
+      const start = ipToNum(document.getElementById('startIp').value);
+      const end = ipToNum(document.getElementById('endIp').value);
+      if (isNaN(start) || isNaN(end)) return;
+      const count = end - start + 1;
+      document.getElementById('rangeResult').innerHTML = `IP 范围: ${numToIp(start)} ~ ${numToIp(end)}<br>包含地址数: <strong>${count.toLocaleString()}</strong>`;
+    }
+    convert();
+    cidrToMask();
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

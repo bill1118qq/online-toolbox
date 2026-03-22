@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>字符数和字节数区别 - UTF-8编码详解 - 在线工具箱</title>
+  <meta name="description" content="字符数和字节数的区别详解：UTF-8编码原理、中英文占多少字节、GBK与UTF-8对比。常用字符编码字节数参考表。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="字符数vs字节数区别">
+  <meta property="og:description" content="UTF-8编码原理、字符字节对应关系。">
+  <meta property="og:url" content="https://eitools.cn/guides/string-length-guide.html">
+  <link rel="canonical" href="https://eitools.cn/guides/string-length-guide.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"字符数和字节数有什么区别？","acceptedAnswer":{"@type":"Answer","text":"字符数是文本中字符的个数（如'你好'是2个字符）。字节数是存储时占用的空间（'你好'UTF-8编码占6字节）。一个中文在UTF-8中占3字节，在GBK中占2字节。"}}]}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">← 返回首页</a>
+      <h1>字符数与字节数详解</h1>
+    </div>
+    <article style="line-height:1.8;">
+      <h2>什么是字符？什么是字节？</h2>
+      <div style="background:#f0f2f5;padding:16px;border-radius:8px;margin:12px 0;">
+        <b>字符（Character）</b>：文本中最小的显示单位。如 "A"、"中"、"！" 各算1个字符。<br>
+        <b>字节（Byte）</b>：计算机存储的基本单位。1字节 = 8位（bit）。
+      </div>
+
+      <h2>UTF-8编码字节数</h2>
+      <table style="width:100%;border-collapse:collapse;margin:12px 0;font-size:0.9rem;">
+        <tr style="background:#f0f2f5;"><th style="padding:10px;">字符类型</th><th style="padding:10px;">Unicode范围</th><th style="padding:10px;">UTF-8字节</th></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">ASCII</td><td style="padding:8px 10px;">U+0000 - U+007F</td><td style="padding:8px 10px;">1字节</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">扩展拉丁</td><td style="padding:8px 10px;">U+0080 - U+07FF</td><td style="padding:8px 10px;">2字节</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">中文等亚洲文字</td><td style="padding:8px 10px;">U+0800 - U+FFFF</td><td style="padding:8px 10px;">3字节</td></tr>
+        <tr><td style="padding:8px 10px;">Emoji等</td><td style="padding:8px 10px;">U+10000+</td><td style="padding:8px 10px;">4字节</td></tr>
+      </table>
+
+      <h2>GBK vs UTF-8</h2>
+      <table style="width:100%;border-collapse:collapse;margin:12px 0;font-size:0.9rem;">
+        <tr style="background:#f0f2f5;"><th style="padding:10px;">字符</th><th style="padding:10px;">UTF-8</th><th style="padding:10px;">GBK</th></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">A</td><td style="padding:8px 10px;">1</td><td style="padding:8px 10px;">1</td></tr>
+        <tr><td style="padding:8px 10px;">中</td><td style="padding:8px 10px;">3</td><td style="padding:8px 10px;">2</td></tr>
+      </table>
+
+      <h2>为什么了解字节数很重要？</h2>
+      <ul>
+        <li><b>数据库字段限制</b>：VARCHAR(255)是255字节，不是255字符</li>
+        <li><b>短信计费</b>：短信按70字/条计费，但实际按字节</li>
+        <li><b>文件大小</b>：网页/文件大小以字节为单位</li>
+        <li><b>API限制</b>：很多API限制请求体大小（字节数）</li>
+      </ul>
+
+      <div style="margin-top:24px;padding:20px;background:#f0f4ff;border-radius:12px;border:1px solid #4361ee;">
+        <h3 style="color:#4361ee;margin-top:0;">在线字符串长度计算器</h3>
+        <p>使用我们的<a href="../src/tools/string-length.html" style="color:#4361ee;font-weight:bold;">字符串长度计算器</a>，精确统计字符数、UTF-8字节、GBK字节、中英文分类等。</p>
+      </div>
+    </article>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../js/share.js"></script>
+</body>
+</html>

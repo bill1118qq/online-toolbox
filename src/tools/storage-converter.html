@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数据存储单位换算 - KB MB GB TB PB - 在线工具箱</title>
+  <meta name="description" content="在线数据存储单位换算工具，支持B/KB/MB/GB/TB/PB互转，二进制和十进制标准切换。免费使用。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="数据存储单位换算">
+  <meta property="og:description" content="KB/MB/GB/TB/PB存储单位互转，支持二进制和十进制。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/storage-converter.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/storage-converter.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"数据存储单位换算","url":"https://eitools.cn/src/tools/storage-converter.html","description":"KB/MB/GB/TB/PB存储单位互转。","applicationCategory":"UtilityApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0"}}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>数据存储单位换算</h1>
+    </div>
+
+    <div style="margin-bottom:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+      <label style="font-size:0.9rem;">换算标准：</label>
+      <label style="display:flex;align-items:center;gap:4px;font-size:0.9rem;">
+        <input type="radio" name="standard" value="binary" checked> 二进制（1024）
+      </label>
+      <label style="display:flex;align-items:center;gap:4px;font-size:0.9rem;">
+        <input type="radio" name="standard" value="decimal"> 十进制（1000）
+      </label>
+    </div>
+
+    <div style="background:white;border-radius:12px;padding:24px;margin-bottom:20px;border:1px solid #eee;">
+      <div style="display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin-bottom:16px;">
+        <input type="number" id="inputValue" placeholder="输入数值" step="any" style="flex:1;min-width:200px;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:16px;">
+        <select id="inputUnit" style="padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+          <option value="0">B (字节)</option>
+          <option value="1">KB</option>
+          <option value="2" selected>MB</option>
+          <option value="3">GB</option>
+          <option value="4">TB</option>
+          <option value="5">PB</option>
+          <option value="6">EB</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="convert()" style="width:100%;">换算</button>
+    </div>
+
+    <div id="results" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-bottom:20px;"></div>
+
+    <div style="background:white;border-radius:12px;padding:24px;margin-bottom:20px;border:1px solid #eee;">
+      <h3 style="margin-bottom:12px;">常用存储对照</h3>
+      <table style="width:100%;border-collapse:collapse;font-size:0.9rem;">
+        <tr style="background:#f0f2f5;"><th style="padding:10px;text-align:left;">描述</th><th style="padding:10px;text-align:right;">大约大小</th></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">一个英文字符</td><td style="padding:8px 10px;text-align:right;">1 B</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">一个汉字</td><td style="padding:8px 10px;text-align:right;">2-4 B</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">一页文档</td><td style="padding:8px 10px;text-align:right;">~20 KB</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">一张低清照片</td><td style="padding:8px 10px;text-align:right;">~500 KB</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">一首MP3歌曲</td><td style="padding:8px 10px;text-align:right;">~4 MB</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">一部高清电影</td><td style="padding:8px 10px;text-align:right;">~4 GB</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">iPhone 15 Pro</td><td style="padding:8px 10px;text-align:right;">128/256/512 GB</td></tr>
+        <tr><td style="padding:8px 10px;">1TB硬盘</td><td style="padding:8px 10px;text-align:right;">约 25万张照片</td></tr>
+      </table>
+    </div>
+
+    <div id="toast" class="toast"></div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    const UNITS = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB'];
+
+    function convert() {
+      const val = parseFloat(document.getElementById('inputValue').value);
+      const unit = parseInt(document.getElementById('inputUnit').value);
+      if (isNaN(val)) { showToast('请输入有效数值'); return; }
+
+      const base = document.querySelector('input[name="standard"]:checked').value;
+      const factor = base === 'binary' ? 1024 : 1000;
+      const bytes = val * Math.pow(factor, unit);
+
+      let html = '';
+      UNITS.forEach((u, i) => {
+        const converted = bytes / Math.pow(factor, i);
+        const display = converted < 0.01 ? converted.toExponential(4) : converted < 100 ? converted.toFixed(4) : converted.toFixed(2);
+        const isActive = i === unit;
+        html += `<div style="background:white;border-radius:12px;padding:16px;border:1px solid ${isActive ? '#4361ee' : '#eee'};text-align:center;">
+          <div style="font-size:1.4rem;font-weight:bold;color:#4361ee;">${display}</div>
+          <div style="font-size:0.85rem;color:#999;margin-top:4px;">${u}${i > 0 ? (base === 'binary' ? ' (2^' + (i * 10) + ')' : ' (10^' + (i * 3) + ')') : ''}</div>
+        </div>`;
+      });
+      document.getElementById('results').innerHTML = html;
+    }
+
+    document.getElementById('inputValue').addEventListener('keydown', e => { if (e.key === 'Enter') convert(); });
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>

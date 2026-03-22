@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>中英文标点转换 - 全角半角转换 - 在线工具箱</title>
+  <meta name="description" content="在线中英文标点符号转换工具：中文标点转英文标点、英文标点转中文标点、全角半角数字转换。一键批量处理。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="中英文标点转换工具">
+  <meta property="og:description" content="中文标点转英文标点，全角半角批量转换。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/punctuation.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/punctuation.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"中英文标点转换工具","url":"https://eitools.cn/src/tools/punctuation.html","description":"中英文标点符号互相转换，全角半角数字字母转换","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>中英文标点转换</h1>
+    </div>
+    <div style="display:flex;gap:8px;margin:16px 0;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="cnToEn()">中文标点 → 英文标点</button>
+      <button class="btn btn-primary" onclick="enToCn()">英文标点 → 中文标点</button>
+      <button class="btn btn-secondary" onclick="fullToHalf()">全角 → 半角</button>
+      <button class="btn btn-secondary" onclick="halfToFull()">半角 → 全角</button>
+      <button class="btn btn-secondary" onclick="copyResult()">复制结果</button>
+    </div>
+    <div class="split-view">
+      <div class="split-panel">
+        <h3>输入文本</h3>
+        <textarea id="input" rows="12" placeholder="输入或粘贴包含标点符号的文本"></textarea>
+      </div>
+      <div class="split-panel">
+        <h3>转换结果</h3>
+        <textarea id="output" rows="12" readonly></textarea>
+      </div>
+    </div>
+    <h2>标点对照表</h2>
+    <table style="width:100%;border-collapse:collapse;margin:12px 0;font-size:0.9rem;">
+      <tr style="background:#f0f2f5;"><th style="padding:10px;">中文标点</th><th style="padding:10px;">英文标点</th><th style="padding:10px;">说明</th></tr>
+      <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">，</td><td style="padding:8px 10px;">,</td><td style="padding:8px 10px;">逗号</td></tr>
+      <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">。</td><td style="padding:8px 10px;">.</td><td style="padding:8px 10px;">句号</td></tr>
+      <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">：</td><td style="padding:8px 10px;">:</td><td style="padding:8px 10px;">冒号</td></tr>
+      <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">；</td><td style="padding:8px 10px;">;</td><td style="padding:8px 10px;">分号</td></tr>
+      <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">！</td><td style="padding:8px 10px;">!</td><td style="padding:8px 10px;">感叹号</td></tr>
+      <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">？</td><td style="padding:8px 10px;">?</td><td style="padding:8px 10px;">问号</td></tr>
+      <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">（ ）</td><td style="padding:8px 10px;">( )</td><td style="padding:8px 10px;">括号</td></tr>
+      <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">" "</td><td style="padding:8px 10px;">" "</td><td style="padding:8px 10px;">引号</td></tr>
+      <tr><td style="padding:8px 10px;">——</td><td style="padding:8px 10px;">-</td><td style="padding:8px 10px;">破折号</td></tr>
+    </table>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    const cnMap = {'，':',','。':'.','：':':','；':';','！':'!','？':'?','（':'(','）':')','【':'[','】':']','{':'{','}':'}','《':'<','》':'>','"':'"','"':'"',''':"'","'":"'",'——':'-','……':'...','、':','};
+
+    function cnToEn() {
+      const input = document.getElementById('input').value;
+      let result = input;
+      Object.keys(cnMap).forEach(k => { result = result.split(k).join(cnMap[k]); });
+      document.getElementById('output').value = result;
+      showToast('中文标点已转为英文标点');
+    }
+
+    function enToCn() {
+      const input = document.getElementById('input').value;
+      const enToCnMap = {};
+      Object.keys(cnMap).forEach(k => { enToCnMap[cnMap[k]] = k; });
+      let result = input;
+      // 处理中文引号（需特殊处理配对）
+      result = result.replace(/"/g, '\u201c');
+      result = result.replace(/"/g, '\u201d');
+      result = result.replace(/'/g, '\u2018');
+      result = result.replace(/'/g, '\u2019');
+      Object.keys(enToCnMap).forEach(k => { result = result.split(k).join(enToCnMap[k]); });
+      document.getElementById('output').value = result;
+      showToast('英文标点已转为中文标点');
+    }
+
+    function fullToHalf() {
+      const input = document.getElementById('input').value;
+      let result = '';
+      for (let i = 0; i < input.length; i++) {
+        const code = input.charCodeAt(i);
+        if (code >= 0xFF01 && code <= 0xFF5E) {
+          result += String.fromCharCode(code - 0xFEE0);
+        } else if (code === 0x3000) {
+          result += String.fromCharCode(0x0020);
+        } else {
+          result += input[i];
+        }
+      }
+      document.getElementById('output').value = result;
+      showToast('全角已转为半角');
+    }
+
+    function halfToFull() {
+      const input = document.getElementById('input').value;
+      let result = '';
+      for (let i = 0; i < input.length; i++) {
+        const code = input.charCodeAt(i);
+        if (code >= 0x0021 && code <= 0x007E) {
+          result += String.fromCharCode(code + 0xFEE0);
+        } else if (code === 0x0020) {
+          result += String.fromCharCode(0x3000);
+        } else {
+          result += input[i];
+        }
+      }
+      document.getElementById('output').value = result;
+      showToast('半角已转为全角');
+    }
+
+    function copyResult() {
+      const output = document.getElementById('output').value;
+      if (!output) { showToast('没有可复制的内容'); return; }
+      navigator.clipboard.writeText(output).then(() => showToast('已复制到剪贴板'));
+    }
+  </script>
+</body>
+</html>

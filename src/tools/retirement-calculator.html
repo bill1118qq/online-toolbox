@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>退休金计算器 - 养老金计算 - 在线工具箱</title>
+  <meta name="description" content="退休金计算器：根据当前年龄、月薪、缴费年限等计算退休后每月可领取的养老金。支持城镇职工和城乡居民两种制度。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="退休金计算器">
+  <meta property="og:description" content="养老金估算计算，城镇职工和城乡居民养老制度。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/retirement-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/retirement-calculator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"退休金计算器","description":"估算退休后每月可领取的养老金","url":"https://eitools.cn/src/tools/retirement-calculator.html","applicationCategory":"FinanceApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>退休金计算器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">估算退休后每月可领取的养老金（仅供参考）。</p>
+    <div style="max-width:900px;">
+      <div style="margin-bottom:16px;">
+        <label style="font-size:0.85rem;color:#888;">养老制度</label>
+        <div style="display:flex;gap:8px;margin-top:4px;">
+          <button id="btnUrban" onclick="switchType('urban')" style="flex:1;padding:10px;border:2px solid #4361ee;background:#e3f2fd;border-radius:8px;cursor:pointer;font-weight:600;">城镇职工</button>
+          <button id="btnRural" onclick="switchType('rural')" style="flex:1;padding:10px;border:2px solid #ddd;background:white;border-radius:8px;cursor:pointer;">城乡居民</button>
+        </div>
+      </div>
+      <div id="urbanForm">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+          <div><label style="font-size:0.85rem;color:#888;">当前年龄</label><input type="number" id="uAge" value="30" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;" oninput="calc()"></div>
+          <div><label style="font-size:0.85rem;color:#888;">性别</label><select id="uGender" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;" onchange="calc()"><option value="male">男（60岁退休）</option><option value="female-worker">女工人（50岁退休）</option><option value="female-cadre">女干部（55岁退休）</option></select></div>
+          <div><label style="font-size:0.85rem;color:#888;">当前月薪（元）</label><input type="number" id="uSalary" value="10000" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;" oninput="calc()"></div>
+          <div><label style="font-size:0.85rem;color:#888;">已缴费年限</label><input type="number" id="uPaid" value="5" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;" oninput="calc()"></div>
+          <div><label style="font-size:0.85rem;color:#888;">预计工资年增长率（%）</label><input type="number" id="uGrowth" value="5" step="0.5" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;" oninput="calc()"></div>
+          <div><label style="font-size:0.85rem;color:#888;">当地平均工资（元/月）</label><input type="number" id="uAvgSalary" value="10000" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;" oninput="calc()"></div>
+          <div><label style="font-size:0.85rem;color:#888;">个人养老金账户余额（元）</label><input type="number" id="uAccount" value="30000" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;" oninput="calc()"></div>
+        </div>
+      </div>
+      <div id="ruralForm" style="display:none;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+          <div><label style="font-size:0.85rem;color:#888;">当前年龄</label><input type="number" id="rAge" value="45" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;" oninput="calcRural()"></div>
+          <div><label style="font-size:0.85rem;color:#888;">每年缴费档次（元）</label><select id="rLevel" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;" onchange="calcRural()"><option value="200">200元/年</option><option value="300">300元/年</option><option value="500">500元/年</option><option value="1000">1000元/年</option><option value="2000" selected>2000元/年</option><option value="3000">3000元/年</option><option value="5000">5000元/年</option></select></div>
+          <div><label style="font-size:0.85rem;color:#888;">已缴费年限</label><input type="number" id="rPaid" value="5" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;" oninput="calcRural()"></div>
+        </div>
+      </div>
+      <div id="urbanResult">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;">
+          <div style="padding:20px;background:#e3f2fd;border-radius:12px;text-align:center;">
+            <div style="font-size:0.8rem;color:#888;">基础养老金</div>
+            <div id="uBasic" style="font-size:1.5rem;font-weight:bold;color:#1565c0;">-</div>
+          </div>
+          <div style="padding:20px;background:#e8f5e9;border-radius:12px;text-align:center;">
+            <div style="font-size:0.8rem;color:#888;">个人账户养老金</div>
+            <div id="uPersonal" style="font-size:1.5rem;font-weight:bold;color:#2e7d32;">-</div>
+          </div>
+          <div style="padding:20px;background:#fff3e0;border-radius:12px;text-align:center;">
+            <div style="font-size:0.8rem;color:#888;">每月养老金（估算）</div>
+            <div id="uTotal" style="font-size:1.5rem;font-weight:bold;color:#f57c00;">-</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+          <div style="padding:16px;background:#f5f5f5;border-radius:12px;">
+            <h3 style="font-size:0.9rem;margin-bottom:8px;">计算公式</h3>
+            <p style="font-size:0.8rem;color:#666;line-height:1.6;">
+              基础养老金 = 退休时当地平均工资 × (1 + 本人平均缴费指数) ÷ 2 × 缴费年限 × 1%<br>
+              个人账户养老金 = 个人账户余额 ÷ 计发月数<br>
+              计发月数：50岁=195, 55岁=170, 60岁=139
+            </p>
+          </div>
+          <div style="padding:16px;background:#f5f5f5;border-radius:12px;">
+            <h3 style="font-size:0.9rem;margin-bottom:8px;">计算详情</h3>
+            <div id="uDetail" style="font-size:0.8rem;color:#666;line-height:1.8;"></div>
+          </div>
+        </div>
+      </div>
+      <div id="ruralResult" style="display:none;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;">
+          <div style="padding:20px;background:#e8f5e9;border-radius:12px;text-align:center;">
+            <div style="font-size:0.8rem;color:#888;">基础养老金</div>
+            <div id="rBasic" style="font-size:1.5rem;font-weight:bold;color:#2e7d32;">-</div>
+          </div>
+          <div style="padding:20px;background:#e3f2fd;border-radius:12px;text-align:center;">
+            <div style="font-size:0.8rem;color:#888;">个人账户养老金</div>
+            <div id="rPersonal" style="font-size:1.5rem;font-weight:bold;color:#1565c0;">-</div>
+          </div>
+          <div style="padding:20px;background:#fff3e0;border-radius:12px;text-align:center;">
+            <div style="font-size:0.8rem;color:#888;">每月养老金（估算）</div>
+            <div id="rTotal" style="font-size:1.5rem;font-weight:bold;color:#f57c00;">-</div>
+          </div>
+        </div>
+        <div style="padding:16px;background:#f5f5f5;border-radius:12px;margin-bottom:20px;">
+          <h3 style="font-size:0.9rem;margin-bottom:8px;">说明</h3>
+          <p style="font-size:0.8rem;color:#666;line-height:1.6;">
+            城乡居民养老金 = 基础养老金 + 个人账户养老金<br>
+            基础养老金：各地标准不同，估算约100-300元/月<br>
+            个人账户养老金 = (个人缴费 + 政府补贴 + 利息) ÷ 139
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    var currentType = 'urban';
+    var MONTHS = { 'female-worker': 195, 'female-cadre': 170, 'male': 139 };
+    var RETIRE_AGE = { 'female-worker': 50, 'female-cadre': 55, 'male': 60 };
+
+    function switchType(type) {
+      currentType = type;
+      document.getElementById('urbanForm').style.display = type === 'urban' ? 'block' : 'none';
+      document.getElementById('ruralForm').style.display = type === 'rural' ? 'block' : 'none';
+      document.getElementById('urbanResult').style.display = type === 'urban' ? 'block' : 'none';
+      document.getElementById('ruralResult').style.display = type === 'rural' ? 'block' : 'none';
+      document.getElementById('btnUrban').style.border = type === 'urban' ? '2px solid #4361ee' : '2px solid #ddd';
+      document.getElementById('btnUrban').style.background = type === 'urban' ? '#e3f2fd' : 'white';
+      document.getElementById('btnUrban').style.fontWeight = type === 'urban' ? '600' : '400';
+      document.getElementById('btnRural').style.border = type === 'rural' ? '2px solid #4361ee' : '2px solid #ddd';
+      document.getElementById('btnRural').style.background = type === 'rural' ? '#e3f2fd' : 'white';
+      document.getElementById('btnRural').style.fontWeight = type === 'rural' ? '600' : '400';
+    }
+
+    function calc() {
+      var age = parseInt(document.getElementById('uAge').value) || 0;
+      var gender = document.getElementById('uGender').value;
+      var salary = parseFloat(document.getElementById('uSalary').value) || 0;
+      var paid = parseInt(document.getElementById('uPaid').value) || 0;
+      var growth = parseFloat(document.getElementById('uGrowth').value) / 100 || 0;
+      var avgSalary = parseFloat(document.getElementById('uAvgSalary').value) || 0;
+      var account = parseFloat(document.getElementById('uAccount').value) || 0;
+      var retireAge = RETIRE_AGE[gender];
+      var yearsToRetire = Math.max(0, retireAge - age);
+      var totalPaid = paid + yearsToRetire;
+      var months = MONTHS[gender];
+
+      // 估算退休时平均工资
+      var futureAvgSalary = avgSalary * Math.pow(1 + 0.04, yearsToRetire);
+      // 估算个人平均缴费指数
+      var avgIndex = salary / avgSalary;
+      // 基础养老金
+      var basic = futureAvgSalary * (1 + avgIndex) / 2 * totalPaid * 0.01;
+      // 估算个人账户余额
+      var futureAccount = account;
+      for (var i = 0; i < yearsToRetire; i++) {
+        futureAccount += salary * 0.08 * 12;
+        futureAccount *= 1.03;
+      }
+      var personal = futureAccount / months;
+      var total = basic + personal;
+
+      document.getElementById('uBasic').textContent = basic.toFixed(0) + ' 元';
+      document.getElementById('uPersonal').textContent = personal.toFixed(0) + ' 元';
+      document.getElementById('uTotal').textContent = total.toFixed(0) + ' 元';
+
+      var detail = '';
+      detail += '退休年龄：' + retireAge + '岁，还有 ' + yearsToRetire + ' 年<br>';
+      detail += '总缴费年限：' + totalPaid + ' 年<br>';
+      detail += '计发月数：' + months + ' 个月<br>';
+      detail += '本人缴费指数：' + avgIndex.toFixed(3) + '<br>';
+      detail += '预计退休时社平工资：' + futureAvgSalary.toFixed(0) + ' 元';
+      document.getElementById('uDetail').innerHTML = detail;
+    }
+
+    function calcRural() {
+      var age = parseInt(document.getElementById('rAge').value) || 0;
+      var level = parseInt(document.getElementById('rLevel').value) || 0;
+      var paid = parseInt(document.getElementById('rPaid').value) || 0;
+      var yearsToRetire = Math.max(0, 60 - age);
+      var totalPaid = paid + yearsToRetire;
+
+      var subsidyMap = { 200: 30, 300: 40, 500: 60, 1000: 80, 2000: 100, 3000: 120, 5000: 160 };
+      var subsidy = subsidyMap[level] || 60;
+      var totalSaved = 0;
+      for (var i = 0; i < yearsToRetire; i++) {
+        totalSaved += (level + subsidy) * 12;
+        totalSaved *= 1.025;
+      }
+      totalSaved += paid * (level + subsidy) * 12;
+
+      var basicPension = 150;
+      var personalPension = totalSaved / 139;
+      var total = basicPension + personalPension;
+
+      document.getElementById('rBasic').textContent = basicPension + ' 元';
+      document.getElementById('rPersonal').textContent = personalPension.toFixed(0) + ' 元';
+      document.getElementById('rTotal').textContent = total.toFixed(0) + ' 元';
+    }
+
+    calc();
+  </script>
+</body>
+</html>

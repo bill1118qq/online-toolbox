@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图片格式转换 - PNG转JPG/WebP互转 - 在线工具箱</title>
+  <meta name="description" content="免费在线图片格式转换，支持PNG转JPG、JPG转PNG、PNG转WebP、WebP转PNG等格式互转。本地转换不上传服务器，保护隐私。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="图片格式转换 - PNG/JPG/WebP互转">
+  <meta property="og:description" content="PNG、JPG、WebP图片格式在线互转，本地处理不上传。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/image-converter.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/image-converter.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"图片格式转换","description":"PNG/JPG/WebP图片格式在线互转","url":"https://eitools.cn/src/tools/image-converter.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"PNG和JPG有什么区别？","acceptedAnswer":{"@type":"Answer","text":"PNG支持透明背景，无损压缩，适合截图、Logo；JPG不支持透明，有损压缩，文件更小，适合照片。"}},{"@type":"Question","name":"WebP格式有什么优势？","acceptedAnswer":{"@type":"Answer","text":"WebP由Google开发，同等质量下比JPG小25-34%，比PNG小26%，支持透明和动画，现代浏览器均已支持。"}}]}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>图片格式转换</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">支持 PNG、JPG、WebP 格式互转，本地处理不上传服务器。</p>
+    <div style="max-width:600px;">
+      <div id="drop-zone" style="border:2px dashed #ccc;border-radius:12px;padding:40px 20px;text-align:center;cursor:pointer;background:#fafafa;margin-bottom:20px;" onclick="document.getElementById('fileInput').click()">
+        <p style="font-size:1.1rem;color:#666;">点击或拖拽图片到此处</p>
+        <p style="font-size:0.85rem;color:#999;margin-top:4px;">支持 PNG / JPG / WebP</p>
+        <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp" style="display:none" onchange="handleFile(this.files[0])">
+      </div>
+      <div id="preview-area" style="display:none;margin-bottom:20px;">
+        <div style="display:flex;gap:20px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:200px;">
+            <p style="font-size:0.85rem;color:#888;margin-bottom:8px;">原图预览</p>
+            <img id="preview-img" style="max-width:100%;max-height:200px;border-radius:8px;border:1px solid #eee;">
+            <p id="orig-info" style="font-size:0.8rem;color:#888;margin-top:4px;"></p>
+          </div>
+        </div>
+      </div>
+      <div id="options" style="display:none;background:#f0f2f5;padding:16px;border-radius:12px;margin-bottom:20px;">
+        <label style="font-size:0.85rem;color:#888;">目标格式</label>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <button onclick="setFormat('image/png')" class="fmt-btn active" data-fmt="image/png">PNG</button>
+          <button onclick="setFormat('image/jpeg')" class="fmt-btn" data-fmt="image/jpeg">JPG</button>
+          <button onclick="setFormat('image/webp')" class="fmt-btn" data-fmt="image/webp">WebP</button>
+        </div>
+        <div id="quality-row" style="margin-top:12px;display:none;">
+          <label style="font-size:0.85rem;color:#888;">质量：<span id="quality-val">90</span>%</label>
+          <input type="range" id="quality" min="10" max="100" value="90" oninput="document.getElementById('quality-val').textContent=this.value" style="width:100%;margin-top:4px;">
+        </div>
+        <button class="btn btn-primary" onclick="convert()" style="margin-top:16px;width:100%;padding:12px;">开始转换</button>
+      </div>
+      <div id="result" style="display:none;background:#e8f5e9;padding:16px;border-radius:12px;">
+        <p style="font-weight:600;color:#2f9e44;">转换成功！</p>
+        <p id="result-info" style="font-size:0.85rem;color:#555;margin-top:4px;"></p>
+        <a id="download-btn" download style="display:inline-block;margin-top:8px;padding:10px 24px;background:#2f9e44;color:white;border-radius:8px;text-decoration:none;font-weight:500;">下载图片</a>
+      </div>
+    </div>
+  </div>
+  <script>
+    let currentFile = null, currentFormat = 'image/png';
+    const dropZone = document.getElementById('drop-zone');
+    dropZone.ondragover = e => { e.preventDefault(); dropZone.style.borderColor = '#4361ee'; };
+    dropZone.ondragleave = () => { dropZone.style.borderColor = '#ccc'; };
+    dropZone.ondrop = e => { e.preventDefault(); dropZone.style.borderColor = '#ccc'; if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); };
+
+    function handleFile(file) {
+      if (!file || !file.type.match(/^image\/(png|jpeg|webp)$/)) return alert('请选择 PNG/JPG/WebP 图片');
+      currentFile = file;
+      const reader = new FileReader();
+      reader.onload = e => {
+        document.getElementById('preview-img').src = e.target.result;
+        document.getElementById('orig-info').textContent = `${file.name} (${(file.size/1024).toFixed(1)} KB)`;
+        document.getElementById('preview-area').style.display = 'block';
+        document.getElementById('options').style.display = 'block';
+        document.getElementById('result').style.display = 'none';
+        setFormat(file.type === 'image/png' ? 'image/jpeg' : 'image/png');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function setFormat(fmt) {
+      currentFormat = fmt;
+      document.querySelectorAll('.fmt-btn').forEach(b => b.classList.toggle('active', b.dataset.fmt === fmt));
+      document.getElementById('quality-row').style.display = (fmt === 'image/jpeg' || fmt === 'image/webp') ? 'block' : 'none';
+    }
+
+    function convert() {
+      if (!currentFile) return;
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width; canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        if (currentFormat === 'image/jpeg') { ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
+        ctx.drawImage(img, 0, 0);
+        const quality = parseInt(document.getElementById('quality').value) / 100;
+        const ext = currentFormat === 'image/png' ? 'png' : currentFormat === 'image/jpeg' ? 'jpg' : 'webp';
+        canvas.toBlob(blob => {
+          if (!blob) return alert('转换失败，浏览器不支持该格式');
+          const url = URL.createObjectURL(blob);
+          const origKB = (currentFile.size / 1024).toFixed(1);
+          const newKB = (blob.size / 1024).toFixed(1);
+          const savings = ((1 - blob.size / currentFile.size) * 100).toFixed(1);
+          document.getElementById('result-info').textContent = `${origKB} KB → ${newKB} KB (${savings > 0 ? '减少' : '增加'} ${Math.abs(savings)}%)`;
+          const baseName = currentFile.name.replace(/\.[^.]+$/, '');
+          document.getElementById('download-btn').href = url;
+          document.getElementById('download-btn').download = `${baseName}.${ext}`;
+          document.getElementById('result').style.display = 'block';
+        }, currentFormat, quality);
+      };
+      img.src = document.getElementById('preview-img').src;
+    }
+
+    // Style active buttons
+    const style = document.createElement('style');
+    style.textContent = `.fmt-btn{padding:8px 20px;border:1px solid #ddd;border-radius:8px;cursor:pointer;background:white;font-size:0.9rem;}.fmt-btn.active{background:#4361ee;color:white;border-color:#4361ee;}`;
+    document.head.appendChild(style);
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

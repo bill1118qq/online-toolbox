@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON转YAML - JSON YAML互转 - 在线工具箱</title>
+  <meta name="description" content="JSON转YAML在线工具：将JSON格式转换为YAML格式，或YAML转JSON。支持格式验证、缩进调整、语法高亮。完全免费，无需安装。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="JSON转YAML工具">
+  <meta property="og:description" content="JSON/YAML格式互转，在线免费工具。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/json-to-yaml.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/json-to-yaml.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"JSON转YAML","description":"JSON和YAML格式互转工具","url":"https://eitools.cn/src/tools/json-to-yaml.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>JSON ⇄ YAML 转换</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">JSON转YAML或YAML转JSON，支持格式验证。</p>
+    <div style="max-width:900px;">
+      <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;">
+        <button onclick="convertTo('yaml')" id="btnToYaml" style="padding:8px 20px;background:#4361ee;color:white;border:2px solid #4361ee;border-radius:8px;cursor:pointer;">JSON → YAML</button>
+        <button onclick="convertTo('json')" id="btnToJson" style="padding:8px 20px;background:white;color:#333;border:2px solid #ddd;border-radius:8px;cursor:pointer;">YAML → JSON</button>
+        <button onclick="loadExample()" style="padding:8px 20px;background:#f0f2f5;border:1px solid #ddd;border-radius:8px;cursor:pointer;">示例</button>
+        <button onclick="clearAll()" style="padding:8px 16px;background:#fee;border:1px solid #fcc;border-radius:8px;cursor:pointer;color:#c00;">清空</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+        <div>
+          <label style="font-size:0.85rem;color:#888;">输入</label>
+          <textarea id="input" placeholder="粘贴JSON或YAML内容..." style="width:100%;height:350px;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:0.9rem;font-family:monospace;line-height:1.6;resize:vertical;tab-size:2;"></textarea>
+        </div>
+        <div style="position:relative;">
+          <label style="font-size:0.85rem;color:#888;">输出</label>
+          <textarea id="output" readonly placeholder="转换结果..." style="width:100%;height:350px;padding:12px;border:1px solid #4361ee;border-radius:8px;font-size:0.9rem;font-family:monospace;line-height:1.6;resize:vertical;background:#f8f9ff;tab-size:2;"></textarea>
+          <button onclick="copyResult()" style="position:absolute;top:24px;right:8px;padding:4px 12px;background:#4361ee;color:white;border:none;border-radius:6px;cursor:pointer;font-size:0.8rem;">复制</button>
+        </div>
+      </div>
+      <div id="error" style="display:none;padding:12px;background:#fee;color:#c00;border-radius:8px;margin-bottom:16px;font-size:0.9rem;"></div>
+    </div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    var currentDir = 'yaml';
+
+    function convertTo(dir) {
+      currentDir = dir;
+      document.getElementById('btnToYaml').style.background = dir === 'yaml' ? '#4361ee' : 'white';
+      document.getElementById('btnToYaml').style.color = dir === 'yaml' ? 'white' : '#333';
+      document.getElementById('btnToYaml').style.borderColor = dir === 'yaml' ? '#4361ee' : '#ddd';
+      document.getElementById('btnToJson').style.background = dir === 'json' ? '#4361ee' : 'white';
+      document.getElementById('btnToJson').style.color = dir === 'json' ? 'white' : '#333';
+      document.getElementById('btnToJson').style.borderColor = dir === 'json' ? '#4361ee' : '#ddd';
+      convert();
+    }
+
+    function jsonToYaml(obj, indent) {
+      indent = indent || 0;
+      var pad = '  '.repeat(indent);
+      var result = '';
+      if (Array.isArray(obj)) {
+        if (obj.length === 0) return '[]';
+        obj.forEach(function(item) {
+          if (typeof item === 'object' && item !== null) {
+            var lines = jsonToYaml(item, indent + 1).split('\n');
+            result += pad + '- ' + lines[0].trim() + '\n';
+            for (var i = 1; i < lines.length; i++) {
+              if (lines[i].trim()) result += lines[i] + '\n';
+            }
+          } else {
+            result += pad + '- ' + formatValue(item) + '\n';
+          }
+        });
+      } else if (typeof obj === 'object' && obj !== null) {
+        var keys = Object.keys(obj);
+        keys.forEach(function(key) {
+          var val = obj[key];
+          if (typeof val === 'object' && val !== null) {
+            if (Array.isArray(val) && val.length === 0) {
+              result += pad + key + ': []\n';
+            } else if (Object.keys(val).length === 0) {
+              result += pad + key + ': {}\n';
+            } else {
+              result += pad + key + ':\n';
+              result += jsonToYaml(val, indent + 1);
+            }
+          } else {
+            result += pad + key + ': ' + formatValue(val) + '\n';
+          }
+        });
+      }
+      return result.trim();
+    }
+
+    function formatValue(val) {
+      if (val === null) return 'null';
+      if (typeof val === 'boolean') return val ? 'true' : 'false';
+      if (typeof val === 'number') return String(val);
+      var str = String(val);
+      if (/[:#{}[\],&*?|>!%@`]/.test(str) || str === '' || str === 'true' || str === 'false' || str === 'null' || !isNaN(str)) {
+        return '"' + str.replace(/"/g, '\\"') + '"';
+      }
+      return str;
+    }
+
+    function convert() {
+      var input = document.getElementById('input').value.trim();
+      var output = document.getElementById('output');
+      var error = document.getElementById('error');
+      error.style.display = 'none';
+
+      if (!input) { output.value = ''; return; }
+
+      try {
+        var obj;
+        if (currentDir === 'yaml') {
+          obj = JSON.parse(input);
+          output.value = jsonToYaml(obj);
+        } else {
+          // Simple YAML-like parser for basic structures
+          obj = simpleYamlParse(input);
+          output.value = JSON.stringify(obj, null, 2);
+        }
+      } catch (e) {
+        error.textContent = '转换错误: ' + e.message;
+        error.style.display = 'block';
+      }
+    }
+
+    function simpleYamlParse(yaml) {
+      // Basic YAML parser for simple key-value and nested structures
+      var result = {};
+      var stack = [{ indent: -1, obj: result }];
+      var lines = yaml.split('\n');
+
+      lines.forEach(function(line) {
+        if (!line.trim() || line.trim().startsWith('#')) return;
+        var indent = line.search(/\S/);
+        var trimmed = line.trim();
+
+        if (trimmed.endsWith(':')) {
+          var key = trimmed.slice(0, -1).replace(/"/g, '');
+          var newObj = {};
+          while (stack.length > 1 && stack[stack.length - 1].indent >= indent) stack.pop();
+          stack[stack.length - 1].obj[key] = newObj;
+          stack.push({ indent: indent, obj: newObj });
+        } else if (trimmed.startsWith('- ')) {
+          var val = trimmed.slice(2).trim();
+          var parent = stack[stack.length - 1].obj;
+          if (!Array.isArray(parent)) {
+            var keys = Object.keys(parent);
+            if (keys.length > 0) {
+              var lastKey = keys[keys.length - 1];
+              if (!Array.isArray(parent[lastKey])) parent[lastKey] = [];
+              parent[lastKey].push(parseSimpleValue(val));
+            }
+          }
+        } else if (trimmed.indexOf(':') > -1) {
+          var idx = trimmed.indexOf(':');
+          var key = trimmed.substring(0, idx).trim().replace(/"/g, '');
+          var val = trimmed.substring(idx + 1).trim();
+          while (stack.length > 1 && stack[stack.length - 1].indent >= indent) stack.pop();
+          stack[stack.length - 1].obj[key] = parseSimpleValue(val);
+        }
+      });
+      return result;
+    }
+
+    function parseSimpleValue(val) {
+      if (val === 'null' || val === '~') return null;
+      if (val === 'true') return true;
+      if (val === 'false') return false;
+      if (/^-?\d+$/.test(val)) return parseInt(val);
+      if (/^-?\d+\.\d+$/.test(val)) return parseFloat(val);
+      if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) return val.slice(1, -1);
+      return val;
+    }
+
+    function loadExample() {
+      var example = '{\n  "name": "在线工具箱",\n  "version": "1.0.0",\n  "description": "免费在线工具集合",\n  "tools": [\n    "JSON格式化",\n    "Base64编解码",\n    "二维码生成"\n  ],\n  "author": {\n    "name": "eitools",\n    "url": "https://eitools.cn"\n  },\n  "features": {\n    "free": true,\n    "noInstall": true,\n    "privacy": true\n  }\n}';
+      document.getElementById('input').value = example;
+      convert();
+    }
+
+    function clearAll() {
+      document.getElementById('input').value = '';
+      document.getElementById('output').value = '';
+      document.getElementById('error').style.display = 'none';
+    }
+
+    function copyResult() {
+      navigator.clipboard.writeText(document.getElementById('output').value).then(function() {
+        var btn = event.target;
+        btn.textContent = '已复制';
+        setTimeout(function() { btn.textContent = '复制'; }, 1500);
+      });
+    }
+  </script>
+</body>
+</html>

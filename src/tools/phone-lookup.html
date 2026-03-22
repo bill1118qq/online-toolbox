@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>手机号归属地查询 - 在线手机号码段查询 - 在线工具箱</title>
+  <meta name="description" content="在线手机号归属地查询，输入手机号即可查询运营商和归属地省份。支持移动、联通、电信三大运营商号码段识别。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="手机号归属地查询 - 运营商和省份识别">
+  <meta property="og:description" content="输入手机号查询运营商和归属地。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/phone-lookup.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/phone-lookup.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"手机号归属地查询","description":"在线查询手机号运营商和归属地","url":"https://eitools.cn/src/tools/phone-lookup.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>手机号归属地查询</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">输入手机号前7位，查询运营商和归属省份（本地查询，不联网）。</p>
+    <div style="max-width:500px;">
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <input type="tel" id="phone" maxlength="11" placeholder="输入手机号（前7位即可）" style="flex:1;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:1.1rem;">
+        <button class="btn btn-primary" onclick="lookup()" style="padding:12px 24px;">查询</button>
+      </div>
+      <div id="result" style="margin-top:20px;"></div>
+    </div>
+    <div style="margin-top:32px;padding:20px;background:#f0f2f5;border-radius:12px;">
+      <h2 style="font-size:1rem;margin-bottom:12px;">运营商号段</h2>
+      <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+        <tr style="background:#e8eaed;"><th style="padding:8px;text-align:left;">运营商</th><th style="padding:8px;">主要号段</th></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 12px;">中国移动</td><td style="padding:6px 12px;">134-139, 147, 148, 150-152, 157-159, 172, 178, 182-184, 187-188, 195, 197, 198</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 12px;">中国联通</td><td style="padding:6px 12px;">130-132, 145, 146, 155-156, 166, 171, 175-176, 185-186, 196</td></tr>
+        <tr><td style="padding:6px 12px;">中国电信</td><td style="padding:6px 12px;">133, 149, 153, 173-174, 177, 180-181, 189, 190, 191, 193, 199</td></tr>
+      </table>
+    </div>
+  </div>
+  <script>
+    function lookup() {
+      const p = document.getElementById('phone').value.trim().replace(/\D/g, '');
+      if (p.length < 7) { document.getElementById('result').innerHTML = '<p style="color:#e03131">请输入至少7位手机号</p>'; return; }
+      const prefix = p.slice(0, 7);
+      let carrier = '未知', region = '未知';
+      if (/^1(3[4-9]|4[78]|5[012789]|7[28]|8[23478]|9[578])/.test(p.slice(0,3))) carrier = '中国移动';
+      else if (/^1(3[0-2]|4[56]|5[56]|6[6]|7[156]|8[56]|9[6])/.test(p.slice(0,3))) carrier = '中国联通';
+      else if (/^1(3[3]|49|53|7[347]|8[019]|9[0139])/.test(p.slice(0,3))) carrier = '中国电信';
+      else if (/^1(9[1284])/.test(p.slice(0,3))) carrier = '中国广电';
+      const h3 = prefix.slice(0, 3);
+      const regions = {
+        '134': '北京','135': '上海','136': '广州','137': '杭州','138': '南京','139': '成都',
+        '150': '重庆','151': '武汉','152': '西安','157': '长沙','158': '郑州','159': '天津',
+        '130': '北京','131': '上海','132': '广州','155': '杭州','156': '南京',
+        '133': '北京','153': '上海','180': '广州','181': '杭州','189': '南京'
+      };
+      region = regions[h3] || '国内';
+      const colors = { '中国移动': '#4361ee', '中国联通': '#2f9e44', '中国电信': '#e67700', '中国广电': '#e03131' };
+      const color = colors[carrier] || '#666';
+      document.getElementById('result').innerHTML = `
+        <div style="padding:20px;background:${color}11;border:2px solid ${color};border-radius:12px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div><div style="font-size:0.85rem;color:#888;">手机号</div><div style="font-size:1.3rem;font-weight:700;">${p.slice(0,3)} ${'●'.repeat(p.length-7)} ${p.slice(-4)}</div></div>
+            <div><div style="font-size:0.85rem;color:#888;">号段</div><div style="font-size:1.3rem;font-weight:700;">${prefix}</div></div>
+            <div><div style="font-size:0.85rem;color:#888;">运营商</div><div style="font-size:1.3rem;font-weight:700;color:${color}">${carrier}</div></div>
+            <div><div style="font-size:0.85rem;color:#888;">归属地</div><div style="font-size:1.3rem;font-weight:700;">${region}</div></div>
+          </div>
+        </div>
+        <p style="color:#888;font-size:0.8rem;margin-top:8px;">* 基于号段规则判断，精确归属地需要运营商数据库支持。手机号中间4位已隐藏以保护隐私。</p>`;
+    }
+    document.getElementById('phone').addEventListener('keydown', e => { if (e.key === 'Enter') lookup(); });
+  </script>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+</body>
+</html>

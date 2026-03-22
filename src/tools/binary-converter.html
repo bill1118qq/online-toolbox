@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>二进制转换 - 进制转换/文本转二进制 - 在线工具箱</title>
+  <meta name="description" content="免费在线二进制转换工具。文本转二进制、二进制转文本、二进制与十六进制八进制互转。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="二进制转换 - 文本转二进制">
+  <meta property="og:description" content="文本转二进制、二进制转文本、多进制互转。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/binary-converter.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/binary-converter.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"二进制转换","description":"文本转二进制、二进制转文本工具","url":"https://eitools.cn/src/tools/binary-converter.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>二进制转换</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">文本与二进制互转，支持二进制、八进制、十六进制转换。</p>
+    <div style="max-width:800px;">
+      <div style="margin-bottom:20px;">
+        <label style="font-size:0.85rem;color:#888;">输入文本</label>
+        <textarea id="textInput" rows="4" oninput="textToBin()" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.9rem;resize:vertical;margin-top:4px;" placeholder="输入文本...">Hello 你好</textarea>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+        <div>
+          <label style="font-size:0.85rem;color:#888;">二进制</label>
+          <textarea id="binOutput" rows="3" readonly style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.85rem;background:#f8f9fa;margin-top:4px;"></textarea>
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">十六进制</label>
+          <textarea id="hexOutput" rows="3" readonly style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.85rem;background:#f8f9fa;margin-top:4px;"></textarea>
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">八进制</label>
+          <textarea id="octOutput" rows="3" readonly style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.85rem;background:#f8f9fa;margin-top:4px;"></textarea>
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">十进制 (Unicode)</label>
+          <textarea id="decOutput" rows="3" readonly style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.85rem;background:#f8f9fa;margin-top:4px;"></textarea>
+        </div>
+      </div>
+      <hr style="border:none;border-top:1px solid #eee;margin:24px 0;">
+      <h3 style="margin-bottom:12px;">二进制转文本</h3>
+      <div style="margin-bottom:12px;">
+        <input type="text" id="binInput" placeholder="输入二进制，如：01001000 01100101" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.9rem;" oninput="binToText()">
+      </div>
+      <div style="padding:12px;background:#f8f9fa;border-radius:8px;min-height:40px;" id="textResult"></div>
+      <hr style="border:none;border-top:1px solid #eee;margin:24px 0;">
+      <h3 style="margin-bottom:12px;">ASCII 码对照表</h3>
+      <div style="overflow-x:auto;">
+        <table id="asciiTable" style="width:100%;border-collapse:collapse;font-family:monospace;font-size:0.8rem;"></table>
+      </div>
+    </div>
+  </div>
+  <script>
+    function textToBin() {
+      const text = document.getElementById('textInput').value;
+      if (!text) { ['binOutput','hexOutput','octOutput','decOutput'].forEach(id => document.getElementById(id).value = ''); return; }
+      const bins = [], hexes = [], octs = [], decs = [];
+      for (const ch of text) {
+        const cp = ch.codePointAt(0);
+        bins.push(cp.toString(2).padStart(8, '0'));
+        hexes.push(cp.toString(16).toUpperCase().padStart(2, '0'));
+        octs.push(cp.toString(8));
+        decs.push(cp.toString());
+      }
+      document.getElementById('binOutput').value = bins.join(' ');
+      document.getElementById('hexOutput').value = hexes.join(' ');
+      document.getElementById('octOutput').value = octs.join(' ');
+      document.getElementById('decOutput').value = decs.join(' ');
+    }
+    function binToText() {
+      const input = document.getElementById('binInput').value.replace(/[^01]/g, '');
+      if (!input) { document.getElementById('textResult').textContent = ''; return; }
+      try {
+        let text = '';
+        for (let i = 0; i < input.length; i += 8) {
+          const byte = input.substring(i, i + 8);
+          if (byte.length === 8) text += String.fromCharCode(parseInt(byte, 2));
+        }
+        document.getElementById('textResult').innerHTML = `<strong>结果：</strong> ${escapeHtml(text)}`;
+      } catch(e) {
+        document.getElementById('textResult').innerHTML = '<span style="color:#c92a2a;">转换失败</span>';
+      }
+    }
+    function buildAsciiTable() {
+      let html = '<tr style="background:#4361ee;color:white;"><th>DEC</th><th>HEX</th><th>BIN</th><th>字符</th><th>DEC</th><th>HEX</th><th>BIN</th><th>字符</th></tr>';
+      for (let i = 32; i < 128; i++) {
+        const ch = i === 32 ? '␣' : String.fromCharCode(i);
+        const ch2 = (i + 48 <= 127) ? ((i + 48) === 32 ? '␣' : String.fromCharCode(i + 48)) : '';
+        if (i % 2 === 0) html += '<tr>';
+        html += `<td style="padding:4px 8px;border:1px solid #eee;">${i}</td>
+          <td style="padding:4px 8px;border:1px solid #eee;">${i.toString(16).toUpperCase()}</td>
+          <td style="padding:4px 8px;border:1px solid #eee;">${i.toString(2).padStart(8,'0')}</td>
+          <td style="padding:4px 8px;border:1px solid #eee;font-size:1.1rem;">${escapeHtml(ch)}</td>`;
+        if (i % 2 === 1) html += '</tr>';
+        else if (i + 48 > 127) html += '<td colspan="4"></td></tr>';
+        else {
+          const j = i + 48;
+          const c = j === 32 ? '␣' : String.fromCharCode(j);
+          html += `<td style="padding:4px 8px;border:1px solid #eee;">${j}</td>
+            <td style="padding:4px 8px;border:1px solid #eee;">${j.toString(16).toUpperCase()}</td>
+            <td style="padding:4px 8px;border:1px solid #eee;">${j.toString(2).padStart(8,'0')}</td>
+            <td style="padding:4px 8px;border:1px solid #eee;font-size:1.1rem;">${escapeHtml(c)}</td></tr>`;
+        }
+      }
+      document.getElementById('asciiTable').innerHTML = html;
+    }
+    function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    textToBin();
+    buildAsciiTable();
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

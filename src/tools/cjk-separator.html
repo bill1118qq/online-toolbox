@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>中文分词 - 中文文本按字/词分割 - 在线工具箱</title>
+  <meta name="description" content="免费在线中文分词工具，将中文文本按单字、双字、三字等方式分割。支持自定义分隔符、添加序号、每行一个字符。适用于数据处理和文本编辑。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="中文分词 - 按字/词分割中文文本">
+  <meta property="og:description" content="中文文本按字/词分割，支持多种模式。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/cjk-separator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/cjk-separator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"中文分词","description":"中文文本按字词分割","url":"https://eitools.cn/src/tools/cjk-separator.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>中文分词</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">将中文文本按单字、双字、三字等方式分割，每行一个。</p>
+    <div style="max-width:600px;">
+      <textarea id="text" rows="5" placeholder="输入中文文本..." oninput="process()" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;margin-bottom:12px;">今天天气真好我想出去散步</textarea>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+        <div><label style="font-size:0.85rem;color:#888;">分割模式</label>
+          <select id="mode" onchange="process()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:4px;">
+            <option value="1">按单字分割</option>
+            <option value="2">按双字（词语）分割</option>
+            <option value="3">按三字分割</option>
+            <option value="4">按四字分割</option>
+            <option value="comma">按逗号分割</option>
+            <option value="space">按空格分割</option>
+            <option value="line">按换行分割（去重）</option>
+          </select></div>
+        <div><label style="font-size:0.85rem;color:#888;">输出格式</label>
+          <select id="format" onchange="process()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:4px;">
+            <option value="newline">每行一个</option>
+            <option value="comma">逗号分隔</option>
+            <option value="space">空格分隔</option>
+            <option value="slash">斜杠分隔</option>
+            <option value="quote">加引号</option>
+          </select></div>
+      </div>
+      <label style="font-size:0.85rem;color:#888;"><input type="checkbox" id="numbered" onchange="process()"> 添加序号</label>
+      <label style="font-size:0.85rem;color:#888;margin-left:16px;"><input type="checkbox" id="dedup" onchange="process()"> 去重</label>
+      <label style="font-size:0.85rem;color:#888;margin-left:16px;"><input type="checkbox" id="filterNonCjk" onchange="process()"> 只保留中文</label>
+      <div style="margin-top:12px;">
+        <label style="font-size:0.85rem;color:#888;">结果（<span id="count">0</span> 项）</label>
+        <textarea id="output" rows="10" readonly style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.85rem;resize:vertical;margin-top:4px;"></textarea>
+      </div>
+      <button class="btn" onclick="navigator.clipboard.writeText(document.getElementById('output').value)" style="margin-top:8px;">复制结果</button>
+    </div>
+  </div>
+  <script>
+    function process() {
+      let text = document.getElementById('text').value;
+      const mode = document.getElementById('mode').value;
+      const fmt = document.getElementById('format').value;
+      const numbered = document.getElementById('numbered').checked;
+      const dedup = document.getElementById('dedup').checked;
+      const filterCjk = document.getElementById('filterNonCjk').checked;
+
+      if (!text) { document.getElementById('output').value = ''; document.getElementById('count').textContent = '0'; return; }
+
+      let items = [];
+      if (mode === 'comma') items = text.split(/[,，]/);
+      else if (mode === 'space') items = text.split(/\s+/);
+      else if (mode === 'line') items = text.split(/\n/).map(s => s.trim()).filter(Boolean);
+      else if (['1','2','3','4'].includes(mode)) {
+        const n = parseInt(mode);
+        for (let i = 0; i < text.length; i += n) items.push(text.substring(i, i + n));
+      }
+
+      if (filterCjk) items = items.map(s => s.replace(/[^\u4e00-\u9fff\u3400-\u4dbf]/g, '')).filter(Boolean);
+      if (dedup) items = [...new Set(items)];
+      items = items.filter(Boolean);
+
+      let sep = '\n';
+      if (fmt === 'comma') sep = ', ';
+      else if (fmt === 'space') sep = ' ';
+      else if (fmt === 'slash') sep = ' / ';
+      else if (fmt === 'quote') sep = '\n';
+
+      let result;
+      if (numbered) {
+        result = items.map((s, i) => `${i + 1}. ${s}`).join(sep);
+      } else if (fmt === 'quote') {
+        result = items.map(s => `"${s}"`).join(sep);
+      } else {
+        result = items.join(sep);
+      }
+
+      document.getElementById('output').value = result;
+      document.getElementById('count').textContent = items.length;
+    }
+    process();
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>工作日计算器 - 排除周末和节假日 - 在线工具箱</title>
+  <meta name="description" content="免费在线工作日计算器，计算两个日期之间的工作日天数，自动排除周末。支持计算距今N个工作日后的日期、加减工作日。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="工作日计算器 - 排除周末计算工作日">
+  <meta property="og:description" content="计算两个日期之间的工作日天数，排除周末。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/workday-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/workday-calculator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"工作日计算器","description":"计算工作日天数，排除周末","url":"https://eitools.cn/src/tools/workday-calculator.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>工作日计算器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">计算两个日期之间的工作日天数，自动排除周六日。</p>
+    <div style="max-width:600px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+        <div><label style="font-size:0.85rem;color:#888;">开始日期</label>
+          <input type="date" id="startDate" onchange="calc()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:4px;"></div>
+        <div><label style="font-size:0.85rem;color:#888;">结束日期</label>
+          <input type="date" id="endDate" onchange="calc()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:4px;"></div>
+      </div>
+      <div id="result1" style="padding:20px;background:#f0f2f5;border-radius:12px;margin-bottom:20px;"></div>
+
+      <h3 style="margin-bottom:12px;">计算N个工作日后的日期</h3>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:12px;margin-bottom:12px;align-items:end;">
+        <div><label style="font-size:0.85rem;color:#888;">起始日期</label>
+          <input type="date" id="startDate2" onchange="calc2()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:4px;"></div>
+        <div><label style="font-size:0.85rem;color:#888;">工作日数</label>
+          <input type="number" id="workdays" value="30" min="1" max="3650" onchange="calc2()" style="width:100px;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:4px;"></div>
+      </div>
+      <div id="result2" style="padding:20px;background:#f0f2f5;border-radius:12px;"></div>
+    </div>
+  </div>
+  <script>
+    function initDates() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('startDate').value = today;
+      document.getElementById('startDate2').value = today;
+      const end = new Date(); end.setMonth(end.getMonth() + 1);
+      document.getElementById('endDate').value = end.toISOString().split('T')[0];
+    }
+    function countWorkdays(start, end) {
+      let count = 0, weekends = 0;
+      const d = new Date(start);
+      while (d <= end) {
+        const day = d.getDay();
+        if (day === 0 || day === 6) weekends++;
+        else count++;
+        d.setDate(d.getDate() + 1);
+      }
+      const totalDays = Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1;
+      return { workdays: count, weekends, totalDays };
+    }
+    function addWorkdays(start, n) {
+      let remaining = n;
+      const d = new Date(start);
+      while (remaining > 0) {
+        d.setDate(d.getDate() + 1);
+        const day = d.getDay();
+        if (day !== 0 && day !== 6) remaining--;
+      }
+      return d;
+    }
+    function calc() {
+      const start = document.getElementById('startDate').value;
+      const end = document.getElementById('endDate').value;
+      if (!start || !end) return;
+      const r = countWorkdays(new Date(start), new Date(end));
+      document.getElementById('result1').innerHTML = `
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+          <div style="text-align:center;padding:12px;background:white;border-radius:8px;"><div style="font-size:0.8rem;color:#888;">总天数</div><div style="font-size:1.4rem;font-weight:800;color:#333;">${r.totalDays}</div></div>
+          <div style="text-align:center;padding:12px;background:white;border-radius:8px;"><div style="font-size:0.8rem;color:#888;">工作日</div><div style="font-size:1.4rem;font-weight:800;color:#4361ee;">${r.workdays}</div></div>
+          <div style="text-align:center;padding:12px;background:white;border-radius:8px;"><div style="font-size:0.8rem;color:#888;">周末</div><div style="font-size:1.4rem;font-weight:800;color:#e67700;">${r.weekends}</div></div>
+        </div>`;
+    }
+    function calc2() {
+      const start = document.getElementById('startDate2').value;
+      const n = parseInt(document.getElementById('workdays').value) || 0;
+      if (!start || n <= 0) return;
+      const target = addWorkdays(new Date(start), n);
+      const dateStr = target.toISOString().split('T')[0];
+      document.getElementById('result2').innerHTML = `
+        <p style="font-size:0.9rem;color:#666;">从 ${start} 起算 <strong>${n}</strong> 个工作日后是：</p>
+        <div style="font-size:1.8rem;font-weight:800;color:#2f9e44;margin-top:8px;">${dateStr}（${['日','一','二','三','四','五','六'][target.getDay()]）</div>`;
+    }
+    initDates();
+    calc();
+    calc2();
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

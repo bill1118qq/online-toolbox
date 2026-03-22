@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON比对 - JSON差异对比工具 - 在线工具箱</title>
+  <meta name="description" content="免费在线JSON比对工具，对比两个JSON数据的差异。支持深度对比、键值对比较，高亮显示新增、修改、删除的字段。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="JSON比对 - JSON差异对比">
+  <meta property="og:description" content="对比两个JSON数据差异，高亮显示。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/json-diff.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/json-diff.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"JSON比对","description":"对比两个JSON数据差异","url":"https://eitools.cn/src/tools/json-diff.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>JSON 比对</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">对比两个 JSON 数据的差异，支持对象和数组的深度比较。</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:900px;">
+      <div><label style="font-size:0.85rem;color:#888;">原始 JSON</label>
+        <textarea id="json1" rows="12" oninput="compare()" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.85rem;resize:vertical;margin-top:4px;">{
+  "name": "张三",
+  "age": 25,
+  "city": "北京",
+  "skills": ["JavaScript", "Python"],
+  "active": true
+}</textarea></div>
+      <div><label style="font-size:0.85rem;color:#888;">修改后 JSON</label>
+        <textarea id="json2" rows="12" oninput="compare()" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.85rem;resize:vertical;margin-top:4px;">{
+  "name": "张三",
+  "age": 26,
+  "city": "上海",
+  "skills": ["JavaScript", "Go", "Python"],
+  "email": "test@example.com",
+  "active": false
+}</textarea></div>
+    </div>
+    <div id="result" style="max-width:900px;margin-top:16px;"></div>
+  </div>
+  <script>
+    function compare() {
+      const el = document.getElementById('result');
+      try {
+        const a = JSON.parse(document.getElementById('json1').value);
+        const b = JSON.parse(document.getElementById('json2').value);
+        const diffs = deepDiff(a, b, '');
+        if (diffs.length === 0) {
+          el.innerHTML = '<div style="padding:16px;background:#e8f5e9;border-radius:12px;color:#2f9e44;font-weight:700;text-align:center;">两个 JSON 完全相同</div>';
+        } else {
+          el.innerHTML = `<div style="margin-bottom:8px;font-size:0.9rem;font-weight:600;">发现 ${diffs.length} 处差异</div>` +
+            diffs.map(d => `<div style="padding:12px;border-radius:8px;margin-bottom:6px;border-left:4px solid ${d.color};background:${d.bg};font-size:0.85rem;">
+              <span style="font-weight:600;">${d.type}</span> <code style="color:#666;">${d.path}</code>
+              <div style="margin-top:4px;"><span style="color:#c92a2a;">旧值：</span><code>${escapeHtml(JSON.stringify(d.oldVal))}</code></div>
+              <div><span style="color:#2f9e44;">新值：</span><code>${escapeHtml(JSON.stringify(d.newVal))}</code></div>
+            </div>`).join('');
+        }
+      } catch(e) {
+        el.innerHTML = `<div style="padding:16px;background:#fee;border-radius:12px;color:#c92a2a;">JSON 解析错误：${escapeHtml(e.message)}</div>`;
+      }
+    }
+    function deepDiff(a, b, path) {
+      const diffs = [];
+      const keysA = Object.keys(a), keysB = Object.keys(b);
+      const allKeys = [...new Set([...keysA, ...keysB])];
+      for (const key of allKeys) {
+        const p = path ? path + '.' + key : key;
+        if (!(key in a)) diffs.push({ type: '新增', path: p, oldVal: undefined, newVal: b[key], color: '#2f9e44', bg: '#e8f5e9' });
+        else if (!(key in b)) diffs.push({ type: '删除', path: p, oldVal: a[key], newVal: undefined, color: '#c92a2a', bg: '#fee' });
+        else if (typeof a[key] !== typeof b[key] || a[key] === null || b[key] === null || typeof a[key] !== 'object') {
+          if (JSON.stringify(a[key]) !== JSON.stringify(b[key])) {
+            diffs.push({ type: '修改', path: p, oldVal: a[key], newVal: b[key], color: '#e67700', bg: '#fff3cd' });
+          }
+        } else {
+          if (Array.isArray(a[key]) && Array.isArray(b[key])) {
+            if (JSON.stringify(a[key]) !== JSON.stringify(b[key])) {
+              diffs.push({ type: '修改', path: p, oldVal: a[key], newVal: b[key], color: '#e67700', bg: '#fff3cd' });
+            }
+          } else {
+            diffs.push(...deepDiff(a[key], b[key], p));
+          }
+        }
+      }
+      return diffs;
+    }
+    function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    compare();
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

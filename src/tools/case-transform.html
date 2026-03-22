@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文本替换 - 批量查找替换 - 在线工具箱</title>
+  <meta name="description" content="免费在线文本替换工具。批量查找替换文本，支持正则表达式、区分大小写、全局替换、预览替换结果。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="文本替换 - 批量查找替换">
+  <meta property="og:description" content="批量文本查找替换，支持正则表达式。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/text-replace.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/text-replace.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"文本替换","description":"批量文本查找替换工具","url":"https://eitools.cn/src/tools/text-replace.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>文本替换</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">批量查找替换文本，支持正则表达式和多种匹配选项。</p>
+    <div style="max-width:900px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:12px;align-items:end;">
+        <div>
+          <label style="font-size:0.85rem;color:#888;">查找内容</label>
+          <input type="text" id="find" oninput="replace()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;font-family:monospace;margin-top:4px;" placeholder="查找...">
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">替换为</label>
+          <input type="text" id="replaceWith" oninput="replace()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;font-family:monospace;margin-top:4px;" placeholder="替换为...">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <label style="font-size:0.8rem;"><input type="checkbox" id="useRegex" onchange="replace()"> 正则</label>
+          <label style="font-size:0.8rem;"><input type="checkbox" id="caseSensitive" checked onchange="replace()"> 区分大小写</label>
+        </div>
+      </div>
+      <div id="matchInfo" style="margin-bottom:8px;font-size:0.85rem;color:#666;"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <label style="font-size:0.85rem;color:#888;">原始文本</label>
+          <textarea id="input" rows="16" oninput="replace()" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.85rem;resize:vertical;margin-top:4px;" placeholder="输入文本...">Hello World, hello JavaScript, hello CSS.
+The quick brown fox jumps over the lazy dog.
+Hello, World! Hello Everyone!</textarea>
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">替换结果</label>
+          <div id="output" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.85rem;min-height:370px;overflow:auto;white-space:pre-wrap;word-wrap:break-word;background:#fafafa;margin-top:4px;"></div>
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <button onclick="copyResult()" style="padding:8px 20px;background:#4361ee;color:white;border:none;border-radius:8px;cursor:pointer;">复制结果</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    let lastResult = '';
+    function replace() {
+      const text = document.getElementById('input').value;
+      const find = document.getElementById('find').value;
+      const replaceWith = document.getElementById('replaceWith').value;
+      const useRegex = document.getElementById('useRegex').checked;
+      const caseSensitive = document.getElementById('caseSensitive').checked;
+      if (!find) {
+        document.getElementById('output').innerHTML = escapeHtml(text);
+        document.getElementById('matchInfo').textContent = '';
+        lastResult = text;
+        return;
+      }
+      let count = 0;
+      let result = '';
+      try {
+        if (useRegex) {
+          const flags = 'g' + (caseSensitive ? '' : 'i');
+          const regex = new RegExp(find, flags);
+          result = text.replace(regex, (match) => { count++; return replaceWith; });
+        } else {
+          if (!caseSensitive) {
+            const lowerText = text.toLowerCase();
+            const lowerFind = find.toLowerCase();
+            let idx = 0, resultParts = [];
+            while (idx < lowerText.length) {
+              const found = lowerText.indexOf(lowerFind, idx);
+              if (found === -1) { resultParts.push(text.slice(idx)); break; }
+              resultParts.push(text.slice(idx, found));
+              resultParts.push(replaceWith);
+              count++;
+              idx = found + find.length;
+            }
+            result = resultParts.join('');
+          } else {
+            result = text.split(find).join(replaceWith);
+            count = (text.length - result.length) / Math.max(1, find.length - replaceWith.length);
+            if (find === replaceWith) count = 0;
+          }
+        }
+      } catch(e) {
+        document.getElementById('output').innerHTML = `<span style="color:#c92a2a;">正则表达式错误: ${escapeHtml(e.message)}</span>`;
+        return;
+      }
+      lastResult = result;
+      document.getElementById('matchInfo').textContent = count > 0 ? `找到 ${count} 处匹配` : '没有找到匹配';
+      const highlighted = escapeHtml(result);
+      document.getElementById('output').innerHTML = highlighted;
+    }
+    function copyResult() { if (lastResult) navigator.clipboard.writeText(lastResult); }
+    function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    replace();
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

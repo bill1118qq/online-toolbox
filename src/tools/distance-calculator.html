@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>距离计算器 - 两地距离/坐标距离 - 在线工具箱</title>
+  <meta name="description" content="在线距离计算器，支持两点坐标距离、经纬度距离（Haversine公式）、地址距离估算。免费使用。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="距离计算器">
+  <meta property="og:description" content="两点坐标距离、经纬度距离计算。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/distance-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/distance-calculator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"距离计算器","url":"https://eitools.cn/src/tools/distance-calculator.html","description":"两点坐标距离和经纬度距离计算。","applicationCategory":"UtilityApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0"}}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>距离计算器</h1>
+    </div>
+
+    <div style="background:white;border-radius:12px;padding:24px;margin-bottom:20px;border:1px solid #eee;">
+      <h3 style="margin-bottom:16px;">平面坐标距离</h3>
+      <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:end;">
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">A点 (x, y)</label>
+          <div style="display:flex;gap:8px;">
+            <input type="number" id="x1" placeholder="x1" step="any" style="flex:1;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+            <input type="number" id="y1" placeholder="y1" step="any" style="flex:1;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+          </div>
+        </div>
+        <div style="padding-bottom:12px;color:#999;font-size:1.5rem;">→</div>
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">B点 (x, y)</label>
+          <div style="display:flex;gap:8px;">
+            <input type="number" id="x2" placeholder="x2" step="any" style="flex:1;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+            <input type="number" id="y2" placeholder="y2" step="any" style="flex:1;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="calcPlane()" style="margin-top:16px;width:100%;">计算距离</button>
+      <div id="planeResult" class="result-box" style="margin-top:12px;padding:16px;font-size:0.95rem;line-height:2;"></div>
+    </div>
+
+    <div style="background:white;border-radius:12px;padding:24px;margin-bottom:20px;border:1px solid #eee;">
+      <h3 style="margin-bottom:16px;">经纬度距离（Haversine公式）</h3>
+      <p style="font-size:0.85rem;color:#999;margin-bottom:12px;">计算地球表面两点之间的球面距离</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:12px;">
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">A点纬度</label>
+          <input type="number" id="lat1" placeholder="如 39.9042（北京）" step="any" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">A点经度</label>
+          <input type="number" id="lon1" placeholder="如 116.4074" step="any" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">B点纬度</label>
+          <input type="number" id="lat2" placeholder="如 31.2304（上海）" step="any" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">B点经度</label>
+          <input type="number" id="lon2" placeholder="如 121.4737" step="any" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="calcGeo()" style="width:100%;">计算地理距离</button>
+      <div id="geoResult" class="result-box" style="margin-top:12px;padding:16px;font-size:0.95rem;line-height:2;"></div>
+    </div>
+
+    <div style="background:white;border-radius:12px;padding:24px;margin-bottom:20px;border:1px solid #eee;">
+      <h3 style="margin-bottom:12px;">常用城市距离</h3>
+      <div id="cityDistances" style="overflow-x:auto;"></div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    function calcPlane() {
+      const x1 = parseFloat(document.getElementById('x1').value);
+      const y1 = parseFloat(document.getElementById('y1').value);
+      const x2 = parseFloat(document.getElementById('x2').value);
+      const y2 = parseFloat(document.getElementById('y2').value);
+      if ([x1,y1,x2,y2].some(v => isNaN(v))) { showToast('请输入有效坐标'); return; }
+
+      const dx = x2 - x1;
+      const dy = y2 - y1;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      document.getElementById('planeResult').innerHTML =
+        `<b>欧氏距离：</b>${dist.toFixed(4)}<br>` +
+        `<b>曼哈顿距离：</b>${Math.abs(dx) + Math.abs(dy)}<br>` +
+        `<b>dx：</b>${dx.toFixed(4)}，<b>dy：</b>${dy.toFixed(4)}`;
+    }
+
+    function haversine(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function calcGeo() {
+      const lat1 = parseFloat(document.getElementById('lat1').value);
+      const lon1 = parseFloat(document.getElementById('lon1').value);
+      const lat2 = parseFloat(document.getElementById('lat2').value);
+      const lon2 = parseFloat(document.getElementById('lon2').value);
+      if ([lat1,lon1,lat2,lon2].some(v => isNaN(v))) { showToast('请输入有效经纬度'); return; }
+
+      const km = haversine(lat1, lon1, lat2, lon2);
+      const mi = km * 0.621371;
+
+      document.getElementById('geoResult').innerHTML =
+        `<b>距离：</b><span style="font-size:1.2em;color:#4361ee;font-weight:bold;">${km.toFixed(2)} 公里</span><br>` +
+        `≈ ${mi.toFixed(2)} 英里<br>` +
+        `≈ ${(km / 1.852).toFixed(2)} 海里`;
+    }
+
+    // 常用城市距离表
+    const CITIES = {
+      '北京': [39.9042, 116.4074], '上海': [31.2304, 121.4737], '广州': [23.1291, 113.2644],
+      '深圳': [22.5431, 114.0579], '成都': [30.5728, 104.0668], '杭州': [30.2741, 120.1551],
+      '武汉': [30.5928, 114.3055], '西安': [34.3416, 108.9398], '南京': [32.0603, 118.7969],
+      '重庆': [29.4316, 106.9123], '天津': [39.3434, 117.3616], '苏州': [31.2990, 120.5853]
+    };
+
+    function renderCityTable() {
+      const pairs = [['北京','上海'],['北京','广州'],['上海','广州'],['北京','成都'],['上海','杭州'],['北京','西安']];
+      let html = '<table style="width:100%;border-collapse:collapse;font-size:0.9rem;">';
+      html += '<tr style="background:#f0f2f5;"><th style="padding:10px;text-align:left;">出发</th><th style="padding:10px;text-align:left;">到达</th><th style="padding:10px;text-align:right;">距离(公里)</th></tr>';
+      pairs.forEach(([a, b]) => {
+        const [la1, lo1] = CITIES[a], [la2, lo2] = CITIES[b];
+        const d = haversine(la1, lo1, la2, lo2);
+        html += `<tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">${a}</td><td style="padding:8px 10px;">${b}</td><td style="padding:8px 10px;text-align:right;font-weight:bold;">${d.toFixed(0)} km</td></tr>`;
+      });
+      html += '</table>';
+      document.getElementById('cityDistances').innerHTML = html;
+    }
+
+    renderCityTable();
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>词频统计 - 单词频率分析 - 在线工具箱</title>
+  <meta name="description" content="免费在线词频统计工具。统计文本中每个单词或汉字出现的频率，支持中英文词频分析、排序、导出。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="词频统计 - 单词频率分析">
+  <meta property="og:description" content="中英文词频统计与分析工具。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/word-frequency.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/word-frequency.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"词频统计","description":"中英文词频统计与分析","url":"https://eitools.cn/src/tools/word-frequency.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>词频统计</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">统计文本中每个词/字的出现频率，支持中英文分析。</p>
+    <div style="max-width:900px;">
+      <div style="margin-bottom:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <label style="font-size:0.85rem;">模式：</label>
+        <select id="mode" onchange="analyze()" style="padding:6px 12px;border:1px solid #ddd;border-radius:6px;">
+          <option value="char">按字符统计</option>
+          <option value="word">按英文单词</option>
+          <option value="both">分别统计</option>
+        </select>
+        <label style="font-size:0.85rem;margin-left:12px;">最少出现次数：</label>
+        <input type="number" id="minCount" value="1" min="1" style="width:60px;padding:6px;border:1px solid #ddd;border-radius:6px;" onchange="analyze()">
+      </div>
+      <textarea id="input" rows="8" oninput="analyze()" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:0.9rem;resize:vertical;margin-bottom:12px;" placeholder="输入或粘贴文本...">人工智能是计算机科学的一个分支，它企图了解智能的实质，并生产出一种新的能以人类智能相似的方式做出反应的智能机器。人工智能的研究包括机器人、语言识别、图像识别、自然语言处理和专家系统等。</textarea>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <h3 style="margin-bottom:8px;">统计结果 <span id="totalInfo" style="font-weight:400;color:#888;font-size:0.85rem;"></span></h3>
+          <div id="result" style="max-height:400px;overflow-y:auto;"></div>
+        </div>
+        <div>
+          <h3 style="margin-bottom:8px;">词频分布图</h3>
+          <div id="chart" style="max-height:400px;overflow-y:auto;"></div>
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <button onclick="exportCSV()" style="padding:8px 20px;background:#4361ee;color:white;border:none;border-radius:8px;cursor:pointer;font-size:0.9rem;">导出 CSV</button>
+        <button onclick="document.getElementById('input').value='';analyze()" style="padding:8px 20px;background:#dee2e6;color:#333;border:none;border-radius:8px;cursor:pointer;font-size:0.9rem;">清空</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    let lastResults = [];
+    function analyze() {
+      const text = document.getElementById('input').value;
+      if (!text.trim()) { document.getElementById('result').innerHTML = ''; document.getElementById('chart').innerHTML = ''; document.getElementById('totalInfo').textContent = ''; lastResults = []; return; }
+      const mode = document.getElementById('mode').value;
+      const minCount = parseInt(document.getElementById('minCount').value) || 1;
+      const freq = {};
+      if (mode === 'char' || mode === 'both') {
+        for (const ch of text) {
+          if (/\s/.test(ch)) continue;
+          freq[ch] = (freq[ch] || 0) + 1;
+        }
+      }
+      if (mode === 'word' || mode === 'both') {
+        const words = text.match(/[a-zA-Z]+/g) || [];
+        words.forEach(w => { const lw = w.toLowerCase(); freq[lw] = (freq[lw] || 0) + 1; });
+      }
+      lastResults = Object.entries(freq)
+        .filter(([_, c]) => c >= minCount)
+        .sort((a, b) => b[1] - a[1]);
+      const total = lastResults.reduce((s, [_, c]) => s + c, 0);
+      document.getElementById('totalInfo').textContent = `共 ${lastResults.length} 个词，总出现 ${total} 次`;
+      document.getElementById('result').innerHTML = lastResults.map(([word, count], i) =>
+        `<div style="display:flex;justify-content:space-between;padding:6px 10px;border-bottom:1px solid #f0f0f0;font-size:0.85rem;">
+          <span><span style="color:#888;width:30px;display:inline-block;">${i+1}.</span> <strong>${escapeHtml(word)}</strong></span>
+          <span><span style="color:#4361ee;font-weight:600;">${count}</span> <span style="color:#bbb;">(${(count/total*100).toFixed(1)}%)</span></span>
+        </div>`).join('');
+      const maxCount = lastResults.length > 0 ? lastResults[0][1] : 1;
+      document.getElementById('chart').innerHTML = lastResults.slice(0, 30).map(([word, count]) =>
+        `<div style="margin-bottom:4px;">
+          <div style="display:flex;justify-content:space-between;font-size:0.8rem;">
+            <span>${escapeHtml(word)}</span><span style="color:#888;">${count}</span>
+          </div>
+          <div style="height:16px;background:#e9ecef;border-radius:4px;overflow:hidden;">
+            <div style="height:100%;width:${count/maxCount*100}%;background:linear-gradient(90deg,#4361ee,#7b93f5);border-radius:4px;transition:width 0.3s;"></div>
+          </div>
+        </div>`).join('');
+    }
+    function exportCSV() {
+      if (!lastResults.length) return;
+      const csv = '\uFEFF词/字,次数,占比\n' + lastResults.map(([w,c]) => `${w},${c},${(c/lastResults.reduce((s,[_,cc])=>s+cc,0)*100).toFixed(1)}%`).join('\n');
+      const blob = new Blob([csv], {type:'text/csv'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'word-frequency.csv';
+      a.click();
+    }
+    function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    analyze();
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

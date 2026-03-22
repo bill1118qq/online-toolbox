@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>股票收益率计算方法 - 持仓盈亏年化收益教程 - 在线工具箱</title>
+  <meta name="description" content="股票收益率计算完整教程：如何计算持仓盈亏、年化收益率、定投收益。含A股手续费计算、常见收益率公式。附在线计算器。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="股票收益率计算教程">
+  <meta property="og:description" content="持仓盈亏、年化收益、定投收益计算方法详解。">
+  <meta property="og:url" content="https://eitools.cn/guides/stock-guide.html">
+  <link rel="canonical" href="https://eitools.cn/guides/stock-guide.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type": "Question", "name": "股票收益率怎么算？", "acceptedAnswer": {"@type": "Answer", "text": "股票收益率 = (当前市值 - 总成本) / 总成本 × 100%。总成本包括买入价格×数量+手续费。例如：买入价15元，1000股，手续费5元，当前价18元，收益率 = (18000-15005)/15005 × 100% = 19.99%。"}},
+      {"@type": "Question", "name": "年化收益率怎么计算？", "acceptedAnswer": {"@type": "Answer", "text": "年化收益率 = (1+总收益率)^(365/持有天数) - 1。例如持有6个月（180天）赚了10%，年化收益率 = (1+0.1)^(365/180) - 1 ≈ 21.67%。"}},
+      {"@type": "Question", "name": "A股交易有哪些费用？", "acceptedAnswer": {"@type": "Answer", "text": "A股交易费用包括：佣金（买卖各收，一般万2.5，最低5元）、印花税（仅卖出时收，千分之0.5）、过户费（沪市万分之一）。买入总费用 ≈ 成交金额×佣金率，卖出总费用 ≈ 成交金额×(佣金率+印花税率)。"}}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">← 返回首页</a>
+      <h1>股票收益率计算教程</h1>
+    </div>
+
+    <article style="line-height:1.8;">
+      <h2>什么是股票收益率？</h2>
+      <p>股票收益率是衡量投资股票盈利能力的指标，表示投入资金相对于收益的比率。它帮助投资者评估投资表现和决策效果。</p>
+
+      <h2>基础收益率计算</h2>
+      <div style="background:#f0f2f5;padding:16px;border-radius:8px;margin:12px 0;">
+        <b>收益率 = (当前市值 - 总投入成本) / 总投入成本 × 100%</b>
+      </div>
+      <p>举例：买入某股票1000股，买入价15元/股，手续费5元：</p>
+      <ul>
+        <li>总成本 = 15 × 1000 + 5 = 15005元</li>
+        <li>当前价18元，市值 = 18 × 1000 = 18000元</li>
+        <li>收益率 = (18000 - 15005) / 15005 × 100% ≈ 19.96%</li>
+      </ul>
+
+      <h2>A股交易费用</h2>
+      <table style="width:100%;border-collapse:collapse;margin:12px 0;font-size:0.9rem;">
+        <tr style="background:#f0f2f5;"><th style="padding:10px;text-align:left;">费用项目</th><th style="padding:10px;">买入</th><th style="padding:10px;">卖出</th><th style="padding:10px;">费率</th></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">券商佣金</td><td style="padding:8px 10px;text-align:center;">✓</td><td style="padding:8px 10px;text-align:center;">✓</td><td style="padding:8px 10px;text-align:center;">≤万3，最低5元</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">印花税</td><td style="padding:8px 10px;text-align:center;">✗</td><td style="padding:8px 10px;text-align:center;">✓</td><td style="padding:8px 10px;text-align:center;">千分之0.5</td></tr>
+        <tr><td style="padding:8px 10px;">过户费</td><td style="padding:8px 10px;text-align:center;">✓</td><td style="padding:8px 10px;text-align:center;">✓</td><td style="padding:8px 10px;text-align:center;">十万分之一</td></tr>
+      </table>
+
+      <h2>年化收益率计算</h2>
+      <p>年化收益率将不同持有期的收益率标准化为年度收益，便于比较：</p>
+      <div style="background:#f0f2f5;padding:16px;border-radius:8px;margin:12px 0;">
+        <b>年化收益率 = (1 + 总收益率) ^ (365 / 持有天数) - 1</b>
+      </div>
+      <p>举例：持有6个月（180天），总收益率为10%：</p>
+      <p>年化收益率 = (1.1)^(365/180) - 1 ≈ 21.67%</p>
+
+      <h2>定投收益率计算</h2>
+      <p>基金定投是最常见的投资方式，收益计算使用<strong>复利公式</strong>：</p>
+      <div style="background:#f0f2f5;padding:16px;border-radius:8px;margin:12px 0;">
+        <b>总价值 = 月投入 × [(1+月收益率)^期数 - 1] / 月收益率 × (1+月收益率)</b>
+      </div>
+
+      <h2>常见问题</h2>
+      <h3>手续费对收益有多大影响？</h3>
+      <p>以佣金万2.5计算，单次交易手续费约为成交金额的0.025%。对于短线频繁交易者，手续费累积可能达到3%-5%，显著侵蚀利润。因此短线交易需要更大的价格波动才能盈利。</p>
+
+      <h3>如何降低交易成本？</h3>
+      <ol>
+        <li>选择低佣金券商（目前很多万1.5甚至更低）</li>
+        <li>减少交易频次，避免频繁买卖</li>
+        <li>单笔交易金额越大，佣金费率占比越低</li>
+        <li>使用限价单而非市价单，精确控制成交价格</li>
+      </ol>
+
+      <div style="margin-top:24px;padding:20px;background:#f0f4ff;border-radius:12px;border:1px solid #4361ee;">
+        <h3 style="color:#4361ee;margin-top:0;">在线股票收益率计算器</h3>
+        <p>使用我们的<a href="../src/tools/stock-return.html" style="color:#4361ee;font-weight:bold;">股票收益率计算器</a>，自动计算持仓盈亏、年化收益率、交易费用，支持定投收益模拟。</p>
+      </div>
+    </article>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../js/share.js"></script>
+</body>
+</html>

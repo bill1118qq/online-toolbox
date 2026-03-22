@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unicode字符查询 - Unicode编码转换 - 在线工具箱</title>
+  <meta name="description" content="免费在线Unicode字符查询工具。搜索Unicode字符，查看编码、名称、分类。支持字符与Unicode编码互转。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="Unicode字符查询 - 编码转换">
+  <meta property="og:description" content="Unicode字符搜索、编码转换工具。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/unicode-search.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/unicode-search.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"Unicode字符查询","description":"Unicode字符搜索和编码转换工具","url":"https://eitools.cn/src/tools/unicode-search.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>Unicode 字符查询</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">搜索 Unicode 字符，查看编码信息，支持字符与编码互转。</p>
+    <div style="max-width:900px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+        <div>
+          <label style="font-size:0.85rem;color:#888;">字符转 Unicode</label>
+          <input type="text" id="charInput" placeholder="输入字符..." oninput="charToUnicode()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:1rem;margin-top:4px;">
+          <div id="charResult" style="margin-top:8px;font-family:monospace;font-size:0.85rem;min-height:60px;background:#f8f9fa;padding:12px;border-radius:8px;"></div>
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">Unicode 转字符</label>
+          <input type="text" id="unicodeInput" placeholder="如：4E2D 或 U+4E2D 或 \\u4E2D" oninput="unicodeToChar()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:1rem;margin-top:4px;">
+          <div id="unicodeResult" style="margin-top:8px;font-size:0.85rem;min-height:60px;background:#f8f9fa;padding:12px;border-radius:8px;"></div>
+        </div>
+      </div>
+      <h3 style="margin-bottom:12px;">常用 Unicode 区间</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
+        <button onclick="showRange('4E00','9FFF','基本汉字')" style="padding:6px 14px;background:#e8f4fd;border:1px solid #b6d4fe;border-radius:20px;cursor:pointer;font-size:0.85rem;">基本汉字</button>
+        <button onclick="showRange('3000','303F','CJK符号')" style="padding:6px 14px;background:#e8f4fd;border:1px solid #b6d4fe;border-radius:20px;cursor:pointer;font-size:0.85rem;">CJK符号</button>
+        <button onclick="showRange('FF00','FFEF','半角/全角')" style="padding:6px 14px;background:#e8f4fd;border:1px solid #b6d4fe;border-radius:20px;cursor:pointer;font-size:0.85rem;">半角/全角</button>
+        <button onclick="showRange('20A0','20CF','货币符号')" style="padding:6px 14px;background:#e8f4fd;border:1px solid #b6d4fe;border-radius:20px;cursor:pointer;font-size:0.85rem;">货币符号</button>
+        <button onclick="showRange('2600','26FF','杂项符号')" style="padding:6px 14px;background:#e8f4fd;border:1px solid #b6d4fe;border-radius:20px;cursor:pointer;font-size:0.85rem;">杂项符号</button>
+        <button onclick="showRange('1F600','1F64F','表情')" style="padding:6px 14px;background:#e8f4fd;border:1px solid #b6d4fe;border-radius:20px;cursor:pointer;font-size:0.85rem;">表情符号</button>
+        <button onclick="showRange('0041','005A','大写字母')" style="padding:6px 14px;background:#e8f4fd;border:1px solid #b6d4fe;border-radius:20px;cursor:pointer;font-size:0.85rem;">大写字母A-Z</button>
+        <button onclick="showRange('0061','007A','小写字母')" style="padding:6px 14px;background:#e8f4fd;border:1px solid #b6d4fe;border-radius:20px;cursor:pointer;font-size:0.85rem;">小写字母a-z</button>
+        <button onclick="showRange('0030','0039','数字')" style="padding:6px 14px;background:#e8f4fd;border:1px solid #b6d4fe;border-radius:20px;cursor:pointer;font-size:0.85rem;">数字0-9</button>
+        <button onclick="showRange('2000','206F','通用标点')" style="padding:6px 14px;background:#e8f4fd;border:1px solid #b6d4fe;border-radius:20px;cursor:pointer;font-size:0.85rem;">通用标点</button>
+      </div>
+      <div id="rangeGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:4px;max-height:400px;overflow-y:auto;"></div>
+    </div>
+  </div>
+  <script>
+    function charToUnicode() {
+      const str = document.getElementById('charInput').value;
+      if (!str) { document.getElementById('charResult').innerHTML = ''; return; }
+      let html = '';
+      for (const ch of str) {
+        const cp = ch.codePointAt(0);
+        html += `<div style="margin-bottom:6px;padding:6px;background:white;border-radius:6px;">
+          <span style="font-size:1.5rem;">${escapeHtml(ch)}</span><br>
+          <span style="color:#4361ee;">U+${cp.toString(16).toUpperCase().padStart(4,'0')}</span>
+          <span style="color:#888;">(${cp})</span><br>
+          <span style="color:#666;font-size:0.8rem;">\\u${cp.toString(16).toUpperCase().padStart(4,'0')} | &amp;#${cp};</span>
+          <button onclick="navigator.clipboard.writeText('U+${cp.toString(16).toUpperCase().padStart(4,'0')}')" style="float:right;padding:2px 8px;font-size:0.75rem;background:#e8f4fd;border:none;border-radius:4px;cursor:pointer;">复制</button>
+        </div>`;
+      }
+      document.getElementById('charResult').innerHTML = html;
+    }
+    function unicodeToChar() {
+      const input = document.getElementById('unicodeInput').value.trim();
+      if (!input) { document.getElementById('unicodeResult').innerHTML = ''; return; }
+      let cp;
+      const cleaned = input.replace(/[^0-9A-Fa-f]/g, '');
+      if (cleaned) {
+        cp = parseInt(cleaned, 16);
+        if (cp > 0x10FFFF || isNaN(cp)) {
+          document.getElementById('unicodeResult').innerHTML = '<span style="color:#c92a2a;">无效的 Unicode 编码</span>';
+          return;
+        }
+        const ch = String.fromCodePoint(cp);
+        document.getElementById('unicodeResult').innerHTML = `<div style="font-size:2rem;">${ch}</div>
+          <div style="margin-top:8px;color:#4361ee;">U+${cp.toString(16).toUpperCase().padStart(4,'0')} (${cp})</div>
+          <button onclick="navigator.clipboard.writeText('${ch}')" style="margin-top:8px;padding:6px 16px;background:#4361ee;color:white;border:none;border-radius:6px;cursor:pointer;">复制字符</button>`;
+      }
+    }
+    function showRange(start, end, name) {
+      const s = parseInt(start, 16), e = parseInt(end, 16);
+      const count = Math.min(e - s + 1, 500);
+      let html = '';
+      for (let i = 0; i < count; i++) {
+        const cp = s + i;
+        try {
+          const ch = String.fromCodePoint(cp);
+          html += `<div onclick="navigator.clipboard.writeText('${ch.replace(/'/g,"\\'")}')" title="U+${cp.toString(16).toUpperCase().padStart(4,'0')}" style="text-align:center;padding:6px;background:white;border-radius:4px;cursor:pointer;font-size:1.2rem;border:1px solid #eee;">${escapeHtml(ch)}<div style="font-size:0.6rem;color:#999;">${cp.toString(16).toUpperCase()}</div></div>`;
+        } catch(e) {}
+      }
+      document.getElementById('rangeGrid').innerHTML = html;
+    }
+    function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

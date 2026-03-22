@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>倒数日计算器 - 纪念日倒计时 - 在线工具箱</title>
+  <meta name="description" content="倒数日计算器：计算距离某个日期还有多少天，支持纪念日、考试倒计时、生日倒计时。自动保存到本地，每次打开即可查看。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="倒数日计算器">
+  <meta property="og:description" content="纪念日倒计时、考试倒计时、生日倒计时工具。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/countdown-day.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/countdown-day.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"倒数日计算器","description":"计算距某个日期的天数，纪念日倒计时","url":"https://eitools.cn/src/tools/countdown-day.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+  <style>
+    .event-card { padding:16px;background:white;border-radius:12px;border:1px solid #eee;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;transition:box-shadow .2s; }
+    .event-card:hover { box-shadow:0 2px 12px rgba(0,0,0,0.08); }
+    .event-card .days { font-size:2rem;font-weight:bold;min-width:100px;text-align:center; }
+    .event-card .days.positive { color:#4361ee; }
+    .event-card .days.negative { color:#f44336; }
+    .event-card .days.today { color:#2e7d32; }
+    .event-card .info { flex:1;margin:0 16px; }
+    .event-card .info h3 { margin:0 0 4px;font-size:1rem; }
+    .event-card .info p { margin:0;font-size:0.8rem;color:#888; }
+    .btn-del { padding:6px 12px;background:#fee;border:1px solid #fcc;border-radius:6px;color:#c00;cursor:pointer;font-size:0.8rem; }
+    .btn-del:hover { background:#fdd; }
+    .preset-btn { padding:6px 14px;background:#f0f2f5;border:1px solid #ddd;border-radius:20px;cursor:pointer;font-size:0.85rem;white-space:nowrap; }
+    .preset-btn:hover { background:#e3f2fd;border-color:#4361ee;color:#4361ee; }
+  </style>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>倒数日计算器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">添加重要日期，实时查看倒计时。数据保存在浏览器本地。</p>
+    <div style="max-width:700px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;margin-bottom:16px;align-items:end;">
+        <div>
+          <label style="font-size:0.8rem;color:#888;">事件名称</label>
+          <input type="text" id="eventName" placeholder="例：春节" maxlength="30" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;">
+        </div>
+        <div>
+          <label style="font-size:0.8rem;color:#888;">目标日期</label>
+          <input type="date" id="eventDate" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;">
+        </div>
+        <div>
+          <label style="font-size:0.8rem;color:#888;">类型</label>
+          <select id="eventType" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;">
+            <option value="countdown">倒计时</option>
+            <option value="elapsed">已过去</option>
+            <option value="yearly">每年重复</option>
+          </select>
+        </div>
+        <button onclick="addEvent()" style="padding:10px 20px;background:#4361ee;color:white;border:none;border-radius:8px;cursor:pointer;white-space:nowrap;">添加</button>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="font-size:0.8rem;color:#888;">快速添加</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+          <button class="preset-btn" onclick="addPreset('元旦','01-01','yearly')">元旦</button>
+          <button class="preset-btn" onclick="addPreset('情人节','02-14','yearly')">情人节</button>
+          <button class="preset-btn" onclick="addPreset('劳动节','05-01','yearly')">劳动节</button>
+          <button class="preset-btn" onclick="addPreset('国庆节','10-01','yearly')">国庆节</button>
+          <button class="preset-btn" onclick="addPreset('圣诞节','12-25','yearly')">圣诞节</button>
+        </div>
+      </div>
+      <div id="eventList"></div>
+      <div id="empty" style="text-align:center;padding:40px;color:#999;">
+        <div style="font-size:3rem;margin-bottom:12px;">📅</div>
+        <p>还没有添加倒数日，快来添加吧</p>
+      </div>
+    </div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    var events = JSON.parse(localStorage.getItem('countdown_events') || '[]');
+
+    function getDaysDiff(targetDate, type) {
+      var now = new Date();
+      now.setHours(0,0,0,0);
+      var target = new Date(targetDate);
+      target.setHours(0,0,0,0);
+
+      if (type === 'yearly') {
+        var thisYear = new Date(now.getFullYear(), target.getMonth(), target.getDate());
+        if (thisYear < now) {
+          thisYear.setFullYear(now.getFullYear() + 1);
+        }
+        var diff = Math.ceil((thisYear - now) / 86400000);
+        return { days: diff, target: thisYear, label: thisYear.getFullYear() + '年' };
+      }
+
+      var diff = Math.ceil((target - now) / 86400000);
+      return { days: diff, target: target, label: '' };
+    }
+
+    function render() {
+      var list = document.getElementById('eventList');
+      var empty = document.getElementById('empty');
+
+      if (events.length === 0) {
+        list.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+
+      var html = '';
+      for (var i = 0; i < events.length; i++) {
+        var ev = events[i];
+        var result = getDaysDiff(ev.date, ev.type);
+        var cssClass = result.days === 0 ? 'today' : (result.days > 0 ? 'positive' : 'negative');
+        var text = '';
+        if (result.days === 0) text = '就是今天!';
+        else if (result.days > 0) text = result.days + ' 天';
+        else text = '已过 ' + Math.abs(result.days) + ' 天';
+        var typeText = ev.type === 'countdown' ? '倒计时' : (ev.type === 'elapsed' ? '正计时' : '每年');
+
+        html += '<div class="event-card">';
+        html += '<div class="days ' + cssClass + '">' + text + '</div>';
+        html += '<div class="info">';
+        html += '<h3>' + escapeHtml(ev.name) + '</h3>';
+        html += '<p>' + ev.date + (result.label ? ' (' + result.label + ')' : '') + ' · ' + typeText + '</p>';
+        html += '</div>';
+        html += '<button class="btn-del" onclick="removeEvent(' + i + ')">删除</button>';
+        html += '</div>';
+      }
+      list.innerHTML = html;
+    }
+
+    function escapeHtml(str) {
+      var div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function addEvent() {
+      var name = document.getElementById('eventName').value.trim();
+      var date = document.getElementById('eventDate').value;
+      var type = document.getElementById('eventType').value;
+      if (!name || !date) { alert('请填写名称和日期'); return; }
+      events.push({ name: name, date: date, type: type });
+      localStorage.setItem('countdown_events', JSON.stringify(events));
+      document.getElementById('eventName').value = '';
+      render();
+    }
+
+    function addPreset(name, monthDay, type) {
+      var year = new Date().getFullYear();
+      var date = year + '-' + monthDay;
+      for (var i = 0; i < events.length; i++) {
+        if (events[i].name === name && events[i].type === type) return;
+      }
+      events.push({ name: name, date: date, type: type });
+      localStorage.setItem('countdown_events', JSON.stringify(events));
+      render();
+    }
+
+    function removeEvent(index) {
+      events.splice(index, 1);
+      localStorage.setItem('countdown_events', JSON.stringify(events));
+      render();
+    }
+
+    render();
+    setInterval(render, 60000);
+  </script>
+</body>
+</html>

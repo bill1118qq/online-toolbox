@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>电费计算器 - 电费多少 - 在线工具箱</title>
+  <meta name="description" content="免费在线电费计算器。根据用电量、电价计算电费，支持阶梯电价、峰谷电价。查看各省市电价标准。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="电费计算器 - 电费多少">
+  <meta property="og:description" content="在线电费计算，支持阶梯电价。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/electricity-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/electricity-calculator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"电费计算器","description":"在线电费阶梯电价计算","url":"https://eitools.cn/src/tools/electricity-calculator.html","applicationCategory":"FinanceApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>电费计算器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">根据用电量计算电费，支持阶梯电价模式。</p>
+    <div style="max-width:700px;">
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+        <label style="font-size:0.85rem;">计费模式：</label>
+        <select id="mode" onchange="calc()" style="padding:6px 12px;border:1px solid #ddd;border-radius:6px;">
+          <option value="居民阶梯">居民阶梯电价</option>
+          <option value="uniform">统一电价</option>
+          <option value="custom">自定义阶梯</option>
+        </select>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+        <div>
+          <label style="font-size:0.85rem;color:#888;">用电量（度/kWh）</label>
+          <input type="number" id="usage" value="300" step="1" oninput="calc()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:1rem;margin-top:4px;">
+        </div>
+        <div id="uniformWrap">
+          <label style="font-size:0.85rem;color:#888;">电价（元/度）</label>
+          <input type="number" id="unitPrice" value="0.56" step="0.01" oninput="calc()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:1rem;margin-top:4px;">
+        </div>
+      </div>
+      <div id="tierInfo" style="padding:16px;background:#f8f9fa;border-radius:12px;margin-bottom:16px;font-size:0.85rem;"></div>
+      <div id="result" style="padding:20px;background:#e8f4fd;border-radius:12px;text-align:center;margin-bottom:20px;"></div>
+      <div id="customTiers" style="display:none;margin-bottom:16px;">
+        <h3 style="margin-bottom:8px;">自定义阶梯设置</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:0.85rem;">
+          <div><label>度数上限</label><input type="number" id="t1" value="170" style="width:100%;padding:6px;border:1px solid #ddd;border-radius:6px;margin-top:4px;" oninput="calc()"></div>
+          <div><label>度数上限</label><input type="number" id="t2" value="260" style="width:100%;padding:6px;border:1px solid #ddd;border-radius:6px;margin-top:4px;" oninput="calc()"></div>
+          <div><label>超出部分</label><div style="padding:6px;margin-top:4px;color:#888;">超出不计上限</div></div>
+          <div><label>第一档电价</label><input type="number" id="p1" value="0.52" step="0.01" style="width:100%;padding:6px;border:1px solid #ddd;border-radius:6px;margin-top:4px;" oninput="calc()"></div>
+          <div><label>第二档电价</label><input type="number" id="p2" value="0.57" step="0.01" style="width:100%;padding:6px;border:1px solid #ddd;border-radius:6px;margin-top:4px;" oninput="calc()"></div>
+          <div><label>第三档电价</label><input type="number" id="p3" value="0.82" step="0.01" style="width:100%;padding:6px;border:1px solid #ddd;border-radius:6px;margin-top:4px;" oninput="calc()"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function calc() {
+      const mode = document.getElementById('mode').value;
+      const usage = parseFloat(document.getElementById('usage').value) || 0;
+      document.getElementById('customTiers').style.display = mode === 'custom' ? 'block' : 'none';
+      document.getElementById('uniformWrap').style.display = mode === 'uniform' ? 'block' : 'none';
+      let total = 0, details = [];
+      if (mode === 'uniform') {
+        const price = parseFloat(document.getElementById('unitPrice').value) || 0;
+        total = usage * price;
+        details.push({range:'全部',kwh:usage,price,total:total});
+      } else {
+        const tiers = mode === 'custom' ? {
+          limits: [parseFloat(document.getElementById('t1').value), parseFloat(document.getElementById('t2').value)],
+          prices: [parseFloat(document.getElementById('p1').value), parseFloat(document.getElementById('p2').value), parseFloat(document.getElementById('p3').value)]
+        } : {
+          limits: [170, 260],
+          prices: [0.52, 0.57, 0.82]
+        };
+        let remaining = usage;
+        let prev = 0;
+        tiers.limits.forEach((limit, i) => {
+          const tierUsage = Math.min(remaining, limit - prev);
+          if (tierUsage > 0) {
+            const tierCost = tierUsage * tiers.prices[i];
+            total += tierCost;
+            details.push({range: `${prev+1}-${limit}度`, kwh: tierUsage, price: tiers.prices[i], total: tierCost});
+            remaining -= tierUsage;
+          }
+          prev = limit;
+        });
+        if (remaining > 0) {
+          const cost = remaining * tiers.prices[2];
+          total += cost;
+          details.push({range: `${prev+1}度以上`, kwh: remaining, price: tiers.prices[2], total: cost});
+        }
+      }
+      document.getElementById('tierInfo').innerHTML = details.map(d =>
+        `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #eee;">
+          <span>${d.range} × ${d.kwh}度 × ¥${d.price}</span>
+          <span style="font-weight:600;">¥${d.total.toFixed(2)}</span>
+        </div>`).join('');
+      document.getElementById('result').innerHTML = `
+        <div style="font-size:0.9rem;color:#888;">预计电费</div>
+        <div style="font-size:2.5rem;font-weight:700;color:#4361ee;">¥${total.toFixed(2)}</div>
+        <div style="font-size:0.85rem;color:#888;">${usage}度 · 均价 ¥${(total/usage).toFixed(3)}/度</div>`;
+    }
+    calc();
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

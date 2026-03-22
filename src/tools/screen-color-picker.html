@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>屏幕取色器 - 像素颜色提取 - 在线工具箱</title>
+  <meta name="description" content="免费在线屏幕取色器。从网页中提取任意位置的颜色值，支持HEX/RGB/HSL格式，一键复制。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="屏幕取色器 - 像素颜色提取">
+  <meta property="og:description" content="在线屏幕取色，提取任意位置颜色。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/screen-color-picker.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/screen-color-picker.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"屏幕取色器","description":"从网页中提取颜色值","url":"https://eitools.cn/src/tools/screen-color-picker.html","applicationCategory":"DesignerApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>屏幕取色器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">点击页面上的图片或区域来提取颜色。支持上传图片取色。</p>
+    <div style="max-width:800px;">
+      <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+        <label style="padding:8px 20px;background:#4361ee;color:white;border:none;border-radius:8px;cursor:pointer;">
+          上传图片取色
+          <input type="file" id="fileInput" accept="image/*" onchange="loadImage(event)" style="display:none;">
+        </label>
+        <button onclick="useGradient()" style="padding:8px 20px;background:#6c757d;color:white;border:none;border-radius:8px;cursor:pointer;">使用示例渐变</button>
+      </div>
+      <div id="canvasWrap" style="position:relative;margin-bottom:16px;border:1px solid #ddd;border-radius:12px;overflow:hidden;min-height:300px;background:repeating-conic-gradient(#e9ecef 0% 25%, #fff 0% 50%) 50%/20px 20px;">
+        <canvas id="canvas" style="display:block;cursor:crosshair;"></canvas>
+        <div id="magnifier" style="position:absolute;width:80px;height:80px;border-radius:50%;border:3px solid #4361ee;display:none;pointer-events:none;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.3);"></div>
+      </div>
+      <div id="colorInfo" style="display:grid;grid-template-columns:1fr 1fr auto;gap:16px;align-items:center;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div id="colorPreview" style="width:60px;height:60px;border-radius:12px;background:#4361ee;border:2px solid #ddd;"></div>
+          <div>
+            <div id="hexVal" style="font-family:monospace;font-size:1.2rem;font-weight:700;">#4361EE</div>
+            <div id="rgbVal" style="font-family:monospace;font-size:0.85rem;color:#888;">rgb(67, 97, 238)</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:0.85rem;color:#888;margin-bottom:4px;">HSL</div>
+          <div id="hslVal" style="font-family:monospace;font-size:0.9rem;">hsl(229, 84%, 60%)</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button onclick="copyColor('hex')" style="padding:6px 12px;background:#4361ee;color:white;border:none;border-radius:6px;cursor:pointer;font-size:0.85rem;">复制HEX</button>
+          <button onclick="copyColor('rgb')" style="padding:6px 12px;background:#495057;color:white;border:none;border-radius:6px;cursor:pointer;font-size:0.85rem;">复制RGB</button>
+        </div>
+      </div>
+      <div id="history" style="margin-top:20px;">
+        <h3 style="margin-bottom:8px;">取色历史</h3>
+        <div id="historyColors" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    let canvas, ctx, imgData, history = [];
+    function init() {
+      canvas = document.getElementById('canvas');
+      ctx = canvas.getContext('2d', { willReadFrequently: true });
+      canvas.addEventListener('mousemove', onMove);
+      canvas.addEventListener('click', onClick);
+      canvas.addEventListener('mouseleave', () => document.getElementById('magnifier').style.display = 'none');
+      useGradient();
+    }
+    function useGradient() {
+      canvas.width = 760;
+      canvas.height = 300;
+      const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+      gradient.addColorStop(0, '#ff0000');
+      gradient.addColorStop(0.17, '#ffff00');
+      gradient.addColorStop(0.33, '#00ff00');
+      gradient.addColorStop(0.5, '#00ffff');
+      gradient.addColorStop(0.67, '#0000ff');
+      gradient.addColorStop(0.83, '#ff00ff');
+      gradient.addColorStop(1, '#ff0000');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const gradient2 = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      gradient2.addColorStop(0, 'rgba(255,255,255,1)');
+      gradient2.addColorStop(0.5, 'rgba(255,255,255,0)');
+      gradient2.addColorStop(0.5, 'rgba(0,0,0,0)');
+      gradient2.addColorStop(1, 'rgba(0,0,0,1)');
+      ctx.fillStyle = gradient2;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    }
+    function loadImage(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const img = new Image();
+      img.onload = () => {
+        const maxW = 760;
+        const scale = img.width > maxW ? maxW / img.width : 1;
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      };
+      img.src = URL.createObjectURL(file);
+    }
+    function getPixel(x, y) {
+      if (!imgData) return null;
+      const i = (Math.floor(y) * canvas.width + Math.floor(x)) * 4;
+      return [imgData.data[i], imgData.data[i+1], imgData.data[i+2], imgData.data[i+3]];
+    }
+    function rgbToHex(r, g, b) { return '#' + [r,g,b].map(c => c.toString(16).padStart(2,'0')).join('').toUpperCase(); }
+    function rgbToHsl(r, g, b) {
+      r /= 255; g /= 255; b /= 255;
+      const max = Math.max(r,g,b), min = Math.min(r,g,b), l = (max+min)/2;
+      if (max === min) return 'hsl(0, 0%, ' + (l*100).toFixed(0) + '%)';
+      const d = max - min;
+      const s = l > 0.5 ? d/(2-max-min) : d/(max+min);
+      let h;
+      if (max === r) h = ((g-b)/d + (g<b?6:0))/6;
+      else if (max === g) h = ((b-r)/d + 2)/6;
+      else h = ((r-g)/d + 4)/6;
+      return `hsl(${Math.round(h*360)}, ${Math.round(s*100)}%, ${Math.round(l*100)}%)`;
+    }
+    function showColor(r, g, b) {
+      const hex = rgbToHex(r, g, b);
+      const hsl = rgbToHsl(r, g, b);
+      document.getElementById('colorPreview').style.background = hex;
+      document.getElementById('hexVal').textContent = hex;
+      document.getElementById('rgbVal').textContent = `rgb(${r}, ${g}, ${b})`;
+      document.getElementById('hslVal').textContent = hsl;
+      addHistory(hex);
+    }
+    function addHistory(hex) {
+      if (history[0] === hex) return;
+      history.unshift(hex);
+      if (history.length > 20) history.pop();
+      document.getElementById('historyColors').innerHTML = history.map(c =>
+        `<div onclick="navigator.clipboard.writeText('${c}')" style="width:32px;height:32px;background:${c};border-radius:6px;cursor:pointer;border:2px solid #ddd;" title="${c}"></div>`).join('');
+    }
+    function onMove(e) {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left, y = e.clientY - rect.top;
+      const px = getPixel(x, y);
+      if (!px) return;
+      const mag = document.getElementById('magnifier');
+      mag.style.display = 'block';
+      mag.style.left = (x + 20) + 'px';
+      mag.style.top = (y - 90) + 'px';
+      showColor(px[0], px[1], px[2]);
+    }
+    function onClick(e) {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left, y = e.clientY - rect.top;
+      const px = getPixel(x, y);
+      if (!px) return;
+      showColor(px[0], px[1], px[2]);
+      navigator.clipboard.writeText(rgbToHex(px[0], px[1], px[2]));
+    }
+    function copyColor(type) {
+      const hex = document.getElementById('hexVal').textContent;
+      const rgb = document.getElementById('rgbVal').textContent;
+      navigator.clipboard.writeText(type === 'hex' ? hex : rgb);
+    }
+    init();
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

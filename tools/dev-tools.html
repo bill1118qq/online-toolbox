@@ -3,36 +3,62 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>开发者工具 - 编码转换、加密解密、计算器 - 在线工具箱</title>
-  <meta name="description" content="免费在线开发者工具集合：进制转换、URL编解码、HTML实体、Hash计算、ASCII码表、子网计算、正则测试等。">
+  <title>开发者工具集合 - 编程工具 - 在线工具箱</title>
+  <meta name="description" content="免费在线开发者工具集合：JSON格式化/校验/比对/Path查询、Base64编解码、正则测试、SQL格式化、XML格式化、JWT解析、编码转换等30+开发者工具。">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <meta property="og:title" content="开发者工具集合">
-  <meta property="og:description" content="免费在线开发者工具：编码转换、加密解密、计算器。">
+  <meta property="og:description" content="JSON/正则/Base64等开发者工具集合。">
   <meta property="og:url" content="https://eitools.cn/tools/dev-tools.html">
   <link rel="canonical" href="https://eitools.cn/tools/dev-tools.html">
   <link rel="stylesheet" href="../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"CollectionPage","name":"开发者工具集合","description":"免费在线开发者工具集合","url":"https://eitools.cn/tools/dev-tools.html"}
+  </script>
 </head>
 <body>
   <div class="tool-page">
     <div class="tool-page-header">
       <a href="../index.html" class="back-link">&larr; 返回首页</a>
-      <h1>开发者工具</h1>
+      <h1>开发者工具集合</h1>
     </div>
-
-    <div class="tools-grid">
-      <a href="../src/tools/base64.html" class="tool-card"><div class="tool-icon">B64</div><h2>Base64 编解码</h2><p>文本与 Base64 互相转换</p></a>
-      <a href="../src/tools/url-encoder.html" class="tool-card"><div class="tool-icon">URL</div><h2>URL 编解码</h2><p>URL 百分号编码与解码</p></a>
-      <a href="../src/tools/html-entities.html" class="tool-card"><div class="tool-icon">&lt;/&gt;</div><h2>HTML 实体编解码</h2><p>HTML 特殊字符与实体互转</p></a>
-      <a href="../src/tools/hash-generator.html" class="tool-card"><div class="tool-icon">#H</div><h2>Hash 计算器</h2><p>MD5/SHA-1/SHA-256/SHA-512</p></a>
-      <a href="../src/tools/uuid-generator.html" class="tool-card"><div class="tool-icon">UID</div><h2>UUID 生成器</h2><p>生成随机 UUID v4</p></a>
-      <a href="../src/tools/regex-tester.html" class="tool-card"><div class="tool-icon">.*</div><h2>正则表达式测试</h2><p>实时匹配高亮</p></a>
-      <a href="../src/tools/ascii-table.html" class="tool-card"><div class="tool-icon">ASC</div><h2>ASCII 码表</h2><p>完整字符对照查询</p></a>
-      <a href="../src/tools/number-base-converter.html" class="tool-card"><div class="tool-icon">N&gt;</div><h2>进制转换</h2><p>二/八/十/十六进制互转</p></a>
-      <a href="../src/tools/caesar-cipher.html" class="tool-card"><div class="tool-icon">[E]</div><h2>文本加密解密</h2><p>Caesar密码、摩尔斯电码</p></a>
-      <a href="../src/tools/subnet-calculator.html" class="tool-card"><div class="tool-icon">NET</div><h2>子网计算器</h2><p>IP 子网掩码计算与划分</p></a>
-      <a href="../src/tools/ip-lookup.html" class="tool-card"><div class="tool-icon">IP</div><h2>IP 地址查询</h2><p>查询 IP 归属地信息</p></a>
-      <a href="../src/tools/css-gradient-generator.html" class="tool-card"><div class="tool-icon">GR</div><h2>CSS 渐变生成器</h2><p>可视化编辑渐变代码</p></a>
+    <p style="color:#666;margin-bottom:20px;">程序员常用在线工具，全部本地运行。</p>
+    <div class="tools-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;">
+      <a href="../src/tools/json-formatter.html" class="tool-card"><div class="tool-icon">{ }</div><h2>JSON 格式化</h2><p>美化/压缩/校验</p></a>
+      <a href="../src/tools/json-validator.html" class="tool-card"><div class="tool-icon">JV</div><h2>JSON 校验</h2><p>格式验证</p></a>
+      <a href="../src/tools/json-diff.html" class="tool-card"><div class="tool-icon">JDF</div><h2>JSON 比对</h2><p>差异对比</p></a>
+      <a href="../src/tools/json-path.html" class="tool-card"><div class="tool-icon">JP</div><h2>JSON Path</h2><p>路径查询</p></a>
+      <a href="../src/tools/json-to-csv.html" class="tool-card"><div class="tool-icon">CSV</div><h2>JSON转CSV</h2><p>表格转换</p></a>
+      <a href="../src/tools/base64.html" class="tool-card"><div class="tool-icon">B64</div><h2>Base64</h2><p>编解码</p></a>
+      <a href="../src/tools/url-encoder.html" class="tool-card"><div class="tool-icon">URL</div><h2>URL 编解码</h2><p>百分号编码</p></a>
+      <a href="../src/tools/html-entities.html" class="tool-card"><div class="tool-icon">&lt;/&gt;</div><h2>HTML 实体</h2><p>特殊字符</p></a>
+      <a href="../src/tools/regex-tester.html" class="tool-card"><div class="tool-icon">.*</div><h2>正则测试</h2><p>实时匹配</p></a>
+      <a href="../src/tools/hash-generator.html" class="tool-card"><div class="tool-icon">#H</div><h2>Hash 计算</h2><p>MD5/SHA</p></a>
+      <a href="../src/tools/uuid-generator.html" class="tool-card"><div class="tool-icon">UID</div><h2>UUID 生成</h2><p>批量生成</p></a>
+      <a href="../src/tools/password-generator.html" class="tool-card"><div class="tool-icon">KEY</div><h2>密码生成</h2><p>随机密码</p></a>
+      <a href="../src/tools/xml-formatter.html" class="tool-card"><div class="tool-icon">XML</div><h2>XML 格式化</h2><p>美化/转JSON</p></a>
+      <a href="../src/tools/sql-formatter.html" class="tool-card"><div class="tool-icon">SQL</div><h2>SQL 格式化</h2><p>美化/压缩</p></a>
+      <a href="../src/tools/jwt-decoder.html" class="tool-card"><div class="tool-icon">JWT</div><h2>JWT 解析</h2><p>Token解码</p></a>
+      <a href="../src/tools/css-formatter.html" class="tool-card"><div class="tool-icon">CSS</div><h2>CSS 格式化</h2><p>美化/压缩</p></a>
+      <a href="../src/tools/number-base-converter.html" class="tool-card"><div class="tool-icon">N&gt;</div><h2>进制转换</h2><p>二/八/十/十六</p></a>
+      <a href="../src/tools/binary-converter.html" class="tool-card"><div class="tool-icon">BIN</div><h2>二进制转换</h2><p>文本/多进制</p></a>
+      <a href="../src/tools/binary-calculator.html" class="tool-card"><div class="tool-icon">BIC</div><h2>二进制计算</h2><p>位运算</p></a>
+      <a href="../src/tools/unicode-search.html" class="tool-card"><div class="tool-icon">U+</div><h2>Unicode查询</h2><p>字符搜索</p></a>
+      <a href="../src/tools/ascii-table.html" class="tool-card"><div class="tool-icon">ASC</div><h2>ASCII 码表</h2><p>字符对照</p></a>
+      <a href="../src/tools/ip-lookup.html" class="tool-card"><div class="tool-icon">IP</div><h2>IP 查询</h2><p>归属地</p></a>
+      <a href="../src/tools/ip-converter.html" class="tool-card"><div class="tool-icon">IPC</div><h2>IP 转换</h2><p>IP/整数互转</p></a>
+      <a href="../src/tools/subnet-calculator.html" class="tool-card"><div class="tool-icon">NET</div><h2>子网计算</h2><p>掩码划分</p></a>
+      <a href="../src/tools/http-status.html" class="tool-card"><div class="tool-icon">HTTP</div><h2>HTTP 状态码</h2><p>状态码大全</p></a>
+      <a href="../src/tools/cron-generator.html" class="tool-card"><div class="tool-icon">CR</div><h2>Cron 生成</h2><p>定时任务</p></a>
+      <a href="../src/tools/markdown-editor.html" class="tool-card"><div class="tool-icon">MD</div><h2>Markdown编辑</h2><p>实时预览</p></a>
+      <a href="../src/tools/html-to-markdown.html" class="tool-card"><div class="tool-icon">H2M</div><h2>HTML转MD</h2><p>格式转换</p></a>
+      <a href="../src/tools/csv-to-markdown.html" class="tool-card"><div class="tool-icon">MDT</div><h2>CSV转MD表格</h2><p>Markdown表格</p></a>
+      <a href="../src/tools/css-unit-converter.html" class="tool-card"><div class="tool-icon">U</div><h2>CSS单位转换</h2><p>px/rem/em</p></a>
+      <a href="../src/tools/color-picker.html" class="tool-card"><div class="tool-icon">CLR</div><h2>颜色选择</h2><p>HEX/RGB</p></a>
+      <a href="../src/tools/css-gradient-generator.html" class="tool-card"><div class="tool-icon">GR</div><h2>CSS 渐变</h2><p>可视化代码</p></a>
     </div>
   </div>
+  <footer class="footer"><div class="container"><p>&copy; 2026 在线工具箱 - 所有工具均在浏览器本地运行</p></div></footer>
+  <div id="share-bar"></div>
+  <script src="../js/share.js"></script>
 </body>
 </html>

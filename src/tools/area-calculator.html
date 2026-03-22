@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>面积计算器 - 平方米亩公顷英亩转换 - 在线工具箱</title>
+  <meta name="description" content="在线面积计算器，支持平方米、平方千米、亩、公顷、平方英尺、英亩等面积单位互转，以及矩形/圆形面积计算。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="面积计算器 - 平方米/亩/公顷/英亩转换">
+  <meta property="og:description" content="面积单位互转，矩形圆形面积计算。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/area-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/area-calculator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"面积计算器","description":"在线面积单位换算和计算","url":"https://eitools.cn/src/tools/area-calculator.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>面积计算器</h1>
+    </div>
+    <div style="max-width:600px;">
+      <h3 style="margin-bottom:12px;">面积单位换算</h3>
+      <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+        <select id="unit" style="flex:1;min-width:140px;padding:10px;border:1px solid #ddd;border-radius:8px;">
+          <option value="sqm" selected>平方米 (m²)</option>
+          <option value="sqkm">平方千米 (km²)</option>
+          <option value="mu">亩</option>
+          <option value="hectare">公顷 (hm²)</option>
+          <option value="sqft">平方英尺 (ft²)</option>
+          <option value="acre">英亩</option>
+          <option value="sqmi">平方英里 (mi²)</option>
+        </select>
+        <input type="number" id="value" placeholder="输入数值" step="any" style="flex:1;min-width:150px;padding:10px;border:1px solid #ddd;border-radius:8px;">
+      </div>
+      <button class="btn btn-primary" onclick="convert()" style="padding:10px 24px;">换算</button>
+      <div id="result" style="margin-top:20px;"></div>
+
+      <h3 style="margin:32px 0 12px;">形状面积计算</h3>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <button class="btn btn-secondary" onclick="showShape('rect')" id="btn-rect" style="flex:1;">矩形</button>
+        <button class="btn btn-secondary" onclick="showShape('circle')" id="btn-circle" style="flex:1;">圆形</button>
+        <button class="btn btn-secondary" onclick="showShape('triangle')" id="btn-tri" style="flex:1;">三角形</button>
+      </div>
+      <div id="shape-form"></div>
+      <div id="shape-result" style="margin-top:12px;"></div>
+    </div>
+    <div style="margin-top:32px;padding:20px;background:#f0f2f5;border-radius:12px;">
+      <h2 style="font-size:1rem;margin-bottom:12px;">常用换算关系</h2>
+      <div style="font-size:0.9rem;color:#555;line-height:2;">
+        <p>1 平方千米 = 100 公顷 = 100万平方米</p>
+        <p>1 公顷 = 15 亩 = 10000 平方米</p>
+        <p>1 亩 ≈ 666.67 平方米</p>
+        <p>1 平方米 = 10.764 平方英尺</p>
+        <p>1 英亩 = 4046.86 平方米 ≈ 6.07 亩</p>
+      </div>
+    </div>
+  </div>
+  <script>
+    const toSqm = { sqm:1, sqkm:1000000, mu:666.667, hectare:10000, sqft:0.092903, acre:4046.86, sqmi:2589988 };
+    const names = { sqm:'平方米', sqkm:'平方千米', mu:'亩', hectare:'公顷', sqft:'平方英尺', acre:'英亩', sqmi:'平方英里' };
+    function convert() {
+      const u = document.getElementById('unit').value, v = parseFloat(document.getElementById('value').value);
+      if (isNaN(v)) return;
+      const sqm = v * toSqm[u];
+      let rows = '';
+      for (const [k,f] of Object.entries(toSqm)) {
+        if (k === u) continue;
+        const r = sqm / f;
+        rows += `<tr style="border-bottom:1px solid #eee;"><td style="padding:8px 12px;">${names[k]}</td><td style="padding:8px 12px;font-weight:600;">${r < 0.01 ? r.toExponential(4) : r.toFixed(4)}</td></tr>`;
+      }
+      document.getElementById('result').innerHTML = `<div style="background:white;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1);"><table style="width:100%;border-collapse:collapse;font-size:0.9rem;"><tr style="background:#4361ee;color:white;"><th style="padding:10px;text-align:left;">单位</th><th style="padding:10px;">结果</th></tr>${rows}</table></div>`;
+    }
+    function showShape(s) {
+      document.querySelectorAll('[id^=btn-]').forEach(b => b.style.background = '');
+      const forms = { rect: `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><div><label style="font-size:0.85rem">长 (m)</label><input type="number" id="sl" step="any" placeholder="长" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;"></div><div><label style="font-size:0.85rem">宽 (m)</label><input type="number" id="sw" step="any" placeholder="宽" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;"></div></div><button class="btn btn-primary" onclick="calcShape('rect')" style="margin-top:8px;width:100%;padding:10px;">计算</button>`,
+        circle: `<div><label style="font-size:0.85rem">半径 (m)</label><input type="number" id="sr" step="any" placeholder="半径" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;"></div><button class="btn btn-primary" onclick="calcShape('circle')" style="margin-top:8px;width:100%;padding:10px;">计算</button>`,
+        triangle: `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><div><label style="font-size:0.85rem">底 (m)</label><input type="number" id="sb" step="any" placeholder="底" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;"></div><div><label style="font-size:0.85rem">高 (m)</label><input type="number" id="sh" step="any" placeholder="高" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;"></div></div><button class="btn btn-primary" onclick="calcShape('triangle')" style="margin-top:8px;width:100%;padding:10px;">计算</button>`
+      };
+      document.getElementById('shape-form').innerHTML = forms[s];
+      if (s === 'rect') document.getElementById('btn-rect').style.background = '#4361ee';
+      else if (s === 'circle') document.getElementById('btn-circle').style.background = '#4361ee';
+      else document.getElementById('btn-tri').style.background = '#4361ee';
+    }
+    function calcShape(s) {
+      let area = 0;
+      if (s === 'rect') { const l = parseFloat(document.getElementById('sl').value), w = parseFloat(document.getElementById('sw').value); area = l * w; }
+      else if (s === 'circle') { const r = parseFloat(document.getElementById('sr').value); area = Math.PI * r * r; }
+      else { const b = parseFloat(document.getElementById('sb').value), h = parseFloat(document.getElementById('sh').value); area = b * h / 2; }
+      document.getElementById('shape-result').innerHTML = `<div style="padding:16px;background:#eef1ff;border-radius:10px;text-align:center;"><div style="font-size:0.85rem;color:#888;">面积</div><div style="font-size:1.6rem;font-weight:800;color:#4361ee;">${area.toFixed(2)} 平方米</div><div style="font-size:0.9rem;color:#666;margin-top:4px;">≈ ${(area/666.667).toFixed(4)} 亩 ≈ ${area.toFixed(2) * 10.764} 平方英尺</div></div>`;
+    }
+    showShape('rect');
+  </script>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+</body>
+</html>

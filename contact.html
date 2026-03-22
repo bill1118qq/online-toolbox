@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>联系我们 - 在线工具箱 EITools</title>
+  <meta name="description" content="联系EITools在线工具箱：提交反馈、建议问题或合作咨询。我们会在1-3个工作日内回复。">
+  <meta name="robots" content="noindex, follow">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="canonical" href="https://eitools.cn/contact.html">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"ContactPage","url":"https://eitools.cn/contact.html","name":"联系我们"}
+  </script>
+</head>
+<body>
+  <div class="tool-page" style="max-width:800px;">
+    <div class="tool-page-header">
+      <a href="index.html" class="back-link">← 返回首页</a>
+      <h1>联系我们</h1>
+    </div>
+    <article style="line-height:2;">
+      <p>感谢您使用 EITools！如果您有任何问题、建议或合作意向，请通过以下方式联系我们。</p>
+
+      <h2>联系方式</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin:16px 0;">
+        <div style="background:white;border:1px solid #eee;border-radius:10px;padding:16px;text-align:center;">
+          <div style="font-size:1.5rem;margin-bottom:8px;">📧</div>
+          <div style="font-weight:bold;">邮箱</div>
+          <div style="color:#4361ee;"><a href="mailto:admin@eitools.cn">admin@eitools.cn</a></div>
+        </div>
+        <div style="background:white;border:1px solid #eee;border-radius:10px;padding:16px;text-align:center;">
+          <div style="font-size:1.5rem;margin-bottom:8px;">🌐</div>
+          <div style="font-weight:bold;">网站</div>
+          <div style="color:#4361ee;"><a href="https://eitools.cn">eitools.cn</a></div>
+        </div>
+        <div style="background:white;border:1px solid #eee;border-radius:10px;padding:16px;text-align:center;">
+          <div style="font-size:1.5rem;margin-bottom:8px;">⏰</div>
+          <div style="font-weight:bold;">回复时间</div>
+          <div style="color:#666;">1-3个工作日</div>
+        </div>
+      </div>
+
+      <h2>提交反馈</h2>
+      <p style="margin-bottom:12px;">请选择反馈类型：</p>
+      <div style="margin-bottom:16px;">
+        <label style="font-weight:bold;display:block;margin-bottom:6px;">反馈类型</label>
+        <select id="feedbackType" style="width:100%;padding:10px;border:2px solid #ddd;border-radius:8px;box-sizing:border-box;">
+          <option value="bug">问题报告</option>
+          <option value="suggestion">功能建议</option>
+          <option value="tool-request">新工具需求</option>
+          <option value="cooperation">合作咨询</option>
+          <option value="other">其他</option>
+        </select>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="font-weight:bold;display:block;margin-bottom:6px;">您的邮箱（选填）</label>
+        <input type="email" id="email" placeholder="方便我们回复您" style="width:100%;padding:10px;border:2px solid #ddd;border-radius:8px;box-sizing:border-box;">
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="font-weight:bold;display:block;margin-bottom:6px;">详细描述</label>
+        <textarea id="message" rows="6" placeholder="请详细描述您的问题或建议..." style="width:100%;padding:10px;border:2px solid #ddd;border-radius:8px;box-sizing:border-box;font-family:inherit;"></textarea>
+      </div>
+      <button class="btn btn-primary" onclick="submitFeedback()">发送反馈</button>
+      <div id="result-box" style="display:none;margin-top:12px;padding:12px;border-radius:8px;font-size:0.9rem;"></div>
+
+      <h2>常见问题</h2>
+      <ul>
+        <li><b>工具计算结果不准确？</b>请详细描述具体工具和输入内容，我们会尽快核实修复</li>
+        <li><b>想要某个新工具？</b>请告诉我们工具名称和需要的功能，我们会评估开发</li>
+        <li><b>想合作或投放广告？</b>请发送邮件到 admin@eitools.cn</li>
+      </ul>
+    </article>
+  </div>
+  <script src="js/share.js"></script>
+  <script>
+    function submitFeedback() {
+      const type = document.getElementById('feedbackType').value;
+      const email = document.getElementById('email').value.trim();
+      const message = document.getElementById('message').value.trim();
+      const box = document.getElementById('result-box');
+
+      if (!message) {
+        box.style.display = 'block';
+        box.style.border = '2px solid #f44';
+        box.style.background = '#fff5f5';
+        box.textContent = '请填写详细描述';
+        return;
+      }
+
+      // 构造 mailto 链接
+      const typeNames = {bug:'问题报告',suggestion:'功能建议','tool-request':'新工具需求',cooperation:'合作咨询',other:'其他'};
+      const subject = encodeURIComponent('[EITools] ' + typeNames[type]);
+      const body = encodeURIComponent('邮箱: ' + (email || '未提供') + '\n\n' + message);
+      window.location.href = 'mailto:admin@eitools.cn?subject=' + subject + '&body=' + body;
+
+      box.style.display = 'block';
+      box.style.border = '2px solid #4ade80';
+      box.style.background = '#f0fff4';
+      box.textContent = '正在打开邮件客户端...如果未弹出，请直接发送邮件到 admin@eitools.cn';
+    }
+  </script>
+</body>
+</html>

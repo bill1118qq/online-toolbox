@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>倒计时器 - 在线正计时/倒计时 - 在线工具箱</title>
+  <meta name="description" content="在线倒计时器：支持自定义时长倒计时、正计时（秒表）、全屏显示。到时提醒，可暂停继续。教学、运动、烹饪等场景通用。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="在线倒计时器">
+  <meta property="og:description" content="自定义倒计时、正计时、全屏显示。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/countdown-timer.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/countdown-timer.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"在线倒计时器","description":"自定义时长倒计时和正计时工具","url":"https://eitools.cn/src/tools/countdown-timer.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+  <style>
+    .timer-display { font-size:5rem;font-weight:300;text-align:center;font-variant-numeric:tabular-nums;letter-spacing:4px;padding:40px 20px; }
+    .timer-display.running { color:#4361ee; }
+    .timer-display.paused { color:#ff9800; }
+    .timer-display.finished { color:#f44336; animation:blink 0.5s infinite; }
+    @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+    .preset-btn { padding:12px 20px;border:2px solid #f0f2f5;border-radius:12px;cursor:pointer;text-align:center;transition:all .2s;background:white; }
+    .preset-btn:hover { border-color:#4361ee;background:#e3f2fd; }
+    .preset-btn .time { font-size:1.5rem;font-weight:600; }
+    .preset-btn .label { font-size:0.8rem;color:#888;margin-top:2px; }
+  </style>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>在线倒计时器</h1>
+    </div>
+    <div style="max-width:700px;margin:0 auto;">
+      <div class="timer-display" id="display">00:00:00</div>
+      <div id="progress" style="height:6px;background:#f0f2f5;border-radius:3px;margin:0 20px 20px;overflow:hidden;">
+        <div id="progressBar" style="height:100%;background:#4361ee;width:0%;transition:width 0.3s;border-radius:3px;"></div>
+      </div>
+      <div style="display:flex;gap:12px;justify-content:center;margin-bottom:24px;">
+        <button id="btnStart" onclick="startTimer()" style="padding:12px 32px;background:#4361ee;color:white;border:none;border-radius:10px;cursor:pointer;font-size:1rem;">开始</button>
+        <button id="btnPause" onclick="pauseTimer()" style="padding:12px 32px;background:#ff9800;color:white;border:none;border-radius:10px;cursor:pointer;font-size:1rem;display:none;">暂停</button>
+        <button onclick="resetTimer()" style="padding:12px 32px;background:#f0f2f5;border:1px solid #ddd;border-radius:10px;cursor:pointer;font-size:1rem;">重置</button>
+        <button onclick="toggleFullscreen()" style="padding:12px 16px;background:#f0f2f5;border:1px solid #ddd;border-radius:10px;cursor:pointer;font-size:1rem;">全屏</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;">
+        <div>
+          <label style="font-size:0.8rem;color:#888;">时</label>
+          <input type="number" id="setH" value="0" min="0" max="99" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;text-align:center;font-size:1.2rem;">
+        </div>
+        <div>
+          <label style="font-size:0.8rem;color:#888;">分</label>
+          <input type="number" id="setM" value="5" min="0" max="59" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;text-align:center;font-size:1.2rem;">
+        </div>
+        <div>
+          <label style="font-size:0.8rem;color:#888;">秒</label>
+          <input type="number" id="setS" value="0" min="0" max="59" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;text-align:center;font-size:1.2rem;">
+        </div>
+        <div style="display:flex;align-items:end;">
+          <label style="font-size:0.8rem;color:#888;">模式</label>
+          <select id="mode" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;">
+            <option value="countdown">倒计时</option>
+            <option value="stopwatch">正计时</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+        <div class="preset-btn" onclick="setPreset(0,1,0)"><div class="time">1分钟</div><div class="label">快速休息</div></div>
+        <div class="preset-btn" onclick="setPreset(0,3,0)"><div class="time">3分钟</div><div class="label">泡面计时</div></div>
+        <div class="preset-btn" onclick="setPreset(0,5,0)"><div class="time">5分钟</div><div class="label">番茄钟</div></div>
+        <div class="preset-btn" onclick="setPreset(0,25,0)"><div class="time">25分钟</div><div class="label">专注时间</div></div>
+        <div class="preset-btn" onclick="setPreset(0,10,0)"><div class="time">10分钟</div><div class="label">运动拉伸</div></div>
+        <div class="preset-btn" onclick="setPreset(0,15,0)"><div class="time">15分钟</div><div class="label">休息提醒</div></div>
+        <div class="preset-btn" onclick="setPreset(0,45,0)"><div class="time">45分钟</div><div class="label">课堂时间</div></div>
+        <div class="preset-btn" onclick="setPreset(1,0,0)"><div class="time">1小时</div><div class="label">阅读时间</div></div>
+      </div>
+    </div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    var totalSeconds = 300;
+    var remainingSeconds = 300;
+    var timerInterval = null;
+    var state = 'idle';
+    var isCountdown = true;
+
+    function setPreset(h, m, s) {
+      document.getElementById('setH').value = h;
+      document.getElementById('setM').value = m;
+      document.getElementById('setS').value = s;
+      totalSeconds = h * 3600 + m * 60 + s;
+      remainingSeconds = totalSeconds;
+      updateDisplay();
+      resetTimer();
+    }
+
+    function updateDisplay() {
+      var displayEl = document.getElementById('display');
+      var secs = isCountdown ? remainingSeconds : (totalSeconds - remainingSeconds);
+      var h = Math.floor(secs / 3600);
+      var m = Math.floor((secs % 3600) / 60);
+      var s = secs % 60;
+      displayEl.textContent = String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+
+      if (isCountdown && totalSeconds > 0) {
+        var pct = ((totalSeconds - remainingSeconds) / totalSeconds) * 100;
+        document.getElementById('progressBar').style.width = pct + '%';
+      } else if (!isCountdown) {
+        document.getElementById('progressBar').style.width = '0%';
+      }
+    }
+
+    function startTimer() {
+      if (state === 'idle') {
+        isCountdown = document.getElementById('mode').value === 'countdown';
+        if (isCountdown) {
+          totalSeconds = parseInt(document.getElementById('setH').value || 0) * 3600 +
+                         parseInt(document.getElementById('setM').value || 0) * 60 +
+                         parseInt(document.getElementById('setS').value || 0);
+          remainingSeconds = totalSeconds;
+        } else {
+          totalSeconds = 0;
+          remainingSeconds = 0;
+        }
+      }
+
+      state = 'running';
+      document.getElementById('btnStart').style.display = 'none';
+      document.getElementById('btnPause').style.display = 'inline-block';
+      document.getElementById('display').className = 'timer-display running';
+
+      clearInterval(timerInterval);
+      timerInterval = setInterval(function() {
+        remainingSeconds++;
+        if (isCountdown && remainingSeconds >= totalSeconds) {
+          remainingSeconds = totalSeconds;
+          pauseTimer();
+          state = 'finished';
+          document.getElementById('display').className = 'timer-display finished';
+          try {
+            var ctx = new (window.AudioContext || window.webkitAudioContext)();
+            var osc = ctx.createOscillator();
+            var gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = 880;
+            gain.gain.value = 0.3;
+            osc.start();
+            setTimeout(function() { osc.stop(); ctx.close(); }, 500);
+          } catch(e) {}
+        }
+        updateDisplay();
+        document.title = document.getElementById('display').textContent + ' - 倒计时';
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      state = 'paused';
+      clearInterval(timerInterval);
+      document.getElementById('btnStart').style.display = 'inline-block';
+      document.getElementById('btnPause').style.display = 'none';
+      document.getElementById('display').className = 'timer-display paused';
+      document.title = document.getElementById('display').textContent + ' - 已暂停';
+    }
+
+    function resetTimer() {
+      state = 'idle';
+      clearInterval(timerInterval);
+      isCountdown = document.getElementById('mode').value === 'countdown';
+      if (isCountdown) {
+        totalSeconds = parseInt(document.getElementById('setH').value || 0) * 3600 +
+                       parseInt(document.getElementById('setM').value || 0) * 60 +
+                       parseInt(document.getElementById('setS').value || 0);
+        remainingSeconds = totalSeconds;
+      } else {
+        totalSeconds = 0;
+        remainingSeconds = 0;
+      }
+      document.getElementById('btnStart').style.display = 'inline-block';
+      document.getElementById('btnPause').style.display = 'none';
+      document.getElementById('display').className = 'timer-display';
+      document.getElementById('progressBar').style.width = '0%';
+      document.title = '在线倒计时器';
+      updateDisplay();
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(function() {});
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    document.getElementById('mode').addEventListener('change', resetTimer);
+    updateDisplay();
+  </script>
+</body>
+</html>

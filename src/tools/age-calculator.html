@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>年龄计算器 - 在线计算精确年龄天数 - 在线工具箱</title>
+  <meta name="description" content="在线年龄计算器，输入出生日期即可精确计算年龄（年月日）、总天数、下一个生日倒计时。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="年龄计算器 - 精确计算年龄和生日倒计时">
+  <meta property="og:description" content="输入生日，精确计算你的年龄（年月日）、已过天数和生日倒计时。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/age-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/age-calculator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"年龄计算器","description":"在线计算精确年龄","url":"https://eitools.cn/src/tools/age-calculator.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>年龄计算器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">输入出生日期，精确计算年龄、天数和生日倒计时。</p>
+    <div style="max-width:500px;">
+      <div style="margin-bottom:16px;">
+        <label style="display:block;margin-bottom:6px;font-weight:600;">出生日期</label>
+        <input type="date" id="birthday" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:1rem;">
+      </div>
+      <button class="btn btn-primary" onclick="calcAge()" style="width:100%;padding:12px;font-size:1.05rem;">计算年龄</button>
+      <div id="result" style="margin-top:24px;"></div>
+    </div>
+  </div>
+  <script>
+    function calcAge() {
+      const bd = document.getElementById('birthday').value;
+      if (!bd) { document.getElementById('result').innerHTML = '<p style="color:#e03131;">请选择出生日期</p>'; return; }
+      const birth = new Date(bd);
+      const now = new Date();
+      if (birth > now) { document.getElementById('result').innerHTML = '<p style="color:#e03131;">出生日期不能是未来</p>'; return; }
+      let years = now.getFullYear() - birth.getFullYear();
+      let months = now.getMonth() - birth.getMonth();
+      let days = now.getDate() - birth.getDate();
+      if (days < 0) { months--; const prev = new Date(now.getFullYear(), now.getMonth(), 0); days += prev.getDate(); }
+      if (months < 0) { years--; months += 12; }
+      const totalDays = Math.floor((now - birth) / 86400000);
+      const totalWeeks = Math.floor(totalDays / 7);
+      const totalHours = totalDays * 24;
+      const nextBirthday = new Date(now.getFullYear(), birth.getMonth(), birth.getDate());
+      if (nextBirthday <= now) nextBirthday.setFullYear(nextBirthday.getFullYear() + 1);
+      const countdown = Math.ceil((nextBirthday - now) / 86400000);
+      const zodiac = ['摩羯座','水瓶座','双鱼座','白羊座','金牛座','双子座','巨蟹座','狮子座','处女座','天秤座','天蝎座','射手座','摩羯座'];
+      const zIdx = birth.getMonth() === 0 ? (birth.getDate() <= 19 ? 0 : 1) : birth.getMonth() === 1 ? (birth.getDate() <= 18 ? 1 : 2) : birth.getMonth() === 2 ? (birth.getDate() <= 20 ? 2 : 3) : birth.getMonth() === 3 ? (birth.getDate() <= 19 ? 3 : 4) : birth.getMonth() === 4 ? (birth.getDate() <= 20 ? 4 : 5) : birth.getMonth() === 5 ? (birth.getDate() <= 21 ? 5 : 6) : birth.getMonth() === 6 ? (birth.getDate() <= 22 ? 6 : 7) : birth.getMonth() === 7 ? (birth.getDate() <= 22 ? 7 : 8) : birth.getMonth() === 8 ? (birth.getDate() <= 22 ? 8 : 9) : birth.getMonth() === 9 ? (birth.getDate() <= 23 ? 9 : 10) : birth.getMonth() === 10 ? (birth.getDate() <= 22 ? 10 : 11) : (birth.getDate() <= 21 ? 11 : 0);
+      document.getElementById('result').innerHTML = `
+        <div style="text-align:center;padding:24px;background:#f0f2f5;border-radius:12px;">
+          <div style="font-size:2rem;font-weight:800;color:#4361ee;">${years} 岁 ${months} 个月 ${days} 天</div>
+          <p style="color:#888;margin-top:4px;">星座：${zodiac[zIdx]}</p>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;">
+          <div style="text-align:center;padding:16px;background:white;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,0.1);"><div style="font-size:0.8rem;color:#888;">已过天数</div><div style="font-size:1.4rem;font-weight:700;">${totalDays.toLocaleString()}</div></div>
+          <div style="text-align:center;padding:16px;background:white;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,0.1);"><div style="font-size:0.8rem;color:#888;">已过周数</div><div style="font-size:1.4rem;font-weight:700;">${totalWeeks.toLocaleString()}</div></div>
+          <div style="text-align:center;padding:16px;background:white;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,0.1);"><div style="font-size:0.8rem;color:#888;">已过小时</div><div style="font-size:1.4rem;font-weight:700;">${totalHours.toLocaleString()}</div></div>
+          <div style="text-align:center;padding:16px;background:white;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,0.1);"><div style="font-size:0.8rem;color:#888;">距离生日</div><div style="font-size:1.4rem;font-weight:700;color:#e67700;">${countdown} 天</div></div>
+        </div>`;
+    }
+  </script>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+</body>
+</html>

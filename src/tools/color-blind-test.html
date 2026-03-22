@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>色盲测试 - 在线色觉检测 - 在线工具箱</title>
+  <meta name="description" content="在线色盲测试，使用石原色觉检测图（Ishihara Test）原理，帮助初步检测红绿色觉异常。免费的在线色觉检测工具。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="色盲测试 - 在线色觉检测">
+  <meta property="og:description" content="在线色盲色弱检测，使用经典石原色觉检测原理。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/color-blind-test.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/color-blind-test.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"色盲测试","description":"在线色觉检测工具","url":"https://eitools.cn/src/tools/color-blind-test.html","applicationCategory":"HealthApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>色盲测试</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">基于石原色觉检测原理，帮助初步检测色觉是否正常。请在正常光线下、距离屏幕约50cm处观察。</p>
+    <p style="color:#e67700;font-size:0.85rem;margin-bottom:20px;">注意：本测试仅供参考，不能替代医院的专业色觉检查。如有疑问请咨询眼科医生。</p>
+    <div style="max-width:600px;">
+      <div id="test-area" style="display:flex;flex-direction:column;align-items:center;gap:24px;"></div>
+      <div id="result-area" style="margin-top:24px;"></div>
+    </div>
+  </div>
+  <script>
+    const tests = [
+      { number: '12', desc: '正常色觉和红色觉异常都能看到', svg: `<svg width="200" height="200" viewBox="0 0 200 200"><circle cx="100" cy="100" r="95" fill="#d4a76a"/><circle cx="100" cy="100" r="60" fill="#c4722a"/><circle cx="85" cy="90" r="8" fill="#6b8e4e"/><circle cx="110" cy="85" r="9" fill="#6b8e4e"/><circle cx="95" cy="110" r="10" fill="#6b8e4e"/><circle cx="115" cy="105" r="8" fill="#6b8e4e"/><circle cx="90" cy="100" r="7" fill="#d4a76a"/><circle cx="105" cy="95" r="9" fill="#d4a76a"/><circle cx="100" cy="115" r="8" fill="#d4a76a"/><circle cx="80" cy="105" r="6" fill="#8b6914"/><circle cx="120" cy="95" r="7" fill="#8b6914"/><circle cx="105" cy="120" r="8" fill="#8b6914"/><circle cx="85" cy="80" r="6" fill="#8b6914"/></svg>` },
+      { number: '8', desc: '正常色觉和绿色觉异常都能看到', svg: `<svg width="200" height="200" viewBox="0 0 200 200"><circle cx="100" cy="100" r="95" fill="#d4a76a"/><circle cx="100" cy="100" r="55" fill="#c4722a"/><circle cx="90" cy="85" r="9" fill="#8b6914"/><circle cx="110" cy="90" r="8" fill="#8b6914"/><circle cx="100" cy="105" r="10" fill="#8b6914"/><circle cx="85" cy="100" r="7" fill="#d4a76a"/><circle cx="115" cy="100" r="8" fill="#d4a76a"/><circle cx="100" cy="80" r="7" fill="#d4a76a"/><circle cx="100" cy="120" r="9" fill="#d4a76a"/></svg>` },
+      { number: '29', desc: '只有正常色觉能看到29，红绿色觉异常可能看到70', svg: `<svg width="200" height="200" viewBox="0 0 200 200"><circle cx="100" cy="100" r="95" fill="#d4a76a"/><circle cx="85" cy="85" r="50" fill="#6b8e4e"/><circle cx="120" cy="115" r="45" fill="#c4722a"/><circle cx="75" cy="95" r="6" fill="#d4a76a"/><circle cx="95" cy="75" r="7" fill="#d4a76a"/><circle cx="130" cy="105" r="8" fill="#d4a76a"/><circle cx="110" cy="130" r="7" fill="#d4a76a"/><circle cx="80" cy="110" r="8" fill="#8b6914"/></svg>` },
+      { number: '5', desc: '只有正常色觉能看到5，红绿色觉异常可能看到2', svg: `<svg width="200" height="200" viewBox="0 0 200 200"><circle cx="100" cy="100" r="95" fill="#d4a76a"/><circle cx="100" cy="100" r="55" fill="#c4722a"/><circle cx="90" cy="85" r="10" fill="#8b6914"/><circle cx="110" cy="85" r="8" fill="#8b6914"/><circle cx="100" cy="100" r="12" fill="#8b6914"/><circle cx="85" cy="100" r="7" fill="#6b8e4e"/><circle cx="115" cy="95" r="9" fill="#6b8e4e"/></svg>` },
+      { number: '无数字', desc: '色觉正常者看不到数字，红绿色觉异常可能看到5', svg: `<svg width="200" height="200" viewBox="0 0 200 200"><circle cx="100" cy="100" r="95" fill="#d4a76a"/><circle cx="100" cy="90" r="45" fill="#c4722a"/><circle cx="90" cy="105" r="40" fill="#6b8e4e"/><circle cx="115" cy="105" r="35" fill="#c4722a"/><circle cx="80" cy="80" r="8" fill="#8b6914"/><circle cx="120" cy="80" r="7" fill="#8b6914"/><circle cx="80" cy="120" r="6" fill="#8b6914"/></svg>` },
+    ];
+
+    let currentTest = 0, score = 0;
+
+    function renderTest() {
+      if (currentTest >= tests.length) { showResult(); return; }
+      const t = tests[currentTest];
+      document.getElementById('test-area').innerHTML = `
+        <div style="font-size:0.85rem;color:#888;">第 ${currentTest + 1} / ${tests.length} 题</div>
+        <div style="border:2px solid #ddd;border-radius:12px;padding:20px;background:white;">${t.svg}</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+          <button class="btn btn-primary" onclick="answer('12')" style="padding:10px 20px;min-width:60px;">12</button>
+          <button class="btn btn-primary" onclick="answer('8')" style="padding:10px 20px;min-width:60px;">8</button>
+          <button class="btn btn-primary" onclick="answer('29')" style="padding:10px 20px;min-width:60px;">29</button>
+          <button class="btn btn-primary" onclick="answer('5')" style="padding:10px 20px;min-width:60px;">5</button>
+          <button class="btn btn-primary" onclick="answer('70')" style="padding:10px 20px;min-width:60px;">70</button>
+          <button class="btn btn-primary" onclick="answer('2')" style="padding:10px 20px;min-width:60px;">2</button>
+          <button class="btn btn-secondary" onclick="answer('无数字')" style="padding:10px 20px;">看不到数字</button>
+        </div>
+        <div style="color:#888;font-size:0.85rem;">${t.desc}</div>`;
+    }
+
+    function answer(val) {
+      const correct = val === tests[currentTest].number;
+      if (correct) score++;
+      currentTest++;
+      renderTest();
+    }
+
+    function showResult() {
+      const pct = score / tests.length * 100;
+      let msg, color;
+      if (pct >= 80) { msg = '您的色觉可能正常。本测试仅供参考，如需确诊请咨询眼科医生。'; color = '#2f9e44'; }
+      else if (pct >= 60) { msg = '您可能存在轻度色觉异常，建议前往医院进行专业检查。'; color = '#e67700'; }
+      else { msg = '您可能存在色觉异常，建议尽快前往医院眼科进行专业色觉检查。'; color = '#e03131'; }
+      document.getElementById('test-area').innerHTML = '';
+      document.getElementById('result-area').innerHTML = `
+        <div style="padding:24px;background:${color}11;border:2px solid ${color};border-radius:12px;text-align:center;">
+          <div style="font-size:2rem;font-weight:800;color:${color};">${score} / ${tests.length}</div>
+          <p style="margin-top:12px;color:#555;">${msg}</p>
+          <button class="btn btn-primary" onclick="restart()" style="margin-top:16px;">重新测试</button>
+        </div>`;
+    }
+
+    function restart() { currentTest = 0; score = 0; document.getElementById('result-area').innerHTML = ''; renderTest(); }
+    renderTest();
+  </script>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+</body>
+</html>

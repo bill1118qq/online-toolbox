@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>信用卡号验证器 - Luhn算法校验 - 在线工具箱</title>
+  <meta name="description" content="在线信用卡号验证工具：使用Luhn算法验证卡号有效性，识别银行卡类型（Visa、Mastercard、银联等），支持脱敏展示。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="信用卡号验证器">
+  <meta property="og:description" content="Luhn算法验证卡号，识别银行卡类型。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/credit-card-validator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/credit-card-validator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"信用卡号验证器","url":"https://eitools.cn/src/tools/credit-card-validator.html","description":"使用Luhn算法验证信用卡号有效性，识别银行卡类型","applicationCategory":"DeveloperApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>信用卡号验证器</h1>
+    </div>
+    <div style="margin:16px 0;">
+      <label style="font-weight:bold;display:block;margin-bottom:8px;">输入卡号（仅本地验证，不上传）</label>
+      <input type="text" id="cardInput" placeholder="输入信用卡号" maxlength="23" style="width:100%;padding:12px;border:2px solid #ddd;border-radius:8px;font-size:1.1rem;letter-spacing:2px;box-sizing:border-box;" oninput="formatCard(this)">
+      <button class="btn btn-primary" style="margin-top:12px;" onclick="validateCard()">验证卡号</button>
+    </div>
+    <div id="result-box" style="display:none;padding:20px;border-radius:12px;margin-top:16px;"></div>
+    <div style="margin-top:24px;padding:16px;background:#fff8e1;border-radius:8px;font-size:0.9rem;color:#666;">
+      <b>隐私声明</b>：所有验证均在浏览器本地完成，卡号不会被发送到任何服务器。
+    </div>
+    <h2>支持的卡组织</h2>
+    <table style="width:100%;border-collapse:collapse;margin:12px 0;font-size:0.9rem;">
+      <tr style="background:#f0f2f5;"><th style="padding:10px;">卡组织</th><th style="padding:10px;">前缀</th><th style="padding:10px;">卡号长度</th></tr>
+      <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">Visa</td><td style="padding:8px 10px;">4</td><td style="padding:8px 10px;">13, 16, 19</td></tr>
+      <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">Mastercard</td><td style="padding:8px 10px;">51-55, 2221-2720</td><td style="padding:8px 10px;">16</td></tr>
+      <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">American Express</td><td style="padding:8px 10px;">34, 37</td><td style="padding:8px 10px;">15</td></tr>
+      <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">UnionPay (银联)</td><td style="padding:8px 10px;">62</td><td style="padding:8px 10px;">16-19</td></tr>
+      <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">JCB</td><td style="padding:8px 10px;">3528-3589</td><td style="padding:8px 10px;">16-19</td></tr>
+      <tr><td style="padding:8px 10px;">Discover</td><td style="padding:8px 10px;">6011, 65</td><td style="padding:8px 10px;">16-19</td></tr>
+    </table>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    function formatCard(input) {
+      let v = input.value.replace(/\D/g, '');
+      v = v.substring(0, 19);
+      input.value = v.replace(/(.{4})/g, '$1 ').trim();
+    }
+
+    function luhnCheck(num) {
+      let sum = 0;
+      let alt = false;
+      for (let i = num.length - 1; i >= 0; i--) {
+        let n = parseInt(num[i], 10);
+        if (alt) { n *= 2; if (n > 9) n -= 9; }
+        sum += n;
+        alt = !alt;
+      }
+      return sum % 10 === 0;
+    }
+
+    function detectCardType(num) {
+      if (/^4/.test(num)) return { name: 'Visa', color: '#1a1f71' };
+      if (/^5[1-5]/.test(num) || /^2(22[1-9]|2[3-9]|3[0-9]|4[0-9]|5[0-9]|6[0-9]|7[0-2]0)/.test(num)) return { name: 'Mastercard', color: '#eb001b' };
+      if (/^3[47]/.test(num)) return { name: 'American Express', color: '#006fcf' };
+      if (/^62/.test(num)) return { name: 'UnionPay (银联)', color: '#d10429' };
+      if (/^35(2[89]|[3-8][0-9])/.test(num)) return { name: 'JCB', color: '#0e4c96' };
+      if (/^(6011|65)/.test(num)) return { name: 'Discover', color: '#ff6000' };
+      if (/^(50|56|57|58|63|67)/.test(num)) return { name: 'Maestro', color: '#003399' };
+      return { name: '未知卡组织', color: '#999' };
+    }
+
+    function maskCard(num) {
+      if (num.length <= 6) return num;
+      return num.substring(0, 6) + '*'.repeat(num.length - 10) + num.substring(num.length - 4);
+    }
+
+    function validateCard() {
+      const input = document.getElementById('cardInput').value.replace(/\s/g, '');
+      const box = document.getElementById('result-box');
+
+      if (!input) {
+        box.style.display = 'block';
+        box.style.border = '2px solid #f44';
+        box.style.background = '#fff5f5';
+        box.innerHTML = '<p style="color:#f44;font-weight:bold;">请输入卡号</p>';
+        return;
+      }
+
+      if (!/^\d+$/.test(input)) {
+        box.style.display = 'block';
+        box.style.border = '2px solid #f44';
+        box.style.background = '#fff5f5';
+        box.innerHTML = '<p style="color:#f44;font-weight:bold;">卡号只能包含数字</p>';
+        return;
+      }
+
+      const card = detectCardType(input);
+      const valid = luhnCheck(input);
+      const masked = maskCard(input);
+
+      box.style.display = 'block';
+      if (valid) {
+        box.style.border = '2px solid #4ade80';
+        box.style.background = '#f0fff4';
+        box.innerHTML = `
+          <div style="text-align:center;margin-bottom:16px;">
+            <span style="display:inline-block;padding:8px 20px;background:${card.color};color:#fff;border-radius:8px;font-size:1.1rem;font-weight:bold;">${card.name}</span>
+          </div>
+          <p style="text-align:center;font-size:1.2rem;font-weight:bold;color:#4ade80;margin:12px 0;">卡号有效</p>
+          <table style="width:100%;border-collapse:collapse;margin-top:12px;">
+            <tr><td style="padding:8px;color:#666;">脱敏卡号</td><td style="padding:8px;font-family:monospace;letter-spacing:2px;">${masked}</td></tr>
+            <tr><td style="padding:8px;color:#666;">卡号长度</td><td style="padding:8px;">${input.length} 位</td></tr>
+            <tr><td style="padding:8px;color:#666;">卡组织</td><td style="padding:8px;">${card.name}</td></tr>
+            <tr><td style="padding:8px;color:#666;">Luhn校验</td><td style="padding:8px;color:#4ade80;font-weight:bold;">通过</td></tr>
+          </table>`;
+      } else {
+        box.style.border = '2px solid #f44';
+        box.style.background = '#fff5f5';
+        box.innerHTML = `
+          <div style="text-align:center;margin-bottom:16px;">
+            <span style="display:inline-block;padding:8px 20px;background:${card.color};color:#fff;border-radius:8px;font-size:1.1rem;font-weight:bold;">${card.name}</span>
+          </div>
+          <p style="text-align:center;font-size:1.2rem;font-weight:bold;color:#f44;margin:12px 0;">卡号无效</p>
+          <table style="width:100%;border-collapse:collapse;margin-top:12px;">
+            <tr><td style="padding:8px;color:#666;">脱敏卡号</td><td style="padding:8px;font-family:monospace;letter-spacing:2px;">${masked}</td></tr>
+            <tr><td style="padding:8px;color:#666;">卡号长度</td><td style="padding:8px;">${input.length} 位</td></tr>
+            <tr><td style="padding:8px;color:#666;">卡组织</td><td style="padding:8px;">${card.name}</td></tr>
+            <tr><td style="padding:8px;color:#666;">Luhn校验</td><td style="padding:8px;color:#f44;font-weight:bold;">未通过</td></tr>
+          </table>`;
+      }
+    }
+  </script>
+</body>
+</html>

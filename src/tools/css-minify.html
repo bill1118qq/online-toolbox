@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS压缩工具 - CSS压缩美化 - 在线工具箱</title>
+  <meta name="description" content="在线CSS压缩美化工具：去除CSS多余空格、注释、分号，压缩CSS文件体积。支持CSS格式化和语法检查。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="CSS压缩美化工具">
+  <meta property="og:description" content="在线压缩或美化CSS代码，去除多余空格和注释。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/css-minify.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/css-minify.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"CSS压缩美化工具","url":"https://eitools.cn/src/tools/css-minify.html","description":"在线CSS压缩美化工具，去除多余空格注释，支持格式化","applicationCategory":"DeveloperApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>CSS压缩美化工具</h1>
+    </div>
+    <div style="display:flex;gap:8px;margin:16px 0;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="minifyCSS()">压缩 CSS</button>
+      <button class="btn btn-primary" onclick="beautifyCSS()">美化 CSS</button>
+      <button class="btn btn-secondary" onclick="copyResult()">复制结果</button>
+      <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+    </div>
+    <div class="split-view">
+      <div class="split-panel">
+        <h3>输入 CSS</h3>
+        <textarea id="input" rows="16" placeholder="粘贴CSS代码&#10;.container {&#10;  display: flex;&#10;  gap: 10px;&#10;}"></textarea>
+        <div style="margin-top:8px;font-size:0.85rem;color:#666;">
+          大小: <span id="inputSize">0</span> 字节
+        </div>
+      </div>
+      <div class="split-panel">
+        <h3>输出结果</h3>
+        <textarea id="output" rows="16" readonly></textarea>
+        <div style="margin-top:8px;font-size:0.85rem;color:#666;">
+          大小: <span id="outputSize">0</span> 字节 | 压缩率: <span id="ratio">-</span>
+        </div>
+      </div>
+    </div>
+    <div id="result-box" style="display:none;padding:12px;border-radius:8px;margin-top:12px;font-size:0.9rem;"></div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    const inputEl = document.getElementById('input');
+    const outputEl = document.getElementById('output');
+    const inputSizeEl = document.getElementById('inputSize');
+    const outputSizeEl = document.getElementById('outputSize');
+    const ratioEl = document.getElementById('ratio');
+    const resultBox = document.getElementById('result-box');
+
+    inputEl.addEventListener('input', () => {
+      inputSizeEl.textContent = new Blob([inputEl.value]).size;
+    });
+
+    function showResult(msg, isError) {
+      resultBox.style.display = 'block';
+      resultBox.style.border = isError ? '2px solid #f44' : '2px solid #4ade80';
+      resultBox.style.background = isError ? '#fff5f5' : '#f0fff4';
+      resultBox.textContent = msg;
+    }
+    function hideResult() { resultBox.style.display = 'none'; }
+
+    function minifyCSS() {
+      hideResult();
+      const input = inputEl.value.trim();
+      if (!input) { showResult('请输入CSS内容', true); return; }
+      try {
+        let result = input;
+        // 去除CSS注释
+        result = result.replace(/\/\*[\s\S]*?\*\//g, '');
+        // 去除换行和多余空格
+        result = result.replace(/\s+/g, ' ');
+        // 去除 {} 前后空格
+        result = result.replace(/\s*\{\s*/g, '{');
+        result = result.replace(/\s*\}\s*/g, '}');
+        // 去除 : , ; 前后空格
+        result = result.replace(/\s*:\s*/g, ':');
+        result = result.replace(/\s*,\s*/g, ',');
+        result = result.replace(/;\s*/g, ';');
+        // 去除最后一个分号（}前的分号）
+        result = result.replace(/;}/g, '}');
+        result = result.trim();
+
+        outputEl.value = result;
+        const inSize = new Blob([input]).size;
+        const outSize = new Blob([result]).size;
+        outputSizeEl.textContent = outSize;
+        ratioEl.textContent = inSize > 0 ? ((1 - outSize / inSize) * 100).toFixed(1) + '%' : '-';
+        showResult('压缩成功！', false);
+      } catch (e) {
+        showResult('压缩出错: ' + e.message, true);
+      }
+    }
+
+    function beautifyCSS() {
+      hideResult();
+      const input = inputEl.value.trim();
+      if (!input) { showResult('请输入CSS内容', true); return; }
+      try {
+        let result = input;
+        // 先去除注释
+        result = result.replace(/\/\*[\s\S]*?\*\//g, '');
+        // 规范化空格
+        result = result.replace(/\s+/g, ' ');
+        result = result.trim();
+
+        const rules = result.split('}');
+        let beautified = '';
+        rules.forEach(rule => {
+          rule = rule.trim();
+          if (!rule) return;
+          const colonIdx = rule.indexOf('{');
+          if (colonIdx === -1) {
+            beautified += rule + '\n';
+            return;
+          }
+          const selector = rule.substring(0, colonIdx).trim();
+          const props = rule.substring(colonIdx + 1).trim();
+          const propsList = props.split(';').map(p => p.trim()).filter(p => p);
+          beautified += selector + ' {\n';
+          propsList.forEach(prop => {
+            beautified += '  ' + prop.replace(/\s*:\s*/, ': ') + ';\n';
+          });
+          beautified += '}\n\n';
+        });
+
+        outputEl.value = beautified.trim();
+        const outSize = new Blob([outputEl.value]).size;
+        outputSizeEl.textContent = outSize;
+        ratioEl.textContent = '-';
+        showResult('美化成功！', false);
+      } catch (e) {
+        showResult('美化出错: ' + e.message, true);
+      }
+    }
+
+    function copyResult() {
+      if (!outputEl.value) { showToast('没有可复制的内容'); return; }
+      navigator.clipboard.writeText(outputEl.value).then(() => showToast('已复制到剪贴板'));
+    }
+
+    function clearAll() {
+      inputEl.value = '';
+      outputEl.value = '';
+      inputSizeEl.textContent = '0';
+      outputSizeEl.textContent = '0';
+      ratioEl.textContent = '-';
+      hideResult();
+    }
+  </script>
+</body>
+</html>

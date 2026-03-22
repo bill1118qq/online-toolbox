@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>烟花代码生成器 - 在线HTML烟花特效 - 在线工具箱</title>
+  <meta name="description" content="在线烟花代码生成器，自定义颜色、大小、速度，一键复制HTML烟花特效代码。适用于表白、节日祝福网页。免费使用。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="烟花代码生成器">
+  <meta property="og:description" content="自定义HTML烟花特效，一键复制代码，适用于表白和节日祝福。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/firework-generator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/firework-generator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "烟花代码生成器",
+    "url": "https://eitools.cn/src/tools/firework-generator.html",
+    "description": "在线烟花代码生成器，自定义烟花特效并复制HTML代码。",
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "Any",
+    "offers": {"@type": "Offer", "price": "0"}
+  }
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>烟花代码生成器</h1>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div>
+        <h3 style="margin-bottom:16px;">参数设置</h3>
+
+        <div style="background:white;border-radius:12px;padding:20px;border:1px solid #eee;margin-bottom:16px;">
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">烟花颜色</label>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" class="fw-color" value="#ff4757" checked> <span style="color:#ff4757;">●</span>红</label>
+            <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" class="fw-color" value="#ffa502" checked> <span style="color:#ffa502;">●</span>橙</label>
+            <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" class="fw-color" value="#ffdd59" checked> <span style="color:#ffdd59;">●</span>黄</label>
+            <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" class="fw-color" value="#2ed573" checked> <span style="color:#2ed573;">●</span>绿</label>
+            <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" class="fw-color" value="#1e90ff" checked> <span style="color:#1e90ff;">●</span>蓝</label>
+            <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" class="fw-color" value="#a855f7"> <span style="color:#a855f7;">●</span>紫</label>
+            <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" class="fw-color" value="#ff6b9d"> <span style="color:#ff6b9d;">●</span>粉</label>
+          </div>
+        </div>
+
+        <div style="background:white;border-radius:12px;padding:20px;border:1px solid #eee;margin-bottom:16px;">
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">粒子数量：<span id="particleVal">60</span></label>
+          <input type="range" id="particleCount" min="20" max="150" value="60" style="width:100%;" oninput="document.getElementById('particleVal').textContent=this.value">
+
+          <label style="display:block;font-size:0.9rem;color:#666;margin-top:12px;margin-bottom:6px;">爆炸半径：<span id="radiusVal">80</span>px</label>
+          <input type="range" id="explosionRadius" min="30" max="200" value="80" style="width:100%;" oninput="document.getElementById('radiusVal').textContent=this.value">
+
+          <label style="display:block;font-size:0.9rem;color:#666;margin-top:12px;margin-bottom:6px;">发射频率：<span id="freqVal">800</span>ms</label>
+          <input type="range" id="launchFreq" min="200" max="2000" value="800" step="100" style="width:100%;" oninput="document.getElementById('freqVal').textContent=this.value">
+        </div>
+
+        <div style="background:white;border-radius:12px;padding:20px;border:1px solid #eee;margin-bottom:16px;">
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">背景色</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <label style="display:flex;align-items:center;gap:4px;"><input type="radio" name="bgType" value="#000000" checked> 黑色</label>
+            <label style="display:flex;align-items:center;gap:4px;"><input type="radio" name="bgType" value="#0a0a2e"> 深蓝</label>
+            <label style="display:flex;align-items:center;gap:4px;"><input type="radio" name="bgType" value="#1a1a1a"> 深灰</label>
+          </div>
+        </div>
+
+        <div style="background:white;border-radius:12px;padding:20px;border:1px solid #eee;margin-bottom:16px;">
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">祝福文字（可选）</label>
+          <input type="text" id="blessText" placeholder="如：新年快乐、我爱你" maxlength="20" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+          <label style="display:flex;align-items:center;gap:6px;font-size:0.9rem;margin-top:8px;">
+            <input type="checkbox" id="showBless"> 显示祝福文字
+          </label>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="previewFirework()">预览效果</button>
+          <button class="btn btn-primary" onclick="generateCode()">生成代码</button>
+          <button class="btn btn-secondary" onclick="copyCode()">复制代码</button>
+        </div>
+      </div>
+
+      <div>
+        <h3 style="margin-bottom:16px;">预览</h3>
+        <canvas id="previewCanvas" width="400" height="400" style="width:100%;border-radius:12px;background:#000;cursor:pointer;"></canvas>
+        <p style="font-size:0.85rem;color:#999;margin-top:8px;text-align:center;">点击画布放烟花</p>
+
+        <h3 style="margin-top:24px;margin-bottom:16px;">生成的代码</h3>
+        <textarea id="codeOutput" rows="16" readonly style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:12px;resize:vertical;font-family:monospace;background:#fafafa;"></textarea>
+      </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    const canvas = document.getElementById('previewCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let rockets = [];
+    let animId = null;
+    let autoLaunch = false;
+    let launchTimer = null;
+
+    canvas.addEventListener('click', e => {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      launchFirework(e.clientX * scaleX, e.clientY * scaleY);
+    });
+
+    function getColors() {
+      return [...document.querySelectorAll('.fw-color:checked')].map(c => c.value);
+    }
+
+    function launchFirework(x, y) {
+      const colors = getColors();
+      if (colors.length === 0) return;
+      const count = parseInt(document.getElementById('particleCount').value);
+      const radius = parseInt(document.getElementById('explosionRadius').value);
+      const color = colors[Math.floor(Math.random() * colors.length)];
+
+      for (let i = 0; i < count; i++) {
+        const angle = (Math.PI * 2 / count) * i;
+        const speed = (Math.random() * 0.7 + 0.3) * radius / 30;
+        particles.push({
+          x, y,
+          vx: Math.cos(angle) * speed * (0.8 + Math.random() * 0.4),
+          vy: Math.sin(angle) * speed * (0.8 + Math.random() * 0.4),
+          life: 1,
+          decay: 0.01 + Math.random() * 0.02,
+          color,
+          size: 1.5 + Math.random() * 2
+        });
+      }
+    }
+
+    function animate() {
+      const bg = document.querySelector('input[name="bgType"]:checked').value;
+      ctx.fillStyle = bg + 'cc';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      particles = particles.filter(p => p.life > 0);
+      particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.03;
+        p.life -= p.decay;
+        ctx.globalAlpha = p.life;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      const bless = document.getElementById('blessText').value;
+      const showBless = document.getElementById('showBless').checked;
+      if (showBless && bless) {
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 28px serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(bless, canvas.width / 2, canvas.height / 2);
+      }
+
+      ctx.globalAlpha = 1;
+      animId = requestAnimationFrame(animate);
+    }
+
+    function previewFirework() {
+      if (animId) cancelAnimationFrame(animId);
+      if (launchTimer) clearInterval(launchTimer);
+      particles = [];
+      autoLaunch = true;
+
+      const freq = parseInt(document.getElementById('launchFreq').value);
+      launchFirework(canvas.width * (0.2 + Math.random() * 0.6), canvas.height * (0.2 + Math.random() * 0.4));
+
+      launchTimer = setInterval(() => {
+        if (autoLaunch) {
+          launchFirework(canvas.width * (0.2 + Math.random() * 0.6), canvas.height * (0.2 + Math.random() * 0.4));
+        }
+      }, freq);
+
+      animate();
+      showToast('预览中，点击画布放烟花');
+    }
+
+    function generateCode() {
+      const colors = getColors();
+      const count = document.getElementById('particleCount').value;
+      const radius = document.getElementById('explosionRadius').value;
+      const bg = document.querySelector('input[name="bgType"]:checked').value;
+      const bless = document.getElementById('blessText').value;
+      const showBless = document.getElementById('showBless').checked;
+
+      const code = `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>烟花特效</title>
+<style>
+* { margin: 0; padding: 0; }
+body { overflow: hidden; background: ${bg}; }
+canvas { display: block; }
+${showBless ? `.bless { position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font:bold 3em serif;text-shadow:0 0 20px rgba(255,255,255,0.5);z-index:10;pointer-events:none; }` : ''}
+</style>
+</head>
+<body>
+${showBless ? `<div class="bless">${bless}</div>` : ''}
+<canvas id="c"></canvas>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');
+c.width=innerWidth;c.height=innerHeight;
+let ps=[];
+const colors=${JSON.stringify(colors)};
+function boom(cx,cy){
+  const cl=colors[Math.floor(Math.random()*colors.length)];
+  for(let i=0;i<${count};i++){
+    const a=Math.PI*2/${count}*i,s=(.3+Math.random()*.7)*${radius}/30;
+    ps.push({x:cx,y:cy,vx:Math.cos(a)*s*(.8+Math.random()*.4),vy:Math.sin(a)*s*(.8+Math.random()*.4),life:1,d:.01+Math.random()*.02,c:cl,s:1.5+Math.random()*2});
+  }
+}
+setInterval(()=>boom(c.width*(.2+Math.random()*.6),c.height*(.2+Math.random()*.4)),${document.getElementById('launchFreq').value});
+c.addEventListener('click',e=>boom(e.clientX,e.clientY));
+(function draw(){
+  x.fillStyle='${bg}cc';x.fillRect(0,0,c.width,c.height);
+  ps=ps.filter(p=>p.life>0);
+  ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.03;p.life-=p.d;x.globalAlpha=p.life;x.fillStyle=p.c;x.beginPath();x.arc(p.x,p.y,p.s*p.life,0,Math.PI*2);x.fill();});
+  x.globalAlpha=1;requestAnimationFrame(draw);
+})();
+<\/script>
+</body>
+</html>`;
+
+      document.getElementById('codeOutput').value = code;
+      showToast('代码已生成');
+    }
+
+    function copyCode() {
+      const code = document.getElementById('codeOutput').value;
+      if (!code) { showToast('请先生成代码'); return; }
+      navigator.clipboard.writeText(code).then(() => showToast('已复制到剪贴板'));
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
+    }
+
+    // 页面加载时自动预览
+    previewFirework();
+  </script>
+</body>
+</html>

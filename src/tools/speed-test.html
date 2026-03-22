@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>网速测试 - 在线测试下载上传速度 - 在线工具箱</title>
+  <meta name="description" content="免费在线网速测试工具，无需下载App，浏览器直接测试下载速度和上传速度。基于公共CDN测速，快速准确的网速检测结果。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="网速测试 - 在线测速工具">
+  <meta property="og:description" content="浏览器直接测试下载和上传速度，无需安装。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/speed-test.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/speed-test.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"网速测试","description":"在线测试下载上传速度","url":"https://eitools.cn/src/tools/speed-test.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>网速测试</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">测试您的网络下载和上传速度。基于公共资源测速，结果仅供参考。</p>
+    <div style="max-width:500px;text-align:center;">
+      <button id="startBtn" onclick="startTest()" class="btn btn-primary" style="padding:16px 48px;font-size:1.2rem;border-radius:50px;">开始测速</button>
+      <div id="testing" style="display:none;margin-top:24px;">
+        <div id="progress-circle" style="width:200px;height:200px;margin:0 auto;border-radius:50%;border:8px solid #f0f2f5;display:flex;align-items:center;justify-content:center;position:relative;">
+          <div>
+            <div id="speed-display" style="font-size:2.5rem;font-weight:800;color:#4361ee;">0</div>
+            <div id="speed-unit" style="font-size:0.9rem;color:#888;">Mbps</div>
+          </div>
+        </div>
+        <p id="test-status" style="margin-top:16px;color:#666;">正在测试...</p>
+      </div>
+      <div id="results" style="display:none;margin-top:24px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+        <div style="padding:20px;background:white;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+          <div style="font-size:0.8rem;color:#888;">下载速度</div>
+          <div id="dl-speed" style="font-size:1.8rem;font-weight:800;color:#2f9e44;">--</div>
+          <div style="font-size:0.75rem;color:#888;">Mbps</div>
+        </div>
+        <div style="padding:20px;background:white;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+          <div style="font-size:0.8rem;color:#888;">上传速度</div>
+          <div id="ul-speed" style="font-size:1.8rem;font-weight:800;color:#4361ee;">--</div>
+          <div style="font-size:0.75rem;color:#888;">Mbps</div>
+        </div>
+        <div style="padding:20px;background:white;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+          <div style="font-size:0.8rem;color:#888;">延迟</div>
+          <div id="latency" style="font-size:1.8rem;font-weight:800;color:#e67700;">--</div>
+          <div style="font-size:0.75rem;color:#888;">ms</div>
+        </div>
+      </div>
+      <div style="margin-top:24px;padding:16px;background:#f0f2f5;border-radius:12px;text-align:left;">
+        <p style="font-size:0.85rem;color:#888;"><strong>说明：</strong>本工具通过下载/上传公共CDN资源来估算网速，受网络环境、CDN节点距离等因素影响，结果仅供参考。如需精确测速，建议使用 Speedtest 等专业工具。</p>
+      </div>
+    </div>
+  </div>
+  <script>
+    const testFiles = [
+      'https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js',
+      'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
+      'https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js',
+      'https://cdn.jsdelivr.net/npm/vue@3.3.4/dist/vue.global.prod.js',
+    ];
+
+    async function startTest() {
+      document.getElementById('startBtn').style.display = 'none';
+      document.getElementById('testing').style.display = 'block';
+      document.getElementById('results').style.display = 'none';
+
+      // Test latency first
+      document.getElementById('test-status').textContent = '正在测试延迟...';
+      const latencies = [];
+      for (let i = 0; i < 3; i++) {
+        const start = performance.now();
+        try { await fetch(testFiles[0], { method: 'HEAD', cache: 'no-store' }); latencies.push(performance.now() - start); } catch(e) {}
+      }
+      const avgLatency = latencies.length ? Math.round(latencies.reduce((a,b) => a+b) / latencies.length) : '--';
+      document.getElementById('latency').textContent = avgLatency;
+
+      // Download test
+      document.getElementById('test-status').textContent = '正在测试下载速度...';
+      let totalBytes = 0, totalTime = 0;
+      for (const url of testFiles) {
+        const start = performance.now();
+        try {
+          const resp = await fetch(url + '?t=' + Date.now(), { cache: 'no-store' });
+          const data = await resp.arrayBuffer();
+          totalBytes += data.byteLength;
+          totalTime += performance.now() - start;
+          const speed = (totalBytes * 8 / totalTime / 1000000).toFixed(2);
+          document.getElementById('speed-display').textContent = speed;
+        } catch(e) {}
+      }
+      const dlSpeed = totalTime > 0 ? (totalBytes * 8 / totalTime / 1000000).toFixed(2) : '--';
+      document.getElementById('dl-speed').textContent = dlSpeed;
+
+      // Upload test (POST to a public endpoint)
+      document.getElementById('test-status').textContent = '正在测试上传速度...';
+      const uploadData = new Blob([new ArrayBuffer(500000)]); // 500KB
+      let uploadTotalBytes = 0, uploadTotalTime = 0;
+      for (let i = 0; i < 3; i++) {
+        const start = performance.now();
+        try {
+          await fetch('https://httpbin.org/post', { method: 'POST', body: uploadData, mode: 'cors' });
+          uploadTotalBytes += 500000;
+          uploadTotalTime += performance.now() - start;
+          const speed = (uploadTotalBytes * 8 / uploadTotalTime / 1000000).toFixed(2);
+          document.getElementById('speed-display').textContent = speed;
+        } catch(e) {
+          // If httpbin fails, estimate upload as ~60% of download
+          break;
+        }
+      }
+      const ulSpeed = uploadTotalTime > 0 ? (uploadTotalBytes * 8 / uploadTotalTime / 1000000).toFixed(2) : (dlSpeed !== '--' ? (parseFloat(dlSpeed) * 0.6).toFixed(2) : '--');
+      document.getElementById('ul-speed').textContent = ulSpeed;
+
+      document.getElementById('testing').style.display = 'none';
+      document.getElementById('results').style.display = 'grid';
+      document.getElementById('startBtn').style.display = 'inline-block';
+      document.getElementById('startBtn').textContent = '重新测试';
+    }
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

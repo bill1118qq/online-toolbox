@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML转Markdown - HTML to MD - 在线工具箱</title>
+  <meta name="description" content="免费在线HTML转Markdown工具。粘贴HTML代码自动转换为Markdown格式，支持表格、链接、图片、列表等标签转换。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="HTML转Markdown - HTML to MD">
+  <meta property="og:description" content="在线HTML转Markdown格式。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/html-to-markdown.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/html-to-markdown.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"HTML转Markdown","description":"在线HTML转Markdown工具","url":"https://eitools.cn/src/tools/html-to-markdown.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>HTML 转 Markdown</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">将 HTML 代码转换为 Markdown 格式，支持常见标签。</p>
+    <div style="max-width:900px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <label style="font-size:0.85rem;color:#888;">HTML 输入</label>
+          <textarea id="input" rows="16" oninput="convert()" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.85rem;resize:vertical;margin-top:4px;" placeholder="粘贴 HTML 代码..."><h1>标题一</h1>
+<h2>标题二</h2>
+<p>这是一个<strong>加粗</strong>和<em>斜体</em>的示例。</p>
+<ul>
+  <li>列表项 1</li>
+  <li>列表项 2</li>
+  <li>列表项 3</li>
+</ul>
+<p>访问 <a href="https://example.com">示例链接</a> 获取更多信息。</p>
+<table>
+  <tr><th>姓名</th><th>年龄</th></tr>
+  <tr><td>张三</td><td>25</td></tr>
+  <tr><td>李四</td><td>30</td></tr>
+</table>
+<code>inline code</code>
+<blockquote>这是一段引用文字</blockquote></textarea>
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">Markdown 输出</label>
+          <textarea id="output" rows="16" readonly style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.85rem;background:#f8f9fa;resize:vertical;margin-top:4px;"></textarea>
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <button onclick="navigator.clipboard.writeText(document.getElementById('output').value)" style="padding:8px 20px;background:#4361ee;color:white;border:none;border-radius:8px;cursor:pointer;">复制 Markdown</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    function convert() {
+      const html = document.getElementById('input').value;
+      if (!html.trim()) { document.getElementById('output').value = ''; return; }
+      let md = html;
+      md = md.replace(/<h1[^>]*>(.*?)<\/h1>/gi, '# $1\n\n');
+      md = md.replace(/<h2[^>]*>(.*?)<\/h2>/gi, '## $1\n\n');
+      md = md.replace(/<h3[^>]*>(.*?)<\/h3>/gi, '### $1\n\n');
+      md = md.replace(/<h4[^>]*>(.*?)<\/h4>/gi, '#### $1\n\n');
+      md = md.replace(/<h5[^>]*>(.*?)<\/h5>/gi, '##### $1\n\n');
+      md = md.replace(/<h6[^>]*>(.*?)<\/h6>/gi, '###### $1\n\n');
+      md = md.replace(/<strong[^>]*>(.*?)<\/strong>/gi, '**$1**');
+      md = md.replace(/<b[^>]*>(.*?)<\/b>/gi, '**$1**');
+      md = md.replace(/<em[^>]*>(.*?)<\/em>/gi, '*$1*');
+      md = md.replace(/<i[^>]*>(.*?)<\/i>/gi, '*$1*');
+      md = md.replace(/<code[^>]*>(.*?)<\/code>/gi, '`$1`');
+      md = md.replace(/<a[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/gi, '[$2]($1)');
+      md = md.replace(/<img[^>]*src="([^"]*)"[^>]*alt="([^"]*)"[^>]*\/?>/gi, '![$2]($1)');
+      md = md.replace(/<img[^>]*src="([^"]*)"[^>]*\/?>/gi, '![]($1)');
+      md = md.replace(/<li[^>]*>(.*?)<\/li>/gi, '- $1\n');
+      md = md.replace(/<\/?[ou]l[^>]*>/gi, '\n');
+      md = md.replace(/<hr\s*\/?>/gi, '\n---\n\n');
+      md = md.replace(/<br\s*\/?>/gi, '\n');
+      md = md.replace(/<blockquote[^>]*>(.*?)<\/blockquote>/gis, (m, c) => '> ' + c.trim().replace(/\n/g, '\n> ') + '\n\n');
+      md = md.replace(/<pre[^>]*><code[^>]*>(.*?)<\/code><\/pre>/gis, '```\n$1\n```\n\n');
+      md = md.replace(/<pre[^>]*>(.*?)<\/pre>/gis, '```\n$1\n```\n\n');
+      md = md.replace(/<p[^>]*>(.*?)<\/p>/gi, '$1\n\n');
+      md = md.replace(/<th[^>]*>(.*?)<\/th>/gi, '| $1');
+      md = md.replace(/<\/tr>/gi, '|\n');
+      md = md.replace(/<tr[^>]*>/gi, '');
+      md = md.replace(/<td[^>]*>(.*?)<\/td>/gi, '| $1');
+      md = md.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+      md = md.replace(/<[^>]+>/g, '');
+      md = md.replace(/\n{3,}/g, '\n\n');
+      document.getElementById('output').value = md.trim();
+    }
+    convert();
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

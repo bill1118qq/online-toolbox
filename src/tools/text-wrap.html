@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文本排版工具 - 中文排版美化 - 在线工具箱</title>
+  <meta name="description" content="文本排版工具：中文首行缩进、段间距调整、添加空行、繁简转换、全半角转换、去除多余空行。一键美化文本排版。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="文本排版工具">
+  <meta property="og:description" content="中文文本排版美化、首行缩进、段间距调整。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/text-wrap.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/text-wrap.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"文本排版工具","description":"中文文本排版美化和格式调整","url":"https://eitools.cn/src/tools/text-wrap.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>文本排版工具</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">一键美化中文文本排版，支持多种常用格式调整。</p>
+    <div style="max-width:900px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+        <textarea id="input" placeholder="在此粘贴或输入需要排版的文本..." style="width:100%;height:300px;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:0.95rem;line-height:1.8;resize:vertical;font-family:inherit;"></textarea>
+        <div style="position:relative;">
+          <textarea id="output" readonly placeholder="排版结果将显示在这里..." style="width:100%;height:300px;padding:12px;border:1px solid #4361ee;border-radius:8px;font-size:0.95rem;line-height:1.8;resize:vertical;font-family:inherit;background:#f8f9ff;"></textarea>
+          <button onclick="copyResult()" style="position:absolute;top:8px;right:8px;padding:4px 12px;background:#4361ee;color:white;border:none;border-radius:6px;cursor:pointer;font-size:0.8rem;">复制</button>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
+        <button onclick="indent()" style="padding:8px 16px;background:#4361ee;color:white;border:none;border-radius:8px;cursor:pointer;">首行缩进</button>
+        <button onclick="removeBlank()" style="padding:8px 16px;background:#4361ee;color:white;border:none;border-radius:8px;cursor:pointer;">去多余空行</button>
+        <button onclick="addBlankLine()" style="padding:8px 16px;background:#4361ee;color:white;border:none;border-radius:8px;cursor:pointer;">段间加空行</button>
+        <button onclick="trimSpaces()" style="padding:8px 16px;background:#e3f2fd;color:#4361ee;border:1px solid #4361ee;border-radius:8px;cursor:pointer;">去首尾空格</button>
+        <button onclick="toFullWidth()" style="padding:8px 16px;background:#e3f2fd;color:#4361ee;border:1px solid #4361ee;border-radius:8px;cursor:pointer;">半角转全角</button>
+        <button onclick="toHalfWidth()" style="padding:8px 16px;background:#e3f2fd;color:#4361ee;border:1px solid #4361ee;border-radius:8px;cursor:pointer;">全角转半角</button>
+        <button onclick="addNumber()" style="padding:8px 16px;background:#e3f2fd;color:#4361ee;border:1px solid #4361ee;border-radius:8px;cursor:pointer;">添加编号</button>
+        <button onclick="addSerialQuote()" style="padding:8px 16px;background:#e3f2fd;color:#4361ee;border:1px solid #4361ee;border-radius:8px;cursor:pointer;">加引号</button>
+        <button onclick="toUpperCase()" style="padding:8px 16px;background:#e3f2fd;color:#4361ee;border:1px solid #4361ee;border-radius:8px;cursor:pointer;">英文大写</button>
+        <button onclick="toLowerCase()" style="padding:8px 16px;background:#e3f2fd;color:#4361ee;border:1px solid #4361ee;border-radius:8px;cursor:pointer;">英文小写</button>
+        <button onclick="reverseText()" style="padding:8px 16px;background:#e3f2fd;color:#4361ee;border:1px solid #4361ee;border-radius:8px;cursor:pointer;">文本反转</button>
+        <button onclick="clearAll()" style="padding:8px 16px;background:#fee;color:#c00;border:1px solid #fcc;border-radius:8px;cursor:pointer;">清空</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+        <div>
+          <label style="font-size:0.85rem;color:#888;">自定义缩进字符</label>
+          <input type="text" id="indentChar" value="　　" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:4px;" placeholder="默认两个全角空格">
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">统计信息</label>
+          <div id="stats" style="padding:8px;background:#f5f5f5;border-radius:6px;margin-top:4px;font-size:0.85rem;color:#666;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    function getOutput() { return document.getElementById('output').value || document.getElementById('input').value; }
+    function setOutput(text) { document.getElementById('output').value = text; updateStats(); }
+
+    function indent() {
+      var text = getOutput();
+      var indentStr = document.getElementById('indentChar').value || '　　';
+      var lines = text.split('\n');
+      var result = lines.map(function(line) {
+        line = line.trim();
+        if (line === '') return '';
+        if (/^\d+[.、)）]/.test(line) || /^[一二三四五六七八九十]+[、.）)]/.test(line)) return line;
+        return indentStr + line;
+      });
+      setOutput(result.join('\n'));
+    }
+
+    function removeBlank() {
+      var text = getOutput();
+      setOutput(text.replace(/\n{3,}/g, '\n\n').replace(/^\n+/, '').replace(/\n+$/, ''));
+    }
+
+    function addBlankLine() {
+      var text = getOutput();
+      setOutput(text.replace(/\n(?!\n)/g, '\n\n'));
+    }
+
+    function trimSpaces() {
+      var text = getOutput();
+      setOutput(text.split('\n').map(function(l) { return l.trim(); }).join('\n'));
+    }
+
+    function toFullWidth() {
+      var text = getOutput();
+      setOutput(text.replace(/[!-~]/g, function(c) { return String.fromCharCode(c.charCodeAt(0) + 65248); }));
+    }
+
+    function toHalfWidth() {
+      var text = getOutput();
+      setOutput(text.replace(/[\uff01-\uff5e]/g, function(c) { return String.fromCharCode(c.charCodeAt(0) - 65248); }).replace(/\u3000/g, ' '));
+    }
+
+    function addNumber() {
+      var text = getOutput();
+      var lines = text.split('\n').filter(function(l) { return l.trim() !== ''; });
+      var result = lines.map(function(line, i) { return (i + 1) + '. ' + line.trim(); });
+      setOutput(result.join('\n'));
+    }
+
+    function addSerialQuote() {
+      var text = getOutput();
+      var lines = text.split('\n').filter(function(l) { return l.trim() !== ''; });
+      var result = lines.map(function(line) { return '"' + line.trim() + '"'; });
+      setOutput(result.join('\n'));
+    }
+
+    function toUpperCase() { setOutput(getOutput().toUpperCase()); }
+    function toLowerCase() { setOutput(getOutput().toLowerCase()); }
+    function reverseText() { setOutput(getOutput().split('').reverse().join('')); }
+
+    function clearAll() {
+      document.getElementById('input').value = '';
+      document.getElementById('output').value = '';
+      document.getElementById('stats').innerHTML = '';
+    }
+
+    function copyResult() {
+      var text = document.getElementById('output').value;
+      if (!text) return;
+      navigator.clipboard.writeText(text).then(function() {
+        var btn = event.target;
+        btn.textContent = '已复制';
+        setTimeout(function() { btn.textContent = '复制'; }, 1500);
+      });
+    }
+
+    function updateStats() {
+      var text = document.getElementById('output').value;
+      if (!text) { document.getElementById('stats').innerHTML = ''; return; }
+      var chars = text.length;
+      var chinese = (text.match(/[\u4e00-\u9fff]/g) || []).length;
+      var words = text.trim().split(/\s+/).length;
+      var lines = text.split('\n').length;
+      var paragraphs = text.split(/\n\s*\n/).filter(function(p) { return p.trim(); }).length;
+      document.getElementById('stats').innerHTML = '字符: ' + chars + ' | 中文: ' + chinese + ' | 词数: ' + words + ' | 行数: ' + lines + ' | 段落: ' + paragraphs;
+    }
+
+    document.getElementById('input').addEventListener('input', function() { updateStats(); });
+    document.getElementById('input').addEventListener('paste', function() { setTimeout(updateStats, 50); });
+  </script>
+</body>
+</html>

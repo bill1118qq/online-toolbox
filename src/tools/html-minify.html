@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML压缩工具 - 去除HTML空格换行 - 在线工具箱</title>
+  <meta name="description" content="在线HTML压缩工具：去除HTML多余空格、换行、注释，压缩HTML文件体积。支持pre/script/style标签保护。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="HTML压缩工具">
+  <meta property="og:description" content="在线压缩HTML，去除多余空格和注释。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/html-minify.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/html-minify.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"HTML压缩工具","url":"https://eitools.cn/src/tools/html-minify.html","description":"在线HTML压缩工具，去除多余空格、换行和注释","applicationCategory":"DeveloperApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>HTML压缩工具</h1>
+    </div>
+    <div style="display:flex;gap:8px;margin:16px 0;flex-wrap:wrap;align-items:center;">
+      <button class="btn btn-primary" onclick="minifyHTML()">压缩 HTML</button>
+      <button class="btn btn-secondary" onclick="copyResult()">复制结果</button>
+      <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+      <label style="font-size:0.85rem;display:flex;align-items:center;gap:4px;">
+        <input type="checkbox" id="removeComments" checked> 去除注释
+      </label>
+      <label style="font-size:0.85rem;display:flex;align-items:center;gap:4px;">
+        <input type="checkbox" id="removeOptionalTags"> 去除可选标签
+      </label>
+    </div>
+    <div class="split-view">
+      <div class="split-panel">
+        <h3>输入 HTML</h3>
+        <textarea id="input" rows="16" placeholder="粘贴HTML源码"></textarea>
+        <div style="margin-top:8px;font-size:0.85rem;color:#666;">
+          大小: <span id="inputSize">0</span> 字节
+        </div>
+      </div>
+      <div class="split-panel">
+        <h3>压缩结果</h3>
+        <textarea id="output" rows="16" readonly></textarea>
+        <div style="margin-top:8px;font-size:0.85rem;color:#666;">
+          大小: <span id="outputSize">0</span> 字节 | 压缩率: <span id="ratio">-</span>
+        </div>
+      </div>
+    </div>
+    <div id="result-box" style="display:none;padding:12px;border-radius:8px;margin-top:12px;font-size:0.9rem;"></div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    const inputEl = document.getElementById('input');
+    const outputEl = document.getElementById('output');
+    const inputSizeEl = document.getElementById('inputSize');
+    const outputSizeEl = document.getElementById('outputSize');
+    const ratioEl = document.getElementById('ratio');
+    const resultBox = document.getElementById('result-box');
+
+    inputEl.addEventListener('input', () => {
+      inputSizeEl.textContent = new Blob([inputEl.value]).size;
+    });
+
+    function showResult(msg, isError) {
+      resultBox.style.display = 'block';
+      resultBox.style.border = isError ? '2px solid #f44' : '2px solid #4ade80';
+      resultBox.style.background = isError ? '#fff5f5' : '#f0fff4';
+      resultBox.textContent = msg;
+    }
+    function hideResult() { resultBox.style.display = 'none'; }
+
+    function minifyHTML() {
+      hideResult();
+      const input = inputEl.value.trim();
+      if (!input) { showResult('请输入HTML内容', true); return; }
+
+      try {
+        let result = input;
+        const removeComments = document.getElementById('removeComments').checked;
+        const removeOptional = document.getElementById('removeOptionalTags').checked;
+
+        // 保护 pre, script, style, textarea 标签内容
+        const protectedBlocks = [];
+        result = result.replace(/<(pre|script|style|textarea)([^>]*)>([\s\S]*?)<\/\1>/gi, (match, tag, attrs, content) => {
+          const placeholder = `__PROTECTED_${protectedBlocks.length}__`;
+          protectedBlocks.push(match);
+          return placeholder;
+        });
+
+        // 去除HTML注释
+        if (removeComments) {
+          result = result.replace(/<!--[\s\S]*?-->/g, '');
+        }
+
+        // 压缩标签间空白
+        result = result.replace(/>\s+</g, '><');
+
+        // 压缩多个空白为一个空格
+        result = result.replace(/\s{2,}/g, ' ');
+
+        // 去除行首行尾空白
+        result = result.split('\n').map(l => l.trim()).join('');
+
+        // 恢复保护的内容
+        protectedBlocks.forEach((block, i) => {
+          result = result.replace(`__PROTECTED_${i}__`, block);
+        });
+
+        // 去除可选标签
+        if (removeOptional) {
+          result = result.replace(/<\/?(option|thead|tbody|tfoot|tr|th|td|li|dt|dd|p|rt|rp|optgroup)[^>]*>/gi, (match) => {
+            if (match.startsWith('</')) return '';
+            return match;
+          });
+        }
+
+        outputEl.value = result;
+        const inSize = new Blob([input]).size;
+        const outSize = new Blob([result]).size;
+        outputSizeEl.textContent = outSize;
+        ratioEl.textContent = inSize > 0 ? ((1 - outSize / inSize) * 100).toFixed(1) + '%' : '-';
+        showResult('压缩成功！', false);
+      } catch (e) {
+        showResult('压缩出错: ' + e.message, true);
+      }
+    }
+
+    function copyResult() {
+      if (!outputEl.value) { showToast('没有可复制的内容'); return; }
+      navigator.clipboard.writeText(outputEl.value).then(() => showToast('已复制到剪贴板'));
+    }
+
+    function clearAll() {
+      inputEl.value = '';
+      outputEl.value = '';
+      inputSizeEl.textContent = '0';
+      outputSizeEl.textContent = '0';
+      ratioEl.textContent = '-';
+      hideResult();
+    }
+  </script>
+</body>
+</html>

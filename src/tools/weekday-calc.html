@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>星期计算器 - 某天是星期几 - 在线工具箱</title>
+  <meta name="description" content="免费在线星期计算器。输入任意日期，快速计算是星期几。支持历史日期和未来日期查询。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="星期计算器 - 某天是星期几">
+  <meta property="og:description" content="输入日期快速计算星期几。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/weekday-calc.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/weekday-calc.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"星期计算器","description":"计算任意日期是星期几","url":"https://eitools.cn/src/tools/weekday-calc.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>星期计算器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">输入任意日期，快速计算是星期几。</p>
+    <div style="max-width:600px;">
+      <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
+        <div>
+          <label style="font-size:0.85rem;color:#888;">日期</label>
+          <input type="date" id="dateInput" style="padding:10px;border:1px solid #ddd;border-radius:8px;font-size:1rem;margin-top:4px;" onchange="calc()">
+        </div>
+        <div style="flex:1;">
+          <label style="font-size:0.85rem;color:#888;">或直接输入</label>
+          <input type="text" id="textInput" placeholder="如：2024-01-01 或 2024年1月1日" oninput="parseAndCalc()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:0.9rem;margin-top:4px;">
+        </div>
+      </div>
+      <div id="result" style="padding:24px;background:#f8f9fa;border-radius:12px;text-align:center;min-height:100px;"></div>
+      <div style="margin-top:20px;">
+        <h3 style="margin-bottom:8px;">今年还有多少个工作日/周末？</h3>
+        <div id="yearStats" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;"></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const WEEKDAYS = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+    const WEEKDAYS_SHORT = ['日','一','二','三','四','五','六'];
+    function calc() {
+      const val = document.getElementById('dateInput').value;
+      if (!val) return;
+      const d = new Date(val);
+      showResult(d);
+    }
+    function parseAndCalc() {
+      const val = document.getElementById('textInput').value.trim();
+      if (!val) { document.getElementById('result').innerHTML = ''; return; }
+      let d = new Date(val);
+      if (isNaN(d.getTime())) {
+        const m = val.match(/(\d{4})[年/\-](\d{1,2})[月/\-](\d{1,2})/);
+        if (m) d = new Date(parseInt(m[1]), parseInt(m[2])-1, parseInt(m[3]));
+      }
+      if (isNaN(d.getTime())) {
+        document.getElementById('result').innerHTML = '<span style="color:#c92a2a;">无法识别的日期格式</span>';
+        return;
+      }
+      document.getElementById('dateInput').value = d.toISOString().split('T')[0];
+      showResult(d);
+    }
+    function showResult(d) {
+      const weekday = WEEKDAYS[d.getDay()];
+      const isWeekend = d.getDay() === 0 || d.getDay() === 6;
+      const today = new Date();
+      const diffDays = Math.round((d - new Date(today.toDateString())) / 86400000);
+      let relText = '今天';
+      if (diffDays > 0) relText = `${diffDays} 天后`;
+      else if (diffDays < 0) relText = `${Math.abs(diffDays)} 天前`;
+      const yearDays = Math.round((d - new Date(d.getFullYear(),0,1)) / 86400000) + 1;
+      document.getElementById('result').innerHTML = `
+        <div style="font-size:2rem;font-weight:700;color:#4361ee;">${weekday}</div>
+        <div style="margin-top:8px;color:#666;">${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日</div>
+        <div style="margin-top:4px;color:#888;">${relText} · 第${d.getDay()===0?7:d.getDay()}天 · 今年第${yearDays}天</div>
+        <div style="margin-top:8px;display:inline-block;padding:4px 16px;border-radius:20px;font-size:0.85rem;background:${isWeekend?'#fff3cd':'#e8f5e9'};color:${isWeekend?'#e67700':'#2f9e44'};">${isWeekend?'周末':'工作日'}</div>`;
+    }
+    function calcYearStats() {
+      const now = new Date();
+      const year = now.getFullYear();
+      let workdays = 0, weekends = 0, passedWork = 0, passedWeek = 0;
+      for (let m = 0; m < 12; m++) {
+        const days = new Date(year, m + 1, 0).getDate();
+        for (let d = 1; d <= days; d++) {
+          const dt = new Date(year, m, d);
+          const isW = dt.getDay() === 0 || dt.getDay() === 6;
+          const isFuture = dt > now;
+          if (isFuture) { if (isW) weekends++; else workdays++; }
+          else { if (isW) passedWeek++; else passedWork++; }
+        }
+      }
+      document.getElementById('yearStats').innerHTML = `
+        <div style="padding:16px;background:#e8f5e9;border-radius:10px;text-align:center;">
+          <div style="font-size:1.5rem;font-weight:700;color:#2f9e44;">${workdays}</div>
+          <div style="font-size:0.85rem;color:#666;">剩余工作日</div>
+        </div>
+        <div style="padding:16px;background:#fff3cd;border-radius:10px;text-align:center;">
+          <div style="font-size:1.5rem;font-weight:700;color:#e67700;">${weekends}</div>
+          <div style="font-size:0.85rem;color:#666;">剩余周末</div>
+        </div>
+        <div style="padding:16px;background:#f0f2f5;border-radius:10px;text-align:center;">
+          <div style="font-size:1.5rem;font-weight:700;color:#495057;">${passedWork}</div>
+          <div style="font-size:0.85rem;color:#666;">已过工作日</div>
+        </div>
+        <div style="padding:16px;background:#f0f2f5;border-radius:10px;text-align:center;">
+          <div style="font-size:1.5rem;font-weight:700;color:#495057;">${passedWeek}</div>
+          <div style="font-size:0.85rem;color:#666;">已过周末</div>
+        </div>`;
+    }
+    calcYearStats();
+    document.getElementById('dateInput').value = new Date().toISOString().split('T')[0];
+    calc();
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

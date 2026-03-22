@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>随机列表生成器 - 随机排序/抽取 - 在线工具箱</title>
+  <meta name="description" content="免费在线随机列表生成器。随机排序、随机抽取指定数量、去除重复、导出结果。适用于抽奖、随机分组等场景。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="随机列表生成器 - 随机排序/抽取">
+  <meta property="og:description" content="随机排序、随机抽取、抽奖工具。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/list-generator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/list-generator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"随机列表生成器","description":"随机排序、随机抽取、抽奖工具","url":"https://eitools.cn/src/tools/list-generator.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>随机列表生成器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">随机排序、随机抽取指定数量，适用于抽奖、分组等场景。</p>
+    <div style="max-width:800px;">
+      <div style="margin-bottom:16px;">
+        <label style="font-size:0.85rem;color:#888;">输入列表（每行一个）</label>
+        <textarea id="input" rows="8" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:0.9rem;resize:vertical;margin-top:4px;" placeholder="张三&#10;李四&#10;王五&#10;赵六&#10;钱七">张三
+李四
+王五
+赵六
+钱七
+孙八
+周九
+吴十</textarea>
+      </div>
+      <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center;">
+        <button onclick="shuffle()" style="padding:8px 20px;background:#4361ee;color:white;border:none;border-radius:8px;cursor:pointer;">随机排序</button>
+        <div style="display:flex;align-items:center;gap:4px;">
+          <label style="font-size:0.85rem;">随机抽取</label>
+          <input type="number" id="pickCount" value="3" min="1" style="width:60px;padding:6px;border:1px solid #ddd;border-radius:6px;">
+          <label style="font-size:0.85rem;">个</label>
+          <button onclick="pick()" style="padding:8px 16px;background:#2f9e44;color:white;border:none;border-radius:8px;cursor:pointer;">抽取</button>
+        </div>
+        <button onclick="groupRandom()" style="padding:8px 20px;background:#e67700;color:white;border:none;border-radius:8px;cursor:pointer;">随机分组</button>
+        <div style="display:flex;align-items:center;gap:4px;">
+          <input type="number" id="groupCount" value="2" min="2" style="width:60px;padding:6px;border:1px solid #ddd;border-radius:6px;">
+          <label style="font-size:0.85rem;">组</label>
+        </div>
+      </div>
+      <div style="margin-bottom:16px;display:flex;gap:8px;">
+        <button onclick="copyResult()" style="padding:6px 16px;background:#495057;color:white;border:none;border-radius:6px;cursor:pointer;font-size:0.85rem;">复制结果</button>
+        <button onclick="document.getElementById('input').value='';document.getElementById('output').innerHTML=''" style="padding:6px 16px;background:#dee2e6;color:#333;border:none;border-radius:6px;cursor:pointer;font-size:0.85rem;">清空</button>
+      </div>
+      <div id="output" style="padding:16px;background:#f8f9fa;border-radius:12px;min-height:60px;"></div>
+    </div>
+  </div>
+  <script>
+    let lastResult = '';
+    function getItems() {
+      return document.getElementById('input').value.split('\n').map(s => s.trim()).filter(Boolean);
+    }
+    function shuffleArray(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+    function shuffle() {
+      const items = getItems();
+      if (!items.length) return;
+      const shuffled = shuffleArray(items);
+      lastResult = shuffled.join('\n');
+      document.getElementById('output').innerHTML = `<h3 style="margin-bottom:8px;">随机排序结果</h3>` +
+        shuffled.map((item, i) => `<div style="display:inline-block;padding:8px 16px;margin:4px;background:white;border-radius:20px;border:1px solid #ddd;"><span style="color:#888;font-size:0.75rem;">${i+1}.</span> ${escapeHtml(item)}</div>`).join('');
+    }
+    function pick() {
+      const items = getItems();
+      const count = parseInt(document.getElementById('pickCount').value) || 1;
+      if (!items.length) return;
+      const shuffled = shuffleArray(items);
+      const picked = shuffled.slice(0, Math.min(count, items.length));
+      lastResult = picked.join('\n');
+      document.getElementById('output').innerHTML = `<h3 style="margin-bottom:8px;">抽取结果</h3>` +
+        `<div style="padding:16px;background:#e8f5e9;border-radius:12px;font-size:1.3rem;font-weight:700;color:#2f9e44;text-align:center;">${picked.map(escapeHtml).join(' · ')}</div>` +
+        `<div style="margin-top:8px;color:#888;font-size:0.85rem;">从 ${items.length} 个中随机抽取 ${picked.length} 个</div>`;
+    }
+    function groupRandom() {
+      const items = getItems();
+      const groups = parseInt(document.getElementById('groupCount').value) || 2;
+      if (!items.length) return;
+      const shuffled = shuffleArray(items);
+      const result = Array.from({length: groups}, () => []);
+      shuffled.forEach((item, i) => result[i % groups].push(item));
+      const colors = ['#e8f4fd','#e8f5e9','#fff3cd','#fee','#f0f2f5','#e7f5ff'];
+      lastResult = result.map((g, i) => `组${i+1}: ${g.join(', ')}`).join('\n');
+      document.getElementById('output').innerHTML = `<h3 style="margin-bottom:8px;">随机分组结果（${groups}组）</h3>` +
+        result.map((g, i) => `<div style="padding:12px;margin-bottom:8px;background:${colors[i%colors.length]};border-radius:10px;">
+          <strong>第${i+1}组</strong>（${g.length}人）<div style="margin-top:4px;">${g.map(escapeHtml).join('、')}</div></div>`).join('');
+    }
+    function copyResult() {
+      if (lastResult) navigator.clipboard.writeText(lastResult);
+    }
+    function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    shuffle();
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

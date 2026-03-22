@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON校验器 - 在线验证JSON格式 - 在线工具箱</title>
+  <meta name="description" content="免费在线JSON校验工具，验证JSON格式是否正确，实时显示错误位置和原因。支持JSON美化、压缩和树形结构预览。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="JSON校验器 - 在线验证JSON格式">
+  <meta property="og:description" content="验证JSON格式，实时显示错误位置。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/json-validator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/json-validator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"JSON校验器","description":"在线验证JSON格式是否正确","url":"https://eitools.cn/src/tools/json-validator.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>JSON 校验器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">粘贴或输入 JSON，实时校验格式，显示错误位置。</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:900px;">
+      <div>
+        <label style="font-size:0.85rem;color:#888;">JSON 输入</label>
+        <textarea id="input" rows="16" oninput="validate()" placeholder='粘贴JSON...' style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.85rem;resize:vertical;margin-top:4px;"></textarea>
+      </div>
+      <div>
+        <label style="font-size:0.85rem;color:#888;">校验结果</label>
+        <div id="result" style="padding:16px;border:1px solid #ddd;border-radius:8px;min-height:200px;margin-top:4px;font-size:0.9rem;"></div>
+      </div>
+    </div>
+    <div style="max-width:900px;margin-top:12px;display:flex;gap:8px;">
+      <button class="btn btn-primary" onclick="validate()">校验</button>
+      <button class="btn" onclick="beautify()">美化</button>
+      <button class="btn" onclick="minify()">压缩</button>
+      <button class="btn" onclick="document.getElementById('input').value='';document.getElementById('result').innerHTML=''">清空</button>
+    </div>
+  </div>
+  <script>
+    function validate() {
+      const input = document.getElementById('input').value.trim();
+      const el = document.getElementById('result');
+      if (!input) { el.innerHTML = '<p style="color:#999;">请输入JSON内容</p>'; return; }
+      try {
+        const parsed = JSON.parse(input);
+        el.innerHTML = `<div style="color:#2f9e44;font-weight:700;font-size:1.1rem;">✓ JSON 格式正确</div>
+          <div style="margin-top:8px;font-size:0.85rem;color:#888;">类型：${getType(parsed)} | 键数：${countKeys(parsed)}</div>
+          <div style="margin-top:12px;font-size:0.85rem;color:#555;">数据预览：<pre style="background:#f0f2f5;padding:12px;border-radius:8px;overflow-x:auto;margin-top:4px;max-height:300px;overflow-y:auto;">${escapeHtml(JSON.stringify(parsed, null, 2))}</pre></div>`;
+        el.style.borderColor = '#2f9e44';
+      } catch (e) {
+        const match = e.message.match(/position\s+(\d+)/i);
+        let posInfo = '';
+        if (match) {
+          const pos = parseInt(match[1]);
+          const line = input.substring(0, pos).split('\n').length;
+          const col = pos - input.lastIndexOf('\n', pos - 1);
+          posInfo = `<div style="margin-top:8px;font-size:0.85rem;color:#888;">错误位置：第 ${line} 行，第 ${col} 列</div>
+            <div style="margin-top:4px;font-size:0.8rem;color:#999;background:#fff3cd;padding:8px;border-radius:6px;">...${escapeHtml(input.substring(Math.max(0, pos - 20), pos + 20))}...</div>`;
+        }
+        el.innerHTML = `<div style="color:#c92a2a;font-weight:700;font-size:1.1rem;">✗ JSON 格式错误</div>
+          <div style="margin-top:8px;color:#c92a2a;font-size:0.9rem;">${escapeHtml(e.message)}</div>${posInfo}`;
+        el.style.borderColor = '#c92a2a';
+      }
+    }
+    function getType(v) { if (v === null) return 'null'; return Array.isArray(v) ? 'Array[' + v.length + ']' : typeof v; }
+    function countKeys(v) { if (!v || typeof v !== 'object') return 0; return Object.keys(v).length; }
+    function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function beautify() {
+      try { document.getElementById('input').value = JSON.stringify(JSON.parse(document.getElementById('input').value), null, 2); validate(); } catch(e) { validate(); }
+    }
+    function minify() {
+      try { document.getElementById('input').value = JSON.stringify(JSON.parse(document.getElementById('input').value)); validate(); } catch(e) { validate(); }
+    }
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

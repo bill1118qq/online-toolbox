@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>体重指数BMI计算器 - 身高标准体重表 - 在线工具箱</title>
+  <meta name="description" content="国际标准BMI计算器：输入身高体重自动计算BMI值，显示WHO和亚洲标准分类。附男女标准体重对照表和健康建议。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="国际标准BMI计算器">
+  <meta property="og:description" content="WHO标准BMI计算、标准体重对照、健康建议。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/bmi-intl.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/bmi-intl.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"国际BMI计算器","description":"按WHO标准计算BMI并给出健康建议","url":"https://eitools.cn/src/tools/bmi-intl.html","applicationCategory":"HealthApplication","operatingSystem":"Any"}
+  </script>
+  <style>
+    .bmi-bar { height:24px;border-radius:12px;background:linear-gradient(to right,#4caf50 0%,#4caf50 37.5%,#ffeb3b 37.5%,#ffeb3b 50%,#ff9800 50%,#ff9800 62.5%,#f44336 62.5%,#f44336 100%);position:relative;margin:20px 0; }
+    .bmi-pointer { position:absolute;top:-8px;width:4px;height:40px;background:#333;border-radius:2px;transition:left .3s; }
+    .bmi-labels { display:flex;justify-content:space-between;font-size:0.75rem;color:#888;margin-top:4px; }
+  </style>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>国际标准BMI计算器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">按WHO标准计算BMI指数，同时显示中国标准和健康建议。</p>
+    <div style="max-width:800px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:16px;margin-bottom:20px;align-items:end;">
+        <div>
+          <label style="font-size:0.85rem;color:#888;">身高（cm）</label>
+          <input type="number" id="height" value="170" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;" oninput="calc()">
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">体重（kg）</label>
+          <input type="number" id="weight" value="65" step="0.1" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;" oninput="calc()">
+        </div>
+        <button onclick="calc()" style="padding:10px 24px;background:#4361ee;color:white;border:none;border-radius:8px;cursor:pointer;white-space:nowrap;">计算</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;">
+        <div style="padding:20px;background:#e3f2fd;border-radius:12px;text-align:center;">
+          <div style="font-size:0.8rem;color:#888;">BMI 指数</div>
+          <div id="bmiValue" style="font-size:2rem;font-weight:bold;color:#1565c0;">-</div>
+        </div>
+        <div style="padding:20px;background:#e8f5e9;border-radius:12px;text-align:center;">
+          <div style="font-size:0.8rem;color:#888;">WHO 分类</div>
+          <div id="whoClass" style="font-size:1.2rem;font-weight:bold;color:#2e7d32;">-</div>
+        </div>
+        <div style="padding:20px;background:#fff3e0;border-radius:12px;text-align:center;">
+          <div style="font-size:0.8rem;color:#888;">中国标准</div>
+          <div id="cnClass" style="font-size:1.2rem;font-weight:bold;color:#f57c00;">-</div>
+        </div>
+      </div>
+      <div class="bmi-bar">
+        <div class="bmi-pointer" id="pointer" style="left:50%;"></div>
+      </div>
+      <div class="bmi-labels">
+        <span>偏瘦 &lt;18.5</span><span>正常 18.5-24</span><span>偏胖 24-28</span><span>肥胖 &gt;28</span>
+      </div>
+      <div id="detail" style="padding:16px;background:#f5f5f5;border-radius:12px;margin-top:20px;font-size:0.9rem;color:#666;line-height:1.8;"></div>
+    </div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    var WHO = [
+      { min: 0, max: 18.5, label: '偏瘦', color: '#4caf50' },
+      { min: 18.5, max: 25, label: '正常', color: '#2e7d32' },
+      { min: 25, max: 30, label: '偏胖', color: '#ff9800' },
+      { min: 30, max: 100, label: '肥胖', color: '#f44336' }
+    ];
+    var CN = [
+      { min: 0, max: 18.5, label: '偏瘦', color: '#4caf50' },
+      { min: 18.5, max: 24, label: '正常', color: '#2e7d32' },
+      { min: 24, max: 28, label: '偏胖', color: '#ff9800' },
+      { min: 28, max: 100, label: '肥胖', color: '#f44336' }
+    ];
+    var ADVICE = {
+      '偏瘦': '建议增加营养摄入，适量增重。可咨询营养师制定饮食计划。',
+      '正常': 'BMI在健康范围内，继续保持均衡饮食和规律运动。',
+      '偏胖': '建议控制饮食热量，增加运动量。每周至少150分钟中等强度运动。',
+      '肥胖': '建议尽快就医咨询，制定科学的减重计划。注意控制碳水摄入。'
+    };
+
+    function classify(bmi, table) {
+      for (var i = 0; i < table.length; i++) {
+        if (bmi >= table[i].min && bmi < table[i].max) return table[i];
+      }
+      return table[table.length - 1];
+    }
+
+    function calc() {
+      var h = parseFloat(document.getElementById('height').value) / 100;
+      var w = parseFloat(document.getElementById('weight').value);
+      if (!h || !w || h <= 0 || w <= 0) return;
+
+      var bmi = w / (h * h);
+      var who = classify(bmi, WHO);
+      var cn = classify(bmi, CN);
+
+      document.getElementById('bmiValue').textContent = bmi.toFixed(1);
+      document.getElementById('whoClass').textContent = who.label;
+      document.getElementById('whoClass').style.color = who.color;
+      document.getElementById('cnClass').textContent = cn.label;
+      document.getElementById('cnClass').style.color = cn.color;
+
+      var pct = Math.min(98, Math.max(2, (bmi / 40) * 100));
+      document.getElementById('pointer').style.left = pct + '%';
+
+      var minWeight = (18.5 * h * h).toFixed(1);
+      var maxWeight = (24 * h * h).toFixed(1);
+      var idealLow = (20 * h * h).toFixed(1);
+      var idealHigh = (23 * h * h).toFixed(1);
+
+      document.getElementById('detail').innerHTML =
+        '<b>WHO健康体重范围：</b>' + (18.5 * h * h).toFixed(1) + 'kg - ' + (25 * h * h).toFixed(1) + 'kg<br>' +
+        '<b>中国标准健康范围：</b>' + minWeight + 'kg - ' + maxWeight + 'kg<br>' +
+        '<b>建议理想体重：</b>' + idealLow + 'kg - ' + idealHigh + 'kg<br>' +
+        '<b>健康建议：</b>' + ADVICE[cn.label];
+    }
+
+    calc();
+  </script>
+</body>
+</html>

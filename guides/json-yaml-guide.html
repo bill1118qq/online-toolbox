@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON与YAML详解 - 格式区别与转换方法 - 在线工具箱</title>
+  <meta name="description" content="JSON与YAML格式对比详解：语法区别、各自的优缺点、适用场景、互相转换方法。附在线JSON/YAML转换工具。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="JSON与YAML格式对比">
+  <meta property="og:description" content="JSON vs YAML语法区别、优缺点、转换方法。">
+  <meta property="og:url" content="https://eitools.cn/guides/json-yaml-guide.html">
+  <link rel="canonical" href="https://eitools.cn/guides/json-yaml-guide.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"JSON和YAML有什么区别？","acceptedAnswer":{"@type":"Answer","text":"JSON用花括号和方括号，严格要求引号和逗号。YAML用缩进表示层级，更简洁可读。JSON适合API传输，YAML适合配置文件（如Docker Compose、K8s）。两者可以互相转换。"}}]}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">← 返回首页</a>
+      <h1>JSON 与 YAML 详解</h1>
+    </div>
+    <article style="line-height:1.8;">
+      <h2>格式对比</h2>
+      <table style="width:100%;border-collapse:collapse;margin:12px 0;font-size:0.9rem;">
+        <tr style="background:#f0f2f5;"><th style="padding:10px;">对比项</th><th style="padding:10px;">JSON</th><th style="padding:10px;">YAML</th></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">可读性</td><td style="padding:8px 10px;">一般</td><td style="padding:8px 10px;">优秀</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">注释</td><td style="padding:8px 10px;">不支持</td><td style="padding:8px 10px;">支持 # 注释</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">缩进</td><td style="padding:8px 10px;">不敏感</td><td style="padding:8px 10px;">严格缩进</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">字符串引号</td><td style="padding:8px 10px;">必须双引号</td><td style="padding:8px 10px;">通常不需要</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">解析性能</td><td style="padding:8px 10px;">快</td><td style="padding:8px 10px;">较慢</td></tr>
+        <tr><td style="padding:8px 10px;">适用场景</td><td style="padding:8px 10px;">API、数据传输</td><td style="padding:8px 10px;">配置文件</td></tr>
+      </table>
+
+      <h2>同样的数据</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:12px 0;">
+        <div>
+          <h3>JSON</h3>
+          <div style="background:#1a1a2e;padding:12px;border-radius:8px;font-family:monospace;font-size:0.8rem;color:#4ade80;overflow-x:auto;">
+            <pre style="margin:0;">{
+  "name": "在线工具箱",
+  "version": "1.0.0",
+  "features": [
+    "JSON格式化",
+    "Base64编解码"
+  ],
+  "author": {
+    "name": "eitools"
+  }
+}</pre>
+          </div>
+        </div>
+        <div>
+          <h3>YAML</h3>
+          <div style="background:#1a1a2e;padding:12px;border-radius:8px;font-family:monospace;font-size:0.8rem;color:#4ade80;overflow-x:auto;">
+            <pre style="margin:0;">name: 在线工具箱
+version: 1.0.0
+features:
+  - JSON格式化
+  - Base64编解码
+author:
+  name: eitools</pre>
+          </div>
+        </div>
+      </div>
+
+      <h2>什么时候用哪个？</h2>
+      <ul>
+        <li><b>用 JSON</b>：API 请求/响应、数据存储、前端配置、WebSocket</li>
+        <li><b>用 YAML</b>：Docker Compose、Kubernetes、CI/CD 配置、应用配置文件</li>
+      </ul>
+
+      <div style="margin-top:24px;padding:20px;background:#f0f4ff;border-radius:12px;border:1px solid #4361ee;">
+        <h3 style="color:#4361ee;margin-top:0;">在线 JSON/YAML 转换器</h3>
+        <p>使用我们的<a href="../src/tools/json-to-yaml.html" style="color:#4361ee;font-weight:bold;">JSON转YAML工具</a>，一键互转，自动格式化。</p>
+      </div>
+    </article>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../js/share.js"></script>
+</body>
+</html>

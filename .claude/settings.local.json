@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "Bash(npx create-next-app@latest toolbox-site --typescript --tailwind --eslint --app --src-dir --no-import-alias --use-npm)",
+      "Bash(npm ls:*)",
+      "Read(//private/tmp/**)",
+      "Bash(npx --yes create-next-app@latest my-toolbox --ts --tailwind --eslint --app --src-dir --no-import-alias --use-npm)",
+      "Bash(mkdir -p /tmp/toolbox-init)",
+      "Bash(npm init:*)",
+      "Bash(open:*)",
+      "Bash(git --version)",
+      "Bash(gh auth:*)",
+      "Bash(vercel --version)",
+      "Bash(brew install:*)",
+      "Bash(gh --version)",
+      "Bash(gh repo:*)",
+      "Bash(vercel whoami:*)",
+      "Bash(vercel --yes --prod)",
+      "Bash(curl:*)",
+      "Bash(vercel domains:*)",
+      "Bash(dig eitools.cn +short)",
+      "Bash(nslookup eitools.cn)",
+      "Bash(nslookup:*)",
+      "Bash(dig eitools.cn @8.8.8.8 +short)",
+      "Bash(dig eitools.cn @223.5.5.5 +short)",
+      "Bash(sudo dscacheutil:*)",
+      "Bash(sudo killall:*)",
+      "Bash(for f:*)",
+      "Bash(do)",
+      "Bash(if ! grep -q 'favicon' \"$f\")",
+      "Bash(then)",
+      "Bash(sed -i '' 's|<link rel=\"\"stylesheet\"\" href=\"\"../../css/style.css\"\">|<link rel=\"\"icon\"\" href=\"\"../../favicon.svg\"\" type=\"\"image/svg+xml\"\">\\\\n  <link rel=\"\"stylesheet\"\" href=\"\"../../css/style.css\"\">|' \"$f\")",
+      "Bash(xxd)",
+      "Bash(npx vercel:*)",
+      "Bash(vercel --prod --yes)",
+      "WebSearch",
+      "Bash(find '/Users/bill1118qq/Library/Mobile Documents/com~apple~CloudDocs/文档/Projects/claude_earn_money/' -type f -name package.json -o -name Makefile -o -name *.config.js -o -name *.config.json -o -name .cursorrules -o -name README.md -o -name CLAUDE.md)",
+      "Bash(ls src/tools/*.html)",
+      "Bash(ls guides/*.html)"
+    ]
+  }
+}

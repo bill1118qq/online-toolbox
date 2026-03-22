@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IP子网计算教程 - CIDR子网划分 - 在线工具箱</title>
+  <meta name="description" content="IP子网计算教程：CIDR表示法、子网掩码转换、网络地址广播地址计算方法、子网划分实战案例。网络工程师必备知识。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="IP子网计算教程 - CIDR划分">
+  <meta property="og:description" content="CIDR表示法、子网掩码转换、子网划分方法详解。">
+  <meta property="og:url" content="https://eitools.cn/guides/ip-subnet-guide.html">
+  <link rel="canonical" href="https://eitools.cn/guides/ip-subnet-guide.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"什么是CIDR？","acceptedAnswer":{"@type":"Answer","text":"CIDR（无类别域间路由）是用斜杠表示法标记IP地址的网络前缀长度。如192.168.1.0/24表示前24位是网络部分。CIDR取代了传统的A/B/C类网络划分，更灵活高效地分配IP地址。"}},{"@type":"Question","name":"子网掩码怎么算？","acceptedAnswer":{"@type":"Answer","text":"子网掩码是由网络前缀决定的。/24的子网掩码是255.255.255.0，/16是255.255.0.0，/8是255.0.0.0。网络地址 = IP地址 AND 子网掩码（按位与运算），广播地址 = 网络地址 OR 反转子网掩码。"}}]}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">← 返回首页</a>
+      <h1>IP子网计算教程</h1>
+    </div>
+    <article style="line-height:1.8;">
+      <h2>什么是CIDR？</h2>
+      <p>CIDR（Classless Inter-Domain Routing，无类别域间路由）使用斜杠表示法来标记网络前缀长度。</p>
+      <div style="background:#f0f2f5;padding:16px;border-radius:8px;margin:12px 0;text-align:center;">
+        <p style="font-size:1.1rem;"><b>192.168.1.0<span style="color:#4361ee;">/24</span></b></p>
+        <p style="color:#666;">前24位是网络部分，后8位是主机部分</p>
+      </div>
+
+      <h2>子网掩码与CIDR对照</h2>
+      <table style="width:100%;border-collapse:collapse;margin:12px 0;font-size:0.9rem;">
+        <tr style="background:#f0f2f5;"><th style="padding:10px;">CIDR</th><th style="padding:10px;">子网掩码</th><th style="padding:10px;">二进制</th><th style="padding:10px;">可用IP数</th></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">/8</td><td style="padding:8px 10px;">255.0.0.0</td><td style="padding:8px 10px;">11111111.00000000...</td><td style="padding:8px 10px;">16,777,214</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">/16</td><td style="padding:8px 10px;">255.255.0.0</td><td style="padding:8px 10px;">11111111.11111111.0...</td><td style="padding:8px 10px;">65,534</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">/24</td><td style="padding:8px 10px;">255.255.255.0</td><td style="padding:8px 10px;">11111111.11111111.11111111.0</td><td style="padding:8px 10px;">254</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">/25</td><td style="padding:8px 10px;">255.255.255.128</td><td style="padding:8px 10px;">...11111111.10000000</td><td style="padding:8px 10px;">126</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">/26</td><td style="padding:8px 10px;">255.255.255.192</td><td style="padding:8px 10px;">...11111111.11000000</td><td style="padding:8px 10px;">62</td></tr>
+        <tr><td style="padding:8px 10px;">/30</td><td style="padding:8px 10px;">255.255.255.252</td><td style="padding:8px 10px;">...11111111.11111100</td><td style="padding:8px 10px;">2</td></tr>
+      </table>
+
+      <h2>计算方法</h2>
+      <ol>
+        <li><b>网络地址</b>：IP地址 AND 子网掩码（按位与）</li>
+        <li><b>广播地址</b>：网络地址 OR (反转子网掩码)</li>
+        <li><b>第一个可用IP</b>：网络地址 + 1</li>
+        <li><b>最后一个可用IP</b>：广播地址 - 1</li>
+        <li><b>可用主机数</b>：2^(32-CIDR) - 2</li>
+      </ol>
+
+      <h2>私有IP地址范围</h2>
+      <table style="width:100%;border-collapse:collapse;margin:12px 0;font-size:0.9rem;">
+        <tr style="background:#f0f2f5;"><th style="padding:10px;">类别</th><th style="padding:10px;">CIDR范围</th><th style="padding:10px;">IP范围</th></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">A类</td><td style="padding:8px 10px;">10.0.0.0/8</td><td style="padding:8px 10px;">10.0.0.0 - 10.255.255.255</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">B类</td><td style="padding:8px 10px;">172.16.0.0/12</td><td style="padding:8px 10px;">172.16.0.0 - 172.31.255.255</td></tr>
+        <tr><td style="padding:8px 10px;">C类</td><td style="padding:8px 10px;">192.168.0.0/16</td><td style="padding:8px 10px;">192.168.0.0 - 192.168.255.255</td></tr>
+      </table>
+
+      <div style="margin-top:24px;padding:20px;background:#f0f4ff;border-radius:12px;border:1px solid #4361ee;">
+        <h3 style="color:#4361ee;margin-top:0;">在线IP地址计算器</h3>
+        <p>使用我们的<a href="../src/tools/ip-calc.html" style="color:#4361ee;font-weight:bold;">IP地址计算器</a>，输入IP和子网掩码即可计算网络地址、广播地址、可用主机等。</p>
+      </div>
+    </article>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../js/share.js"></script>
+</body>
+</html>

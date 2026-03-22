@@ -1,4 +1,10 @@
 User-agent: *
 Allow: /
+Disallow: /tmp/
+Disallow: /_private/
 
-Sitemap: sitemap.xml
+Sitemap: https://eitools.cn/sitemap.xml
+
+# Crawl-delay for politeness
+User-agent: *
+Crawl-delay: 1

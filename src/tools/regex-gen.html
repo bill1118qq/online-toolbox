@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>常用正则表达式大全 - 正则速查表 - 在线工具箱</title>
+  <meta name="description" content="常用正则表达式大全：手机号、邮箱、身份证、IP地址、URL、日期等正则表达式速查。一键复制，附正则语法说明。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="常用正则表达式大全">
+  <meta property="og:description" content="手机号、邮箱、身份证等常用正则速查。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/regex-gen.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/regex-gen.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"正则表达式大全","url":"https://eitools.cn/src/tools/regex-gen.html","description":"常用正则表达式速查表，支持搜索、复制和在线测试","applicationCategory":"DeveloperApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>常用正则表达式大全</h1>
+    </div>
+    <div style="margin:16px 0;">
+      <input type="text" id="searchInput" placeholder="搜索正则（如：手机号、邮箱、IP）" oninput="filterRegex()" style="width:100%;padding:10px;border:2px solid #ddd;border-radius:8px;box-sizing:border-box;">
+    </div>
+    <div style="margin-bottom:16px;display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-secondary" onclick="filterByCategory('all')">全部</button>
+      <button class="btn btn-secondary" onclick="filterByCategory('字符串')">字符串</button>
+      <button class="btn btn-secondary" onclick="filterByCategory('数字')">数字</button>
+      <button class="btn btn-secondary" onclick="filterByCategory('网络')">网络</button>
+      <button class="btn btn-secondary" onclick="filterByCategory('日期')">日期</button>
+      <button class="btn btn-secondary" onclick="filterByCategory('中文')">中文</button>
+    </div>
+    <div id="regexList"></div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    const regexData = [
+      { name: '手机号', regex: '^1[3-9]\\d{9}$', desc: '中国大陆手机号', category: '网络', test: '13800138000' },
+      { name: '邮箱', regex: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$', desc: '标准邮箱格式', category: '网络', test: 'test@example.com' },
+      { name: '身份证号', regex: '^\\d{17}[\\dXx]$', desc: '18位身份证号（含校验位）', category: '中文', test: '110101199001011234' },
+      { name: 'IP地址', regex: '^((25[0-5]|2[0-4]\\d|[01]?\\d\\d?)\\.){3}(25[0-5]|2[0-4]\\d|[01]?\\d\\d?)$', desc: 'IPv4地址', category: '网络', test: '192.168.1.1' },
+      { name: 'URL', regex: '^https?://[\\w\\-]+(\\.[\\w\\-]+)+[\\w\\-.,@?^=%&:/~+#]*$', desc: 'http/https网址', category: '网络', test: 'https://www.example.com' },
+      { name: '中文字符', regex: '^[\\u4e00-\\u9fa5]+$', desc: '纯中文字符', category: '中文', test: '你好世界' },
+      { name: '邮政编码', regex: '^[1-9]\\d{5}$', desc: '中国邮政编码6位', category: '中文', test: '100000' },
+      { name: '日期(YYYY-MM-DD)', regex: '^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$', desc: 'ISO格式日期', category: '日期', test: '2026-01-15' },
+      { name: '时间(HH:mm)', regex: '^([01]\\d|2[0-3]):[0-5]\\d$', desc: '24小时制时间', category: '日期', test: '14:30' },
+      { name: '整数', regex: '^-?\\d+$', desc: '正整数或负整数', category: '数字', test: '12345' },
+      { name: '小数', regex: '^-?\\d+\\.\\d+$', desc: '正小数或负小数', category: '数字', test: '3.14159' },
+      { name: '正整数', regex: '^[1-9]\\d*$', desc: '大于0的整数', category: '数字', test: '42' },
+      { name: '车牌号', regex: '^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤川青藏琼宁][A-Z][A-Z0-9]{5,6}$', desc: '中国普通车牌号', category: '中文', test: '京A12345' },
+      { name: '密码强度(中)', regex: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$', desc: '至少8位，含大小写字母和数字', category: '字符串', test: 'Passw0rd' },
+      { name: '十六进制颜色', regex: '^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$', desc: '#RGB或#RRGGBB格式', category: '字符串', test: '#ff6600' },
+      { name: 'HTML标签', regex: '<([a-z][a-z0-9]*)\\b[^>]*>(.*?)</\\1>', desc: '匹配HTML标签对', category: '字符串', test: '<div>内容</div>' },
+      { name: '中英文混合', regex: '^[\\u4e00-\\u9fa5a-zA-Z0-9]+$', desc: '中文、英文、数字组合', category: '中文', test: '你好abc123' },
+      { name: '文件路径', regex: '^(/[^/]+)+$', desc: 'Unix文件路径', category: '字符串', test: '/usr/local/bin' },
+      { name: '版本号', regex: '^\\d+\\.\\d+\\.\\d+$', desc: '语义化版本号 x.y.z', category: '字符串', test: '1.0.0' },
+      { name: 'UUID', regex: '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$', desc: 'UUID格式', category: '字符串', test: '550e8400-e29b-41d4-a716-446655440000' },
+    ];
+
+    function renderRegex(data) {
+      const container = document.getElementById('regexList');
+      container.innerHTML = data.map(item => `
+        <div class="regex-item" style="background:white;border:1px solid #eee;border-radius:10px;padding:14px;margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+            <div>
+              <span style="font-weight:bold;color:#4361ee;">${item.name}</span>
+              <span style="color:#999;font-size:0.8rem;margin-left:8px;">${item.desc}</span>
+            </div>
+            <span style="background:#f0f2f5;padding:2px 8px;border-radius:10px;font-size:0.75rem;color:#666;">${item.category}</span>
+          </div>
+          <div style="background:#1a1a2e;padding:10px;border-radius:6px;font-family:monospace;font-size:0.85rem;color:#4ade80;margin:8px 0;overflow-x:auto;cursor:pointer;" onclick="copyRegex('${item.regex.replace(/'/g, "\\'")}', this)">
+            ${item.regex} <span style="color:#666;font-size:0.75rem;">点击复制</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <span style="font-size:0.85rem;color:#666;">测试: ${item.test}</span>
+            <button class="btn btn-secondary" style="padding:4px 12px;font-size:0.8rem;" onclick="testRegex('${item.regex.replace(/'/g, "\\'")}', '${item.test}', this)">测试匹配</button>
+            <span class="test-result" style="font-size:0.85rem;"></span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function copyRegex(regex, el) {
+      navigator.clipboard.writeText(regex).then(() => showToast('已复制正则: ' + regex));
+    }
+
+    function testRegex(regex, test, btn) {
+      const result = btn.nextElementSibling;
+      try {
+        const re = new RegExp(regex);
+        const match = re.test(test);
+        result.style.color = match ? '#4ade80' : '#f44';
+        result.textContent = match ? '✓ 匹配成功' : '✗ 不匹配';
+      } catch (e) {
+        result.style.color = '#f44';
+        result.textContent = '正则语法错误';
+      }
+    }
+
+    function filterRegex() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = regexData.filter(item =>
+        item.name.toLowerCase().includes(q) ||
+        item.desc.toLowerCase().includes(q) ||
+        item.category.toLowerCase().includes(q) ||
+        item.regex.toLowerCase().includes(q)
+      );
+      renderRegex(filtered);
+    }
+
+    function filterByCategory(cat) {
+      document.getElementById('searchInput').value = cat === 'all' ? '' : cat;
+      filterRegex();
+    }
+
+    renderRegex(regexData);
+  </script>
+</body>
+</html>

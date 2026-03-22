@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>理想体重计算 - 标准体重BMI参考 - 在线工具箱</title>
+  <meta name="description" content="在线理想体重计算器，根据身高性别计算标准体重范围。支持BMI标准、Broca公式、Devine公式等多种计算方法。免费使用。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="理想体重计算器">
+  <meta property="og:description" content="根据身高性别计算标准体重，多种计算方法对比。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/ideal-weight.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/ideal-weight.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"理想体重计算器","url":"https://eitools.cn/src/tools/ideal-weight.html","description":"根据身高性别计算标准体重范围。","applicationCategory":"HealthApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0"}}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>理想体重计算</h1>
+    </div>
+
+    <div style="background:white;border-radius:12px;padding:24px;margin-bottom:20px;border:1px solid #eee;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">性别</label>
+          <select id="gender" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+            <option value="male">男</option><option value="female">女</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">身高（cm）</label>
+          <input type="number" id="height" placeholder="如 170" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">当前体重（kg，可选）</label>
+          <input type="number" id="currentWeight" placeholder="如 70" step="0.1" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="calc()" style="margin-top:16px;width:100%;">计算理想体重</button>
+      <div id="result" class="result-box" style="margin-top:12px;padding:16px;font-size:0.95rem;line-height:2;"></div>
+    </div>
+
+    <div style="background:white;border-radius:12px;padding:24px;margin-bottom:20px;border:1px solid #eee;">
+      <h3 style="margin-bottom:12px;">理想体重参考表</h3>
+      <div style="overflow-x:auto;" id="refTable"></div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    function calc() {
+      const g = document.getElementById('gender').value;
+      const h = parseFloat(document.getElementById('height').value);
+      const cw = parseFloat(document.getElementById('currentWeight').value);
+
+      if (!h || h < 100 || h > 250) { showToast('请输入有效身高（100-250cm）'); return; }
+
+      // Broca公式改良版
+      const broca = g === 'male' ? (h - 80) * 0.7 : (h - 70) * 0.6;
+
+      // BMI标准范围（18.5-23.9为正常）
+      const bmiLow = 18.5 * (h / 100) * (h / 100);
+      const bmiHigh = 23.9 * (h / 100) * (h / 100);
+      const bmiIdeal = 21.7 * (h / 100) * (h / 100);
+
+      // Devine公式
+      const devine = g === 'male' ? 50 + 2.3 * (h / 2.54 - 60) : 45.5 + 2.3 * (h / 2.54 - 60);
+
+      // Hamwi公式
+      const hamwi = g === 'male' ? 48 + 2.7 * (h / 2.54 - 60) : 45.5 + 2.2 * (h / 2.54 - 60);
+
+      let extra = '';
+      if (!isNaN(cw) && cw > 0) {
+        const diff = cw - bmiIdeal;
+        const status = diff > 5 ? '偏胖' : diff > -5 ? '正常' : '偏瘦';
+        const color = diff > 5 ? '#ff9800' : diff > -5 ? '#4caf50' : '#2196f3';
+        extra = `<hr style="border:none;border-top:1px solid #eee;margin:8px 0;"><b>当前体重：</b>${cw} kg<br><b>与理想体重差：</b><span style="color:${color};font-weight:bold;">${diff > 0 ? '+' : ''}${diff.toFixed(1)} kg（${status}）</span>`;
+      }
+
+      document.getElementById('result').innerHTML =
+        `<b>身高 ${h}cm ${g === 'male' ? '男性' : '女性'} 理想体重：</b><br><br>` +
+        `<b style="font-size:1.3em;color:#4361ee;">BMI标准范围：${bmiLow.toFixed(1)} - ${bmiHigh.toFixed(1)} kg</b><br>` +
+        `BMI理想值：${bmiIdeal.toFixed(1)} kg（BMI=21.7）<br><br>` +
+        `<b>各公式对比：</b><br>` +
+        `改良Broca公式：${broca.toFixed(1)} kg<br>` +
+        `Devine公式：${devine.toFixed(1)} kg<br>` +
+        `Hamwi公式：${hamwi.toFixed(1)} kg<br>` +
+        `<span style="font-size:0.8rem;color:#999;">（仅供参考，实际体重受年龄、肌肉量、骨架等因素影响）</span>${extra}`;
+    }
+
+    function renderTable() {
+      let html = '<table style="width:100%;border-collapse:collapse;font-size:0.85rem;">';
+      html += '<tr style="background:#f0f2f5;"><th style="padding:8px;">身高</th><th style="padding:8px;">男性正常范围</th><th style="padding:8px;">男性理想</th><th style="padding:8px;">女性正常范围</th><th style="padding:8px;">女性理想</th></tr>';
+      [155, 158, 160, 162, 165, 168, 170, 172, 175, 178, 180, 182, 185, 188, 190].forEach(h => {
+        const hm = h / 100;
+        const ml = (18.5 * hm * hm).toFixed(0);
+        const mh = (23.9 * hm * hm).toFixed(0);
+        const mi = (21.7 * hm * hm).toFixed(0);
+        html += `<tr style="border-bottom:1px solid #eee;"><td style="padding:6px 8px;text-align:center;">${h}cm</td><td style="padding:6px 8px;text-align:center;">${ml}-${mh}kg</td><td style="padding:6px 8px;text-align:center;font-weight:bold;">${mi}kg</td><td style="padding:6px 8px;text-align:center;">${ml}-${mh}kg</td><td style="padding:6px 8px;text-align:center;font-weight:bold;">${mi}kg</td></tr>`;
+      });
+      html += '</table>';
+      document.getElementById('refTable').innerHTML = html;
+    }
+
+    renderTable();
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>

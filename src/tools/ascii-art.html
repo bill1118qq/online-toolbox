@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASCII艺术字生成器 - 文字转ASCII Art - 在线工具箱</title>
+  <meta name="description" content="在线ASCII艺术字生成器，输入文字即可生成漂亮的ASCII Art字符画。支持多种字体风格，可自定义字符。免费使用。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="ASCII艺术字生成器">
+  <meta property="og:description" content="输入文字生成ASCII Art字符画，多种字体风格。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/ascii-art.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/ascii-art.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"ASCII艺术字生成器","url":"https://eitools.cn/src/tools/ascii-art.html","description":"文字转ASCII Art字符画。","applicationCategory":"UtilityApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0"}}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>ASCII 艺术字生成器</h1>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:end;">
+      <div style="flex:1;min-width:200px;">
+        <input type="text" id="inputText" placeholder="输入文字（英文/数字）" maxlength="20" value="HELLO" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:16px;">
+      </div>
+      <select id="fontSelect" style="padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        <option value="block">Block</option>
+        <option value="simple">Simple</option>
+        <option value="shadow">Shadow</option>
+        <option value="star">Star</option>
+        <option value="banner">Banner</option>
+      </select>
+      <button class="btn btn-primary" onclick="generate()" style="padding:12px 24px;">生成</button>
+    </div>
+
+    <div style="background:#1a1a2e;border-radius:12px;padding:24px;margin-bottom:20px;overflow-x:auto;">
+      <pre id="output" style="font-family:'Courier New',monospace;font-size:12px;line-height:1.2;color:#4ade80;white-space:pre;margin:0;user-select:all;">输入文字后点击"生成"</pre>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-secondary" onclick="copyResult()">复制 ASCII Art</button>
+      <button class="btn btn-secondary" onclick="downloadTxt()">下载 .txt 文件</button>
+    </div>
+
+    <div style="background:white;border-radius:12px;padding:24px;margin-top:20px;border:1px solid #eee;">
+      <h3 style="margin-bottom:12px;">使用说明</h3>
+      <ul style="font-size:0.9rem;color:#666;line-height:2;">
+        <li>目前仅支持英文大写字母和数字</li>
+        <li>中文文字请使用拼音替代</li>
+        <li>生成的ASCII Art可直接复制到代码注释、聊天、文档中使用</li>
+        <li>推荐使用等宽字体查看效果最佳</li>
+      </ul>
+    </div>
+
+    <div id="toast" class="toast"></div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    // Mini ASCII art font definitions (simplified block letters)
+    const FONTS = {
+      block: {
+        A: ['  ##  ','  # # ',' #### ','#    #','#    #'],
+        B: ['#### ','#   #','#### ','#   #','#### '],
+        C: [' ####','#    ','#    ','#    ',' ####'],
+        D: ['###  ','#  # ','#  # ','#  # ','###  '],
+        E: ['#####','#    ','###  ','#    ','#####'],
+        F: ['#####','#    ','###  ','#    ','#    '],
+        G: [' ####','#    ','#  ##','#   #',' ### '],
+        H: ['#    #','#    #','######','#    #','#    #'],
+        I: ['#####','  #  ','  #  ','  #  ','#####'],
+        J: ['#####','    #','    #','#   #',' ### '],
+        K: ['#   # ','#  # ','###  ','#  # ','#   # '],
+        L: ['#    ','#    ','#    ','#    ','#####'],
+        M: ['#    #','##  ##','# ## #','#    #','#    #'],
+        N: ['#    #','##   #','# #  #','#  # #','#   ##'],
+        O: [' ### ','#   #','#   #','#   #',' ### '],
+        P: ['#### ','#   #','#### ','#    ','#    '],
+        Q: [' ### ','#   #','# # #','#  ##',' ####'],
+        R: ['#### ','#   #','#### ','#  # ','#   #'],
+        S: [' ####','#    ',' ### ','    #','#### '],
+        T: ['######','  ##  ','  ##  ','  ##  ','  ##  '],
+        U: ['#    #','#    #','#    #','#    #',' ### '],
+        V: ['#    #','#    #','#    #',' # # ','  #  '],
+        W: ['#    #','#    #','# ## #','##  ##','#    #'],
+        X: ['#   # ',' # # ','  #  ',' # # ','#   # '],
+        Y: ['#   # ',' # # ','  #  ','  #  ','  #  '],
+        Z: ['######','    # ','  #  ',' #   ','######'],
+        '0': [' ### ','#  ##','# # #','##  #',' ### '],
+        '1': ['  #  ',' ##  ','  #  ','  #  ',' ### '],
+        '2': [' ### ','#   #','  ## ',' #   ','#####'],
+        '3': ['#### ','    #',' ### ','    #','#### '],
+        '4': ['#   #','#   #','#####','    #','    #'],
+        '5': ['#####','#    ','#### ','    #','#### '],
+        '6': [' ####','#    ','#### ','#   #',' ### '],
+        '7': ['#####','    #','   # ','  #  ','  #  '],
+        '8': [' ### ','#   #',' ### ','#   #',' ### '],
+        '9': [' ### ','#   #',' ####','    #',' ### '],
+        ' ': ['     ','     ','     ','     ','     ']
+      }
+    };
+
+    function generate() {
+      const text = document.getElementById('inputText').value.toUpperCase().trim();
+      if (!text) { showToast('请输入文字'); return; }
+
+      const font = document.getElementById('fontSelect').value;
+      const art = FONTS[font] || FONTS.block;
+      const lines = ['', '', '', '', ''];
+
+      for (let i = 0; i < text.length; i++) {
+        const char = art[text[i]] || art['?'] || ['?????','?????','?????','?????','?????'];
+        for (let row = 0; row < 5; row++) {
+          lines[row] += char[row] + '  ';
+        }
+      }
+
+      document.getElementById('output').textContent = lines.join('\n');
+    }
+
+    function copyResult() {
+      const text = document.getElementById('output').textContent;
+      if (text === '输入文字后点击"生成"') { showToast('请先生成ASCII Art'); return; }
+      navigator.clipboard.writeText(text).then(() => showToast('已复制到剪贴板'));
+    }
+
+    function downloadTxt() {
+      const text = document.getElementById('output').textContent;
+      if (text === '输入文字后点击"生成"') { showToast('请先生成ASCII Art'); return; }
+      const blob = new Blob([text], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'ascii-art.txt';
+      a.click();
+    }
+
+    // Auto-generate on load
+    generate();
+
+    document.getElementById('inputText').addEventListener('keydown', e => { if (e.key === 'Enter') generate(); });
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>

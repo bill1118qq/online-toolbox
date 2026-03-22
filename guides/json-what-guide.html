@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON是什么？JSON格式入门教程 - 在线工具箱</title>
+  <meta name="description" content="JSON是什么？JSON格式入门教程。详解JSON语法规则、数据类型、常见用法，附带在线JSON格式化工具链接。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="JSON是什么？JSON格式入门教程">
+  <meta property="og:description" content="JSON格式语法规则和入门教程。">
+  <meta property="og:url" content="https://eitools.cn/guides/json-what-guide.html">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://eitools.cn/guides/json-what-guide.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"JSON是什么？","acceptedAnswer":{"@type":"Answer","text":"JSON是JavaScript Object Notation的缩写，一种轻量级的数据交换格式。用易读的文本格式存储和传输结构化数据。"}},{"@type":"Question","name":"JSON和XML有什么区别？","acceptedAnswer":{"@type":"Answer","text":"JSON更简洁，没有结束标签，解析更快，已成为Web API的事实标准。XML有标签闭包，支持注释和命名空间，在配置文件中仍广泛使用。"}},{"@type":"Question","name":"JSON支持哪些数据类型？","acceptedAnswer":{"type":"Answer","text":"JSON支持6种数据类型：对象(object)、数组(array)、字符串(string)、数字(number)、布尔值(boolean)和null。不支持日期、注释、undefined等。"}}]}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>JSON 是什么？</h1>
+    </div>
+    <article style="max-width:700px;line-height:1.8;color:#333;">
+      <p>JSON（JavaScript Object Notation）是当今互联网最常用的数据交换格式。</p>
+
+      <h2 style="margin-top:32px;color:#4361ee;">JSON 基本语法</h2>
+      <div style="padding:16px;background:#1e1e2e;border-radius:12px;font-family:monospace;font-size:0.85rem;color:#e8f4fd;line-height:1.6;">
+        <span style="color:#c92a2a;">{</span><br>
+        &nbsp;&nbsp;<span style="color:#e67700;">"name"</span>: <span style="color:#2f9e44;">"张三"</span>,<br>
+        &nbsp;&nbsp;<span style="color:#e67700;">"age"</span>: <span style="color:#4361ee;">25</span>,<br>
+        &nbsp;&nbsp;<span style="color:#e67700;">"skills"</span>: [<span style="color:#2f9e44;">"JavaScript"</span>, <span style="color:#2f9e44;">"Python"</span>],<br>
+        &nbsp;&nbsp;<span style="color:#e67700;">"active"</span>: <span style="color:#c92a2a;">true</span><br>
+        <span style="color:#c92a2a;">}</span>
+      </div>
+
+      <h2 style="margin-top:32px;color:#4361ee;">6 种数据类型</h2>
+      <ul>
+        <li><strong>对象 {}</strong> — 键值对集合，类似字典/Map</li>
+        <li><strong>数组 []</strong> — 有序值列表</li>
+        <li><strong>字符串 ""</strong> — 用双引号包裹的文本</li>
+        <li><strong>数字</strong> — 整数或浮点数</li>
+        <li><strong>布尔值</strong> — true 或 false</li>
+        <li><strong>null</strong> — 空值</li>
+      </ul>
+
+      <h2 style="margin-top:32px;color:#4361ee;">JSON vs XML</h2>
+      <table style="width:100%;border-collapse:collapse;margin:16px 0;">
+        <tr style="background:#4361ee;color:white;"><th style="padding:10px;border:1px solid #ddd;">对比项</th><th style="padding:10px;border:1px solid #ddd;">JSON</th><th style="padding:10px;border:1px solid #ddd;">XML</th></tr>
+        <tr><td style="padding:8px;border:1px solid #eee;">可读性</td><td style="padding:8px;border:1px solid #eee;">高</td><td style="padding:8px;border:1px solid #eee;">中</td></tr>
+        <tr><td style="padding:8px;border:1px solid #eee;">文件大小</td><td style="padding:8px;border:1px solid #eee;">小</td><td style="padding:8px;border:1px solid #eee;">大</td></tr>
+        <tr><td style="padding:8px;border:1px solid #eee;">解析速度</td><td style="padding:8px;border:1px solid #eee;">快</td><td style="padding:8px;border:1px solid #eee;">慢</td></tr>
+        <tr><td style="padding:8px;border:1px solid #eee;">注释</td><td style="padding:8px;border:1px solid #eee;color:#c92a2a;">不支持</td><td style="padding:8px;border:1px solid #eee;color:#2f9e44;">支持</td></tr>
+      </table>
+
+      <div style="margin-top:32px;padding:20px;background:#f0f2f5;border-radius:12px;">
+        <p style="font-weight:600;margin-bottom:8px;">相关工具</p>
+        <a href="../src/tools/json-formatter.html" style="color:#4361ee;font-weight:500;display:block;">→ JSON 格式化工具</a>
+        <a href="../src/tools/json-validator.html" style="color:#4361ee;font-weight:500;display:block;">→ JSON 校验器</a>
+        <a href="../tools/json-tools.html" style="color:#4361ee;font-weight:500;display:block;">→ 更多 JSON 工具</a>
+      </div>
+    </article>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../js/share.js"></script>
+</body>
+</html>

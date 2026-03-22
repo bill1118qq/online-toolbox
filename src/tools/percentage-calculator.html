@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>百分比计算器 - 在线百分比计算 - 在线工具箱</title>
+  <meta name="description" content="在线百分比计算器，支持百分比计算、增减百分比、百分数与分数互转等多种百分比计算功能。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="百分比计算器 - 在线百分比多种计算">
+  <meta property="og:description" content="百分比计算、增减百分比、百分数转换，一站式计算。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/percentage-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/percentage-calculator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"百分比计算器","description":"在线百分比计算工具","url":"https://eitools.cn/src/tools/percentage-calculator.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>百分比计算器</h1>
+    </div>
+    <div style="max-width:600px;">
+      <!-- 1. X is what % of Y -->
+      <div style="background:#f0f2f5;padding:20px;border-radius:12px;margin-bottom:16px;">
+        <h3 style="margin:0 0 12px;font-size:1rem;">X 是 Y 的百分之几？</h3>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <input type="number" id="p1x" placeholder="X" step="any" style="width:100px;padding:10px;border:1px solid #ddd;border-radius:8px;text-align:center;">
+          <span>是</span>
+          <input type="number" id="p1y" placeholder="Y" step="any" style="width:100px;padding:10px;border:1px solid #ddd;border-radius:8px;text-align:center;">
+          <span>的</span>
+          <button class="btn btn-primary" onclick="calcP1()" style="padding:10px 20px;">计算</button>
+        </div>
+        <div id="r1" style="margin-top:12px;font-size:1.2rem;font-weight:700;"></div>
+      </div>
+
+      <!-- 2. X% of Y -->
+      <div style="background:#f0f2f5;padding:20px;border-radius:12px;margin-bottom:16px;">
+        <h3 style="margin:0 0 12px;font-size:1rem;">X 的 Y% 是多少？</h3>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <input type="number" id="p2x" placeholder="数值" step="any" style="width:100px;padding:10px;border:1px solid #ddd;border-radius:8px;text-align:center;">
+          <span>的</span>
+          <input type="number" id="p2y" placeholder="%" step="any" style="width:100px;padding:10px;border:1px solid #ddd;border-radius:8px;text-align:center;">
+          <span>%</span>
+          <button class="btn btn-primary" onclick="calcP2()" style="padding:10px 20px;">计算</button>
+        </div>
+        <div id="r2" style="margin-top:12px;font-size:1.2rem;font-weight:700;"></div>
+      </div>
+
+      <!-- 3. Percentage change -->
+      <div style="background:#f0f2f5;padding:20px;border-radius:12px;margin-bottom:16px;">
+        <h3 style="margin:0 0 12px;font-size:1rem;">从 X 到 Y，变化了百分之几？</h3>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <span>从</span>
+          <input type="number" id="p3x" placeholder="原值" step="any" style="width:100px;padding:10px;border:1px solid #ddd;border-radius:8px;text-align:center;">
+          <span>到</span>
+          <input type="number" id="p3y" placeholder="新值" step="any" style="width:100px;padding:10px;border:1px solid #ddd;border-radius:8px;text-align:center;">
+          <button class="btn btn-primary" onclick="calcP3()" style="padding:10px 20px;">计算</button>
+        </div>
+        <div id="r3" style="margin-top:12px;font-size:1.2rem;font-weight:700;"></div>
+      </div>
+
+      <!-- 4. Increase/Decrease -->
+      <div style="background:#f0f2f5;padding:20px;border-radius:12px;">
+        <h3 style="margin:0 0 12px;font-size:1rem;">X 增加/减少 Y% 等于多少？</h3>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <input type="number" id="p4x" placeholder="数值" step="any" style="width:100px;padding:10px;border:1px solid #ddd;border-radius:8px;text-align:center;">
+          <select id="p4op" style="padding:10px;border:1px solid #ddd;border-radius:8px;">
+            <option value="add">增加</option>
+            <option value="sub">减少</option>
+          </select>
+          <input type="number" id="p4y" placeholder="%" step="any" style="width:100px;padding:10px;border:1px solid #ddd;border-radius:8px;text-align:center;">
+          <span>%</span>
+          <button class="btn btn-primary" onclick="calcP4()" style="padding:10px 20px;">计算</button>
+        </div>
+        <div id="r4" style="margin-top:12px;font-size:1.2rem;font-weight:700;"></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function $(id){return parseFloat(document.getElementById(id).value)}
+    function calcP1(){const x=$('p1x'),y=$('p1y');if(!y||y===0){document.getElementById('r1').innerHTML='<span style="color:#e03131">除数不能为0</span>';return}document.getElementById('r1').innerHTML=`<span style="color:#4361ee">${(x/y*100).toFixed(2)}%</span>`}
+    function calcP2(){const x=$('p2x'),y=$('p2y');document.getElementById('r2').innerHTML=`<span style="color:#4361ee">${(x*y/100).toFixed(2)}</span>`}
+    function calcP3(){const x=$('p3x'),y=$('p3y');if(!x||x===0){document.getElementById('r3').innerHTML='<span style="color:#e03131">原值不能为0</span>';return}const c=(y-x)/x*100;const d=c>=0?'增长':'减少';document.getElementById('r3').innerHTML=`<span style="color:${c>=0?'#2f9e44':'#e03131'}">${Math.abs(c).toFixed(2)}% (${d})</span>`}
+    function calcP4(){const x=$('p4x'),y=$('p4y'),op=document.getElementById('p4op').value;const r=op==='add'?x*(1+y/100):x*(1-y/100);document.getElementById('r4').innerHTML=`<span style="color:#4361ee">${r.toFixed(2)}</span>`}
+  </script>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+</body>
+</html>

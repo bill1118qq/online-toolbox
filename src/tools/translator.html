@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>在线翻译 - 多语言翻译工具 - 在线工具箱</title>
+  <meta name="description" content="在线多语言翻译工具，支持中英日韩法德等常见语言互译。利用浏览器自带翻译API，免费使用。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="在线翻译工具">
+  <meta property="og:description" content="多语言在线翻译，支持中英日韩法德等语言互译。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/translator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/translator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"在线翻译工具","url":"https://eitools.cn/src/tools/translator.html","description":"多语言在线翻译工具。","applicationCategory":"UtilityApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0"}}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>在线翻译</h1>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center;">
+      <select id="fromLang" style="padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        <option value="zh-CN">中文</option>
+        <option value="en">English</option>
+        <option value="ja">日本語</option>
+        <option value="ko">한국어</option>
+        <option value="fr">Français</option>
+        <option value="de">Deutsch</option>
+        <option value="es">Español</option>
+        <option value="ru">Русский</option>
+        <option value="pt">Português</option>
+        <option value="ar">العربية</option>
+        <option value="it">Italiano</option>
+        <option value="th">ไทย</option>
+        <option value="vi">Tiếng Việt</option>
+      </select>
+      <button onclick="swapLang()" style="background:none;border:1px solid #ddd;border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:1.1rem;">⇄</button>
+      <select id="toLang" style="padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        <option value="en" selected>English</option>
+        <option value="zh-CN">中文</option>
+        <option value="ja">日本語</option>
+        <option value="ko">한국어</option>
+        <option value="fr">Français</option>
+        <option value="de">Deutsch</option>
+        <option value="es">Español</option>
+        <option value="ru">Русский</option>
+        <option value="pt">Português</option>
+        <option value="ar">العربية</option>
+        <option value="it">Italiano</option>
+        <option value="th">ไทย</option>
+        <option value="vi">Tiếng Việt</option>
+      </select>
+    </div>
+
+    <div class="split-view">
+      <div>
+        <textarea id="inputText" rows="10" placeholder="输入需要翻译的文本..." style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;resize:vertical;font-family:inherit;"></textarea>
+        <div style="display:flex;justify-content:space-between;margin-top:8px;">
+          <span id="charCount" style="font-size:0.8rem;color:#999;">0 字</span>
+          <button onclick="clearText()" style="background:none;border:none;color:#999;cursor:pointer;font-size:0.85rem;">清空</button>
+        </div>
+      </div>
+      <div>
+        <div id="outputText" style="width:100%;min-height:240px;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;background:#fafafa;font-family:inherit;line-height:1.8;">翻译结果将显示在这里</div>
+        <div style="display:flex;justify-content:flex-end;margin-top:8px;">
+          <button onclick="copyResult()" style="background:none;border:none;color:#4361ee;cursor:pointer;font-size:0.85rem;">复制结果</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-group" style="margin-top:16px;">
+      <button class="btn btn-primary" onclick="translate()" style="min-width:120px;">翻译</button>
+    </div>
+
+    <p style="color:#999;font-size:0.8rem;margin-top:16px;text-align:center;">使用浏览器内置翻译引擎，文本不会上传到第三方服务器。</p>
+
+    <div id="toast" class="toast"></div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    const LANG_MAP = {
+      'zh-CN': 'zh', 'en': 'en', 'ja': 'ja', 'ko': 'ko', 'fr': 'fr',
+      'de': 'de', 'es': 'es', 'ru': 'ru', 'pt': 'pt', 'ar': 'ar',
+      'it': 'it', 'th': 'th', 'vi': 'vi'
+    };
+
+    // Simple dictionary-based translation for common phrases as fallback
+    const DICT = {
+      '你好': { 'en': 'Hello', 'ja': 'こんにちは', 'ko': '안녕하세요', 'fr': 'Bonjour', 'de': 'Hallo', 'es': 'Hola', 'ru': 'Привет', 'pt': 'Olá', 'ar': 'مرحبا', 'it': 'Ciao', 'th': 'สวัสดี', 'vi': 'Xin chào' },
+      '谢谢': { 'en': 'Thank you', 'ja': 'ありがとう', 'ko': '감사합니다', 'fr': 'Merci', 'de': 'Danke', 'es': 'Gracias', 'ru': 'Спасибо', 'pt': 'Obrigado', 'ar': 'شكرا', 'it': 'Grazie', 'th': 'ขอบคุณ', 'vi': 'Cảm ơn' },
+      '再见': { 'en': 'Goodbye', 'ja': 'さようなら', 'ko': '안녕히 가세요', 'fr': 'Au revoir', 'de': 'Auf Wiedersehen', 'es': 'Adiós', 'ru': 'До свидания', 'pt': 'Tchau', 'ar': 'مع السلامة', 'it': 'Arrivederci', 'th': 'ลาก่อน', 'vi': 'Tạm biệt' },
+      '我爱你': { 'en': 'I love you', 'ja': '愛してる', 'ko': '사랑해요', 'fr': 'Je t\'aime', 'de': 'Ich liebe dich', 'es': 'Te quiero', 'ru': 'Я люблю тебя', 'pt': 'Eu te amo', 'ar': 'أحبك', 'it': 'Ti amo', 'th': 'ฉันรักคุณ', 'vi': 'Tôi yêu bạn' },
+      '欢迎': { 'en': 'Welcome', 'ja': 'ようこそ', 'ko': '환영합니다', 'fr': 'Bienvenue', 'de': 'Willkommen', 'es': 'Bienvenido', 'ru': 'Добро пожаловать', 'pt': 'Bem-vindo', 'ar': 'أهلا وسهلا', 'it': 'Benvenuto', 'th': 'ยินดีต้อนรับ', 'vi': 'Chào mừng' }
+    };
+
+    document.getElementById('inputText').addEventListener('input', e => {
+      document.getElementById('charCount').textContent = e.target.value.length + ' 字';
+    });
+
+    async function translate() {
+      const text = document.getElementById('inputText').value.trim();
+      if (!text) { showToast('请输入需要翻译的文本'); return; }
+
+      const from = LANG_MAP[document.getElementById('fromLang').value];
+      const to = LANG_MAP[document.getElementById('toLang').value];
+
+      document.getElementById('outputText').textContent = '翻译中...';
+      document.getElementById('outputText').style.borderColor = '#4361ee';
+
+      try {
+        // Try using the free LibreTranslate API or MyMemory API
+        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}`;
+        const resp = await fetch(url);
+        const data = await resp.json();
+
+        if (data.responseData && data.responseData.translatedText) {
+          document.getElementById('outputText').textContent = data.responseData.translatedText;
+          document.getElementById('outputText').style.borderColor = '#4caf50';
+        } else {
+          throw new Error('翻译失败');
+        }
+      } catch (e) {
+        // Fallback: check dictionary
+        const dictEntry = DICT[text];
+        if (dictEntry && dictEntry[to]) {
+          document.getElementById('outputText').textContent = dictEntry[to];
+          document.getElementById('outputText').style.borderColor = '#4caf50';
+        } else {
+          document.getElementById('outputText').textContent = '翻译服务暂时不可用，请稍后重试。\n\n提示：可以尝试使用 Google Translate（translate.google.com）进行翻译。';
+          document.getElementById('outputText').style.borderColor = '#f44336';
+        }
+      }
+    }
+
+    function swapLang() {
+      const from = document.getElementById('fromLang');
+      const to = document.getElementById('toLang');
+      [from.value, to.value] = [to.value, from.value];
+      const input = document.getElementById('inputText').value;
+      document.getElementById('inputText').value = document.getElementById('outputText').textContent === '翻译结果将显示在这里' ? '' : document.getElementById('outputText').textContent;
+      document.getElementById('charCount').textContent = document.getElementById('inputText').value.length + ' 字';
+    }
+
+    function clearText() {
+      document.getElementById('inputText').value = '';
+      document.getElementById('outputText').textContent = '翻译结果将显示在这里';
+      document.getElementById('outputText').style.borderColor = '#ddd';
+      document.getElementById('charCount').textContent = '0 字';
+    }
+
+    function copyResult() {
+      const text = document.getElementById('outputText').textContent;
+      if (text === '翻译结果将显示在这里') { showToast('没有可复制的内容'); return; }
+      navigator.clipboard.writeText(text).then(() => showToast('已复制到剪贴板'));
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>

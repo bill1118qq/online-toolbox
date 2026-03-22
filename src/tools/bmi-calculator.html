@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BMI计算器 - 在线BMI指数计算 - 在线工具箱</title>
+  <meta name="description" content="在线BMI计算器，输入身高体重即可计算BMI指数，支持中国标准和WHO标准，一键了解您的体重状况。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="BMI计算器 - 免费在线BMI指数计算">
+  <meta property="og:description" content="输入身高体重，快速计算BMI指数，了解健康体重范围。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/bmi-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/bmi-calculator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"BMI计算器","description":"在线计算BMI身体质量指数","url":"https://eitools.cn/src/tools/bmi-calculator.html","applicationCategory":"HealthApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>BMI 计算器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">输入身高和体重，计算您的 BMI 身体质量指数。</p>
+    <div style="max-width:500px;">
+      <div style="margin-bottom:16px;">
+        <label style="display:block;margin-bottom:6px;font-weight:600;">身高（厘米）</label>
+        <input type="number" id="height" placeholder="例如：170" min="50" max="250" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:1rem;">
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="display:block;margin-bottom:6px;font-weight:600;">体重（公斤）</label>
+        <input type="number" id="weight" placeholder="例如：65" min="10" max="500" step="0.1" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:1rem;">
+      </div>
+      <button class="btn btn-primary" onclick="calcBMI()" style="width:100%;padding:12px;font-size:1.05rem;">计算 BMI</button>
+      <div id="result" style="margin-top:24px;"></div>
+    </div>
+
+    <div style="margin-top:40px;padding:20px;background:#f0f2f5;border-radius:12px;">
+      <h2 style="font-size:1.1rem;margin-bottom:12px;">BMI 参考标准（中国）</h2>
+      <table style="width:100%;border-collapse:collapse;font-size:0.9rem;">
+        <tr style="background:#e8eaed;"><th style="padding:8px;text-align:left;">BMI 范围</th><th style="padding:8px;">分类</th><th style="padding:8px;">健康风险</th></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px;">&lt; 18.5</td><td style="padding:8px;">偏瘦</td><td style="padding:8px;">营养不良风险</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px;">18.5 - 23.9</td><td style="padding:8px;">正常</td><td style="padding:8px;color:green;">低风险</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px;">24.0 - 27.9</td><td style="padding:8px;">偏胖</td><td style="padding:8px;color:#e67700;">中等风险</td></tr>
+        <tr><td style="padding:8px;">&ge; 28.0</td><td style="padding:8px;">肥胖</td><td style="padding:8px;color:#e03131;">高风险</td></tr>
+      </table>
+    </div>
+  </div>
+  <script>
+    function calcBMI() {
+      const h = parseFloat(document.getElementById('height').value);
+      const w = parseFloat(document.getElementById('weight').value);
+      if (!h || !w || h < 50 || h > 250 || w < 10 || w > 500) {
+        document.getElementById('result').innerHTML = '<p style="color:#e03131;">请输入有效的身高（50-250cm）和体重（10-500kg）</p>';
+        return;
+      }
+      const bmi = w / ((h / 100) ** 2);
+      const bmiRound = bmi.toFixed(1);
+      let category, color, advice;
+      if (bmi < 18.5) { category = '偏瘦'; color = '#4361ee'; advice = '建议适当增加营养摄入，均衡饮食。'; }
+      else if (bmi < 24) { category = '正常'; color = '#2f9e44'; advice = '您的体重在健康范围内，请继续保持！'; }
+      else if (bmi < 28) { category = '偏胖'; color = '#e67700'; advice = '建议控制饮食、增加运动，注意体重管理。'; }
+      else { category = '肥胖'; color = '#e03131'; advice = '建议咨询医生，制定科学的减重计划。'; }
+      const idealMin = (18.5 * (h / 100) ** 2).toFixed(1);
+      const idealMax = (23.9 * (h / 100) ** 2).toFixed(1);
+      document.getElementById('result').innerHTML = `
+        <div style="text-align:center;padding:20px;background:${color}11;border:2px solid ${color};border-radius:12px;">
+          <div style="font-size:2.5rem;font-weight:800;color:${color};">${bmiRound}</div>
+          <div style="font-size:1.2rem;font-weight:600;color:${color};margin:8px 0;">${category}</div>
+          <p style="color:#555;">${advice}</p>
+          <p style="color:#888;font-size:0.9rem;margin-top:12px;">您的健康体重范围：${idealMin} - ${idealMax} kg</p>
+        </div>`;
+    }
+    document.getElementById('height').addEventListener('keydown', e => { if (e.key === 'Enter') calcBMI(); });
+    document.getElementById('weight').addEventListener('keydown', e => { if (e.key === 'Enter') calcBMI(); });
+  </script>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+</body>
+</html>

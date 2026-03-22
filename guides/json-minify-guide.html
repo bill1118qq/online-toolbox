@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON压缩美化教程 - JSON Minify - 在线工具箱</title>
+  <meta name="description" content="JSON压缩美化教程：为什么要压缩JSON、JSON压缩原理、JSON格式化缩进设置、JSON压缩工具推荐。前后端开发必备技能。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="JSON压缩美化教程">
+  <meta property="og:description" content="JSON压缩原理、格式化方法和最佳实践。">
+  <meta property="og:url" content="https://eitools.cn/guides/json-minify-guide.html">
+  <link rel="canonical" href="https://eitools.cn/guides/json-minify-guide.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"为什么要压缩JSON？","acceptedAnswer":{"@type":"Answer","text":"压缩JSON（Minify）去除所有多余空格、换行和缩进，可减小文件体积30-60%。在生产环境中传输的JSON API响应通常都经过压缩，以减少网络传输时间和带宽消耗。开发调试时则使用美化格式便于阅读。"}}]}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">← 返回首页</a>
+      <h1>JSON压缩美化教程</h1>
+    </div>
+    <article style="line-height:1.8;">
+      <h2>为什么要压缩JSON？</h2>
+      <ul>
+        <li><b>减小文件体积</b>：去除空格换行可减少30-60%大小</li>
+        <li><b>加快传输速度</b>：API响应体积更小，加载更快</li>
+        <li><b>节省带宽成本</b>：高流量网站可显著降低CDN费用</li>
+        <li><b>减少解析时间</b>：浏览器处理更少的字符</li>
+      </ul>
+
+      <h2>压缩原理</h2>
+      <div style="background:#f0f2f5;padding:16px;border-radius:8px;margin:12px 0;">
+        <p><b>压缩前（美化格式）：</b>1.2 KB</p>
+        <div style="background:#1a1a2e;padding:12px;border-radius:8px;font-family:monospace;font-size:0.85rem;color:#4ade80;overflow-x:auto;margin:8px 0;">
+          <pre style="margin:0;">{
+  "name": "张三",
+  "age": 25,
+  "email": "zhang@example.com"
+}</pre>
+        </div>
+        <p><b>压缩后（Minify）：</b>0.5 KB（节省58%）</p>
+        <div style="background:#1a1a2e;padding:12px;border-radius:8px;font-family:monospace;font-size:0.85rem;color:#4ade80;overflow-x:auto;margin:8px 0;">
+          <pre style="margin:0;">{"name":"张三","age":25,"email":"zhang@example.com"}</pre>
+        </div>
+      </div>
+
+      <h2>JavaScript中压缩JSON</h2>
+      <div style="background:#1a1a2e;padding:12px;border-radius:8px;font-family:monospace;font-size:0.85rem;color:#4ade80;overflow-x:auto;margin:8px 0;">
+        <pre style="margin:0;">// 压缩
+const minified = JSON.stringify(obj);
+
+// 美化（2空格缩进）
+const pretty = JSON.stringify(obj, null, 2);
+
+// 美化（4空格缩进）
+const pretty4 = JSON.stringify(obj, null, 4);</pre>
+      </div>
+
+      <h2>缩进风格对比</h2>
+      <table style="width:100%;border-collapse:collapse;margin:12px 0;font-size:0.9rem;">
+        <tr style="background:#f0f2f5;"><th style="padding:10px;">缩进方式</th><th style="padding:10px;">适用场景</th></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">2空格</td><td style="padding:8px 10px;">JavaScript/React项目（最常用）</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">4空格</td><td style="padding:8px 10px;">Python/Java项目</td></tr>
+        <tr><td style="padding:8px 10px;">Tab</td><td style="padding:8px 10px;">Go语言项目</td></tr>
+      </table>
+
+      <div style="margin-top:24px;padding:20px;background:#f0f4ff;border-radius:12px;border:1px solid #4361ee;">
+        <h3 style="color:#4361ee;margin-top:0;">在线JSON压缩美化工具</h3>
+        <p>使用我们的<a href="../src/tools/json-minify.html" style="color:#4361ee;font-weight:bold;">JSON压缩美化工具</a>，一键压缩或美化JSON，显示压缩率对比。</p>
+      </div>
+    </article>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../js/share.js"></script>
+</body>
+</html>

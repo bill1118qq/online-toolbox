@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>身份证号码校验 - 在线验证18位身份证 - 在线工具箱</title>
+  <meta name="description" content="免费在线身份证号码校验工具，验证18位身份证号格式是否正确，提取出生日期、性别、所在地区等信息。本地验证不上传。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="身份证号码校验 - 在线验证身份证格式">
+  <meta property="og:description" content="验证18位身份证号格式，提取出生日期、性别等信息。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/id-card-validator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/id-card-validator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"身份证号码校验","description":"在线验证18位身份证号格式","url":"https://eitools.cn/src/tools/id-card-validator.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>身份证号码校验</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">验证18位身份证号格式是否正确，提取出生日期、性别等信息。所有数据在本地处理，不上传服务器。</p>
+    <div style="max-width:500px;">
+      <input type="text" id="idcard" maxlength="18" placeholder="请输入18位身份证号码" oninput="validate()" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:1.1rem;font-family:monospace;letter-spacing:2px;margin-bottom:16px;">
+      <div id="result" style="display:none;"></div>
+      <div style="margin-top:24px;padding:16px;background:#f0f2f5;border-radius:12px;">
+        <p style="font-weight:600;font-size:0.9rem;margin-bottom:8px;">18位身份证号码结构</p>
+        <p style="font-size:0.85rem;color:#666;">第1-6位：地址码（省市区）<br>第7-14位：出生日期（YYYYMMDD）<br>第15-17位：顺序码（奇数=男性，偶数=女性）<br>第18位：校验码（0-9或X）</p>
+      </div>
+      <div style="margin-top:12px;padding:16px;background:#fff3cd;border-radius:12px;">
+        <p style="font-size:0.85rem;color:#856404;">本工具仅做格式校验，不查询任何数据库，不会上传身份证号码，无法验证号码是否真实存在。</p>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Province codes (partial list for common provinces)
+    const provinces = {'11':'北京','12':'天津','13':'河北','14':'山西','15':'内蒙古','21':'辽宁','22':'吉林','23':'黑龙江','31':'上海','32':'江苏','33':'浙江','34':'安徽','35':'福建','36':'江西','37':'山东','41':'河南','42':'湖北','43':'湖南','44':'广东','45':'广西','46':'海南','50':'重庆','51':'四川','52':'贵州','53':'云南','54':'西藏','61':'陕西','62':'甘肃','63':'青海','64':'宁夏','65':'新疆','71':'台湾','81':'香港','82':'澳门','91':'国外'};
+    const weights = [7,9,10,5,8,4,2,1,6,3,7,9,10,5,8,4,2];
+    const checkCodes = ['1','0','X','9','8','7','6','5','4','3','2'];
+
+    function validate() {
+      const id = document.getElementById('idcard').value.trim().toUpperCase();
+      const el = document.getElementById('result');
+      if (id.length !== 18) { if (id.length > 0) { el.style.display = 'block'; el.innerHTML = '<p style="color:#c92a2a;">请输入完整的18位身份证号码（当前' + id.length + '位）</p>'; } else { el.style.display = 'none'; } return; }
+
+      let valid = true, errors = [];
+
+      // Check basic format
+      if (!/^\d{17}[\dX]$/.test(id)) { valid = false; errors.push('格式错误：前17位应为数字，第18位为数字或X'); }
+
+      // Check province code
+      const provinceCode = id.substring(0, 2);
+      if (!provinces[provinceCode]) { valid = false; errors.push('地址码无效：未知的省份代码'); }
+
+      // Check date
+      const dateStr = id.substring(6, 14);
+      const date = new Date(dateStr.substring(0,4), parseInt(dateStr.substring(4,6)) - 1, parseInt(dateStr.substring(6,8)));
+      if (isNaN(date.getTime()) || dateStr.substring(4,6) === '00' || dateStr.substring(6,8) === '00') { valid = false; errors.push('出生日期无效'); }
+      else if (date > new Date()) { valid = false; errors.push('出生日期不能是未来日期'); }
+
+      // Check sum
+      let sum = 0;
+      for (let i = 0; i < 17; i++) sum += parseInt(id[i]) * weights[i];
+      const checkCode = checkCodes[sum % 11];
+      if (id[17] !== checkCode) { valid = false; errors.push('校验码错误，正确校验码为 ' + checkCode); }
+
+      // Extract info
+      const genderCode = parseInt(id[16]);
+      const gender = genderCode % 2 === 1 ? '男' : '女';
+      const province = provinces[provinceCode] || '未知';
+      const birthDate = `${dateStr.substring(0,4)}年${dateStr.substring(4,6)}月${dateStr.substring(6,8)}日`;
+
+      if (valid) {
+        el.style.display = 'block';
+        el.innerHTML = `<div style="background:#e8f5e9;padding:20px;border-radius:12px;">
+          <p style="font-size:1.2rem;font-weight:700;color:#2f9e44;">✓ 格式正确</p>
+          <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div style="padding:12px;background:white;border-radius:8px;"><span style="font-size:0.8rem;color:#888;">所在省份</span><br><strong>${province}</strong></div>
+            <div style="padding:12px;background:white;border-radius:8px;"><span style="font-size:0.8rem;color:#888;">出生日期</span><br><strong>${birthDate}</strong></div>
+            <div style="padding:12px;background:white;border-radius:8px;"><span style="font-size:0.8rem;color:#888;">性别</span><br><strong>${gender}</strong></div>
+            <div style="padding:12px;background:white;border-radius:8px;"><span style="font-size:0.8rem;color:#888;">校验码</span><br><strong>${id[17]}</strong></div>
+          </div></div>`;
+      } else {
+        el.style.display = 'block';
+        el.innerHTML = `<div style="background:#fee;padding:20px;border-radius:12px;">
+          <p style="font-size:1.1rem;font-weight:700;color:#c92a2a;">✗ 格式有误</p>
+          <ul style="margin-top:8px;color:#c92a2a;font-size:0.9rem;">${errors.map(e => '<li>' + e + '</li>').join('')}</ul>
+          <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div style="padding:12px;background:white;border-radius:8px;"><span style="font-size:0.8rem;color:#888;">所在省份</span><br><strong>${province}</strong></div>
+            <div style="padding:12px;background:white;border-radius:8px;"><span style="font-size:0.8rem;color:#888;">出生日期</span><br><strong>${dateStr ? birthDate : '无效'}</strong></div>
+          </div></div>`;
+      }
+    }
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

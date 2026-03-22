@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML在线预览 - 实时编辑预览HTML代码 - 在线工具箱</title>
+  <meta name="description" content="在线HTML预览工具，实时编辑并预览HTML代码效果。支持CSS、JavaScript实时运行。无需安装，打开即用。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="HTML在线预览工具">
+  <meta property="og:description" content="实时编辑预览HTML代码，支持CSS和JavaScript。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/html-preview.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/html-preview.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"HTML在线预览","url":"https://eitools.cn/src/tools/html-preview.html","description":"实时编辑预览HTML代码效果。","applicationCategory":"DeveloperApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0"}}
+  </script>
+</head>
+<body>
+  <div class="tool-page" style="max-width:100%;padding:0;">
+    <div class="tool-page-header" style="padding:16px 24px;">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1 style="margin:4px 0;">HTML 在线预览</h1>
+    </div>
+
+    <div style="display:flex;flex-direction:column;height:calc(100vh - 80px);">
+      <div style="display:flex;flex:1;min-height:0;">
+        <div style="flex:1;display:flex;flex-direction:column;min-width:0;">
+          <div style="padding:8px 16px;background:#f0f2f5;font-size:0.85rem;border-bottom:1px solid #ddd;font-weight:600;">HTML 代码</div>
+          <textarea id="editor" spellcheck="false" style="flex:1;padding:12px;border:none;resize:none;font-family:'SF Mono',Fira Code,Consolas,monospace;font-size:13px;line-height:1.6;outline:none;tab-size:2;" placeholder="在此输入HTML代码..."><!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    h1 { color: #333; margin-bottom: 8px; }
+    p { color: #666; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>你好世界</h1>
+    <p>编辑左侧代码，右侧实时预览</p>
+  </div>
+</body>
+</html></textarea>
+        </div>
+        <div style="width:1px;background:#ddd;"></div>
+        <div style="flex:1;display:flex;flex-direction:column;min-width:0;">
+          <div style="padding:8px 16px;background:#f0f2f5;font-size:0.85rem;border-bottom:1px solid #ddd;font-weight:600;">预览</div>
+          <iframe id="preview" style="flex:1;border:none;background:white;" sandbox="allow-scripts allow-same-origin"></iframe>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;padding:8px 16px;background:#f0f2f5;border-top:1px solid #ddd;">
+        <button class="btn btn-primary" onclick="runPreview()" style="padding:6px 20px;font-size:0.85rem;">运行</button>
+        <button class="btn btn-secondary" onclick="clearEditor()" style="padding:6px 20px;font-size:0.85rem;">清空</button>
+        <button class="btn btn-secondary" onclick="copyCode()" style="padding:6px 20px;font-size:0.85rem;">复制代码</button>
+        <button class="btn btn-secondary" onclick="downloadCode()" style="padding:6px 20px;font-size:0.85rem;">下载HTML</button>
+        <label style="display:flex;align-items:center;gap:4px;font-size:0.85rem;margin-left:auto;">
+          <input type="checkbox" id="autoRun" checked> 自动刷新
+        </label>
+      </div>
+    </div>
+  </div>
+  <script>
+    const editor = document.getElementById('editor');
+    const preview = document.getElementById('preview');
+    let debounceTimer = null;
+
+    function runPreview() {
+      const code = editor.value;
+      const doc = preview.contentDocument || preview.contentWindow.document;
+      doc.open();
+      doc.write(code);
+      doc.close();
+    }
+
+    function clearEditor() {
+      editor.value = '';
+      runPreview();
+    }
+
+    function copyCode() {
+      navigator.clipboard.writeText(editor.value).then(() => showToast('已复制到剪贴板'));
+    }
+
+    function downloadCode() {
+      const blob = new Blob([editor.value], { type: 'text/html' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'page.html';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    editor.addEventListener('input', () => {
+      if (document.getElementById('autoRun').checked) {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(runPreview, 500);
+      }
+    });
+
+    // Tab key support
+    editor.addEventListener('keydown', e => {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const start = editor.selectionStart;
+        const end = editor.selectionEnd;
+        editor.value = editor.value.substring(0, start) + '  ' + editor.value.substring(end);
+        editor.selectionStart = editor.selectionEnd = start + 2;
+      }
+    });
+
+    // Initial run
+    runPreview();
+
+    function showToast(msg) {
+      const t = document.createElement('div');
+      t.textContent = msg;
+      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#333;color:white;padding:8px 20px;border-radius:20px;font-size:14px;z-index:9999;animation:fadeInOut 2s forwards;';
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2000);
+    }
+  </script>
+</body>
+</html>

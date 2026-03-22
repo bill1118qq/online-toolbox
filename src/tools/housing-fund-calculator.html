@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>公积金贷款计算器 - 公积金月供 - 在线工具箱</title>
+  <meta name="description" content="免费在线公积金贷款计算器。计算公积金贷款月供、利息总额、还款明细。支持等额本息和等额本金，可组合商业贷款。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="公积金贷款计算器">
+  <meta property="og:description" content="公积金贷款月供计算和还款明细。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/housing-fund-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/housing-fund-calculator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"公积金贷款计算器","description":"公积金贷款月供和还款明细计算","url":"https://eitools.cn/src/tools/housing-fund-calculator.html","applicationCategory":"FinanceApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>公积金贷款计算器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">计算公积金贷款月供，支持与商业贷款组合计算。</p>
+    <div style="max-width:900px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+        <div style="padding:16px;background:#e8f4fd;border-radius:12px;">
+          <h3 style="color:#4361ee;margin-bottom:12px;">公积金贷款</h3>
+          <div style="margin-bottom:8px;"><label style="font-size:0.8rem;color:#888;">贷款金额（万元）</label>
+            <input type="number" id="fundAmount" value="60" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:2px;" oninput="calc()"></div>
+          <div style="margin-bottom:8px;"><label style="font-size:0.8rem;color:#888;">公积金利率（%）</label>
+            <input type="number" id="fundRate" value="2.85" step="0.01" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:2px;" oninput="calc()"></div>
+          <div><label style="font-size:0.8rem;color:#888;">贷款年限（年）</label>
+            <select id="fundYears" onchange="calc()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:2px;">
+              <option value="5">5年</option><option value="10">10年</option><option value="15">15年</option><option value="20">20年</option><option value="25" selected>25年</option><option value="30">30年</option>
+            </select></div>
+        </div>
+        <div style="padding:16px;background:#fff3cd;border-radius:12px;">
+          <h3 style="color:#e67700;margin-bottom:12px;">商业贷款（可选）</h3>
+          <div style="margin-bottom:8px;"><label style="font-size:0.8rem;color:#888;">贷款金额（万元）</label>
+            <input type="number" id="comAmount" value="100" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:2px;" oninput="calc()"></div>
+          <div style="margin-bottom:8px;"><label style="font-size:0.8rem;color:#888;">商贷利率（%）</label>
+            <input type="number" id="comRate" value="3.45" step="0.01" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:2px;" oninput="calc()"></div>
+          <div><label style="font-size:0.8rem;color:#888;">贷款年限（年）</label>
+            <select id="comYears" onchange="calc()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:2px;">
+              <option value="5">5年</option><option value="10">10年</option><option value="15">15年</option><option value="20">20年</option><option value="25" selected>25年</option><option value="30">30年</option>
+            </select></div>
+        </div>
+      </div>
+      <div id="result"></div>
+    </div>
+  </div>
+  <script>
+    function calcLoan(P, rate, years) {
+      const r = rate / 100 / 12;
+      const n = years * 12;
+      const M = P * r * Math.pow(1+r,n) / (Math.pow(1+r,n) - 1);
+      return { monthly: M, total: M*n, interest: M*n - P };
+    }
+    function calc() {
+      const fA = parseFloat(document.getElementById('fundAmount').value) * 10000;
+      const fR = parseFloat(document.getElementById('fundRate').value);
+      const fY = parseInt(document.getElementById('fundYears').value);
+      const cA = parseFloat(document.getElementById('comAmount').value) * 10000;
+      const cR = parseFloat(document.getElementById('comRate').value);
+      const cY = parseInt(document.getElementById('comYears').value);
+      const fund = calcLoan(fA, fR, fY);
+      const com = calcLoan(cA, cR, cY);
+      const totalMonthly = fund.monthly + com.monthly;
+      const totalPay = fund.total + com.total;
+      const totalInterest = fund.interest + com.interest;
+      const totalLoan = fA + cA;
+      document.getElementById('result').innerHTML = `
+        <div style="padding:20px;background:#f8f9fa;border-radius:12px;margin-bottom:16px;">
+          <h3 style="margin-bottom:12px;">组合贷款结果</h3>
+          <div style="text-align:center;margin-bottom:16px;">
+            <div style="font-size:2.5rem;font-weight:700;color:#4361ee;">¥${totalMonthly.toFixed(2)}</div>
+            <div style="color:#888;">每月还款（公积金¥${fund.monthly.toFixed(2)} + 商贷¥${com.monthly.toFixed(2)}）</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+            <div style="text-align:center;padding:12px;background:white;border-radius:8px;">
+              <div style="font-size:0.8rem;color:#888;">贷款总额</div>
+              <div style="font-weight:700;">¥${(totalLoan/10000).toFixed(0)}万</div>
+            </div>
+            <div style="text-align:center;padding:12px;background:white;border-radius:8px;">
+              <div style="font-size:0.8rem;color:#888;">还款总额</div>
+              <div style="font-weight:700;">¥${(totalPay/10000).toFixed(2)}万</div>
+            </div>
+            <div style="text-align:center;padding:12px;background:white;border-radius:8px;">
+              <div style="font-size:0.8rem;color:#888;">利息总额</div>
+              <div style="font-weight:700;color:#c92a2a;">¥${(totalInterest/10000).toFixed(2)}万</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="padding:16px;background:#e8f4fd;border-radius:12px;">
+            <h4 style="color:#4361ee;margin-bottom:8px;">公积金贷款明细</h4>
+            <div style="font-size:0.85rem;">
+              <div>贷款：¥${(fA/10000).toFixed(0)}万 · 利率 ${fR}% · ${fY}年</div>
+              <div>月供：¥${fund.monthly.toFixed(2)}</div>
+              <div>利息：¥${(fund.interest/10000).toFixed(2)}万</div>
+              <div>还款总额：¥${(fund.total/10000).toFixed(2)}万</div>
+            </div>
+          </div>
+          <div style="padding:16px;background:#fff3cd;border-radius:12px;">
+            <h4 style="color:#e67700;margin-bottom:8px;">商业贷款明细</h4>
+            <div style="font-size:0.85rem;">
+              <div>贷款：¥${(cA/10000).toFixed(0)}万 · 利率 ${cR}% · ${cY}年</div>
+              <div>月供：¥${com.monthly.toFixed(2)}</div>
+              <div>利息：¥${(com.interest/10000).toFixed(2)}万</div>
+              <div>还款总额：¥${(com.total/10000).toFixed(2)}万</div>
+            </div>
+          </div>
+        </div>`;
+    }
+    calc();
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

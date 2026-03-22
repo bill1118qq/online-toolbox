@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文本去重工具 - 行去重排序 - 在线工具箱</title>
+  <meta name="description" content="在线文本去重工具：去除重复行、排序、统计重复次数。支持忽略大小写去重、去除空行。一键处理大量文本数据。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="文本去重工具">
+  <meta property="og:description" content="去除重复行、排序、统计重复次数。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/text-unique.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/text-unique.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"文本去重工具","url":"https://eitools.cn/src/tools/text-unique.html","description":"在线文本去重、排序、统计重复次数","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>文本去重工具</h1>
+    </div>
+    <div style="display:flex;gap:8px;margin:16px 0;flex-wrap:wrap;align-items:center;">
+      <button class="btn btn-primary" onclick="deduplicate()">去重</button>
+      <button class="btn btn-primary" onclick="sortAsc()">升序排列</button>
+      <button class="btn btn-primary" onclick="sortDesc()">降序排列</button>
+      <button class="btn btn-secondary" onclick="showDuplicates()">只显示重复行</button>
+      <button class="btn btn-secondary" onclick="copyResult()">复制结果</button>
+      <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+      <label style="font-size:0.85rem;display:flex;align-items:center;gap:4px;">
+        <input type="checkbox" id="ignoreCase"> 忽略大小写
+      </label>
+      <label style="font-size:0.85rem;display:flex;align-items:center;gap:4px;">
+        <input type="checkbox" id="trimSpaces" checked> 去除首尾空格
+      </label>
+      <label style="font-size:0.85rem;display:flex;align-items:center;gap:4px;">
+        <input type="checkbox" id="removeEmpty" checked> 去除空行
+      </label>
+    </div>
+    <div class="split-view">
+      <div class="split-panel">
+        <h3>输入文本（每行一个）</h3>
+        <textarea id="input" rows="16" placeholder="每行输入一条内容&#10;支持大量文本数据"></textarea>
+        <div style="margin-top:8px;font-size:0.85rem;color:#666;">总行数: <span id="totalLines">0</span></div>
+      </div>
+      <div class="split-panel">
+        <h3>处理结果</h3>
+        <textarea id="output" rows="16" readonly></textarea>
+        <div style="margin-top:8px;font-size:0.85rem;color:#666;">结果行数: <span id="resultLines">0</span> | 重复行: <span id="dupCount">0</span> | 去重率: <span id="dupRate">-</span></div>
+      </div>
+    </div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    const inputEl = document.getElementById('input');
+    const outputEl = document.getElementById('output');
+
+    inputEl.addEventListener('input', () => {
+      const lines = inputEl.value.split('\n').filter(l => l.trim());
+      document.getElementById('totalLines').textContent = lines.length;
+    });
+
+    function processLines() {
+      const ignoreCase = document.getElementById('ignoreCase').checked;
+      const trimSpaces = document.getElementById('trimSpaces').checked;
+      const removeEmpty = document.getElementById('removeEmpty').checked;
+      let lines = inputEl.value.split('\n');
+      if (trimSpaces) lines = lines.map(l => l.trim());
+      if (removeEmpty) lines = lines.filter(l => l);
+      return { lines, ignoreCase };
+    }
+
+    function deduplicate() {
+      const { lines, ignoreCase } = processLines();
+      const seen = new Set();
+      const result = [];
+      lines.forEach(l => {
+        const key = ignoreCase ? l.toLowerCase() : l;
+        if (!seen.has(key)) { seen.add(key); result.push(l); }
+      });
+      outputEl.value = result.join('\n');
+      updateStats(lines.length, result.length);
+      showToast('去重完成');
+    }
+
+    function sortAsc() {
+      const { lines, ignoreCase } = processLines();
+      lines.sort((a, b) => {
+        const ka = ignoreCase ? a.toLowerCase() : a;
+        const kb = ignoreCase ? b.toLowerCase() : b;
+        return ka.localeCompare(kb, 'zh');
+      });
+      outputEl.value = lines.join('\n');
+      showToast('升序排列完成');
+    }
+
+    function sortDesc() {
+      const { lines, ignoreCase } = processLines();
+      lines.sort((a, b) => {
+        const ka = ignoreCase ? a.toLowerCase() : a;
+        const kb = ignoreCase ? b.toLowerCase() : b;
+        return kb.localeCompare(ka, 'zh');
+      });
+      outputEl.value = lines.join('\n');
+      showToast('降序排列完成');
+    }
+
+    function showDuplicates() {
+      const { lines, ignoreCase } = processLines();
+      const counts = {};
+      lines.forEach(l => {
+        const key = ignoreCase ? l.toLowerCase() : l;
+        counts[key] = (counts[key] || 0) + 1;
+      });
+      const dupes = lines.filter(l => {
+        const key = ignoreCase ? l.toLowerCase() : l;
+        return counts[key] > 1;
+      });
+      outputEl.value = [...new Set(dupes)].join('\n');
+      updateStats(lines.length, lines.length - dupes.length + [...new Set(dupes)].length);
+      showToast('找到 ' + [...new Set(dupes)].length + ' 个重复项');
+    }
+
+    function updateStats(total, result) {
+      const dupes = total - result;
+      document.getElementById('resultLines').textContent = result;
+      document.getElementById('dupCount').textContent = dupes;
+      document.getElementById('dupRate').textContent = total > 0 ? ((dupes / total) * 100).toFixed(1) + '%' : '-';
+    }
+
+    function copyResult() {
+      if (!outputEl.value) { showToast('没有结果'); return; }
+      navigator.clipboard.writeText(outputEl.value).then(() => showToast('已复制'));
+    }
+
+    function clearAll() {
+      inputEl.value = ''; outputEl.value = '';
+      document.getElementById('totalLines').textContent = '0';
+      document.getElementById('resultLines').textContent = '0';
+      document.getElementById('dupCount').textContent = '0';
+      document.getElementById('dupRate').textContent = '-';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>星座查询 - 生肖查询 - 输入生日查星座和生肖 - 在线工具箱</title>
+  <meta name="description" content="免费在线星座生肖查询工具，输入生日快速查询西方星座和中国十二生肖。包含星座日期范围、星座性格特点、生肖年份对照表。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="星座生肖查询 - 输入生日查星座和生肖">
+  <meta property="og:description" content="输入生日查询星座和生肖。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/zodiac.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/zodiac.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"星座生肖查询","description":"输入生日查询星座和生肖","url":"https://eitools.cn/src/tools/zodiac.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>星座 & 生肖查询</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">选择或输入出生日期，查询西方星座和中国生肖。</p>
+    <div style="max-width:600px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;">
+        <div><label style="font-size:0.85rem;color:#888;">年</label>
+          <input type="number" id="year" value="1995" min="1900" max="2100" oninput="query()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:4px;"></div>
+        <div><label style="font-size:0.85rem;color:#888;">月</label>
+          <input type="number" id="month" value="6" min="1" max="12" oninput="query()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:4px;"></div>
+        <div><label style="font-size:0.85rem;color:#888;">日</label>
+          <input type="number" id="day" value="15" min="1" max="31" oninput="query()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:4px;"></div>
+      </div>
+      <div id="result"></div>
+      <div style="margin-top:24px;">
+        <h3 style="margin-bottom:12px;">十二生肖年份对照</h3>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;font-size:0.85rem;">
+          <div style="padding:8px;background:white;border-radius:8px;border:1px solid #eee;"><strong>鼠</strong><br>2020, 2008, 1996</div>
+          <div style="padding:8px;background:white;border-radius:8px;border:1px solid #eee;"><strong>牛</strong><br>2021, 2009, 1997</div>
+          <div style="padding:8px;background:white;border-radius:8px;border:1px solid #eee;"><strong>虎</strong><br>2022, 2010, 1998</div>
+          <div style="padding:8px;background:white;border-radius:8px;border:1px solid #eee;"><strong>兔</strong><br>2023, 2011, 1999</div>
+          <div style="padding:8px;background:white;border-radius:8px;border:1px solid #eee;"><strong>龙</strong><br>2024, 2012, 2000</div>
+          <div style="padding:8px;background:white;border-radius:8px;border:1px solid #eee;"><strong>蛇</strong><br>2025, 2013, 2001</div>
+          <div style="padding:8px;background:white;border-radius:8px;border:1px solid #eee;"><strong>马</strong><br>2026, 2014, 2002</div>
+          <div style="padding:8px;background:white;border-radius:8px;border:1px solid #eee;"><strong>羊</strong><br>2027, 2015, 2003</div>
+          <div style="padding:8px;background:white;border-radius:8px;border:1px solid #eee;"><strong>猴</strong><br>2028, 2016, 2004</div>
+          <div style="padding:8px;background:white;border-radius:8px;border:1px solid #eee;"><strong>鸡</strong><br>2029, 2017, 2005</div>
+          <div style="padding:8px;background:white;border-radius:8px;border:1px solid #eee;"><strong>狗</strong><br>2030, 2018, 2006</div>
+          <div style="padding:8px;background:white;border-radius:8px;border:1px solid #eee;"><strong>猪</strong><br>2031, 2019, 2007</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const zodiacs = [
+      { name: '摩羯座', symbol: '♑', date: '12/22-1/19', trait: '踏实、有责任感、有耐心', startM: 12, startD: 22, endM: 1, endD: 19, element: '土象' },
+      { name: '水瓶座', symbol: '♒', date: '1/20-2/18', trait: '独立、创新、理性', startM: 1, startD: 20, endM: 2, endD: 18, element: '风象' },
+      { name: '双鱼座', symbol: '♓', date: '2/19-3/20', trait: '浪漫、敏感、有想象力', startM: 2, startD: 19, endM: 3, endD: 20, element: '水象' },
+      { name: '白羊座', symbol: '♈', date: '3/21-4/19', trait: '热情、勇敢、有活力', startM: 3, startD: 21, endM: 4, endD: 19, element: '火象' },
+      { name: '金牛座', symbol: '♉', date: '4/20-5/20', trait: '稳重、务实、有耐心', startM: 4, startD: 20, endM: 5, endD: 20, element: '土象' },
+      { name: '双子座', symbol: '♊', date: '5/21-6/21', trait: '聪明、灵活、好奇心强', startM: 5, startD: 21, endM: 6, endD: 21, element: '风象' },
+      { name: '巨蟹座', symbol: '♋', date: '6/22-7/22', trait: '温柔、体贴、重视家庭', startM: 6, startD: 22, endM: 7, endD: 22, element: '水象' },
+      { name: '狮子座', symbol: '♌', date: '7/23-8/22', trait: '自信、大方、有领导力', startM: 7, startD: 23, endM: 8, endD: 22, element: '火象' },
+      { name: '处女座', symbol: '♍', date: '8/23-9/22', trait: '细致、完美主义、有分析力', startM: 8, startD: 23, endM: 9, endD: 22, element: '土象' },
+      { name: '天秤座', symbol: '♎', date: '9/23-10/23', trait: '优雅、公正、追求和谐', startM: 9, startD: 23, endM: 10, endD: 23, element: '风象' },
+      { name: '天蝎座', symbol: '♏', date: '10/24-11/22', trait: '神秘、有洞察力、意志坚定', startM: 10, startD: 24, endM: 11, endD: 22, element: '水象' },
+      { name: '射手座', symbol: '♐', date: '11/23-12/21', trait: '乐观、自由、爱冒险', startM: 11, startD: 23, endM: 12, endD: 21, element: '火象' },
+    ];
+    const animals = ['鼠','牛','虎','兔','龙','蛇','马','羊','猴','鸡','狗','猪'];
+
+    function query() {
+      const year = parseInt(document.getElementById('year').value), month = parseInt(document.getElementById('month').value), day = parseInt(document.getElementById('day').value);
+      const el = document.getElementById('result');
+
+      if (!year || !month || !day || month < 1 || month > 12 || day < 1 || day > 31) {
+        el.innerHTML = '<p style="color:#c92a2a;">请输入有效的日期</p>'; return;
+      }
+
+      // Find zodiac
+      let zodiac = zodiacs[0];
+      for (const z of zodiacs) {
+        if (z.startM === z.endM) { if (month === z.startM && day >= z.startD && day <= z.endD) { zodiac = z; break; } }
+        else if (z.startM > z.endM) { if ((month === z.startM && day >= z.startD) || (month === z.endM && day <= z.endD)) { zodiac = z; break; } }
+        else { if ((month === z.startM && day >= z.startD) || (month === z.endM && day <= z.endD)) { zodiac = z; break; } }
+      }
+
+      // Find Chinese zodiac
+      const animalIndex = (year - 4) % 12;
+      const animal = animals[animalIndex >= 0 ? animalIndex : animalIndex + 12];
+
+      el.innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div style="padding:24px;background:white;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06);text-align:center;">
+            <div style="font-size:3rem;">${zodiac.symbol}</div>
+            <div style="font-size:1.3rem;font-weight:700;margin-top:8px;color:#4361ee;">${zodiac.name}</div>
+            <div style="font-size:0.85rem;color:#888;margin-top:4px;">${zodiac.date}</div>
+            <div style="font-size:0.85rem;color:#888;margin-top:4px;">${zodiac.element}</div>
+            <div style="font-size:0.85rem;color:#555;margin-top:8px;padding-top:8px;border-top:1px solid #eee;">${zodiac.trait}</div>
+          </div>
+          <div style="padding:24px;background:white;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06);text-align:center;">
+            <div style="font-size:3rem;">${getAnimalEmoji(animal)}</div>
+            <div style="font-size:1.3rem;font-weight:700;margin-top:8px;color:#e67700;">${animal}</div>
+            <div style="font-size:0.85rem;color:#888;margin-top:4px;">${year}年 生肖${animal}</div>
+            <div style="font-size:0.85rem;color:#888;margin-top:4px;">十二生肖</div>
+            <div style="font-size:0.85rem;color:#555;margin-top:8px;padding-top:8px;border-top:1px solid #eee;">${getAnimalTrait(animal)}</div>
+          </div>
+        </div>`;
+    }
+
+    function getAnimalEmoji(name) {
+      const map = {'鼠':'🐭','牛':'🐂','虎':'🐯','兔':'🐰','龙':'🐲','蛇':'🐍','马':'🐴','羊':'🐑','猴':'🐵','鸡':'🐔','狗':'🐶','猪':'🐷'};
+      return map[name] || '';
+    }
+    function getAnimalTrait(name) {
+      const traits = {'鼠':'机智灵活、适应力强','牛':'勤劳踏实、稳重可靠','虎':'勇敢果断、有魄力','兔':'温文尔雅、心思细腻','龙':'自信开朗、有远见','蛇':'深沉睿智、直觉敏锐','马':'热情奔放、自由不羁','羊':'温柔善良、有艺术天赋','猴':'聪明好动、幽默风趣','鸡':'勤劳认真、善于观察','狗':'忠诚可靠、正义感强','猪':'真诚善良、豁达乐观'};
+      return traits[name] || '';
+    }
+    query();
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON转表格 - JSON数据可视化 - 在线工具箱</title>
+  <meta name="description" content="在线JSON转表格工具：将JSON数组转换为可读的HTML表格。支持排序、搜索、导出CSV。数据展示必备工具。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="JSON转表格工具">
+  <meta property="og:description" content="JSON数组转HTML表格，支持排序和搜索。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/json-pretty.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/json-pretty.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"JSON转表格工具","url":"https://eitools.cn/src/tools/json-pretty.html","description":"JSON数组转HTML表格，支持排序、搜索、导出CSV","applicationCategory":"DeveloperApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>JSON转表格</h1>
+    </div>
+    <div style="display:flex;gap:8px;margin:16px 0;flex-wrap:wrap;align-items:center;">
+      <button class="btn btn-primary" onclick="convert()">转换为表格</button>
+      <button class="btn btn-secondary" onclick="exportCSV()">导出CSV</button>
+      <button class="btn btn-secondary" onclick="loadSample()">加载示例</button>
+    </div>
+    <textarea id="input" rows="6" placeholder='粘贴JSON数组，例如：&#10;[{"name":"张三","age":25},{"name":"李四","age":30}]' style="width:100%;padding:12px;border:2px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.9rem;box-sizing:border-box;"></textarea>
+    <div id="toolbar" style="display:none;margin:12px 0;">
+      <input type="text" id="searchInput" placeholder="搜索表格内容..." oninput="filterTable()" style="padding:8px;border:1px solid #ddd;border-radius:6px;width:200px;">
+      <span id="rowCount" style="font-size:0.85rem;color:#666;margin-left:12px;"></span>
+    </div>
+    <div id="tableContainer" style="overflow-x:auto;margin-top:12px;"></div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    let tableData = [];
+    let tableHeaders = [];
+
+    function convert() {
+      const input = document.getElementById('input').value.trim();
+      if (!input) { showToast('请输入JSON数组'); return; }
+      try {
+        const parsed = JSON.parse(input);
+        if (!Array.isArray(parsed) || parsed.length === 0) {
+          showToast('请输入非空的JSON数组');
+          return;
+        }
+        tableData = parsed;
+        tableHeaders = [...new Set(parsed.flatMap(item => Object.keys(item)))];
+        renderTable(parsed);
+        document.getElementById('toolbar').style.display = 'block';
+        document.getElementById('rowCount').textContent = `共 ${parsed.length} 条记录`;
+        document.getElementById('searchInput').value = '';
+      } catch (e) {
+        showToast('JSON解析错误: ' + e.message);
+      }
+    }
+
+    function renderTable(data) {
+      if (!data.length) {
+        document.getElementById('tableContainer').innerHTML = '<p style="color:#999;">无匹配数据</p>';
+        document.getElementById('rowCount').textContent = '0 条记录';
+        return;
+      }
+      let html = '<table style="width:100%;border-collapse:collapse;font-size:0.9rem;">';
+      html += '<tr style="background:#f0f2f5;cursor:pointer;">';
+      tableHeaders.forEach(h => {
+        html += `<th style="padding:10px;text-align:left;border-bottom:2px solid #ddd;white-space:nowrap;" onclick="sortTable('${h}')">${h} ↕</th>`;
+      });
+      html += '</tr>';
+      data.forEach(row => {
+        html += '<tr style="border-bottom:1px solid #eee;">';
+        tableHeaders.forEach(h => {
+          const val = row[h] !== undefined ? row[h] : '';
+          html += `<td style="padding:8px 10px;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${String(val)}">${val}</td>`;
+        });
+        html += '</tr>';
+      });
+      html += '</table>';
+      document.getElementById('tableContainer').innerHTML = html;
+    }
+
+    let sortCol = '';
+    let sortAsc = true;
+    function sortTable(col) {
+      if (sortCol === col) { sortAsc = !sortAsc; } else { sortCol = col; sortAsc = true; }
+      const sorted = [...tableData].sort((a, b) => {
+        const va = a[col] ?? '', vb = b[col] ?? '';
+        if (typeof va === 'number' && typeof vb === 'number') return sortAsc ? va - vb : vb - va;
+        const cmp = String(va).localeCompare(String(vb), 'zh');
+        return sortAsc ? cmp : -cmp;
+      });
+      renderTable(sorted);
+    }
+
+    function filterTable() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = tableData.filter(row =>
+        tableHeaders.some(h => String(row[h] ?? '').toLowerCase().includes(q))
+      );
+      renderTable(filtered);
+    }
+
+    function exportCSV() {
+      if (!tableData.length) { showToast('无数据可导出'); return; }
+      const csv = [tableHeaders.join(',')];
+      tableData.forEach(row => {
+        csv.push(tableHeaders.map(h => {
+          let val = String(row[h] ?? '');
+          if (val.includes(',') || val.includes('"') || val.includes('\n')) {
+            val = '"' + val.replace(/"/g, '""') + '"';
+          }
+          return val;
+        }).join(','));
+      });
+      const blob = new Blob(['\ufeff' + csv.join('\n')], { type: 'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'data.csv'; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function loadSample() {
+      document.getElementById('input').value = JSON.stringify([
+        {"姓名":"张三","年龄":28,"城市":"北京","职位":"前端工程师","薪资":25000},
+        {"姓名":"李四","年龄":32,"城市":"上海","职位":"后端工程师","薪资":30000},
+        {"姓名":"王五","年龄":25,"城市":"深圳","职位":"UI设计师","薪资":20000},
+        {"姓名":"赵六","年龄":30,"城市":"杭州","职位":"产品经理","薪资":28000},
+        {"姓名":"钱七","年龄":27,"城市":"广州","职位":"测试工程师","薪资":18000}
+      ], null, 2);
+    }
+  </script>
+</body>
+</html>

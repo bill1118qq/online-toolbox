@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON Path 在线查询 - JSONPath 测试 - 在线工具箱</title>
+  <meta name="description" content="在线JSONPath查询工具，输入JSON数据和JSONPath表达式，实时提取匹配的数据。支持$.store.book[*].author等常用表达式。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="JSON Path 在线查询工具">
+  <meta property="og:description" content="输入JSON和JSONPath表达式，实时提取数据。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/json-path.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/json-path.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"JSON Path查询工具","description":"在线JSONPath表达式查询和测试","url":"https://eitools.cn/src/tools/json-path.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>JSON Path 查询</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">输入 JSON 数据和 JSONPath 表达式，实时提取匹配结果。</p>
+    <div style="max-width:800px;">
+      <div style="margin-bottom:12px;">
+        <label style="font-size:0.85rem;color:#888;">JSONPath 表达式</label>
+        <input type="text" id="path" value="$.store.book[*].author" oninput="query()" placeholder="例如: $.store.book[*].author" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-family:monospace;">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <label style="font-size:0.85rem;color:#888;">JSON 数据</label>
+          <textarea id="json" oninput="query()" rows="14" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.85rem;resize:vertical;">{
+  "store": {
+    "book": [
+      { "category": "reference", "author": "Nigel Rees", "title": "Sayings of the Century", "price": 8.95 },
+      { "category": "fiction", "author": "Evelyn Waugh", "title": "Sword of Honour", "price": 12.99 },
+      { "category": "fiction", "author": "Herman Melville", "title": "Moby Dick", "isbn": "0-553-21311-3", "price": 8.99 },
+      { "category": "fiction", "author": "J.R.R. Tolkien", "title": "The Lord of the Rings", "isbn": "0-395-19395-8", "price": 22.99 }
+    ],
+    "bicycle": { "color": "red", "price": 19.95 }
+  }
+}</textarea>
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">查询结果</label>
+          <pre id="result" style="width:100%;padding:10px;background:#f0f2f5;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.85rem;overflow:auto;min-height:300px;white-space:pre-wrap;"></pre>
+        </div>
+      </div>
+      <div style="margin-top:16px;">
+        <label style="font-size:0.85rem;color:#888;">常用表达式</label>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="btn btn-secondary" onclick="document.getElementById('path').value='$';query()" style="font-size:0.75rem;padding:4px 8px;">根对象 $</button>
+          <button class="btn btn-secondary" onclick="document.getElementById('path').value='$.store.book[*].author';query()" style="font-size:0.75rem;padding:4px 8px;">所有作者</button>
+          <button class="btn btn-secondary" onclick="document.getElementById('path').value='$.store.book[0].title';query()" style="font-size:0.75rem;padding:4px 8px;">第一本书</button>
+          <button class="btn btn-secondary" onclick="document.getElementById('path').value='$..author';query()" style="font-size:0.75rem;padding:4px 8px;">所有author</button>
+          <button class="btn btn-secondary" onclick="document.getElementById('path').value='$.store.book[?(@.price<10)]';query()" style="font-size:0.75rem;padding:4px 8px;">价格<10</button>
+          <button class="btn btn-secondary" onclick="document.getElementById('path').value='$.store.*';query()" style="font-size:0.75rem;padding:4px 8px;">store子元素</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function query() {
+      const path = document.getElementById('path').value.trim();
+      const jsonStr = document.getElementById('json').value.trim();
+      if (!path || !jsonStr) { document.getElementById('result').textContent = ''; return; }
+      try {
+        const data = JSON.parse(jsonStr);
+        const result = queryPath(data, path);
+        document.getElementById('result').textContent = JSON.stringify(result, null, 2);
+      } catch(e) {
+        document.getElementById('result').textContent = '错误: ' + e.message;
+      }
+    }
+
+    function queryPath(obj, path) {
+      if (path === '$' || path === '') return obj;
+      let current = path.startsWith('$') ? path.slice(1) : path;
+      if (current.startsWith('..')) {
+        const key = current.slice(2).replace(/^\./, '');
+        return deepSearch(obj, key);
+      }
+      if (current.startsWith('.')) current = current.slice(1);
+      const parts = current.split(/(?<!\[[^\]]*)\./);
+      return parts.reduce((acc, part) => {
+        if (acc === undefined || acc === null) return undefined;
+        // Handle array index or wildcard
+        const arrMatch = part.match(/^(\w+)\[(.+)\]$/);
+        if (arrMatch) {
+          const key = arrMatch[1], idx = arrMatch[2];
+          const val = typeof acc === 'object' ? acc[key] : undefined;
+          if (idx === '*') return Array.isArray(val) ? val : [val];
+          const numIdx = parseInt(idx);
+          if (!isNaN(numIdx)) return Array.isArray(val) ? val[numIdx] : undefined;
+          return val;
+        }
+        // Handle filter [?(...)]
+        const filterMatch = part.match(/^(\w+)\[\?\(@\.(.+?)\)\]$/);
+        if (filterMatch) {
+          const key = filterMatch[1], cond = filterMatch[2];
+          const arr = typeof acc === 'object' ? acc[key] : undefined;
+          if (!Array.isArray(arr)) return undefined;
+          const [field, op, val] = parseFilter(cond);
+          return arr.filter(item => {
+            const v = item[field];
+            if (op === '<') return v < parseFloat(val);
+            if (op === '>') return v > parseFloat(val);
+            if (op === '==') return v == val;
+            if (op === '!=') return v != val;
+            return true;
+          });
+        }
+        return typeof acc === 'object' ? acc[part] : undefined;
+      }, obj);
+    }
+
+    function deepSearch(obj, key) {
+      const results = [];
+      function search(o) {
+        if (Array.isArray(o)) o.forEach(search);
+        else if (o && typeof o === 'object') {
+          if (o[key] !== undefined) results.push(o[key]);
+          Object.values(o).forEach(search);
+        }
+      }
+      search(obj);
+      return results;
+    }
+
+    function parseFilter(cond) {
+      const match = cond.match(/(.+?)([<>=!]=?)(.+)/);
+      return match ? [match[1].trim(), match[2], match[3].trim()] : [cond, '==', ''];
+    }
+    query();
+  </script>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+</body>
+</html>

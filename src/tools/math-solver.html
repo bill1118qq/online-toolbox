@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数学公式计算器 - 一元二次方程/勾股定理/三角函数 - 在线工具箱</title>
+  <meta name="description" content="免费在线数学公式计算器，支持一元二次方程求解、勾股定理计算、三角函数、圆的面积周长、球体体积等常用数学公式。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="数学公式计算器 - 在线求解">
+  <meta property="og:description" content="一元二次方程、勾股定理、三角函数在线计算。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/math-solver.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/math-solver.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"数学公式计算器","description":"在线数学公式求解工具","url":"https://eitools.cn/src/tools/math-solver.html","applicationCategory":"EducationalApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>数学公式计算器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">常用数学公式在线计算，输入数值即可得到结果。</p>
+    <div style="max-width:600px;">
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;">
+        <button onclick="showPanel('quadratic')" class="tab-btn active" data-p="quadratic">一元二次方程</button>
+        <button onclick="showPanel('pythagorean')" class="tab-btn" data-p="pythagorean">勾股定理</button>
+        <button onclick="showPanel('trig')" class="tab-btn" data-p="trig">三角函数</button>
+        <button onclick="showPanel('circle')" class="tab-btn" data-p="circle">圆计算</button>
+        <button onclick="showPanel('sphere')" class="tab-btn" data-p="sphere">球体计算</button>
+        <button onclick="showPanel('percentage')" class="tab-btn" data-p="percentage">百分比计算</button>
+      </div>
+
+      <div id="panel-quadratic" class="calc-panel">
+        <h3 style="margin-bottom:12px;">一元二次方程 ax² + bx + c = 0</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+          <div><label style="font-size:0.85rem;color:#888;">a</label><input type="number" id="qa" value="1" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:4px;"></div>
+          <div><label style="font-size:0.85rem;color:#888;">b</label><input type="number" id="qb" value="-5" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:4px;"></div>
+          <div><label style="font-size:0.85rem;color:#888;">c</label><input type="number" id="qc" value="6" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:4px;"></div>
+        </div>
+        <button class="btn btn-primary" onclick="solveQuadratic()" style="margin-top:12px;">求解</button>
+        <div id="quad-result" style="margin-top:12px;"></div>
+      </div>
+
+      <div id="panel-pythagorean" class="calc-panel" style="display:none;">
+        <h3 style="margin-bottom:12px;">勾股定理 a² + b² = c²</h3>
+        <p style="font-size:0.85rem;color:#888;margin-bottom:8px;">输入任意两边，自动计算第三边</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+          <div><label style="font-size:0.85rem;color:#888;">a</label><input type="number" id="pa" placeholder="输入" oninput="solvePyth()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:4px;"></div>
+          <div><label style="font-size:0.85rem;color:#888;">b</label><input type="number" id="pb" placeholder="输入" oninput="solvePyth()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:4px;"></div>
+          <div><label style="font-size:0.85rem;color:#888;">c（斜边）</label><input type="number" id="pc" placeholder="输入" oninput="solvePyth()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:4px;"></div>
+        </div>
+        <div id="pyth-result" style="margin-top:12px;"></div>
+      </div>
+
+      <div id="panel-trig" class="calc-panel" style="display:none;">
+        <h3 style="margin-bottom:12px;">三角函数计算</h3>
+        <div><label style="font-size:0.85rem;color:#888;">角度</label>
+          <input type="number" id="trig-angle" value="45" oninput="calcTrig()" style="width:100px;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:4px;"> 度
+        </div>
+        <div id="trig-result" style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;"></div>
+      </div>
+
+      <div id="panel-circle" class="calc-panel" style="display:none;">
+        <h3 style="margin-bottom:12px;">圆的计算</h3>
+        <div><label style="font-size:0.85rem;color:#888;">半径 r</label>
+          <input type="number" id="circle-r" value="5" oninput="calcCircle()" style="width:100px;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:4px;">
+        </div>
+        <div id="circle-result" style="margin-top:12px;"></div>
+      </div>
+
+      <div id="panel-sphere" class="calc-panel" style="display:none;">
+        <h3 style="margin-bottom:12px;">球体的计算</h3>
+        <div><label style="font-size:0.85rem;color:#888;">半径 r</label>
+          <input type="number" id="sphere-r" value="5" oninput="calcSphere()" style="width:100px;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:4px;">
+        </div>
+        <div id="sphere-result" style="margin-top:12px;"></div>
+      </div>
+
+      <div id="panel-percentage" class="calc-panel" style="display:none;">
+        <h3 style="margin-bottom:12px;">百分比计算</h3>
+        <div style="display:grid;gap:12px;">
+          <div><label style="font-size:0.85rem;color:#888;">X 是 Y 的百分之几？</label>
+            <div style="display:flex;gap:8px;margin-top:4px;align-items:center;">
+              <input type="number" id="pct-x" placeholder="X" style="flex:1;padding:8px;border:1px solid #ddd;border-radius:6px;">
+              <span>是</span>
+              <input type="number" id="pct-y" placeholder="Y" style="flex:1;padding:8px;border:1px solid #ddd;border-radius:6px;">
+              <button class="btn btn-primary" onclick="calcPctXY()" style="padding:8px 12px;">计算</button>
+            </div>
+            <div id="pct-xy-result" style="margin-top:8px;font-weight:600;"></div>
+          </div>
+          <div><label style="font-size:0.85rem;color:#888;">X 的 Y% 是多少？</label>
+            <div style="display:flex;gap:8px;margin-top:4px;align-items:center;">
+              <input type="number" id="pct-a" placeholder="X" style="flex:1;padding:8px;border:1px solid #ddd;border-radius:6px;">
+              <span>的</span>
+              <input type="number" id="pct-b" placeholder="Y%" style="flex:1;padding:8px;border:1px solid #ddd;border-radius:6px;">
+              <span>%</span>
+              <button class="btn btn-primary" onclick="calcPctAB()" style="padding:8px 12px;">计算</button>
+            </div>
+            <div id="pct-ab-result" style="margin-top:8px;font-weight:600;"></div>
+          </div>
+          <div><label style="font-size:0.85rem;color:#888;">X 增长/减少了 Y% 变成多少？</label>
+            <div style="display:flex;gap:8px;margin-top:4px;align-items:center;">
+              <input type="number" id="pct-m" placeholder="X" style="flex:1;padding:8px;border:1px solid #ddd;border-radius:6px;">
+              <select id="pct-dir" style="padding:8px;border:1px solid #ddd;border-radius:6px;"><option>增加</option><option>减少</option></select>
+              <input type="number" id="pct-n" placeholder="Y%" style="flex:1;padding:8px;border:1px solid #ddd;border-radius:6px;">
+              <span>%</span>
+              <button class="btn btn-primary" onclick="calcPctMN()" style="padding:8px 12px;">计算</button>
+            </div>
+            <div id="pct-mn-result" style="margin-top:8px;font-weight:600;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <style>.tab-btn{padding:8px 16px;border:1px solid #ddd;border-radius:8px;cursor:pointer;background:white;font-size:0.85rem;}.tab-btn.active{background:#4361ee;color:white;border-color:#4361ee;}.calc-panel{background:#f8f9fa;padding:20px;border-radius:12px;}</style>
+  <script>
+    function showPanel(id) {
+      document.querySelectorAll('.calc-panel').forEach(p => p.style.display = 'none');
+      document.getElementById('panel-' + id).style.display = 'block';
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.p === id));
+    }
+    function solveQuadratic() {
+      const a = parseFloat(document.getElementById('qa').value), b = parseFloat(document.getElementById('qb').value), c = parseFloat(document.getElementById('qc').value);
+      if (a === 0) return document.getElementById('quad-result').innerHTML = '<p style="color:#c92a2a;">a不能为0</p>';
+      const D = b * b - 4 * a * c;
+      let html = `<p>Δ = b² - 4ac = ${D}</p>`;
+      if (D > 0) {
+        const x1 = (-b + Math.sqrt(D)) / (2 * a), x2 = (-b - Math.sqrt(D)) / (2 * a);
+        html += `<p style="color:#2f9e44;">x₁ = ${x1}, x₂ = ${x2}</p>`;
+      } else if (D === 0) {
+        html += `<p style="color:#2f9e44;">x = ${-b / (2 * a)}（重根）</p>`;
+      } else {
+        const real = (-b / (2 * a)).toFixed(4), imag = (Math.sqrt(-D) / (2 * a)).toFixed(4);
+        html += `<p style="color:#e67700;">x₁ = ${real} + ${imag}i, x₂ = ${real} - ${imag}i（复数根）</p>`;
+      }
+      document.getElementById('quad-result').innerHTML = html;
+    }
+    function solvePyth() {
+      const a = parseFloat(document.getElementById('pa').value), b = parseFloat(document.getElementById('pb').value), c = parseFloat(document.getElementById('pc').value);
+      let html = '';
+      if (a && b && !c) html = `<p style="color:#2f9e44;">c = √(${a}² + ${b}²) = <strong>${Math.sqrt(a*a+b*b).toFixed(4)}</strong></p>`;
+      else if (a && c && !b) html = `<p style="color:#2f9e44;">b = √(${c}² - ${a}²) = <strong>${Math.sqrt(c*c-a*a).toFixed(4)}</strong></p>`;
+      else if (b && c && !a) html = `<p style="color:#2f9e44;">a = √(${c}² - ${b}²) = <strong>${Math.sqrt(c*c-b*b).toFixed(4)}</strong></p>`;
+      else if (a && b && c) html = a*a+b*b===c*c ? '<p style="color:#2f9e44;">✓ 这是一个直角三角形</p>' : '<p style="color:#e67700;">✗ 不是直角三角形</p>';
+      document.getElementById('pyth-result').innerHTML = html;
+    }
+    function calcTrig() {
+      const deg = parseFloat(document.getElementById('trig-angle').value), rad = deg * Math.PI / 180;
+      const fns = { 'sin': Math.sin(rad), 'cos': Math.cos(rad), 'tan': Math.tan(rad), 'csc': 1/Math.sin(rad), 'sec': 1/Math.cos(rad), 'cot': 1/Math.tan(rad) };
+      document.getElementById('trig-result').innerHTML = Object.entries(fns).map(([n, v]) => `<div style="padding:10px;background:white;border-radius:8px;"><span style="color:#888;font-size:0.85rem;">${n}(${deg}°)</span><br><strong>${isNaN(v) ? '无定义' : v.toFixed(8)}</strong></div>`).join('');
+    }
+    function calcCircle() {
+      const r = parseFloat(document.getElementById('circle-r').value); if (!r) return;
+      document.getElementById('circle-result').innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="padding:10px;background:white;border-radius:8px;"><span style="color:#888;font-size:0.85rem;">直径</span><br><strong>${2*r}</strong></div>
+          <div style="padding:10px;background:white;border-radius:8px;"><span style="color:#888;font-size:0.85rem;">周长</span><br><strong>${(2*Math.PI*r).toFixed(4)}</strong></div>
+          <div style="padding:10px;background:white;border-radius:8px;"><span style="color:#888;font-size:0.85rem;">面积</span><br><strong>${(Math.PI*r*r).toFixed(4)}</strong></div>
+        </div>`;
+    }
+    function calcSphere() {
+      const r = parseFloat(document.getElementById('sphere-r').value); if (!r) return;
+      document.getElementById('sphere-result').innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="padding:10px;background:white;border-radius:8px;"><span style="color:#888;font-size:0.85rem;">表面积</span><br><strong>${(4*Math.PI*r*r).toFixed(4)}</strong></div>
+          <div style="padding:10px;background:white;border-radius:8px;"><span style="color:#888;font-size:0.85rem;">体积</span><br><strong>${(4/3*Math.PI*r*r*r).toFixed(4)}</strong></div>
+        </div>`;
+    }
+    function calcPctXY() {
+      const x = parseFloat(document.getElementById('pct-x').value), y = parseFloat(document.getElementById('pct-y').value);
+      if (y === 0) return;
+      document.getElementById('pct-xy-result').textContent = `${x} 是 ${y} 的 ${(x/y*100).toFixed(2)}%`;
+    }
+    function calcPctAB() {
+      const a = parseFloat(document.getElementById('pct-a').value), b = parseFloat(document.getElementById('pct-b').value);
+      document.getElementById('pct-ab-result').textContent = `${a} 的 ${b}% 是 ${(a*b/100).toFixed(2)}`;
+    }
+    function calcPctMN() {
+      const m = parseFloat(document.getElementById('pct-m').value), n = parseFloat(document.getElementById('pct-n').value);
+      const dir = document.getElementById('pct-dir').value === '增加' ? 1 : -1;
+      document.getElementById('pct-mn-result').textContent = `${m} ${document.getElementById('pct-dir').value} ${n}% 后 = ${(m + m * n / 100 * dir).toFixed(2)}`;
+    }
+    solveQuadratic(); calcTrig(); calcCircle(); calcSphere();
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

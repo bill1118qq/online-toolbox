@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON压缩工具 - JSON压缩美化 - 在线工具箱</title>
+  <meta name="description" content="在线JSON压缩美化工具：一键压缩JSON去除空格换行，或美化格式化JSON。支持JSON语法验证、文件大小对比。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="JSON压缩美化工具">
+  <meta property="og:description" content="一键压缩或美化JSON，支持语法验证。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/json-minify.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/json-minify.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"JSON压缩美化工具","url":"https://eitools.cn/src/tools/json-minify.html","description":"在线JSON压缩美化工具，支持JSON压缩、美化、语法验证","applicationCategory":"DeveloperApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>JSON压缩美化工具</h1>
+    </div>
+    <div style="display:flex;gap:8px;margin:16px 0;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="compressJSON()">压缩（Minify）</button>
+      <button class="btn btn-primary" onclick="beautifyJSON()">美化（格式化）</button>
+      <button class="btn btn-secondary" onclick="copyResult()">复制结果</button>
+      <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+    </div>
+    <div class="split-view">
+      <div class="split-panel">
+        <h3>输入 JSON</h3>
+        <textarea id="input" rows="16" placeholder='粘贴JSON内容，例如：&#10;{&#10;  "name": "张三",&#10;  "age": 25&#10;}'></textarea>
+        <div style="margin-top:8px;font-size:0.85rem;color:#666;">
+          大小: <span id="inputSize">0</span> 字节
+        </div>
+      </div>
+      <div class="split-panel">
+        <h3>输出结果</h3>
+        <textarea id="output" rows="16" readonly></textarea>
+        <div style="margin-top:8px;font-size:0.85rem;color:#666;">
+          大小: <span id="outputSize">0</span> 字节 | 压缩率: <span id="ratio">-</span>
+        </div>
+      </div>
+    </div>
+    <div id="result-box" style="display:none;padding:12px;border-radius:8px;margin-top:12px;font-size:0.9rem;"></div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    const inputEl = document.getElementById('input');
+    const outputEl = document.getElementById('output');
+    const inputSizeEl = document.getElementById('inputSize');
+    const outputSizeEl = document.getElementById('outputSize');
+    const ratioEl = document.getElementById('ratio');
+    const resultBox = document.getElementById('result-box');
+
+    inputEl.addEventListener('input', () => {
+      inputSizeEl.textContent = new Blob([inputEl.value]).size;
+    });
+
+    function showResult(msg, isError) {
+      resultBox.style.display = 'block';
+      resultBox.style.border = isError ? '2px solid #f44' : '2px solid #4ade80';
+      resultBox.style.background = isError ? '#fff5f5' : '#f0fff4';
+      resultBox.textContent = msg;
+    }
+
+    function hideResult() { resultBox.style.display = 'none'; }
+
+    function compressJSON() {
+      hideResult();
+      const input = inputEl.value.trim();
+      if (!input) { showResult('请输入JSON内容', true); return; }
+      try {
+        const parsed = JSON.parse(input);
+        const minified = JSON.stringify(parsed);
+        outputEl.value = minified;
+        const inSize = new Blob([input]).size;
+        const outSize = new Blob([minified]).size;
+        outputSizeEl.textContent = outSize;
+        ratioEl.textContent = ((1 - outSize / inSize) * 100).toFixed(1) + '%';
+        showResult('压缩成功！', false);
+      } catch (e) {
+        showResult('JSON语法错误: ' + e.message, true);
+      }
+    }
+
+    function beautifyJSON() {
+      hideResult();
+      const input = inputEl.value.trim();
+      if (!input) { showResult('请输入JSON内容', true); return; }
+      try {
+        const parsed = JSON.parse(input);
+        const indent = parseInt(prompt('缩进空格数（2或4）:', '2')) || 2;
+        const beautified = JSON.stringify(parsed, null, indent);
+        outputEl.value = beautified;
+        const outSize = new Blob([beautified]).size;
+        outputSizeEl.textContent = outSize;
+        ratioEl.textContent = '-';
+        showResult('美化成功！', false);
+      } catch (e) {
+        showResult('JSON语法错误: ' + e.message, true);
+      }
+    }
+
+    function copyResult() {
+      if (!outputEl.value) { showToast('没有可复制的内容'); return; }
+      navigator.clipboard.writeText(outputEl.value).then(() => showToast('已复制到剪贴板'));
+    }
+
+    function clearAll() {
+      inputEl.value = '';
+      outputEl.value = '';
+      inputSizeEl.textContent = '0';
+      outputSizeEl.textContent = '0';
+      ratioEl.textContent = '-';
+      hideResult();
+    }
+  </script>
+</body>
+</html>

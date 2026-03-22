@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>字符频率统计 - 文本字符出现次数统计 - 在线工具箱</title>
+  <meta name="description" content="在线文本字符频率统计工具，统计每个字符出现的次数和频率，支持中英文文本分析，可视化展示Top字符。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="字符频率统计 - 文本字符出现次数">
+  <meta property="og:description" content="统计文本中每个字符出现次数，可视化柱状图。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/char-frequency.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/char-frequency.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"字符频率统计","description":"统计文本中每个字符的出现次数","url":"https://eitools.cn/src/tools/char-frequency.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>字符频率统计</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">粘贴文本，统计每个字符的出现次数和频率。</p>
+    <div style="max-width:700px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+        <label style="cursor:pointer;"><input type="checkbox" id="ignore-space" onchange="analyze()"> 忽略空格</label>
+        <label style="cursor:pointer;"><input type="checkbox" id="ignore-case" onchange="analyze()"> 忽略大小写</label>
+        <label style="cursor:pointer;"><input type="checkbox" id="ignore-punct" onchange="analyze()"> 忽略标点</label>
+        <label style="cursor:pointer;"><input type="checkbox" id="sort-freq" checked onchange="analyze()"> 按频率排序</label>
+      </div>
+      <textarea id="text" rows="8" oninput="analyze()" placeholder="粘贴文本到此处..." style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:0.95rem;resize:vertical;">天地玄黄，宇宙洪荒。日月盈昃，辰宿列张。寒来暑往，秋收冬藏。闰余成岁，律吕调阳。云腾致雨，露结为霜。金生丽水，玉出昆冈。剑号巨阙，珠称夜光。果珍李柰，菜重芥姜。海咸河淡，鳞潜羽翔。龙师火帝，鸟官人皇。始制文字，乃服衣裳。推位让国，有虞陶唐。吊民伐罪，周发殷汤。坐朝问道，垂拱平章。爱育黎首，臣伏戎羌。遐迩一体，率宾归王。鸣凤在竹，白驹食场。化被草木，赖及万方。盖此身发，四大五常。恭惟鞠养，岂敢毁伤。女慕贞洁，男效才良。知过必改，得能莫忘。罔谈彼短，靡恃己长。信使可覆，器欲难量。墨悲丝染，诗赞羔羊。景行维贤，克念作圣。德建名立，形端表正。空谷传声，虚堂习听。祸因恶积，福缘善庆。尺璧非宝，寸阴是竞。资父事君，曰严与敬。孝当竭力，忠则尽命。临深履薄，夙兴温凊。似兰斯馨，如松之盛。川流不息，渊澄取映。容止若思，言辞安定。笃初诚美，慎终宜令。荣业所基，籍甚无竟。学优登仕，摄职从政。存以甘棠，去而益咏。乐殊贵贱，礼别尊卑。上和下睦，夫唱妇随。外受傅训，入奉母仪。诸姑伯叔，犹子比儿。孔怀兄弟，同气连枝。交友投分，切磨箴规。仁慈隐恻，造次弗离。节义廉退，颠沛匪亏。性静情逸，心动神疲。守真志满，逐物意移。坚持雅操，好爵自縻。都邑华夏，东西二京。背邙面洛，浮渭据泾。宫殿盘郁，楼观飞惊。图写禽兽，画彩仙灵。丙舍旁启，甲帐对楹。肆筵设席，鼓瑟吹笙。升阶纳陛，弁转疑星。右通广内，左达承明。既集坟典，亦聚群英。杜稿钟隶，漆书壁经。府罗将相，路侠槐卿。户封八县，家给千兵。高冠陪辇，驱毂振缨。世禄侈富，车驾肥轻。策功茂实，勒碑刻铭。</textarea>
+      <div id="summary" style="margin-top:12px;font-size:0.9rem;color:#555;"></div>
+      <div id="result" style="margin-top:16px;"></div>
+    </div>
+  </div>
+  <script>
+    function analyze() {
+      let text = document.getElementById('text').value;
+      if (!text) { document.getElementById('result').innerHTML = ''; document.getElementById('summary').innerHTML = ''; return; }
+      if (document.getElementById('ignore-case').checked) text = text.toLowerCase();
+      if (document.getElementById('ignore-space').checked) text = text.replace(/\s/g, '');
+      if (document.getElementById('ignore-punct').checked) text = text.replace(/[^\w\u4e00-\u9fff]/g, '');
+
+      const freq = {};
+      for (const ch of text) freq[ch] = (freq[ch] || 0) + 1;
+      const total = text.length;
+      const unique = Object.keys(freq).length;
+
+      let entries = Object.entries(freq);
+      if (document.getElementById('sort-freq').checked) entries.sort((a,b) => b[1]-a[1]);
+      else entries.sort((a,b) => a[0].localeCompare(b[0]));
+
+      const maxFreq = entries[0] ? entries[0][1] : 1;
+      let html = '<div style="max-height:500px;overflow-y:auto;">';
+      entries.slice(0, 50).forEach(([ch, count]) => {
+        const pct = (count/total*100).toFixed(1);
+        const barW = (count/maxFreq*100);
+        html += `<div style="display:grid;grid-template-columns:40px 1fr 60px 60px;gap:8px;align-items:center;padding:4px 0;font-size:0.85rem;border-bottom:1px solid #f0f0f0;">
+          <div style="font-weight:700;font-family:monospace;text-align:center;">${ch === ' ' ? '␣' : ch}</div>
+          <div style="background:#e0e0e0;border-radius:3px;height:18px;overflow:hidden;"><div style="height:100%;width:${barW}%;background:#4361ee;border-radius:3px;min-width:2px;"></div></div>
+          <div style="text-align:right;font-family:monospace;">${count}</div>
+          <div style="text-align:right;color:#888;">${pct}%</div></div>`;
+      });
+      html += '</div>';
+      if (entries.length > 50) html += `<p style="color:#888;font-size:0.85rem;margin-top:8px;">显示前50个，共${entries.length}个不同字符</p>`;
+      document.getElementById('result').innerHTML = html;
+      document.getElementById('summary').textContent = `总字符数：${total} | 不同字符数：${unique}`;
+    }
+    analyze();
+  </script>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+</body>
+</html>

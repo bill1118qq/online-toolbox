@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>倒数日计算方法 - 距离某天还有多少天 - 在线工具箱</title>
+  <meta name="description" content="倒数日计算方法详解：如何快速计算距离某个日期的天数、常见倒计时日期（考试、纪念日、节日）、倒计时工具推荐。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="倒数日计算方法详解">
+  <meta property="og:description" content="天数计算方法、常用倒计时日期、在线倒计时工具。">
+  <meta property="og:url" content="https://eitools.cn/guides/countdown-day-guide.html">
+  <link rel="canonical" href="https://eitools.cn/guides/countdown-day-guide.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"怎么计算距离某天还有多少天？","acceptedAnswer":{"@type":"Answer","text":"计算方法：用目标日期减去今天的日期。例如2026年10月1日减去今天的天数，就是距离国庆节的天数。也可以用在线倒数日计算器一键计算。"}},{"@type":"Question","name":"2026年重要节日倒计时？","acceptedAnswer":{"@type":"Answer","text":"2026年重要日期：元旦1月1日、春节2月17日、情人节2月14日、劳动节5月1日、端午节6月19日、中秋节9月25日、国庆节10月1日、圣诞节12月25日。具体天数取决于当前日期。"}},{"@type":"Question","name":"天数怎么算更方便？","acceptedAnswer":{"@type":"Answer","text":"最方便的方法是使用在线倒数日工具，添加目标日期后自动实时更新倒计时天数。手机日历也可以设置倒计时提醒。Excel中用=TODAY()-起始日期即可计算天数差。"}}]}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">← 返回首页</a>
+      <h1>倒数日计算方法</h1>
+    </div>
+    <article style="line-height:1.8;">
+      <h2>什么是倒数日？</h2>
+      <p>倒数日是指从今天到某个目标日期之间的天数。常用于：</p>
+      <ul>
+        <li><b>考试倒计时</b>：高考、考研、四六级等重要考试</li>
+        <li><b>纪念日</b>：恋爱纪念日、结婚纪念日</li>
+        <li><b>生日倒计时</b>：距离自己或家人朋友的生日</li>
+        <li><b>节日倒计时</b>：春节、国庆等法定节假日</li>
+        <li><b>重要事件</b>：项目截止、旅行出发、合同到期</li>
+      </ul>
+
+      <h2>天数计算方法</h2>
+      <h3>方法一：在线工具（最方便）</h3>
+      <p>使用在线倒数日计算器，输入日期即可自动计算，还能保存多个倒数日。</p>
+
+      <h3>方法二：Excel/WPS</h3>
+      <div style="background:#1a1a2e;padding:12px;border-radius:8px;font-family:monospace;font-size:0.85rem;color:#4ade80;overflow-x:auto;margin:8px 0;">
+        <pre style="margin:0;">= 目标日期 - TODAY()
+= DATE(2026,10,1) - TODAY()
+= DATEDIF(TODAY(), "2026-10-01", "D")</pre>
+      </div>
+
+      <h3>方法三：JavaScript</h3>
+      <div style="background:#1a1a2e;padding:12px;border-radius:8px;font-family:monospace;font-size:0.85rem;color:#4ade80;overflow-x:auto;margin:8px 0;">
+        <pre style="margin:0;">const target = new Date('2026-10-01');
+const today = new Date();
+const days = Math.ceil((target - today) / 86400000);
+console.log('距离国庆节还有' + days + '天');</pre>
+      </div>
+
+      <h2>2026年重要日期</h2>
+      <table style="width:100%;border-collapse:collapse;margin:12px 0;font-size:0.9rem;">
+        <tr style="background:#f0f2f5;"><th style="padding:10px;">日期</th><th style="padding:10px;">节日/事件</th><th style="padding:10px;">放假安排</th></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">1月1日</td><td style="padding:8px 10px;">元旦</td><td style="padding:8px 10px;">1天</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">2月17日</td><td style="padding:8px 10px;">春节</td><td style="padding:8px 10px;">7天</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">4月5日</td><td style="padding:8px 10px;">清明节</td><td style="padding:8px 10px;">3天</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">5月1日</td><td style="padding:8px 10px;">劳动节</td><td style="padding:8px 10px;">5天</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">6月1日</td><td style="padding:8px 10px;">儿童节</td><td style="padding:8px 10px;">1天</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">6月19日</td><td style="padding:8px 10px;">端午节</td><td style="padding:8px 10px;">3天</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">9月25日</td><td style="padding:8px 10px;">中秋节</td><td style="padding:8px 10px;">3天</td></tr>
+        <tr><td style="padding:8px 10px;">10月1日</td><td style="padding:8px 10px;">国庆节</td><td style="padding:8px 10px;">7天</td></tr>
+      </table>
+
+      <div style="margin-top:24px;padding:20px;background:#f0f4ff;border-radius:12px;border:1px solid #4361ee;">
+        <h3 style="color:#4361ee;margin-top:0;">在线倒数日工具</h3>
+        <p>使用我们的<a href="../src/tools/countdown-day.html" style="color:#4361ee;font-weight:bold;">倒数日计算器</a>，添加多个重要日期，实时查看倒计时，数据自动保存到浏览器。</p>
+      </div>
+    </article>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../js/share.js"></script>
+</body>
+</html>

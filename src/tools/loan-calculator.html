@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>贷款计算器 - 等额本息/等额本金 - 在线工具箱</title>
+  <meta name="description" content="免费在线贷款计算器。支持等额本息、等额本金两种还款方式，计算月供、利息总额、还款明细。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="贷款计算器 - 等额本息/等额本金">
+  <meta property="og:description" content="贷款月供计算、利息对比、还款明细。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/loan-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/loan-calculator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"贷款计算器","description":"贷款月供计算和还款明细","url":"https://eitools.cn/src/tools/loan-calculator.html","applicationCategory":"FinanceApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>贷款计算器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">适用于房贷、车贷、消费贷等各类贷款，对比两种还款方式。</p>
+    <div style="max-width:900px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;">
+        <div>
+          <label style="font-size:0.85rem;color:#888;">贷款金额（万元）</label>
+          <input type="number" id="amount" value="100" step="1" oninput="calc()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:1rem;margin-top:4px;">
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">年利率（%）</label>
+          <input type="number" id="rate" value="3.45" step="0.01" oninput="calc()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:1rem;margin-top:4px;">
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">贷款期限（年）</label>
+          <input type="number" id="years" value="30" min="1" max="50" oninput="calc()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:1rem;margin-top:4px;">
+        </div>
+      </div>
+      <div id="result" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;"></div>
+      <details style="margin-bottom:20px;">
+        <summary style="cursor:pointer;color:#4361ee;font-weight:600;padding:12px;background:#f0f2f5;border-radius:8px;">查看还款明细</summary>
+        <div id="detail" style="margin-top:12px;max-height:400px;overflow-y:auto;"></div>
+      </details>
+      <div style="display:flex;gap:8px;margin-bottom:20px;">
+        <label style="font-size:0.85rem;">对比方式：</label>
+        <select id="compareMode" onchange="calc()" style="padding:6px 12px;border:1px solid #ddd;border-radius:6px;">
+          <option value="both">等额本息 vs 等额本金</option>
+          <option value="debx">仅等额本息</option>
+          <option value="debj">仅等额本金</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <script>
+    function calc() {
+      const P = parseFloat(document.getElementById('amount').value) * 10000;
+      const annualRate = parseFloat(document.getElementById('rate').value) / 100;
+      const n = parseInt(document.getElementById('years').value) * 12;
+      const mode = document.getElementById('compareMode').value;
+      if (!P || !annualRate || !n) return;
+      const r = annualRate / 12;
+      let html = '';
+      const schedules = [];
+      if (mode === 'both' || mode === 'debx') {
+        const M = P * r * Math.pow(1+r, n) / (Math.pow(1+r, n) - 1);
+        const totalPay = M * n;
+        const totalInterest = totalPay - P;
+        schedules.push({name:'等额本息', schedule:generateDEBX(P,r,n,M), totalPay, totalInterest, firstM: M, lastM: M});
+      }
+      if (mode === 'both' || mode === 'debj') {
+        const principal = P / n;
+        let totalPay = 0, firstM = 0, lastM = 0;
+        const schedule = [];
+        let remaining = P;
+        for (let i = 1; i <= n; i++) {
+          const interest = remaining * r;
+          const payment = principal + interest;
+          totalPay += payment;
+          remaining -= principal;
+          if (i === 1) firstM = payment;
+          if (i === n) lastM = payment;
+          schedule.push({month:i, payment, principal, interest, remaining: Math.max(0, remaining)});
+        }
+        schedules.push({name:'等额本金', schedule, totalPay, totalInterest: totalPay - P, firstM, lastM});
+      }
+      if (schedules.length === 2) {
+        const s1 = schedules[0], s2 = schedules[1];
+        const diff = s1.totalInterest - s2.totalInterest;
+        html += `
+          <div style="padding:20px;background:#e8f4fd;border-radius:12px;">
+            <h3 style="margin-bottom:12px;color:#4361ee;">${s1.name}</h3>
+            <div style="font-size:2rem;font-weight:700;color:#4361ee;">¥${s1.firstM.toFixed(2)}</div>
+            <div style="color:#888;font-size:0.85rem;">每月还款（固定）</div>
+            <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:0.85rem;">
+              <div>还款总额<br><strong>¥${(s1.totalPay/10000).toFixed(2)}万</strong></div>
+              <div>利息总额<br><strong>¥${(s1.totalInterest/10000).toFixed(2)}万</strong></div>
+            </div>
+          </div>
+          <div style="padding:20px;background:#fff3cd;border-radius:12px;">
+            <h3 style="margin-bottom:12px;color:#e67700;">${s2.name}</h3>
+            <div style="font-size:2rem;font-weight:700;color:#e67700;">¥${s2.firstM.toFixed(2)}</div>
+            <div style="color:#888;font-size:0.85rem;">首月还款 → 末月 ¥${s2.lastM.toFixed(2)}</div>
+            <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:0.85rem;">
+              <div>还款总额<br><strong>¥${(s2.totalPay/10000).toFixed(2)}万</strong></div>
+              <div>利息总额<br><strong>¥${(s2.totalInterest/10000).toFixed(2)}万</strong></div>
+            </div>
+            <div style="margin-top:12px;padding:8px;background:white;border-radius:8px;text-align:center;font-size:0.85rem;">
+              比${s1.name}少付利息 <strong style="color:#2f9e44;">¥${(Math.abs(diff)/10000).toFixed(2)}万</strong>
+            </div>
+          </div>`;
+      } else {
+        const s = schedules[0];
+        const color = s.name === '等额本息' ? '#4361ee' : '#e67700';
+        html += `<div style="padding:20px;background:#f0f2f5;border-radius:12px;grid-column:span 2;">
+          <h3 style="margin-bottom:12px;color:${color};">${s.name}</h3>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;text-align:center;">
+            <div><div style="font-size:1.5rem;font-weight:700;color:${color};">¥${s.firstM.toFixed(0)}</div><div style="font-size:0.85rem;color:#888;">月供</div></div>
+            <div><div style="font-size:1.5rem;font-weight:700;">¥${(s.totalPay/10000).toFixed(2)}万</div><div style="font-size:0.85rem;color:#888;">还款总额</div></div>
+            <div><div style="font-size:1.5rem;font-weight:700;color:#c92a2a;">¥${(s.totalInterest/10000).toFixed(2)}万</div><div style="font-size:0.85rem;color:#888;">利息总额</div></div>
+            <div><div style="font-size:1.5rem;font-weight:700;">${(s.totalInterest/P*100).toFixed(1)}%</div><div style="font-size:0.85rem;color:#888;">利率占比</div></div>
+          </div>
+        </div>`;
+      }
+      document.getElementById('result').innerHTML = html;
+      let detailHtml = '<table style="width:100%;border-collapse:collapse;font-size:0.8rem;"><tr style="background:#4361ee;color:white;"><th style="padding:8px;border:1px solid #eee;">期数</th><th style="padding:8px;border:1px solid #eee;">月供</th><th style="padding:8px;border:1px solid #eee;">本金</th><th style="padding:8px;border:1px solid #eee;">利息</th><th style="padding:8px;border:1px solid #eee;">剩余本金</th></tr>';
+      schedules.forEach(s => {
+        s.schedule.forEach(row => {
+          detailHtml += `<tr><td style="padding:6px 8px;border:1px solid #eee;">${row.month}</td><td style="padding:6px 8px;border:1px solid #eee;">¥${row.payment.toFixed(2)}</td><td style="padding:6px 8px;border:1px solid #eee;">¥${row.principal.toFixed(2)}</td><td style="padding:6px 8px;border:1px solid #eee;color:#c92a2a;">¥${row.interest.toFixed(2)}</td><td style="padding:6px 8px;border:1px solid #eee;">¥${row.remaining.toFixed(2)}</td></tr>`;
+        });
+      });
+      detailHtml += '</table>';
+      document.getElementById('detail').innerHTML = detailHtml;
+    }
+    function generateDEBX(P, r, n, M) {
+      const schedule = [];
+      let remaining = P;
+      for (let i = 1; i <= n; i++) {
+        const interest = remaining * r;
+        const principal = M - interest;
+        remaining -= principal;
+        schedule.push({month:i, payment:M, principal, interest, remaining: Math.max(0, remaining)});
+      }
+      return schedule;
+    }
+    calc();
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

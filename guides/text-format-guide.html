@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>中文排版规范 - 文本格式化技巧 - 在线工具箱</title>
+  <meta name="description" content="中文排版规范详解：首行缩进、全角半角区别、中英文排版技巧、Markdown格式排版方法。在线文本排版工具推荐。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="中文排版规范详解">
+  <meta property="og:description" content="中文排版标准、全角半角、Markdown排版技巧。">
+  <meta property="og:url" content="https://eitools.cn/guides/text-format-guide.html">
+  <link rel="canonical" href="https://eitools.cn/guides/text-format-guide.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"中文排版首行缩进几个字符？","acceptedAnswer":{"@type":"Answer","text":"中文排版首行缩进一般为2个全角空格（相当于4个半角空格）。在Word中可设置段落首行缩进2字符。在网页中可用text-indent:2em实现。"}},{"@type":"Question","name":"全角和半角有什么区别？","acceptedAnswer":{"@type":"Answer","text":"全角字符占一个汉字宽度，半角占半个汉字宽度。中文标点用全角（，。！？），英文标点用半角(,.!?)。数字和英文字母在中文语境中通常使用半角。在CSS中可用font-variant-numeric:tabular-nums统一数字宽度。"}},{"@type":"Question","name":"中英文混排要注意什么？","acceptedAnswer":{"@type":"Answer","text":"中英文混排注意事项：1.中英文之间加空格；2.中文使用全角标点；3.英文使用半角标点；4.数字与中文之间适当空格；5.专有名词可保持原文格式。这些规则可通过CSS的text-autospace属性自动处理。"}}]}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">← 返回首页</a>
+      <h1>中文排版规范</h1>
+    </div>
+    <article style="line-height:1.8;">
+      <h2>中文排版基本规范</h2>
+      <h3>首行缩进</h3>
+      <p>中文段落首行应缩进2个全角空格（2em）：</p>
+      <ul>
+        <li>Word中：段落设置 → 首行缩进 2字符</li>
+        <li>网页中：CSS `text-indent: 2em`</li>
+        <li>Markdown中：段落开头输入两个全角空格（U+3000）</li>
+      </ul>
+
+      <h3>行间距</h3>
+      <p>中文推荐行间距为字号的1.5-2倍，例如16px字号配合24px行高。正文推荐使用 `line-height: 1.8`。</p>
+
+      <h2>全角 vs 半角</h2>
+      <table style="width:100%;border-collapse:collapse;margin:12px 0;font-size:0.9rem;">
+        <tr style="background:#f0f2f5;"><th style="padding:10px;">类型</th><th style="padding:10px;">适用</th><th style="padding:10px;">示例</th></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">全角</td><td style="padding:8px 10px;">中文标点、特殊符号</td><td style="padding:8px 10px;">，。！？：；（）【】""</td></tr>
+        <tr><td style="padding:8px 10px;">半角</td><td style="padding:8px 10px;">英文标点、数字、字母</td><td style="padding:8px 10px;">, . ! ? : ; ( ) [ ] " "</td></tr>
+      </table>
+
+      <h2>中英文混排技巧</h2>
+      <ol>
+        <li><b>中英文之间加空格</b>：排版更美观，阅读更舒适</li>
+        <li><b>中文用全角标点</b>：逗号用"，"而不是","</li>
+        <li><b>英文用半角标点</b>：逗号用","而不是"，"</li>
+        <li><b>避免连续全角空格</b>：多余空格影响排版效果</li>
+        <li><b>统一数字格式</b>：一般使用半角阿拉伯数字</li>
+      </ol>
+
+      <h2>Markdown 排版技巧</h2>
+      <div style="background:#1a1a2e;padding:12px;border-radius:8px;font-family:monospace;font-size:0.85rem;color:#4ade80;overflow-x:auto;margin:8px 0;">
+        <pre style="margin:0;"># 一级标题
+## 二级标题
+### 三级标题
+
+**粗体** *斜体* ~~删除线~~
+
+- 无序列表项1
+- 无序列表项2
+
+1. 有序列表项1
+2. 有序列表项2
+
+> 引用文本
+
+| 表头1 | 表头2 |
+|-------|-------|
+| 内容1 | 内容2 |</pre>
+      </div>
+
+      <h2>常见文本排版问题</h2>
+      <ul>
+        <li><b>多余空行</b>：从网页复制文本常带多余空行，需要清理</li>
+        <li><b>首尾空格</b>：每行文字前后多余空格影响对齐</li>
+        <li><b>标点错误</b>：英文标点混入中文文本</li>
+        <li><b>编码问题</b>：全角/半角混用导致排版混乱</li>
+      </ul>
+
+      <div style="margin-top:24px;padding:20px;background:#f0f4ff;border-radius:12px;border:1px solid #4361ee;">
+        <h3 style="color:#4361ee;margin-top:0;">在线文本排版工具</h3>
+        <p>使用我们的<a href="../src/tools/text-wrap.html" style="color:#4361ee;font-weight:bold;">文本排版工具</a>，一键实现首行缩进、去多余空行、全半角转换、添加编号等操作。</p>
+      </div>
+    </article>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../js/share.js"></script>
+</body>
+</html>

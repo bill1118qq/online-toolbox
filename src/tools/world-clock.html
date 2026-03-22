@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>世界时钟 - 各国时间查询 - 在线工具箱</title>
+  <meta name="description" content="在线世界时钟，查看全球主要城市当前时间，支持北京时间、纽约时间、东京时间、伦敦时间等20+城市实时时间。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="世界时钟 - 全球城市时间查询">
+  <meta property="og:description" content="查看全球20+城市实时时间，无需安装。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/world-clock.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/world-clock.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"世界时钟","description":"查看全球城市实时时间","url":"https://eitools.cn/src/tools/world-clock.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>世界时钟</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">全球主要城市实时时间，每秒更新。</p>
+    <div id="clocks" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;max-width:800px;"></div>
+  </div>
+  <script>
+    const cities = [
+      {name:'北京',tz:'Asia/Shanghai',flag:'🇨🇳'},
+      {name:'上海',tz:'Asia/Shanghai',flag:'🇨🇳'},
+      {name:'香港',tz:'Asia/Hong_Kong',flag:'🇭🇰'},
+      {name:'台北',tz:'Asia/Taipei',flag:'🇹🇼'},
+      {name:'东京',tz:'Asia/Tokyo',flag:'🇯🇵'},
+      {name:'首尔',tz:'Asia/Seoul',flag:'🇰🇷'},
+      {name:'新加坡',tz:'Asia/Singapore',flag:'🇸🇬'},
+      {name:'曼谷',tz:'Asia/Bangkok',flag:'🇹🇭'},
+      {name:'孟买',tz:'Asia/Kolkata',flag:'🇮🇳'},
+      {name:'迪拜',tz:'Asia/Dubai',flag:'🇦🇪'},
+      {name:'莫斯科',tz:'Europe/Moscow',flag:'🇷🇺'},
+      {name:'伦敦',tz:'Europe/London',flag:'🇬🇧'},
+      {name:'巴黎',tz:'Europe/Paris',flag:'🇫🇷'},
+      {name:'柏林',tz:'Europe/Berlin',flag:'🇩🇪'},
+      {name:'纽约',tz:'America/New_York',flag:'🇺🇸'},
+      {name:'芝加哥',tz:'America/Chicago',flag:'🇺🇸'},
+      {name:'洛杉矶',tz:'America/Los_Angeles',flag:'🇺🇸'},
+      {name:'悉尼',tz:'Australia/Sydney',flag:'🇦🇺'},
+      {name:'奥克兰',tz:'Pacific/Auckland',flag:'🇳🇿'},
+      {name:'多伦多',tz:'America/Toronto',flag:'🇨🇦'},
+    ];
+    function getTime(tz) {
+      const now = new Date();
+      const opts = { timeZone: tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+      const dateOpts = { timeZone: tz, month: 'short', day: 'numeric', weekday: 'short' };
+      return { time: now.toLocaleTimeString('zh-CN', opts), date: now.toLocaleDateString('zh-CN', dateOpts) };
+    }
+    function isDay(tz) {
+      const h = parseInt(new Date().toLocaleTimeString('en-US', { timeZone: tz, hour: 'numeric', hour12: false }));
+      return h >= 6 && h < 18;
+    }
+    function render() {
+      const container = document.getElementById('clocks');
+      container.innerHTML = cities.map(c => {
+        const { time, date } = getTime(c.tz);
+        const day = isDay(c.tz);
+        return `<div style="padding:16px;background:${day ? 'linear-gradient(135deg,#eef7ff,#e8f4fd)' : 'linear-gradient(135deg,#1a1a2e,#2d2d44)'};border-radius:12px;color:${day ? '#333' : 'white'};">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div><div style="font-weight:700;font-size:1.1rem;">${c.flag} ${c.name}</div><div style="font-size:0.8rem;color:${day ? '#888' : '#aaa'};">${date}</div></div>
+            <div style="font-size:1.6rem;font-weight:800;font-variant-numeric:tabular-nums;">${time}</div>
+          </div></div>`;
+      }).join('');
+    }
+    render();
+    setInterval(render, 1000);
+  </script>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+</body>
+</html>

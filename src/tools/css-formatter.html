@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS格式化 - 在线美化压缩CSS代码 - 在线工具箱</title>
+  <meta name="description" content="免费在线CSS格式化工具，美化或压缩CSS代码。支持代码格式化、压缩、复制，开发人员必备工具。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="CSS格式化 - 在线美化压缩CSS代码">
+  <meta property="og:description" content="在线CSS代码格式化、压缩、美化。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/css-formatter.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/css-formatter.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"CSS格式化","description":"在线美化压缩CSS代码","url":"https://eitools.cn/src/tools/css-formatter.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>CSS 格式化</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">美化或压缩 CSS 代码，支持缩进风格选择。</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:900px;">
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <label style="font-size:0.85rem;color:#888;">输入 CSS</label>
+          <button onclick="document.getElementById('input').value='';document.getElementById('output').value=''" style="font-size:0.8rem;color:#999;background:none;border:none;cursor:pointer;">清空</button>
+        </div>
+        <textarea id="input" rows="18" placeholder="粘贴CSS代码..." style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.85rem;resize:vertical;"></textarea>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <label style="font-size:0.85rem;color:#888;">输出结果</label>
+          <button onclick="navigator.clipboard.writeText(document.getElementById('output').value)" style="font-size:0.8rem;color:#4361ee;background:none;border:none;cursor:pointer;">复制</button>
+        </div>
+        <textarea id="output" rows="18" readonly style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.85rem;resize:vertical;"></textarea>
+      </div>
+    </div>
+    <div style="max-width:900px;margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="formatCSS(2)">美化 (2空格)</button>
+      <button class="btn btn-primary" onclick="formatCSS(4)">美化 (4空格)</button>
+      <button class="btn btn-primary" onclick="minifyCSS()">压缩</button>
+    </div>
+  </div>
+  <script>
+    function formatCSS(indent) {
+      const input = document.getElementById('input').value.trim();
+      if (!input) return;
+      let css = input.replace(/\/\*[\s\S]*?\*\//g, '');
+      css = css.replace(/\s+/g, ' ').replace(/\s*([{}:;,])\s*/g, '$1').replace(/;}/g, '}');
+      let formatted = '', level = 0;
+      const sp = ' '.repeat(indent);
+      for (const ch of css) {
+        if (ch === '{') { formatted += ' {\n' + sp.repeat(++level); }
+        else if (ch === '}') { formatted = formatted.trimEnd() + '\n' + sp.repeat(--level) + '}\n' + sp.repeat(level); }
+        else if (ch === ';') { formatted += ';\n' + sp.repeat(level); }
+        else if (ch === ':') { formatted += ': '; }
+        else { formatted += ch; }
+      }
+      document.getElementById('output').value = formatted.trim();
+    }
+
+    function minifyCSS() {
+      const input = document.getElementById('input').value.trim();
+      if (!input) return;
+      let css = input.replace(/\/\*[\s\S]*?\*\//g, '');
+      css = css.replace(/\s+/g, ' ').replace(/\s*([{}:;,>+~])\s*/g, '$1').replace(/;}/g, '}').replace(/\s*!important/g, '!important');
+      document.getElementById('output').value = css.trim();
+    }
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS单位转换 - px/rem/em/pt/vw互转 - 在线工具箱</title>
+  <meta name="description" content="免费在线CSS单位转换工具，支持px、rem、em、pt、vw等单位互转。基于根字体大小和父元素字体大小自动计算。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="CSS单位转换 - px/rem/em/pt互转">
+  <meta property="og:description" content="CSS px/rem/em/pt/vw单位在线互转。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/css-unit-converter.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/css-unit-converter.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"CSS单位转换","description":"px/rem/em/pt/vw单位互转","url":"https://eitools.cn/src/tools/css-unit-converter.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>CSS 单位转换</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">px / rem / em / pt / vw / % 单位互转，输入数值自动转换。</p>
+    <div style="max-width:600px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+        <div><label style="font-size:0.85rem;color:#888;">根字体大小 (html font-size)</label>
+          <input type="number" id="rootFontSize" value="16" onchange="convertAll()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:4px;"> px</div>
+        <div><label style="font-size:0.85rem;color:#888;">视口宽度 (用于vw)</label>
+          <input type="number" id="viewportWidth" value="1920" onchange="convertAll()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:4px;"> px</div>
+      </div>
+      <div style="display:grid;gap:12px;">
+        <div style="display:grid;grid-template-columns:80px 1fr auto;gap:8px;align-items:center;">
+          <select id="unit-from" onchange="convertAll()" style="padding:8px;border:1px solid #ddd;border-radius:6px;">
+            <option value="px" selected>px</option><option value="rem">rem</option><option value="em">em</option><option value="pt">pt</option><option value="vw">vw</option><option value="%">%</option>
+          </select>
+          <input type="number" id="value" value="16" oninput="convertAll()" style="padding:8px;border:1px solid #ddd;border-radius:6px;font-size:1.1rem;">
+          <span style="font-size:0.85rem;color:#888;">=</span>
+        </div>
+        <div id="results" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"></div>
+      </div>
+      <div style="margin-top:24px;padding:16px;background:#f0f2f5;border-radius:12px;">
+        <p style="font-weight:600;font-size:0.9rem;margin-bottom:8px;">CSS 单位参考</p>
+        <table style="width:100%;font-size:0.85rem;border-collapse:collapse;">
+          <tr><td style="padding:6px;border:1px solid #eee;"><strong>px</strong></td><td style="padding:6px;border:1px solid #eee;">像素，绝对单位</td></tr>
+          <tr><td style="padding:6px;border:1px solid #eee;"><strong>rem</strong></td><td style="padding:6px;border:1px solid #eee;">相对于根元素(html)字体大小</td></tr>
+          <tr><td style="padding:6px;border:1px solid #eee;"><strong>em</strong></td><td style="padding:6px;border:1px solid #eee;">相对于父元素字体大小（默认16px时与rem相同）</td></tr>
+          <tr><td style="padding:6px;border:1px solid #eee;"><strong>pt</strong></td><td style="padding:6px;border:1px solid #eee;">磅，1pt = 1.333px</td></tr>
+          <tr><td style="padding:6px;border:1px solid #eee;"><strong>vw</strong></td><td style="padding:6px;border:1px solid #eee;">视口宽度的1%</td></tr>
+          <tr><td style="padding:6px;border:1px solid #eee;"><strong>%</strong></td><td style="padding:6px;border:1px solid #eee;">相对于父元素的百分比</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <script>
+    function convertAll() {
+      const val = parseFloat(document.getElementById('value').value);
+      const unit = document.getElementById('unit-from').value;
+      const root = parseFloat(document.getElementById('rootFontSize').value) || 16;
+      const vw = parseFloat(document.getElementById('viewportWidth').value) || 1920;
+      if (isNaN(val)) { document.getElementById('results').innerHTML = ''; return; }
+
+      // Convert everything to px first
+      let px = val;
+      if (unit === 'rem') px = val * root;
+      else if (unit === 'em') px = val * root;
+      else if (unit === 'pt') px = val * 1.333;
+      else if (unit === 'vw') px = val * vw / 100;
+      else if (unit === '%') px = val * root / 100;
+
+      const results = [
+        { unit: 'px', value: px.toFixed(2) },
+        { unit: 'rem', value: (px / root).toFixed(4) },
+        { unit: 'em', value: (px / root).toFixed(4) },
+        { unit: 'pt', value: (px / 1.333).toFixed(2) },
+        { unit: 'vw', value: (px / vw * 100).toFixed(4) },
+        { unit: '%', value: (px / root * 100).toFixed(2) },
+      ];
+
+      document.getElementById('results').innerHTML = results.map(r =>
+        `<div style="padding:12px;background:white;border-radius:8px;border:1px solid #eee;${r.unit === unit ? 'border-color:#4361ee;background:#f0f4ff;' : ''}">
+          <span style="font-size:0.8rem;color:#888;">${r.unit}</span><br>
+          <strong style="font-size:1.1rem;">${r.value}</strong>
+        </div>`
+      ).join('');
+    }
+    convertAll();
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

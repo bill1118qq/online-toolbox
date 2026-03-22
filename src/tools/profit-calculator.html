@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>利润计算器 - 利润率/毛利率/加价率 - 在线工具箱</title>
+  <meta name="description" content="在线利润计算器，快速计算利润、利润率、毛利率、加价率、成本利润。适用于电商、零售、批发等场景。免费使用。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="利润计算器">
+  <meta property="og:description" content="在线计算利润、利润率、毛利率、加价率。免费使用。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/profit-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/profit-calculator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "利润计算器",
+    "url": "https://eitools.cn/src/tools/profit-calculator.html",
+    "description": "在线计算利润、利润率、毛利率、加价率。",
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "Any",
+    "offers": {"@type": "Offer", "price": "0"}
+  }
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>利润计算器</h1>
+    </div>
+
+    <div style="background:white;border-radius:12px;padding:24px;margin-bottom:20px;border:1px solid #eee;">
+      <h3 style="margin-bottom:16px;">基础利润计算</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">成本价（元）</label>
+          <input type="number" id="cost" placeholder="如 50" step="0.01" min="0" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">售价（元）</label>
+          <input type="number" id="price" placeholder="如 80" step="0.01" min="0" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px;">
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">数量</label>
+          <input type="number" id="quantity" placeholder="1" value="1" min="1" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">其他费用（元）</label>
+          <input type="number" id="extraCost" placeholder="如运费 5" step="0.01" min="0" value="0" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="calcProfit()" style="margin-top:16px;width:100%;">计算利润</button>
+      <div id="profitResult" class="result-box" style="margin-top:12px;padding:16px;font-size:0.95rem;line-height:2;"></div>
+    </div>
+
+    <div style="background:white;border-radius:12px;padding:24px;margin-bottom:20px;border:1px solid #eee;">
+      <h3 style="margin-bottom:16px;">按利润率反算售价</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">成本价（元）</label>
+          <input type="number" id="reverseCost" placeholder="如 50" step="0.01" min="0" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">目标利润率（%）</label>
+          <input type="number" id="targetMargin" placeholder="如 30" step="0.1" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="reverseCalc()" style="margin-top:16px;width:100%;">计算售价</button>
+      <div id="reverseResult" class="result-box" style="margin-top:12px;padding:16px;font-size:0.95rem;line-height:2;"></div>
+    </div>
+
+    <div style="background:white;border-radius:12px;padding:24px;margin-bottom:20px;border:1px solid #eee;">
+      <h3 style="margin-bottom:16px;">批量商品利润表</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:12px;">
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">总成本（元）</label>
+          <input type="number" id="totalCost" placeholder="总进货成本" step="0.01" min="0" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">总销售额（元）</label>
+          <input type="number" id="totalRevenue" placeholder="总销售金额" step="0.01" min="0" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+      </div>
+      <div>
+        <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">运营费用（元）</label>
+        <input type="number" id="totalExpense" placeholder="快递、包装、平台费等" step="0.01" min="0" value="0" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+      </div>
+      <button class="btn btn-primary" onclick="batchCalc()" style="margin-top:16px;width:100%;">计算</button>
+      <div id="batchResult" class="result-box" style="margin-top:12px;padding:16px;font-size:0.95rem;line-height:2;"></div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    function calcProfit() {
+      const cost = parseFloat(document.getElementById('cost').value);
+      const price = parseFloat(document.getElementById('price').value);
+      const qty = parseInt(document.getElementById('quantity').value) || 1;
+      const extra = parseFloat(document.getElementById('extraCost').value) || 0;
+
+      if (isNaN(cost) || isNaN(price) || cost < 0 || price < 0) {
+        showToast('请输入有效的成本和售价'); return;
+      }
+
+      const unitProfit = price - cost;
+      const profitMargin = cost > 0 ? (unitProfit / price * 100) : 0;
+      const markup = cost > 0 ? (unitProfit / cost * 100) : 0;
+      const totalProfit = unitProfit * qty - extra;
+      const totalRevenue = price * qty;
+      const totalCostAll = cost * qty + extra;
+
+      const profitColor = totalProfit >= 0 ? '#4caf50' : '#f44336';
+
+      document.getElementById('profitResult').innerHTML =
+        `<b>单件利润：</b><span style="color:${profitColor}">${unitProfit.toFixed(2)} 元</span><br>` +
+        `<b>利润率（净利润率）：</b><span style="color:${profitColor}">${profitMargin.toFixed(2)}%</span><br>` +
+        `<b>加价率（成本加价率）：</b><span style="color:${profitColor}">${markup.toFixed(2)}%</span><br>` +
+        `<b>总销售额：</b>${totalRevenue.toFixed(2)} 元<br>` +
+        `<b>总成本：</b>${totalCostAll.toFixed(2)} 元（进货${(cost * qty).toFixed(2)} + 费用${extra.toFixed(2)}）<br>` +
+        `<b>总利润：</b><span style="color:${profitColor};font-size:1.2em;font-weight:bold;">${totalProfit.toFixed(2)} 元</span>`;
+    }
+
+    function reverseCalc() {
+      const cost = parseFloat(document.getElementById('reverseCost').value);
+      const margin = parseFloat(document.getElementById('targetMargin').value);
+
+      if (isNaN(cost) || isNaN(margin) || cost < 0) { showToast('请输入有效数值'); return; }
+      if (margin >= 100) { showToast('利润率不能超过100%'); return; }
+
+      const sellPrice = cost / (1 - margin / 100);
+      const profit = sellPrice - cost;
+
+      document.getElementById('reverseResult').innerHTML =
+        `<b>建议售价：</b><span style="color:#4361ee;font-size:1.2em;font-weight:bold;">${sellPrice.toFixed(2)} 元</span><br>` +
+        `<b>单件利润：</b>${profit.toFixed(2)} 元<br>` +
+        `<b>成本占比：</b>${(cost / sellPrice * 100).toFixed(2)}%<br>` +
+        `<b>利润占比：</b>${(profit / sellPrice * 100).toFixed(2)}%`;
+    }
+
+    function batchCalc() {
+      const cost = parseFloat(document.getElementById('totalCost').value);
+      const revenue = parseFloat(document.getElementById('totalRevenue').value);
+      const expense = parseFloat(document.getElementById('totalExpense').value) || 0;
+
+      if (isNaN(cost) || isNaN(revenue)) { showToast('请输入总成本和总销售额'); return; }
+
+      const grossProfit = revenue - cost;
+      const netProfit = grossProfit - expense;
+      const grossMargin = revenue > 0 ? (grossProfit / revenue * 100) : 0;
+      const netMargin = revenue > 0 ? (netProfit / revenue * 100) : 0;
+      const roi = cost > 0 ? (netProfit / cost * 100) : 0;
+
+      const color = netProfit >= 0 ? '#4caf50' : '#f44336';
+
+      document.getElementById('batchResult').innerHTML =
+        `<b>毛利润：</b>${grossProfit.toFixed(2)} 元<br>` +
+        `<b>毛利率：</b>${grossMargin.toFixed(2)}%<br>` +
+        `<b>净利润：</b><span style="color:${color};font-size:1.1em;font-weight:bold;">${netProfit.toFixed(2)} 元</span><br>` +
+        `<b>净利率：</b><span style="color:${color}">${netMargin.toFixed(2)}%</span><br>` +
+        `<b>投资回报率（ROI）：</b><span style="color:${color}">${roi.toFixed(2)}%</span>`;
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>

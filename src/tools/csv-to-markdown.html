@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSV转Markdown表格 - 在线转换工具 - 在线工具箱</title>
+  <meta name="description" content="在线CSV转Markdown表格工具，支持逗号、分号、Tab分隔符，自动生成对齐格式。免费使用，数据不上传。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="CSV转Markdown表格工具">
+  <meta property="og:description" content="在线将CSV数据转换为Markdown表格格式，支持多种分隔符。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/csv-to-markdown.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/csv-to-markdown.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "CSV转Markdown表格",
+    "url": "https://eitools.cn/src/tools/csv-to-markdown.html",
+    "description": "在线将CSV数据转换为Markdown表格格式。",
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "Any",
+    "offers": {"@type": "Offer", "price": "0"}
+  }
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>CSV 转 Markdown 表格</h1>
+    </div>
+
+    <div style="margin-bottom:16px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;">
+      <label style="font-size:0.9rem;">分隔符：</label>
+      <label style="display:flex;align-items:center;gap:4px;font-size:0.9rem;">
+        <input type="radio" name="delimiter" value="," checked> 逗号
+      </label>
+      <label style="display:flex;align-items:center;gap:4px;font-size:0.9rem;">
+        <input type="radio" name="delimiter" value=";"> 分号
+      </label>
+      <label style="display:flex;align-items:center;gap:4px;font-size:0.9rem;">
+        <input type="radio" name="delimiter" value="&#9;"> Tab
+      </label>
+      <label style="display:flex;align-items:center;gap:4px;font-size:0.9rem;">
+        <input type="radio" name="delimiter" value="|"> 竖线
+      </label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:0.9rem;margin-left:auto;">
+        <input type="checkbox" id="hasHeader" checked> 首行作为表头
+      </label>
+    </div>
+
+    <div class="split-view">
+      <div>
+        <label style="font-weight:600;margin-bottom:8px;display:block;">CSV 输入</label>
+        <textarea id="csvInput" rows="14" placeholder="姓名,年龄,城市&#10;张三,25,北京&#10;李四,30,上海&#10;王五,28,广州" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;resize:vertical;font-family:monospace;"></textarea>
+      </div>
+      <div>
+        <label style="font-weight:600;margin-bottom:8px;display:block;">Markdown 输出</label>
+        <textarea id="mdOutput" rows="14" readonly style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;resize:vertical;background:#fafafa;font-family:monospace;"></textarea>
+      </div>
+    </div>
+
+    <div class="btn-group" style="margin-top:16px;">
+      <button class="btn btn-primary" onclick="convert()">转换</button>
+      <button class="btn btn-secondary" onclick="copyResult()">复制 Markdown</button>
+      <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+    </div>
+
+    <div id="toast" class="toast"></div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    function getDelimiter() {
+      return document.querySelector('input[name="delimiter"]:checked').value;
+    }
+
+    function parseCSV(text, delimiter) {
+      const rows = [];
+      let current = '';
+      let inQuotes = false;
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        if (inQuotes) {
+          if (ch === '"' && text[i + 1] === '"') { current += '"'; i++; }
+          else if (ch === '"') { inQuotes = false; }
+          else { current += ch; }
+        } else {
+          if (ch === '"') { inQuotes = true; }
+          else if (ch === delimiter) { rows[rows.length - 1].push(current); current = ''; if (!rows.length) rows.push([]); }
+          else if (ch === '\n' || (ch === '\r' && text[i + 1] === '\n')) {
+            if (!rows.length) rows.push([]);
+            rows[rows.length - 1].push(current);
+            current = '';
+            rows.push([]);
+            if (ch === '\r') i++;
+          } else {
+            if (!rows.length) rows.push([]);
+            current += ch;
+          }
+        }
+      }
+      if (current || rows.length) {
+        if (!rows.length) rows.push([]);
+        rows[rows.length - 1].push(current);
+      }
+      return rows.filter(r => r.some(c => c.trim() !== ''));
+    }
+
+    function padCell(content, width) {
+      const len = [...content].length;
+      return content + ' '.repeat(Math.max(0, width - len));
+    }
+
+    function convert() {
+      const csv = document.getElementById('csvInput').value.trim();
+      if (!csv) { showToast('请输入CSV数据'); return; }
+
+      const delimiter = getDelimiter();
+      const hasHeader = document.getElementById('hasHeader').checked;
+
+      try {
+        const rows = parseCSV(csv, delimiter);
+        if (rows.length === 0) { showToast('无法解析CSV数据'); return; }
+
+        const maxCols = Math.max(...rows.map(r => r.length));
+        const padded = rows.map(r => {
+          while (r.length < maxCols) r.push('');
+          return r;
+        });
+
+        const colWidths = [];
+        for (let c = 0; c < maxCols; c++) {
+          colWidths[c] = Math.max(...padded.map(r => [...(r[c] || '')].length), 3);
+        }
+
+        let md = '';
+        padded.forEach((row, i) => {
+          md += '| ' + row.map((cell, c) => padCell(cell, colWidths[c])).join(' | ') + ' |\n';
+          if (i === 0 && hasHeader) {
+            md += '| ' + colWidths.map(w => '-'.repeat(w)).join(' | ') + ' |\n';
+          }
+        });
+
+        document.getElementById('mdOutput').value = md;
+        document.getElementById('mdOutput').style.borderColor = '#4caf50';
+      } catch (e) {
+        showToast('转换失败：' + e.message);
+      }
+    }
+
+    function copyResult() {
+      const text = document.getElementById('mdOutput').value;
+      if (!text) { showToast('没有可复制的内容'); return; }
+      navigator.clipboard.writeText(text).then(() => showToast('已复制到剪贴板'));
+    }
+
+    function clearAll() {
+      document.getElementById('csvInput').value = '';
+      document.getElementById('mdOutput').value = '';
+      document.getElementById('mdOutput').style.borderColor = '#ddd';
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IP地址转换 - IP与整数互转 - 在线工具箱</title>
+  <meta name="description" content="IP地址与整数互转工具，支持IPv4转十进制整数、CIDR子网掩码转换。免费在线使用，数据不上传。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="IP地址转换工具">
+  <meta property="og:description" content="IP地址与整数互转，CIDR子网掩码转换。免费在线工具。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/ip-converter.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/ip-converter.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "IP地址转换工具",
+    "url": "https://eitools.cn/src/tools/ip-converter.html",
+    "description": "IP地址与整数互转，CIDR子网掩码转换。",
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "Any",
+    "offers": {"@type": "Offer", "price": "0"}
+  }
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>IP 地址转换</h1>
+    </div>
+
+    <div style="background:white;border-radius:12px;padding:24px;margin-bottom:20px;border:1px solid #eee;">
+      <h3 style="margin-bottom:16px;">IPv4 ↔ 十进制整数</h3>
+      <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:end;">
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">IPv4 地址</label>
+          <input type="text" id="ipInput" placeholder="如 192.168.1.1" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+        <button class="btn btn-primary" onclick="ipToInt()" style="margin-bottom:1px;">→</button>
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">十进制整数</label>
+          <input type="text" id="intInput" placeholder="如 3232235777" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+      </div>
+    </div>
+
+    <div style="background:white;border-radius:12px;padding:24px;margin-bottom:20px;border:1px solid #eee;">
+      <h3 style="margin-bottom:16px;">CIDR 表示法</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">CIDR（如 192.168.1.0/24）</label>
+          <input type="text" id="cidrInput" placeholder="192.168.1.0/24" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+          <button class="btn btn-primary" onclick="parseCIDR()" style="margin-top:10px;width:100%;">解析</button>
+        </div>
+        <div id="cidrResult" class="result-box" style="min-height:120px;padding:12px;font-size:0.9rem;line-height:1.8;"></div>
+      </div>
+    </div>
+
+    <div style="background:white;border-radius:12px;padding:24px;margin-bottom:20px;border:1px solid #eee;">
+      <h3 style="margin-bottom:16px;">IP 范围查询</h3>
+      <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:end;">
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">起始 IP</label>
+          <input type="text" id="startIp" placeholder="192.168.1.0" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+        <div style="align-self:end;padding-bottom:6px;">至</div>
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">结束 IP</label>
+          <input type="text" id="endIp" placeholder="192.168.1.255" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="calcIpRange()" style="margin-top:12px;width:100%;">计算</button>
+      <div id="rangeResult" class="result-box" style="margin-top:12px;min-height:60px;padding:12px;font-size:0.9rem;line-height:1.8;"></div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    function ipToInt() {
+      const ip = document.getElementById('ipInput').value.trim();
+      if (!validateIP(ip)) { showToast('IP地址格式不正确'); return; }
+      const parts = ip.split('.').map(Number);
+      const num = ((parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3]) >>> 0;
+      document.getElementById('intInput').value = num;
+    }
+
+    function intToIp() {
+      const num = parseInt(document.getElementById('intInput').value.trim());
+      if (isNaN(num) || num < 0 || num > 4294967295) { showToast('请输入0-4294967295之间的整数'); return; }
+      document.getElementById('ipInput').value = [
+        (num >>> 24) & 255, (num >>> 16) & 255, (num >>> 8) & 255, num & 255
+      ].join('.');
+    }
+
+    document.getElementById('ipInput').addEventListener('keydown', e => { if (e.key === 'Enter') ipToInt(); });
+    document.getElementById('intInput').addEventListener('keydown', e => { if (e.key === 'Enter') intToIp(); });
+
+    function validateIP(ip) {
+      return /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.test(ip) &&
+        [1,2,3,4].every(i => parseInt(RegExp['$'+i]) <= 255);
+    }
+
+    function parseCIDR() {
+      const cidr = document.getElementById('cidrInput').value.trim();
+      const match = cidr.match(/^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\/(\d{1,2})$/);
+      if (!match) { showToast('CIDR格式不正确，如 192.168.1.0/24'); return; }
+      if (!validateIP(match[1])) { showToast('IP地址格式不正确'); return; }
+
+      const prefix = parseInt(match[2]);
+      if (prefix < 0 || prefix > 32) { showToast('子网前缀必须在0-32之间'); return; }
+
+      const mask = prefix === 0 ? 0 : (~0 << (32 - prefix)) >>> 0;
+      const maskIp = [
+        (mask >>> 24) & 255, (mask >>> 16) & 255, (mask >>> 8) & 255, mask & 255
+      ].join('.');
+
+      const ipParts = match[1].split('.').map(Number);
+      const ipNum = ((ipParts[0] << 24) | (ipParts[1] << 16) | (ipParts[2] << 8) | ipParts[3]) >>> 0;
+      const networkNum = (ipNum & mask) >>> 0;
+      const broadcastNum = (networkNum | (~mask >>> 0)) >>> 0;
+
+      const network = numToIp(networkNum);
+      const broadcast = numToIp(broadcastNum);
+      const firstHost = numToIp(networkNum + 1);
+      const lastHost = numToIp(broadcastNum - 1);
+      const total = Math.pow(2, 32 - prefix);
+      const hosts = prefix <= 30 ? total - 2 : (prefix === 31 ? 2 : 1);
+
+      document.getElementById('cidrResult').innerHTML =
+        `<b>子网掩码：</b>${maskIp}<br>` +
+        `<b>网络地址：</b>${network}<br>` +
+        `<b>广播地址：</b>${broadcast}<br>` +
+        `<b>起始主机：</b>${firstHost}<br>` +
+        `<b>结束主机：</b>${lastHost}<br>` +
+        `<b>可用主机数：</b>${hosts}<br>` +
+        `<b>总地址数：</b>${total}`;
+    }
+
+    function calcIpRange() {
+      const start = document.getElementById('startIp').value.trim();
+      const end = document.getElementById('endIp').value.trim();
+      if (!validateIP(start) || !validateIP(end)) { showToast('IP地址格式不正确'); return; }
+
+      const startNum = ipToNum(start);
+      const endNum = ipToNum(end);
+      if (startNum > endNum) { showToast('起始IP不能大于结束IP'); return; }
+
+      const count = endNum - startNum + 1;
+      let cidr = findCIDR(startNum, endNum);
+
+      document.getElementById('rangeResult').innerHTML =
+        `<b>IP数量：</b>${count}<br>` +
+        `<b>起始整数：</b>${startNum}<br>` +
+        `<b>结束整数：</b>${endNum}<br>` +
+        `<b>CIDR表示：</b>${cidr}`;
+    }
+
+    function findCIDR(start, end) {
+      for (let prefix = 32; prefix >= 0; prefix--) {
+        const mask = prefix === 0 ? 0 : (~0 << (32 - prefix)) >>> 0;
+        if ((start & mask) === ((end & mask)) && (start & ~mask >>> 0) === 0) {
+          return numToIp(start) + '/' + prefix;
+        }
+      }
+      return '无法表示为单个CIDR';
+    }
+
+    function ipToNum(ip) {
+      const p = ip.split('.').map(Number);
+      return ((p[0] << 24) | (p[1] << 16) | (p[2] << 8) | p[3]) >>> 0;
+    }
+
+    function numToIp(n) {
+      return [(n >>> 24) & 255, (n >>> 16) & 255, (n >>> 8) & 255, n & 255].join('.');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>

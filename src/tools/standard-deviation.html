@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>标准差计算器 - 方差/标准差 - 在线工具箱</title>
+  <meta name="description" content="免费在线标准差计算器。输入数据自动计算均值、方差、标准差、中位数、最大最小值。适用于统计分析。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="标准差计算器 - 方差/标准差">
+  <meta property="og:description" content="在线计算均值、方差、标准差、中位数。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/standard-deviation.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/standard-deviation.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"标准差计算器","description":"在线计算均值、方差、标准差","url":"https://eitools.cn/src/tools/standard-deviation.html","applicationCategory":"EducationalApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>标准差计算器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">输入一组数字，自动计算均值、方差、标准差等统计指标。</p>
+    <div style="max-width:800px;">
+      <textarea id="input" rows="4" oninput="calc()" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.9rem;resize:vertical;margin-bottom:16px;" placeholder="输入数字，逗号/空格/换行分隔...">85, 90, 78, 92, 88, 76, 95, 89, 83, 91, 87, 94, 82, 86, 93, 80, 97, 84, 89, 88</textarea>
+      <div id="result" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <h3 style="margin-bottom:8px;">数据分布</h3>
+          <canvas id="chart" width="350" height="200" style="border:1px solid #ddd;border-radius:8px;"></canvas>
+        </div>
+        <div>
+          <h3 style="margin-bottom:8px;">详细统计</h3>
+          <div id="detail" style="font-size:0.85rem;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function calc() {
+      const nums = document.getElementById('input').value.split(/[,\s\n]+/).map(Number).filter(n => !isNaN(n));
+      if (!nums.length) { document.getElementById('result').innerHTML = ''; return; }
+      const n = nums.length;
+      const sum = nums.reduce((a,b) => a+b, 0);
+      const mean = sum / n;
+      const sorted = [...nums].sort((a,b) => a-b);
+      const variance = nums.reduce((s,x) => s + (x-mean)**2, 0) / (n-1);
+      const sampleVar = nums.reduce((s,x) => s + (x-mean)**2, 0) / n;
+      const stdDev = Math.sqrt(variance);
+      const popStdDev = Math.sqrt(sampleVar);
+      const median = n % 2 === 0 ? (sorted[n/2-1]+sorted[n/2])/2 : sorted[Math.floor(n/2)];
+      const range = sorted[n-1] - sorted[0];
+      const q1 = sorted[Math.floor(n*0.25)];
+      const q3 = sorted[Math.floor(n*0.75)];
+      const iqr = q3 - q1;
+      document.getElementById('result').innerHTML = `
+        <div style="padding:12px;background:#e8f4fd;border-radius:10px;text-align:center;">
+          <div style="font-size:0.75rem;color:#888;">均值</div><div style="font-size:1.5rem;font-weight:700;color:#4361ee;">${mean.toFixed(2)}</div>
+        </div>
+        <div style="padding:12px;background:#e8f5e9;border-radius:10px;text-align:center;">
+          <div style="font-size:0.75rem;color:#888;">标准差</div><div style="font-size:1.5rem;font-weight:700;color:#2f9e44;">${stdDev.toFixed(4)}</div>
+        </div>
+        <div style="padding:12px;background:#fff3cd;border-radius:10px;text-align:center;">
+          <div style="font-size:0.75rem;color:#888;">方差</div><div style="font-size:1.5rem;font-weight:700;">${variance.toFixed(4)}</div>
+        </div>
+        <div style="padding:12px;background:#fee;border-radius:10px;text-align:center;">
+          <div style="font-size:0.75rem;color:#888;">中位数</div><div style="font-size:1.5rem;font-weight:700;">${median}</div>
+        </div>`;
+      document.getElementById('detail').innerHTML = `
+        <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+          <tr style="background:#f0f2f5;"><th style="padding:6px 10px;border:1px solid #eee;">指标</th><th style="padding:6px 10px;border:1px solid #eee;">值</th></tr>
+          <tr><td style="padding:6px 10px;border:1px solid #eee;">数量</td><td style="padding:6px 10px;border:1px solid #eee;">${n}</td></tr>
+          <tr><td style="padding:6px 10px;border:1px solid #eee;">总和</td><td style="padding:6px 10px;border:1px solid #eee;">${sum.toFixed(2)}</td></tr>
+          <tr><td style="padding:6px 10px;border:1px solid #eee;">最小值</td><td style="padding:6px 10px;border:1px solid #eee;">${sorted[0]}</td></tr>
+          <tr><td style="padding:6px 10px;border:1px solid #eee;">最大值</td><td style="padding:6px 10px;border:1px solid #eee;">${sorted[n-1]}</td></tr>
+          <tr><td style="padding:6px 10px;border:1px solid #eee;">极差</td><td style="padding:6px 10px;border:1px solid #eee;">${range}</td></tr>
+          <tr><td style="padding:6px 10px;border:1px solid #eee;">Q1（25%）</td><td style="padding:6px 10px;border:1px solid #eee;">${q1}</td></tr>
+          <tr><td style="padding:6px 10px;border:1px solid #eee;">Q3（75%）</td><td style="padding:6px 10px;border:1px solid #eee;">${q3}</td></tr>
+          <tr><td style="padding:6px 10px;border:1px solid #eee;">四分位距 IQR</td><td style="padding:6px 10px;border:1px solid #eee;">${iqr}</td></tr>
+          <tr><td style="padding:6px 10px;border:1px solid #eee;">总体标准差</td><td style="padding:6px 10px;border:1px solid #eee;">${popStdDev.toFixed(4)}</td></tr>
+          <tr><td style="padding:6px 10px;border:1px solid #eee;">样本标准差</td><td style="padding:6px 10px;border:1px solid #eee;">${stdDev.toFixed(4)}</td></tr>
+        </table>`;
+      drawChart(nums, mean, stdDev);
+    }
+    function drawChart(nums, mean, stdDev) {
+      const canvas = document.getElementById('chart');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (!nums.length) return;
+      const min = Math.min(...nums), max = Math.max(...nums);
+      const range = max - min || 1;
+      const barW = Math.max(2, (canvas.width - 20) / nums.length);
+      const maxH = canvas.height - 40;
+      nums.forEach((v, i) => {
+        const h = ((v - min) / range) * maxH;
+        const color = Math.abs(v - mean) <= stdDev ? '#4361ee' : (Math.abs(v - mean) <= 2*stdDev ? '#7b93f5' : '#ccc');
+        ctx.fillStyle = color;
+        ctx.fillRect(10 + i * barW, canvas.height - 20 - h, barW - 1, h);
+      });
+      ctx.fillStyle = '#c92a2a';
+      ctx.setLineDash([4, 4]);
+      const meanY = canvas.height - 20 - ((mean - min) / range) * maxH;
+      ctx.beginPath();
+      ctx.moveTo(0, meanY);
+      ctx.lineTo(canvas.width, meanY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#c92a2a';
+      ctx.font = '10px sans-serif';
+      ctx.fillText('mean=' + mean.toFixed(1), 5, meanY - 4);
+    }
+    calc();
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

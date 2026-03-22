@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>在线Markdown编辑器 - 实时预览 - 在线工具箱</title>
+  <meta name="description" content="在线Markdown编辑器：实时预览渲染效果，支持标题、列表、代码块、表格、引用等语法。一键复制HTML代码，支持导出。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="在线Markdown编辑器">
+  <meta property="og:description" content="Markdown实时预览编辑器，支持复制HTML。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/markdown-live.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/markdown-live.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"在线Markdown编辑器","description":"Markdown实时预览和HTML导出","url":"https://eitools.cn/src/tools/markdown-live.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any"}
+  </script>
+  <style>
+    .md-editor { display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid #ddd;border-radius:8px;overflow:hidden;height:500px; }
+    .md-editor textarea { padding:16px;border:none;outline:none;resize:none;font-family:monospace;font-size:0.9rem;line-height:1.6;tab-size:2; }
+    .md-preview { padding:16px;overflow-y:auto;border-left:1px solid #ddd;line-height:1.8;font-size:0.95rem; }
+    .md-preview h1 { border-bottom:2px solid #4361ee;padding-bottom:8px;margin:16px 0 12px; }
+    .md-preview h2 { border-bottom:1px solid #eee;padding-bottom:6px;margin:14px 0 10px; }
+    .md-preview h3 { margin:12px 0 8px; }
+    .md-preview code { background:#f0f2f5;padding:2px 6px;border-radius:4px;font-size:0.85em;font-family:monospace; }
+    .md-preview pre { background:#1a1a2e;color:#4ade80;padding:16px;border-radius:8px;overflow-x:auto;margin:12px 0; }
+    .md-preview pre code { background:none;padding:0;color:inherit; }
+    .md-preview blockquote { border-left:4px solid #4361ee;padding:8px 16px;margin:12px 0;color:#666;background:#f8f9ff; }
+    .md-preview ul, .md-preview ol { padding-left:24px; }
+    .md-preview li { margin:4px 0; }
+    .md-preview table { width:100%;border-collapse:collapse;margin:12px 0; }
+    .md-preview th, .md-preview td { padding:8px 12px;border:1px solid #ddd; }
+    .md-preview th { background:#f0f2f5; }
+    .md-preview img { max-width:100%;border-radius:8px; }
+    .md-preview a { color:#4361ee; }
+    .md-preview hr { border:none;border-top:2px solid #f0f2f5;margin:16px 0; }
+  </style>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>在线Markdown编辑器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">实时预览Markdown渲染效果，支持导出HTML。</p>
+    <div style="max-width:1000px;">
+      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+        <button onclick="loadExample()" style="padding:6px 16px;background:#e3f2fd;border:1px solid #4361ee;border-radius:6px;cursor:pointer;color:#4361ee;font-size:0.85rem;">示例</button>
+        <button onclick="copyHTML()" style="padding:6px 16px;background:#e8f5e9;border:1px solid #4caf50;border-radius:6px;cursor:pointer;color:#2e7d32;font-size:0.85rem;">复制HTML</button>
+        <button onclick="clearAll()" style="padding:6px 16px;background:#fee;border:1px solid #fcc;border-radius:6px;cursor:pointer;color:#c00;font-size:0.85rem;">清空</button>
+      </div>
+      <div class="md-editor">
+        <textarea id="editor" placeholder="在此输入Markdown..." oninput="render()"></textarea>
+        <div class="md-preview" id="preview"></div>
+      </div>
+    </div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    function escapeHtml(str) {
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function mdToHtml(text) {
+      var html = escapeHtml(text);
+      // Code blocks
+      html = html.replace(/```(\w*)\n([\s\S]*?)```/g, function(m, lang, code) {
+        return '<pre><code>' + code.trim() + '</code></pre>';
+      });
+      // Inline code
+      html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+      // Headers
+      html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+      html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+      html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+      // Bold & Italic
+      html = html.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+      html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+      html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+      // Links
+      html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+      // Images
+      html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">');
+      // Blockquote
+      html = html.replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>');
+      // Horizontal rule
+      html = html.replace(/^---$/gm, '<hr>');
+      // Unordered list
+      html = html.replace(/^[*-] (.+)$/gm, '<li>$1</li>');
+      html = html.replace(/((?:<li>.*<\/li>\n?)+)/g, '<ul>$1</ul>');
+      // Ordered list
+      html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+      // Strikethrough
+      html = html.replace(/~~(.+?)~~/g, '<del>$1</del>');
+      // Tables
+      html = html.replace(/^\|(.+)\|$/gm, function(m, row) {
+        if (/^\|[\s-:|]+\|$/.test(m)) return '';
+        var cells = row.split('|').filter(function(c) { return c.trim(); });
+        var tag = 'td';
+        return '<tr>' + cells.map(function(c) { return '<' + tag + '>' + c.trim() + '</' + tag + '>'; }).join('') + '</tr>';
+      });
+      // Paragraphs
+      html = html.replace(/\n\n(?!<)/g, '</p><p>');
+      html = '<p>' + html + '</p>';
+      html = html.replace(/<p>\s*<(h[1-6]|pre|ul|ol|blockquote|hr|table)/g, '<$1');
+      html = html.replace(/<\/(h[1-6]|pre|ul|ol|blockquote|hr|table)>\s*<\/p>/g, '</$1>');
+      html = html.replace(/<p>\s*<\/p>/g, '');
+      return html;
+    }
+
+    function render() {
+      var md = document.getElementById('editor').value;
+      document.getElementById('preview').innerHTML = mdToHtml(md);
+    }
+
+    function copyHTML() {
+      navigator.clipboard.writeText(document.getElementById('preview').innerHTML).then(function() {
+        var btn = event.target;
+        btn.textContent = '已复制';
+        setTimeout(function() { btn.textContent = '复制HTML'; }, 1500);
+      });
+    }
+
+    function loadExample() {
+      document.getElementById('editor').value = '# 欢迎使用Markdown编辑器\n\n这是一段**示例文本**，展示Markdown的基本语法。\n\n## 功能特点\n\n- 实时预览\n- 支持代码块\n- 表格渲染\n- HTML导出\n\n### 代码示例\n\n```javascript\nconsole.log("Hello World");\n```\n\n> 这是一段引用文字\n\n| 功能 | 状态 |\n|------|------|\n| 标题 | ✓ |\n| 列表 | ✓ |\n| 代码 | ✓ |\n\n更多语法请参考 [Markdown指南](https://eitools.cn)。';
+      render();
+    }
+
+    function clearAll() {
+      document.getElementById('editor').value = '';
+      document.getElementById('preview').innerHTML = '';
+    }
+
+    loadExample();
+  </script>
+</body>
+</html>

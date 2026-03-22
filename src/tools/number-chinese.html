@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数字转中文 - 大写金额/中文读法 - 在线工具箱</title>
+  <meta name="description" content="免费在线数字转中文工具，支持阿拉伯数字转中文大写、小写、金额大写。输入数字立即转换，适用于财务、合同、法律文书场景。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="数字转中文 - 大写金额/中文读法">
+  <meta property="og:description" content="数字转中文大写、小写、金额大写。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/number-chinese.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/number-chinese.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"数字转中文","description":"阿拉伯数字转中文大写小写","url":"https://eitools.cn/src/tools/number-chinese.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>数字转中文</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">输入数字，转换为中文大写、小写、财务金额。</p>
+    <div style="max-width:500px;">
+      <input type="text" id="input" placeholder="请输入数字（如 12345.67）" oninput="convert()" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:1.1rem;margin-bottom:16px;">
+      <div id="results" style="display:grid;gap:12px;"></div>
+    </div>
+  </div>
+  <script>
+    const cnNums = ['零','壹','贰','叁','肆','伍','陆','柒','捌','玖'];
+    const cnNumsLow = ['零','一','二','三','四','五','六','七','八','九'];
+    const cnUnits = ['','拾','佰','仟'];
+    const cnBigUnits = ['','万','亿','兆'];
+    const cnDecUnits = ['角','分'];
+    const cnIntStr = '元整';
+    const cnNeg = '负';
+
+    function numberToChineseUpper(num) {
+      if (num === 0) return '零';
+      let neg = num < 0; num = Math.abs(num);
+      const intPart = Math.floor(num);
+      const decPart = Math.round((num - intPart) * 100);
+      let result = '';
+      if (neg) result += cnNeg;
+      result += intToChinese(intPart, cnNums);
+      if (decPart > 0) {
+        result += '点';
+        const jiao = Math.floor(decPart / 10), fen = decPart % 10;
+        if (jiao > 0) result += cnNums[jiao] + cnDecUnits[0];
+        if (fen > 0) result += cnNums[fen] + cnDecUnits[1];
+      }
+      return result || '零';
+    }
+
+    function intToChinese(num, nums) {
+      if (num === 0) return '';
+      let str = String(num), result = '', zeroFlag = false;
+      const len = str.length;
+      const groups = Math.ceil(len / 4);
+      for (let i = 0; i < groups; i++) {
+        const start = len - (i + 1) * 4, end = len - i * 4;
+        const groupStr = str.substring(Math.max(0, start), end);
+        const groupNum = parseInt(groupStr);
+        if (groupNum === 0) { zeroFlag = true; continue; }
+        let groupResult = '';
+        for (let j = 0; j < groupStr.length; j++) {
+          const d = parseInt(groupStr[j]);
+          if (d === 0) { zeroFlag = true; }
+          else {
+            if (zeroFlag) { groupResult += nums[0]; zeroFlag = false; }
+            groupResult += nums[d] + cnUnits[groupStr.length - 1 - j];
+          }
+        }
+        if (zeroFlag && i < groups - 1) { result = nums[0] + result; zeroFlag = false; }
+        result = groupResult + cnBigUnits[i] + result;
+      }
+      return result;
+    }
+
+    function numberToChineseLow(num) {
+      if (num === 0) return '零';
+      let neg = num < 0; num = Math.abs(num);
+      const intPart = Math.floor(num);
+      const decPart = Math.round((num - intPart) * 100);
+      let result = '';
+      if (neg) result += '负';
+      result += intToChinese(intPart, cnNumsLow);
+      if (decPart > 0) {
+        result += '点';
+        const jiao = Math.floor(decPart / 10), fen = decPart % 10;
+        if (jiao > 0) result += cnNumsLow[jiao];
+        if (fen > 0) result += cnNumsLow[fen];
+      }
+      return result || '零';
+    }
+
+    function numberToRMB(num) {
+      if (num === 0) return '零元整';
+      num = Math.round(num * 100) / 100;
+      let neg = num < 0; num = Math.abs(num);
+      const intPart = Math.floor(num);
+      const decPart = Math.round((num - intPart) * 100);
+      let result = '';
+      if (neg) result += cnNeg;
+      result += intToChinese(intPart, cnNums) + '元';
+      if (decPart > 0) {
+        const jiao = Math.floor(decPart / 10), fen = decPart % 10;
+        if (jiao > 0) result += cnNums[jiao] + '角';
+        if (fen > 0) result += cnNums[fen] + '分';
+        if (jiao === 0) result += cnNums[0] + '角';
+      } else {
+        result += '整';
+      }
+      return result;
+    }
+
+    function convert() {
+      const input = document.getElementById('input').value.trim();
+      const el = document.getElementById('results');
+      if (!input) { el.innerHTML = ''; return; }
+      const num = parseFloat(input);
+      if (isNaN(num)) { el.innerHTML = '<p style="color:#c92a2a;">请输入有效数字</p>'; return; }
+      if (Math.abs(num) > 1e16) { el.innerHTML = '<p style="color:#e67700;">数字过大，请输入小于10^16的数</p>'; return; }
+      el.innerHTML = [
+        { label: '中文小写', value: numberToChineseLow(num), color: '#333' },
+        { label: '中文大写', value: numberToChineseUpper(num), color: '#4361ee' },
+        { label: '人民币大写', value: numberToRMB(num), color: '#e67700' },
+      ].map(s => `<div style="padding:16px;background:white;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+        <div style="font-size:0.8rem;color:#888;margin-bottom:4px;">${s.label}</div>
+        <div style="font-size:1.2rem;font-weight:700;color:${s.color};word-break:break-all;">${s.value}</div>
+      </div>`).join('');
+    }
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

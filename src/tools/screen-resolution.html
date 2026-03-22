@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>屏幕分辨率查询 - 常用分辨率对照 - 在线工具箱</title>
+  <meta name="description" content="在线查看当前屏幕分辨率，常用屏幕分辨率对照表，iPhone、iPad、MacBook、Android手机分辨率大全。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="屏幕分辨率查询 - 当前分辨率与常用分辨率">
+  <meta property="og:description" content="查看当前屏幕分辨率，常用设备分辨率对照。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/screen-resolution.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/screen-resolution.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"屏幕分辨率查询","description":"查看当前屏幕分辨率和常用设备分辨率","url":"https://eitools.cn/src/tools/screen-resolution.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>屏幕分辨率查询</h1>
+    </div>
+    <div style="max-width:700px;">
+      <div style="padding:24px;background:linear-gradient(135deg,#eef1ff,#f8f9ff);border:2px solid #4361ee;border-radius:12px;text-align:center;margin-bottom:24px;">
+        <div style="font-size:0.85rem;color:#888;">当前屏幕分辨率</div>
+        <div id="resolution" style="font-size:2.2rem;font-weight:800;color:#4361ee;"></div>
+        <div id="details" style="color:#555;font-size:0.9rem;margin-top:8px;"></div>
+      </div>
+
+      <h2 style="font-size:1.1rem;margin-bottom:12px;">iPhone 分辨率</h2>
+      <table style="width:100%;border-collapse:collapse;font-size:0.85rem;background:white;border-radius:12px;overflow:hidden;margin-bottom:20px;">
+        <tr style="background:#e8eaed;"><th style="padding:8px;text-align:left;">型号</th><th style="padding:8px;">逻辑分辨率</th><th style="padding:8px;">物理分辨率</th><th style="padding:8px;">PPI</th></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 12px;">iPhone 15 Pro Max</td><td style="padding:6px 12px;">430×932</td><td style="padding:6px 12px;">1290×2796</td><td style="padding:6px 12px;">460</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 12px;">iPhone 15 Pro</td><td style="padding:6px 12px;">393×852</td><td style="padding:6px 12px;">1179×2556</td><td style="padding:6px 12px;">460</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 12px;">iPhone 14</td><td style="padding:6px 12px;">390×844</td><td style="padding:6px 12px;">1170×2532</td><td style="padding:6px 12px;">457</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 12px;">iPhone SE (3rd)</td><td style="padding:6px 12px;">375×667</td><td style="padding:6px 12px;">750×1334</td><td style="padding:6px 12px;">326</td></tr>
+        <tr><td style="padding:6px 12px;">iPhone 15</td><td style="padding:6px 12px;">393×852</td><td style="padding:6px 12px;">1179×2556</td><td style="padding:6px 12px;">460</td></tr>
+      </table>
+
+      <h2 style="font-size:1.1rem;margin-bottom:12px;">常见屏幕分辨率</h2>
+      <table style="width:100%;border-collapse:collapse;font-size:0.85rem;background:white;border-radius:12px;overflow:hidden;margin-bottom:20px;">
+        <tr style="background:#e8eaed;"><th style="padding:8px;text-align:left;">名称</th><th style="padding:8px;">分辨率</th><th style="padding:8px;">宽高比</th><th style="padding:8px;">常见设备</th></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 12px;">HD</td><td style="padding:6px 12px;">1280×720</td><td style="padding:6px 12px;">16:9</td><td style="padding:6px 12px;">入门手机/笔记本</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 12px;">Full HD</td><td style="padding:6px 12px;">1920×1080</td><td style="padding:6px 12px;">16:9</td><td style="padding:6px 12px;">主流显示器</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 12px;">2K (QHD)</td><td style="padding:6px 12px;">2560×1440</td><td style="padding:6px 12px;">16:9</td><td style="padding:6px 12px;">高端显示器</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 12px;">4K (UHD)</td><td style="padding:6px 12px;">3840×2160</td><td style="padding:6px 12px;">16:9</td><td style="padding:6px 12px;">4K显示器/电视</td></tr>
+        <tr><td style="padding:6px 12px;">Retina</td><td style="padding:6px 12px;">2560×1600</td><td style="padding:6px 12px;">16:10</td><td style="padding:6px 12px;">MacBook Pro</td></tr>
+      </table>
+
+      <h2 style="font-size:1.1rem;margin-bottom:12px;">Android 手机分辨率</h2>
+      <table style="width:100%;border-collapse:collapse;font-size:0.85rem;background:white;border-radius:12px;overflow:hidden;">
+        <tr style="background:#e8eaed;"><th style="padding:8px;text-align:left;">品牌/系列</th><th style="padding:8px;">逻辑分辨率</th><th style="padding:8px;">物理分辨率</th></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 12px;">Samsung Galaxy S24</td><td style="padding:6px 12px;">360×780</td><td style="padding:6px 12px;">1080×2340</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 12px;">Pixel 8</td><td style="padding:6px 12px;">412×892</td><td style="padding:6px 12px;">1080×2400</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 12px;">华为 Mate 60</td><td style="padding:6px 12px;">360×780</td><td style="padding:6px 12px;">1260×2720</td></tr>
+        <tr><td style="padding:6px 12px;">小米 14</td><td style="padding:6px 12px;">393×852</td><td style="padding:6px 12px;">1080×2400</td></tr>
+      </table>
+    </div>
+  </div>
+  <script>
+    const dpr = window.devicePixelRatio || 1;
+    document.getElementById('resolution').textContent = `${window.screen.width} × ${window.screen.height}`;
+    document.getElementById('details').textContent = `设备像素比 (DPR): ${dpr} | 物理像素: ${Math.round(window.screen.width*dpr)} × ${Math.round(window.screen.height*dpr)} | 颜色深度: ${screen.colorDepth}bit | 视口: ${window.innerWidth} × ${window.innerHeight}`;
+  </script>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+</body>
+</html>

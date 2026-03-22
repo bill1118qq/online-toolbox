@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>网页烟花特效代码 - HTML5 Canvas烟花教程 - 在线工具箱</title>
+  <meta name="description" content="网页烟花特效代码教程：如何用HTML5 Canvas实现烟花动画效果，包含完整代码示例和参数说明。附在线烟花代码生成器。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="网页烟花特效代码教程">
+  <meta property="og:description" content="HTML5 Canvas烟花动画实现教程，含完整代码和在线生成器。">
+  <meta property="og:url" content="https://eitools.cn/guides/firework-guide.html">
+  <link rel="canonical" href="https://eitools.cn/guides/firework-guide.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type": "Question", "name": "如何用HTML实现烟花特效？", "acceptedAnswer": {"@type": "Answer", "text": "使用HTML5 Canvas API实现烟花效果：1. 创建canvas元素；2. 用requestAnimationFrame循环绘制；3. 每帧绘制粒子，应用重力和透明度衰减；4. 随机生成不同颜色和大小的粒子群模拟爆炸效果。"}},
+      {"@type": "Question", "name": "烟花特效可以用在哪些场景？", "acceptedAnswer": {"@type": "Answer", "text": "烟花特效适用于：表白网页、节日祝福（新年、国庆、生日）、产品发布页面、游戏特效、互动展示页面等场景。"}},
+      {"@type": "Question", "name": "如何让烟花代码在手机上也能运行？", "acceptedAnswer": {"@type": "Answer", "text": "让烟花代码响应式适配：设置canvas宽度为100vw、高度为100vh；监听resize事件动态调整canvas尺寸；使用touch事件替代click事件；注意移动端性能优化，减少粒子数量。"}}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">← 返回首页</a>
+      <h1>网页烟花特效代码教程</h1>
+    </div>
+
+    <article style="line-height:1.8;">
+      <h2>什么是HTML5 Canvas烟花特效？</h2>
+      <p>HTML5 Canvas烟花特效是利用浏览器的Canvas API绘制粒子动画，模拟真实烟花爆炸效果。它纯前端实现，不需要服务器，可以直接嵌入任何网页。</p>
+
+      <h2>烟花效果实现原理</h2>
+      <p>烟花效果的核心是<strong>粒子系统</strong>：</p>
+      <ol>
+        <li><b>发射阶段</b>：一个光点从底部向上运动</li>
+        <li><b>爆炸阶段</b>：到达顶点后分裂成多个粒子</li>
+        <li><b>扩散阶段</b>：粒子向四周扩散，受重力影响下落</li>
+        <li><b>消散阶段</b>：粒子透明度逐渐降低直至消失</li>
+      </ol>
+
+      <h2>核心代码逻辑</h2>
+      <p>烟花效果的关键参数：</p>
+      <ul>
+        <li><b>粒子数量</b>：每次爆炸产生的粒子数（20-150）</li>
+        <li><b>扩散速度</b>：粒子初始速度（影响爆炸半径）</li>
+        <li><b>重力加速度</b>：影响粒子下落速度（通常0.02-0.05）</li>
+        <li><b>生命周期</b>：粒子衰减速率（控制烟花持续时间）</li>
+        <li><b>颜色</b>：随机或预定义的颜色数组</li>
+      </ul>
+
+      <h2>烟花特效应用场景</h2>
+      <ul>
+        <li><b>表白网页</b>：浪漫烟花配合文字，制作个性化表白页面</li>
+        <li><b>节日祝福</b>：新年、国庆、圣诞等节日的祝福页面</li>
+        <li><b>生日贺卡</b>：在线生日贺卡添加烟花效果</li>
+        <li><b>产品发布</b>：新产品上线庆祝页面</li>
+        <li><b>互动游戏</b>：简单的烟花互动小游戏</li>
+      </ul>
+
+      <h2>性能优化建议</h2>
+      <ol>
+        <li>使用对象池复用粒子，减少GC压力</li>
+        <li>设置最大粒子数量上限（建议不超过5000）</li>
+        <li>使用离屏Canvas进行双缓冲</li>
+        <li>移动端减少粒子数量和密度</li>
+        <li>使用requestAnimationFrame保持60fps</li>
+      </ol>
+
+      <h2>常见问题</h2>
+      <h3>如何添加文字到烟花页面？</h3>
+      <p>在Canvas上绘制文字：使用ctx.fillText()方法在指定位置绘制祝福文字，配合颜色和阴影效果即可。也可以使用HTML元素覆盖在Canvas上方，更灵活地控制样式。</p>
+
+      <h3>如何让烟花跟随鼠标点击？</h3>
+      <p>监听canvas的click事件，获取点击坐标(e.clientX, e.clientY)，在该位置触发烟花爆炸。注意Canvas尺寸和CSS显示尺寸的比例换算。</p>
+
+      <div style="margin-top:24px;padding:20px;background:#f0f4ff;border-radius:12px;border:1px solid #4361ee;">
+        <h3 style="color:#4361ee;margin-top:0;">在线烟花代码生成器</h3>
+        <p>使用我们的<a href="../src/tools/firework-generator.html" style="color:#4361ee;font-weight:bold;">在线烟花代码生成器</a>，自定义颜色、粒子数、爆炸半径等参数，实时预览效果，一键复制完整HTML代码。</p>
+      </div>
+    </article>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../js/share.js"></script>
+</body>
+</html>

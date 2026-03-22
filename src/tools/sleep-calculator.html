@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>睡眠计算器 - 最佳起床时间和睡眠周期 - 在线工具箱</title>
+  <meta name="description" content="免费在线睡眠计算器，根据入睡时间计算最佳起床时间。基于90分钟睡眠周期，帮助你科学安排睡眠，每天精力充沛。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="睡眠计算器 - 最佳起床时间和睡眠周期">
+  <meta property="og:description" content="根据入睡时间计算最佳起床时间，科学睡眠。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/sleep-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/sleep-calculator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"睡眠计算器","description":"根据入睡时间计算最佳起床时间","url":"https://eitools.cn/src/tools/sleep-calculator.html","applicationCategory":"HealthApplication","operatingSystem":"Any"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"正常人每天睡几个小时最好？","acceptedAnswer":{"@type":"Answer","text":"成年人建议每天睡7-9小时。青少年需要8-10小时，老年人6-8小时。睡眠不足或过多都会影响健康。"}},{"@type":"Question","name":"什么是睡眠周期？","acceptedAnswer":{"@type":"Answer","text":"人的睡眠由多个约90分钟的周期组成，每个周期包括浅睡、深睡和REM快速眼动阶段。在周期结束时（90分钟的整数倍）醒来会感觉最清醒。"}},{"@type":"Question","name":"几点睡觉最好？","acceptedAnswer":{"@type":"Answer","text":"从生理节律角度看，晚上10点到11点入睡最佳，因为此时人体褪黑素分泌达到高峰。建议成年人保持每晚相同的入睡时间。"}}]}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>睡眠计算器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">根据入睡时间计算最佳起床时间，基于90分钟睡眠周期。</p>
+    <div style="max-width:600px;">
+      <div style="display:flex;gap:12px;align-items:end;margin-bottom:24px;">
+        <div style="flex:1;"><label style="font-size:0.85rem;color:#888;">计划入睡时间</label>
+          <input type="time" id="sleepTime" value="23:00" onchange="calc()" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:1.1rem;margin-top:4px;"></div>
+        <div><label style="font-size:0.85rem;color:#888;">入睡需要(分钟)</label>
+          <input type="number" id="fallAsleep" value="15" min="0" max="60" onchange="calc()" style="width:100px;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:4px;"></div>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-bottom:20px;">
+        <button onclick="setNow()" class="btn" style="padding:6px 16px;font-size:0.85rem;">设为现在</button>
+        <button onclick="setTime(22,0)" class="btn" style="padding:6px 16px;font-size:0.85rem;">22:00</button>
+        <button onclick="setTime(22,30)" class="btn" style="padding:6px 16px;font-size:0.85rem;">22:30</button>
+        <button onclick="setTime(23,0)" class="btn" style="padding:6px 16px;font-size:0.85rem;">23:00</button>
+        <button onclick="setTime(23,30)" class="btn" style="padding:6px 16px;font-size:0.85rem;">23:30</button>
+      </div>
+
+      <div id="wake-times">
+        <h3 style="margin-bottom:12px;">建议起床时间</h3>
+        <div id="results"></div>
+      </div>
+
+      <div style="margin-top:24px;">
+        <h3 style="margin-bottom:12px;">反向计算：想在指定时间起床</h3>
+        <div style="display:flex;gap:12px;align-items:end;">
+          <div><label style="font-size:0.85rem;color:#888;">目标起床时间</label>
+            <input type="time" id="wakeTime" value="07:00" onchange="calcReverse()" style="width:150px;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:1.1rem;margin-top:4px;"></div>
+        </div>
+        <div id="sleep-suggestions" style="margin-top:12px;"></div>
+      </div>
+
+      <div style="margin-top:24px;padding:16px;background:#f0f2f5;border-radius:12px;">
+        <p style="font-size:0.85rem;color:#666;"><strong>睡眠周期说明：</strong>一个睡眠周期约90分钟，包含浅睡→深睡→REM阶段。在周期结束时醒来感觉最清醒。建议睡4-6个周期（6-9小时）。如果闹钟在深睡阶段响，会感觉昏昏沉沉。</p>
+      </div>
+    </div>
+  </div>
+  <script>
+    function setTime(h, m) {
+      document.getElementById('sleepTime').value = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+      calc();
+    }
+    function setNow() {
+      const now = new Date();
+      document.getElementById('sleepTime').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+      calc();
+    }
+    function addMinutes(timeStr, mins) {
+      const [h, m] = timeStr.split(':').map(Number);
+      const total = h * 60 + m + mins;
+      const newH = Math.floor(total / 60) % 24;
+      const newM = total % 60;
+      return `${String(newH).padStart(2,'0')}:${String(newM).padStart(2,'0')}`;
+    }
+    function calc() {
+      const sleepTime = document.getElementById('sleepTime').value;
+      const fallAsleep = parseInt(document.getElementById('fallAsleep').value) || 15;
+      const actualSleep = addMinutes(sleepTime, fallAsleep);
+      const cycles = [4, 5, 6];
+      const el = document.getElementById('results');
+      el.innerHTML = cycles.map((c, i) => {
+        const wakeTime = addMinutes(actualSleep, c * 90);
+        const totalMins = c * 90;
+        const h = Math.floor(totalMins / 60), m = totalMins % 60;
+        const quality = i === 2 ? '推荐' : i === 1 ? '较好' : '最短';
+        const color = i === 2 ? '#2f9e44' : i === 1 ? '#4361ee' : '#e67700';
+        return `<div style="padding:16px;background:white;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;${i === 2 ? 'border:2px solid #2f9e44;' : ''}">
+          <div><div style="font-size:1.5rem;font-weight:800;color:${color};">${wakeTime}</div><div style="font-size:0.85rem;color:#888;">${c}个周期 · ${h}小时${m > 0 ? m + '分' : ''}</div></div>
+          <span style="padding:4px 12px;border-radius:12px;background:${color}20;color:${color};font-size:0.8rem;font-weight:600;">${quality}</span>
+        </div>`;
+      }).join('');
+    }
+    function calcReverse() {
+      const wakeTime = document.getElementById('wakeTime').value;
+      const fallAsleep = parseInt(document.getElementById('fallAsleep').value) || 15;
+      const cycles = [6, 5, 4];
+      const el = document.getElementById('sleep-suggestions');
+      el.innerHTML = '<p style="font-size:0.85rem;color:#888;margin-bottom:8px;">建议入睡时间</p>' + cycles.map(c => {
+        const sleepNeeded = addMinutes(wakeTime, -(c * 90 + fallAsleep));
+        const totalMins = c * 90;
+        const h = Math.floor(totalMins / 60), m = totalMins % 60;
+        return `<div style="padding:12px;background:white;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,0.06);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+          <div><span style="font-size:1.2rem;font-weight:700;">${sleepNeeded}</span><span style="font-size:0.85rem;color:#888;margin-left:8px;">${c}个周期 · ${h}小时${m > 0 ? m + '分' : ''}</span></div>
+        </div>`;
+      }).join('');
+    }
+    calc();
+    calcReverse();
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

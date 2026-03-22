@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文本统计工具 - 字数统计阅读时间 - 在线工具箱</title>
+  <meta name="description" content="在线文本统计工具：字数、词数、句数、段落数、行数、阅读时间、中英文分类统计。支持粘贴或输入文本实时统计。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="文本统计工具">
+  <meta property="og:description" content="字数、词数、句数、段落数、阅读时间统计。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/text-stats.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/text-stats.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"文本统计工具","url":"https://eitools.cn/src/tools/text-stats.html","description":"在线文本统计工具，实时统计字数、词数、句数、阅读时间等","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>文本统计工具</h1>
+    </div>
+    <textarea id="input" rows="10" placeholder="在此输入或粘贴文本，实时统计..." oninput="analyze()" style="width:100%;padding:12px;border:2px solid #ddd;border-radius:8px;font-size:1rem;box-sizing:border-box;resize:vertical;font-family:inherit;line-height:1.6;"></textarea>
+    <div style="margin-top:16px;">
+      <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+    </div>
+    <div id="stats" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-top:20px;">
+      <div class="stat-card"><div class="stat-value" id="charCount">0</div><div class="stat-label">总字符</div></div>
+      <div class="stat-card"><div class="stat-value" id="charNoSpace">0</div><div class="stat-label">字符(不含空格)</div></div>
+      <div class="stat-card"><div class="stat-value" id="chineseCount">0</div><div class="stat-label">中文字符</div></div>
+      <div class="stat-card"><div class="stat-value" id="englishCount">0</div><div class="stat-label">英文单词</div></div>
+      <div class="stat-card"><div class="stat-value" id="numberCount">0</div><div class="stat-label">数字</div></div>
+      <div class="stat-card"><div class="stat-value" id="punctCount">0</div><div class="stat-label">标点符号</div></div>
+      <div class="stat-card"><div class="stat-value" id="sentenceCount">0</div><div class="stat-label">句子数</div></div>
+      <div class="stat-card"><div class="stat-value" id="paraCount">0</div><div class="stat-label">段落数</div></div>
+      <div class="stat-card"><div class="stat-value" id="lineCount">0</div><div class="stat-label">行数</div></div>
+      <div class="stat-card"><div class="stat-value" id="readTime">0分钟</div><div class="stat-label">阅读时间</div></div>
+      <div class="stat-card"><div class="stat-value" id="speakTime">0分钟</div><div class="stat-label">朗读时间</div></div>
+      <div class="stat-card"><div class="stat-value" id="byteSize">0 B</div><div class="stat-label">UTF-8字节</div></div>
+    </div>
+    <style>
+      .stat-card { background:white; border:1px solid #eee; border-radius:10px; padding:16px; text-align:center; transition:transform 0.2s; }
+      .stat-card:hover { transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,0.1); }
+      .stat-value { font-size:1.5rem; font-weight:bold; color:#4361ee; margin-bottom:4px; }
+      .stat-label { font-size:0.8rem; color:#999; }
+    </style>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    function analyze() {
+      const text = document.getElementById('input').value;
+
+      // 字符统计
+      const charCount = text.length;
+      const charNoSpace = text.replace(/\s/g, '').length;
+
+      // 中文
+      const chinese = (text.match(/[\u4e00-\u9fa5]/g) || []).length;
+
+      // 英文单词
+      const english = text.replace(/[\u4e00-\u9fa5]/g, ' ').trim().split(/\s+/).filter(w => w && /^[a-zA-Z]+$/.test(w)).length;
+
+      // 数字
+      const numbers = (text.match(/\d+/g) || []).length;
+
+      // 标点
+      const punct = (text.match(/[，。！？、；：""''（）《》【】…—,.!?;:'"()\[\]{}<>\-]/g) || []).length;
+
+      // 句子
+      const sentences = text.split(/[。！？.!?]+/).filter(s => s.trim()).length;
+
+      // 段落
+      const paragraphs = text.split(/\n\s*\n/).filter(p => p.trim()).length || (text.trim() ? 1 : 0);
+
+      // 行数
+      const lines = text ? text.split('\n').length : 0;
+
+      // 阅读时间（中文300字/分，英文200词/分）
+      const readMin = Math.ceil((chinese / 300) + (english / 200));
+      const speakMin = Math.ceil((chinese / 250) + (english / 150));
+
+      // UTF-8字节
+      const bytes = new Blob([text]).size;
+      const byteStr = bytes > 1024 ? (bytes / 1024).toFixed(1) + ' KB' : bytes + ' B';
+
+      document.getElementById('charCount').textContent = charCount.toLocaleString();
+      document.getElementById('charNoSpace').textContent = charNoSpace.toLocaleString();
+      document.getElementById('chineseCount').textContent = chinese.toLocaleString();
+      document.getElementById('englishCount').textContent = english.toLocaleString();
+      document.getElementById('numberCount').textContent = numbers.toLocaleString();
+      document.getElementById('punctCount').textContent = punct.toLocaleString();
+      document.getElementById('sentenceCount').textContent = sentences.toLocaleString();
+      document.getElementById('paraCount').textContent = paragraphs.toLocaleString();
+      document.getElementById('lineCount').textContent = lines.toLocaleString();
+      document.getElementById('readTime').textContent = (text.trim() ? readMin : 0) + '分钟';
+      document.getElementById('speakTime').textContent = (text.trim() ? speakMin : 0) + '分钟';
+      document.getElementById('byteSize').textContent = byteStr;
+    }
+
+    function clearAll() {
+      document.getElementById('input').value = '';
+      analyze();
+    }
+  </script>
+</body>
+</html>

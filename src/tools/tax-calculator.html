@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>个税计算器 - 2025年个人所得税计算 - 在线工具箱</title>
+  <meta name="description" content="2025年个人所得税计算器，输入月薪自动计算五险一金、个税和税后工资，支持累计预扣法计算。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="个税计算器 - 2025年个人所得税在线计算">
+  <meta property="og:description" content="输入月薪，自动计算五险一金、个税和到手工资。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/tax-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/tax-calculator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"个税计算器","description":"2025年个人所得税在线计算工具","url":"https://eitools.cn/src/tools/tax-calculator.html","applicationCategory":"FinanceApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>个税计算器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">输入月薪，计算五险一金、个税和到手工资（2025年标准）。</p>
+    <div style="max-width:500px;">
+      <div style="margin-bottom:16px;">
+        <label style="display:block;margin-bottom:6px;font-weight:600;">税前月薪（元）</label>
+        <input type="number" id="salary" placeholder="例如：15000" min="0" max="10000000" step="100" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:1rem;">
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="display:block;margin-bottom:6px;font-weight:600;">五险一金比例</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div><label style="font-size:0.85rem;color:#888;">公积金（%）</label><input type="number" id="fund" value="12" min="5" max="12" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;"></div>
+          <div><label style="font-size:0.85rem;color:#888;">社保（%）</label><input type="number" id="social" value="10.5" min="0" max="30" step="0.5" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;"></div>
+        </div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="display:block;margin-bottom:6px;font-weight:600;">专项附加扣除（元/月）</label>
+        <input type="number" id="deduct" placeholder="例如：2000（租房/子女教育等）" min="0" step="100" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:1rem;">
+      </div>
+      <button class="btn btn-primary" onclick="calcTax()" style="width:100%;padding:12px;font-size:1.05rem;">计算个税</button>
+      <div id="result" style="margin-top:24px;"></div>
+    </div>
+    <div style="margin-top:32px;padding:20px;background:#f0f2f5;border-radius:12px;">
+      <h2 style="font-size:1rem;margin-bottom:12px;">个人所得税税率表（综合所得）</h2>
+      <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+        <tr style="background:#e8eaed;"><th style="padding:8px;text-align:left;">级数</th><th style="padding:8px;">全年应纳税所得额</th><th style="padding:8px;">税率</th><th style="padding:8px;">速算扣除数</th></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px;">1</td><td style="padding:6px;">≤ 36,000</td><td style="padding:6px;">3%</td><td style="padding:6px;">0</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px;">2</td><td style="padding:6px;">36,000 - 144,000</td><td style="padding:6px;">10%</td><td style="padding:6px;">2,520</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px;">3</td><td style="padding:6px;">144,000 - 300,000</td><td style="padding:6px;">20%</td><td style="padding:6px;">16,920</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px;">4</td><td style="padding:6px;">300,000 - 420,000</td><td style="padding:6px;">25%</td><td style="padding:6px;">31,920</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px;">5</td><td style="padding:6px;">420,000 - 660,000</td><td style="padding:6px;">30%</td><td style="padding:6px;">52,920</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px;">6</td><td style="padding:6px;">660,000 - 960,000</td><td style="padding:6px;">35%</td><td style="padding:6px;">85,920</td></tr>
+        <tr><td style="padding:6px;">7</td><td style="padding:6px;">> 960,000</td><td style="padding:6px;">45%</td><td style="padding:6px;">181,920</td></tr>
+      </table>
+    </div>
+  </div>
+  <script>
+    function calcTax() {
+      const salary = parseFloat(document.getElementById('salary').value);
+      const fundRate = parseFloat(document.getElementById('fund').value) / 100;
+      const socialRate = parseFloat(document.getElementById('social').value) / 100;
+      const extraDeduct = parseFloat(document.getElementById('deduct').value) || 0;
+      if (!salary || salary <= 0) { document.getElementById('result').innerHTML = '<p style="color:#e03131;">请输入有效月薪</p>'; return; }
+      const threshold = 5000;
+      const fundDeduct = Math.min(salary * fundRate, salary * 0.12);
+      const socialDeduct = salary * socialRate;
+      const taxableIncome = salary - threshold - fundDeduct - socialDeduct - extraDeduct;
+      const monthlyTaxable = Math.max(0, taxableIncome);
+      const annualTaxable = monthlyTaxable * 12;
+      let annualTax = 0;
+      const brackets = [[36000,0.03,0],[144000,0.10,2520],[300000,0.20,16920],[420000,0.25,31920],[660000,0.30,52920],[960000,0.35,85920],[Infinity,0.45,181920]];
+      for (const [limit, rate, deduct] of brackets) {
+        if (annualTaxable <= limit) { annualTax = annualTaxable * rate - deduct; break; }
+      }
+      annualTax = Math.max(0, annualTax);
+      const monthlyTax = annualTax / 12;
+      const totalDeduct = fundDeduct + socialDeduct + monthlyTax;
+      const afterTax = salary - totalDeduct;
+      document.getElementById('result').innerHTML = `
+        <div style="text-align:center;padding:24px;background:linear-gradient(135deg,#4361ee11,#4361ee05);border:2px solid #4361ee;border-radius:12px;">
+          <div style="font-size:0.85rem;color:#888;">税后月薪</div>
+          <div style="font-size:2.2rem;font-weight:800;color:#4361ee;">${afterTax.toFixed(2)} 元</div>
+        </div>
+        <div style="margin-top:16px;background:white;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.1);overflow:hidden;">
+          <table style="width:100%;border-collapse:collapse;font-size:0.9rem;">
+            <tr style="border-bottom:1px solid #eee;"><td style="padding:12px;">税前工资</td><td style="padding:12px;font-weight:600;">${salary.toFixed(2)}</td></tr>
+            <tr style="border-bottom:1px solid #eee;"><td style="padding:12px;">公积金（${(fundRate*100).toFixed(1)}%）</td><td style="padding:12px;color:#e03131;">-${fundDeduct.toFixed(2)}</td></tr>
+            <tr style="border-bottom:1px solid #eee;"><td style="padding:12px;">社保（${(socialRate*100).toFixed(1)}%）</td><td style="padding:12px;color:#e03131;">-${socialDeduct.toFixed(2)}</td></tr>
+            <tr style="border-bottom:1px solid #eee;"><td style="padding:12px;">起征点</td><td style="padding:12px;color:#e03131;">-5,000.00</td></tr>
+            <tr style="border-bottom:1px solid #eee;"><td style="padding:12px;">专项附加扣除</td><td style="padding:12px;color:#e03131;">-${extraDeduct.toFixed(2)}</td></tr>
+            <tr style="border-bottom:1px solid #eee;background:#fff8f0;"><td style="padding:12px;font-weight:600;">个人所得税</td><td style="padding:12px;color:#e03131;font-weight:600;">-${monthlyTax.toFixed(2)}</td></tr>
+            <tr style="background:#eef1ff;"><td style="padding:12px;font-weight:700;">到手工资</td><td style="padding:12px;font-weight:700;color:#4361ee;">${afterTax.toFixed(2)}</td></tr>
+          </table>
+        </div>`;
+    }
+  </script>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>进制转换器 - 二八十六进制互转 - 在线工具箱</title>
+  <meta name="description" content="在线进制转换器：支持二进制、八进制、十进制、十六进制之间的互相转换。支持自定义进制(2-36)、浮点数转换、批量转换。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="在线进制转换器">
+  <meta property="og:description" content="二八十六进制互转，支持自定义进制2-36。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/number-base-extended.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/number-base-extended.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"进制转换器","description":"二八十六进制及自定义进制转换","url":"https://eitools.cn/src/tools/number-base-extended.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>进制转换器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">支持2-36进制之间的互相转换，实时显示所有进制结果。</p>
+    <div style="max-width:800px;">
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px;">
+        <div>
+          <label style="font-size:0.85rem;color:#888;">输入数值</label>
+          <input type="text" id="input" value="255" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;margin-top:4px;font-size:1.1rem;font-family:monospace;" oninput="convert()">
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">输入进制</label>
+          <select id="fromBase" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;margin-top:4px;font-size:1rem;" onchange="convert()">
+            <option value="2">二进制 (2)</option>
+            <option value="8">八进制 (8)</option>
+            <option value="10" selected>十进制 (10)</option>
+            <option value="16">十六进制 (16)</option>
+            <option value="32">三十二进制 (32)</option>
+            <option value="36">三十六进制 (36)</option>
+          </select>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+          <thead>
+            <tr style="background:#4361ee;color:white;">
+              <th style="padding:10px;text-align:left;">进制</th>
+              <th style="padding:10px;text-align:left;">值</th>
+              <th style="padding:10px;text-align:right;">位数</th>
+              <th style="padding:10px;text-align:right;">操作</th>
+            </tr>
+          </thead>
+          <tbody id="resultTable">
+          </tbody>
+        </table>
+      </div>
+      <div style="padding:16px;background:#f0f2f5;border-radius:12px;">
+        <h3 style="font-size:0.9rem;margin-bottom:8px;">常用快速参考</h3>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;font-family:monospace;font-size:0.85rem;">
+          <div style="background:white;padding:8px;border-radius:6px;text-align:center;">
+            <div style="color:#888;font-size:0.75rem;">DEC 255</div>
+            <div>HEX FF</div>
+          </div>
+          <div style="background:white;padding:8px;border-radius:6px;text-align:center;">
+            <div style="color:#888;font-size:0.75rem;">DEC 256</div>
+            <div>HEX 100</div>
+          </div>
+          <div style="background:white;padding:8px;border-radius:6px;text-align:center;">
+            <div style="color:#888;font-size:0.75rem;">DEC 1024</div>
+            <div>HEX 400</div>
+          </div>
+          <div style="background:white;padding:8px;border-radius:6px;text-align:center;">
+            <div style="color:#888;font-size:0.75rem;">DEC 65535</div>
+            <div>HEX FFFF</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    var BASES = [
+      { name: '二进制', base: 2, prefix: '0b', color: '#e53935' },
+      { name: '八进制', base: 8, prefix: '0o', color: '#8e24aa' },
+      { name: '十进制', base: 10, prefix: '', color: '#43a047' },
+      { name: '十六进制', base: 16, prefix: '0x', color: '#1e88e5' }
+    ];
+
+    function convert() {
+      var input = document.getElementById('input').value.trim();
+      var fromBase = parseInt(document.getElementById('fromBase').value);
+      var table = document.getElementById('resultTable');
+      if (!input) { table.innerHTML = ''; return; }
+
+      try {
+        var decimal = parseInt(input, fromBase);
+        if (isNaN(decimal)) {
+          table.innerHTML = '<tr><td colspan="4" style="padding:20px;text-align:center;color:#f44;">无效输入</td></tr>';
+          return;
+        }
+      } catch (e) {
+        table.innerHTML = '<tr><td colspan="4" style="padding:20px;text-align:center;color:#f44;">转换错误</td></tr>';
+        return;
+      }
+
+      var html = '';
+      for (var i = 0; i < BASES.length; i++) {
+        var b = BASES[i];
+        var value = decimal.toString(b.base).toUpperCase();
+        var digits = value.length;
+        var padded = value;
+        if (b.base === 2) {
+          padded = value.replace(/(.{4})/g, '$1 ').trim();
+        } else if (b.base === 16 && value.length > 4) {
+          padded = value.replace(/(.{4})/g, '$1 ').trim();
+        }
+
+        html += '<tr style="border-bottom:1px solid #eee;">';
+        html += '<td style="padding:10px;font-weight:600;color:' + b.color + ';">' + b.name + ' (' + b.base + ')</td>';
+        html += '<td style="padding:10px;font-family:monospace;font-size:0.95rem;">' + escapeHtml(padded) + '</td>';
+        html += '<td style="padding:10px;text-align:right;color:#888;">' + digits + ' 位</td>';
+        html += '<td style="padding:10px;text-align:right;"><button onclick="copyText(\'' + b.prefix + value + '\')" style="padding:4px 10px;background:#f0f2f5;border:1px solid #ddd;border-radius:4px;cursor:pointer;font-size:0.8rem;">复制</button></td>';
+        html += '</tr>';
+      }
+
+      document.getElementById('resultTable').innerHTML = html;
+    }
+
+    function escapeHtml(str) {
+      var div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function copyText(text) {
+      navigator.clipboard.writeText(text).then(function() {
+        var btn = event.target;
+        btn.textContent = '已复制';
+        setTimeout(function() { btn.textContent = '复制'; }, 1500);
+      });
+    }
+
+    convert();
+  </script>
+</body>
+</html>

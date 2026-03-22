@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>天数计算器 - 两日期相差天数 - 在线工具箱</title>
+  <meta name="description" content="免费在线天数计算器，计算两个日期之间相差多少天、多少周、多少月。支持正计时和倒计时。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="天数计算器 - 日期差/正计时/倒计时">
+  <meta property="og:description" content="计算两个日期之间相差多少天。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/days-between.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/days-between.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"天数计算器","description":"计算两日期相差天数","url":"https://eitools.cn/src/tools/days-between.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>天数计算器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">计算两个日期之间相差多少天。</p>
+    <div style="max-width:500px;">
+      <div style="display:grid;gap:12px;margin-bottom:16px;">
+        <div><label style="font-size:0.85rem;color:#888;">开始日期</label>
+          <input type="date" id="start" onchange="calc()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:4px;"></div>
+        <div><label style="font-size:0.85rem;color:#888;">结束日期</label>
+          <input type="date" id="end" onchange="calc()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:4px;"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <button onclick="setToday()" class="btn" style="padding:6px 12px;font-size:0.85rem;">今天</button>
+        <button onclick="setRange(30)" class="btn" style="padding:6px 12px;font-size:0.85rem;">近30天</button>
+        <button onclick="setRange(90)" class="btn" style="padding:6px 12px;font-size:0.85rem;">近90天</button>
+        <button onclick="setRange(365)" class="btn" style="padding:6px 12px;font-size:0.85rem;">近1年</button>
+      </div>
+      <div id="result" style="padding:24px;background:#f0f2f5;border-radius:12px;"></div>
+    </div>
+  </div>
+  <script>
+    function init() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('start').value = today;
+      const end = new Date(); end.setDate(end.getDate() + 30);
+      document.getElementById('end').value = end.toISOString().split('T')[0];
+      calc();
+    }
+    function setToday() { const t = new Date().toISOString().split('T')[0]; document.getElementById('start').value = t; document.getElementById('end').value = t; calc(); }
+    function setRange(n) { const t = new Date().toISOString().split('T')[0]; document.getElementById('start').value = t; const e = new Date(); e.setDate(e.getDate() + n); document.getElementById('end').value = e.toISOString().split('T')[0]; calc(); }
+
+    function calc() {
+      const s = new Date(document.getElementById('start').value);
+      const e = new Date(document.getElementById('end').value);
+      if (isNaN(s) || isNaN(e)) return;
+      const diffMs = Math.abs(e - s);
+      const days = Math.round(diffMs / (1000 * 60 * 60 * 24));
+      const weeks = Math.floor(days / 7);
+      const remainDays = days % 7;
+      const months = (e.getFullYear() - s.getFullYear()) * 12 + e.getMonth() - s.getMonth();
+      const hours = Math.round(diffMs / (1000 * 60 * 60));
+      const minutes = Math.round(diffMs / (1000 * 60));
+      const isPast = e < s;
+
+      document.getElementById('result').innerHTML = `
+        <div style="text-align:center;">
+          <div style="font-size:0.9rem;color:#666;margin-bottom:8px;">${isPast ? '已经过去' : '距今还有'}</div>
+          <div style="font-size:2.5rem;font-weight:800;color:#4361ee;">${days}</div>
+          <div style="font-size:1rem;color:#888;">天</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:20px;">
+          <div style="padding:12px;background:white;border-radius:8px;text-align:center;"><div style="font-size:0.8rem;color:#888;">周</div><div style="font-size:1.2rem;font-weight:700;">${weeks}周${remainDays > 0 ? remainDays + '天' : ''}</div></div>
+          <div style="padding:12px;background:white;border-radius:8px;text-align:center;"><div style="font-size:0.8rem;color:#888;">小时</div><div style="font-size:1.2rem;font-weight:700;">${hours.toLocaleString()}</div></div>
+          <div style="padding:12px;background:white;border-radius:8px;text-align:center;"><div style="font-size:0.8rem;color:#888;">分钟</div><div style="font-size:1.2rem;font-weight:700;">${minutes.toLocaleString()}</div></div>
+        </div>`;
+    }
+    init();
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

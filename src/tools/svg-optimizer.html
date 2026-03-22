@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SVG优化压缩 - SVG压缩工具 - 在线工具箱</title>
+  <meta name="description" content="在线SVG优化压缩工具：去除SVG多余空格、注释、元数据，压缩SVG文件体积。支持SVG预览和代码查看。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="SVG优化压缩工具">
+  <meta property="og:description" content="在线压缩SVG，去除多余属性和注释。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/svg-optimizer.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/svg-optimizer.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"SVG优化压缩工具","url":"https://eitools.cn/src/tools/svg-optimizer.html","description":"在线SVG优化压缩，去除注释和多余属性，压缩SVG体积","applicationCategory":"DeveloperApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>SVG优化压缩工具</h1>
+    </div>
+    <div style="display:flex;gap:8px;margin:16px 0;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="optimizeSVG()">优化压缩</button>
+      <button class="btn btn-secondary" onclick="copyResult()">复制结果</button>
+      <button class="btn btn-secondary" onclick="downloadSVG()">下载SVG</button>
+      <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+      <label style="font-size:0.85rem;display:flex;align-items:center;gap:4px;">
+        <input type="checkbox" id="removeMetadata" checked> 去除元数据
+      </label>
+      <label style="font-size:0.85rem;display:flex;align-items:center;gap:4px;">
+        <input type="checkbox" id="removeComments" checked> 去除注释
+      </label>
+    </div>
+    <div class="split-view">
+      <div class="split-panel">
+        <h3>输入 SVG 代码</h3>
+        <textarea id="input" rows="14" placeholder="粘贴SVG代码或上传SVG文件"></textarea>
+        <input type="file" accept=".svg" id="fileInput" onchange="loadFile(event)" style="margin-top:8px;">
+        <div style="margin-top:8px;font-size:0.85rem;color:#666;">大小: <span id="inputSize">0</span> 字节</div>
+      </div>
+      <div class="split-panel">
+        <h3>优化结果</h3>
+        <textarea id="output" rows="14" readonly></textarea>
+        <div style="margin-top:8px;font-size:0.85rem;color:#666;">大小: <span id="outputSize">0</span> 字节 | 压缩率: <span id="ratio">-</span></div>
+        <div id="preview" style="margin-top:12px;border:1px solid #ddd;border-radius:8px;min-height:80px;display:flex;align-items:center;justify-content:center;background:#fafafa;"></div>
+      </div>
+    </div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    const inputEl = document.getElementById('input');
+    const outputEl = document.getElementById('output');
+    const previewEl = document.getElementById('preview');
+
+    inputEl.addEventListener('input', () => {
+      document.getElementById('inputSize').textContent = new Blob([inputEl.value]).size;
+    });
+
+    function loadFile(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        inputEl.value = ev.target.result;
+        document.getElementById('inputSize').textContent = file.size;
+      };
+      reader.readAsText(file);
+    }
+
+    function optimizeSVG() {
+      let svg = inputEl.value.trim();
+      if (!svg || !svg.includes('<svg')) { showToast('请输入有效的SVG代码'); return; }
+
+      const removeMetadata = document.getElementById('removeMetadata').checked;
+      const removeComments = document.getElementById('removeComments').checked;
+
+      // 去除注释
+      if (removeComments) {
+        svg = svg.replace(/<!--[\s\S]*?-->/g, '');
+      }
+
+      // 去除metadata元素
+      if (removeMetadata) {
+        svg = svg.replace(/<metadata[\s\S]*?<\/metadata>/gi, '');
+        svg = svg.replace(/<desc[\s\S]*?<\/desc>/gi, '');
+      }
+
+      // 去除编辑器属性
+      svg = svg.replace(/\s+(inkscape|sodipodi):[a-z-]+="[^"]*"/gi, '');
+      svg = svg.replace(/\s+xmlns:(inkscape|sodipodi)="[^"]*"/gi, '');
+
+      // 压缩空白
+      svg = svg.replace(/>\s+</g, '><');
+      svg = svg.replace(/\s{2,}/g, ' ');
+
+      outputEl.value = svg.trim();
+      const inSize = new Blob([inputEl.value]).size;
+      const outSize = new Blob([svg]).size;
+      document.getElementById('outputSize').textContent = outSize;
+      document.getElementById('ratio').textContent = inSize > 0 ? ((1 - outSize / inSize) * 100).toFixed(1) + '%' : '-';
+
+      previewEl.innerHTML = svg.trim();
+      showToast('SVG优化完成！');
+    }
+
+    function copyResult() {
+      if (!outputEl.value) { showToast('没有内容'); return; }
+      navigator.clipboard.writeText(outputEl.value).then(() => showToast('已复制'));
+    }
+
+    function downloadSVG() {
+      if (!outputEl.value) { showToast('没有内容'); return; }
+      const blob = new Blob([outputEl.value], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'optimized.svg'; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function clearAll() {
+      inputEl.value = ''; outputEl.value = '';
+      document.getElementById('inputSize').textContent = '0';
+      document.getElementById('outputSize').textContent = '0';
+      document.getElementById('ratio').textContent = '-';
+      previewEl.innerHTML = '';
+    }
+  </script>
+</body>
+</html>

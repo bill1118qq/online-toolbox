@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>打字速度测试 - 在线测速 - 在线工具箱</title>
+  <meta name="description" content="免费在线打字速度测试。测试中文/英文打字速度（字/分钟 WPM），实时统计正确率和打字时间。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="打字速度测试 - WPM测速">
+  <meta property="og:description" content="在线中英文打字速度测试。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/typing-speed.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/typing-speed.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"打字速度测试","description":"中英文打字速度WPM测试","url":"https://eitools.cn/src/tools/typing-speed.html","applicationCategory":"EducationalApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>打字速度测试</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">测试你的打字速度，支持中文和英文。</p>
+    <div style="max-width:700px;">
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <button onclick="setLang('en')" id="btn-en" style="padding:8px 16px;background:#4361ee;color:white;border:none;border-radius:8px;cursor:pointer;">英文</button>
+        <button onclick="setLang('cn')" id="btn-cn" style="padding:8px 16px;background:#6c757d;color:white;border:none;border-radius:8px;cursor:pointer;">中文</button>
+        <button onclick="resetTest()" style="padding:8px 16px;background:#dee2e6;color:#333;border:none;border-radius:8px;cursor:pointer;margin-left:auto;">重新开始</button>
+      </div>
+      <div id="sampleText" style="padding:16px;background:#f8f9fa;border-radius:12px;font-size:1.1rem;line-height:1.8;margin-bottom:16px;min-height:80px;"></div>
+      <textarea id="typingArea" rows="4" oninput="onType()" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:1rem;resize:vertical;margin-bottom:16px;" placeholder="开始打字..." disabled></textarea>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
+        <div style="padding:12px;background:#e8f4fd;border-radius:10px;text-align:center;">
+          <div id="wpm" style="font-size:1.5rem;font-weight:700;color:#4361ee;">0</div>
+          <div style="font-size:0.8rem;color:#888;">WPM</div>
+        </div>
+        <div style="padding:12px;background:#e8f5e9;border-radius:10px;text-align:center;">
+          <div id="cpm" style="font-size:1.5rem;font-weight:700;color:#2f9e44;">0</div>
+          <div style="font-size:0.8rem;color:#888;">字/分钟</div>
+        </div>
+        <div style="padding:12px;background:#fff3cd;border-radius:10px;text-align:center;">
+          <div id="accuracy" style="font-size:1.5rem;font-weight:700;color:#e67700;">100%</div>
+          <div style="font-size:0.8rem;color:#888;">正确率</div>
+        </div>
+        <div style="padding:12px;background:#f0f2f5;border-radius:10px;text-align:center;">
+          <div id="elapsed" style="font-size:1.5rem;font-weight:700;">0s</div>
+          <div style="font-size:0.8rem;color:#888;">用时</div>
+        </div>
+      </div>
+      <div id="progress" style="margin-bottom:8px;">
+        <div style="height:8px;background:#e9ecef;border-radius:4px;overflow:hidden;">
+          <div id="progressBar" style="height:100%;width:0%;background:linear-gradient(90deg,#4361ee,#7b93f5);border-radius:4px;transition:width 0.2s;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const samples = {
+      en: ['The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs. How vexingly quick daft zebras jump!','Programming is the art of telling another human being what one wants the computer to do. Every great developer you know got there by solving problems they were unqualified to solve until they actually did it.','The best way to predict the future is to implement it. Code is like humor: when you have to explain it, it is bad.'],
+      cn: ['今天天气真好，我们一起去公园散步吧。路上遇到了一个老朋友，聊了很多有趣的事情。','人工智能技术正在改变我们的生活方式，从智能手机到自动驾驶汽车，从虚拟助手到医疗诊断，AI的应用无处不在。','学习编程最好的方法就是动手实践。不要害怕犯错，每一个错误都是学习的机会。坚持下去，你一定会成为一名优秀的程序员。']
+    };
+    let lang = 'en', sample = '', startTime = null, timer = null, finished = false;
+    function setLang(l) {
+      lang = l;
+      document.getElementById('btn-en').style.background = l === 'en' ? '#4361ee' : '#6c757d';
+      document.getElementById('btn-cn').style.background = l === 'cn' ? '#4361ee' : '#6c757d';
+      resetTest();
+    }
+    function resetTest() {
+      finished = false;
+      startTime = null;
+      if (timer) clearInterval(timer);
+      const arr = samples[lang];
+      sample = arr[Math.floor(Math.random() * arr.length)];
+      document.getElementById('sampleText').innerHTML = sample.split('').map(c => `<span class="char">${escapeHtml(c)}</span>`).join('');
+      document.getElementById('typingArea').value = '';
+      document.getElementById('typingArea').disabled = false;
+      document.getElementById('typingArea').focus();
+      ['wpm','cpm','accuracy','elapsed'].forEach(id => document.getElementById(id).textContent = id === 'accuracy' ? '100%' : id === 'elapsed' ? '0s' : '0');
+      document.getElementById('progressBar').style.width = '0%';
+    }
+    function onType() {
+      const typed = document.getElementById('typingArea').value;
+      if (!typed) return;
+      if (!startTime) {
+        startTime = Date.now();
+        timer = setInterval(updateTime, 100);
+      }
+      const chars = document.querySelectorAll('#sampleText .char');
+      let correct = 0, total = 0;
+      chars.forEach((span, i) => {
+        if (i < typed.length) {
+          total++;
+          if (typed[i] === sample[i]) {
+            correct++;
+            span.style.color = '#2f9e44';
+            span.style.background = '#d1e7dd';
+          } else {
+            span.style.color = '#c92a2a';
+            span.style.background = '#fee';
+          }
+        } else {
+          span.style.color = '#333';
+          span.style.background = 'transparent';
+        }
+      });
+      const acc = total > 0 ? (correct / total * 100) : 100;
+      document.getElementById('accuracy').textContent = acc.toFixed(1) + '%';
+      const elapsed = (Date.now() - startTime) / 1000 / 60;
+      const wpm = elapsed > 0 ? Math.round(correct / 5 / elapsed) : 0;
+      const cpm = elapsed > 0 ? Math.round(correct / elapsed) : 0;
+      document.getElementById('wpm').textContent = wpm;
+      document.getElementById('cpm').textContent = cpm;
+      document.getElementById('progressBar').style.width = Math.min(100, typed.length / sample.length * 100) + '%';
+      if (typed.length >= sample.length) {
+        finished = true;
+        clearInterval(timer);
+        document.getElementById('typingArea').disabled = true;
+        document.getElementById('progressBar').style.width = '100%';
+      }
+    }
+    function updateTime() {
+      if (!startTime) return;
+      const s = Math.floor((Date.now() - startTime) / 1000);
+      const m = Math.floor(s / 60);
+      document.getElementById('elapsed').textContent = m > 0 ? `${m}m${s%60}s` : `${s}s`;
+    }
+    function escapeHtml(c) { return c === ' ' ? '&nbsp;' : c.replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+    resetTest();
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

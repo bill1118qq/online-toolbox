@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XML格式化 - XML美化/压缩工具 - 在线工具箱</title>
+  <meta name="description" content="免费在线XML格式化工具，美化、压缩XML文档。支持XML语法高亮、错误检测、XML转JSON。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="XML格式化 - XML美化/压缩">
+  <meta property="og:description" content="在线XML格式化、美化、压缩工具。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/xml-formatter.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/xml-formatter.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"XML格式化","description":"在线XML格式化、美化、压缩工具","url":"https://eitools.cn/src/tools/xml-formatter.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>XML 格式化</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">美化、压缩 XML 文档，支持语法高亮和 XML 转 JSON。</p>
+    <div style="max-width:900px;">
+      <div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap;">
+        <button onclick="beautify()" style="padding:8px 20px;background:#4361ee;color:white;border:none;border-radius:8px;cursor:pointer;font-size:0.9rem;">美化</button>
+        <button onclick="minify()" style="padding:8px 20px;background:#6c757d;color:white;border:none;border-radius:8px;cursor:pointer;font-size:0.9rem;">压缩</button>
+        <button onclick="toJson()" style="padding:8px 20px;background:#2f9e44;color:white;border:none;border-radius:8px;cursor:pointer;font-size:0.9rem;">XML 转 JSON</button>
+        <button onclick="copyResult()" style="padding:8px 20px;background:#495057;color:white;border:none;border-radius:8px;cursor:pointer;font-size:0.9rem;">复制结果</button>
+        <button onclick="clearAll()" style="padding:8px 20px;background:#dee2e6;color:#333;border:none;border-radius:8px;cursor:pointer;font-size:0.9rem;">清空</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <label style="font-size:0.85rem;color:#888;">输入 XML</label>
+          <textarea id="input" rows="18" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.85rem;resize:vertical;margin-top:4px;" placeholder="粘贴 XML 内容...">&lt;root&gt;&lt;user id="1"&gt;&lt;name&gt;张三&lt;/name&gt;&lt;age&gt;25&lt;/age&gt;&lt;email&gt;test@example.com&lt;/email&gt;&lt;/user&gt;&lt;user id="2"&gt;&lt;name&gt;李四&lt;/name&gt;&lt;age&gt;30&lt;/age&gt;&lt;/user&gt;&lt;/root&gt;</textarea>
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">输出结果</label>
+          <pre id="output" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.85rem;overflow:auto;min-height:396px;background:#fafafa;white-space:pre-wrap;word-wrap:break-word;margin-top:4px;"></pre>
+        </div>
+      </div>
+      <div id="status" style="margin-top:8px;font-size:0.85rem;color:#666;"></div>
+    </div>
+  </div>
+  <script>
+    function setStatus(msg, color) {
+      document.getElementById('status').innerHTML = `<span style="color:${color}">${msg}</span>`;
+    }
+    function parseXml(str) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(str, 'text/xml');
+      const err = doc.querySelector('parsererror');
+      if (err) throw new Error(err.textContent);
+      return doc;
+    }
+    function beautify() {
+      try {
+        const doc = parseXml(document.getElementById('input').value);
+        const result = new XMLSerializer().serializeToString(doc.documentElement);
+        document.getElementById('output').textContent = formatXml(result, 2);
+        setStatus('美化成功', '#2f9e44');
+      } catch(e) {
+        document.getElementById('output').textContent = 'XML 解析错误: ' + e.message;
+        setStatus('解析失败', '#c92a2a');
+      }
+    }
+    function minify() {
+      try {
+        const doc = parseXml(document.getElementById('input').value);
+        const result = new XMLSerializer().serializeToString(doc.documentElement);
+        document.getElementById('output').textContent = result.replace(/\s+/g, ' ').replace(/>\s+</g, '><').trim();
+        setStatus('压缩成功', '#2f9e44');
+      } catch(e) {
+        document.getElementById('output').textContent = 'XML 解析错误: ' + e.message;
+        setStatus('解析失败', '#c92a2a');
+      }
+    }
+    function toJson() {
+      try {
+        const doc = parseXml(document.getElementById('input').value);
+        const json = xmlNodeToJson(doc.documentElement);
+        document.getElementById('output').textContent = JSON.stringify(json, null, 2);
+        setStatus('转换成功', '#2f9e44');
+      } catch(e) {
+        document.getElementById('output').textContent = '转换错误: ' + e.message;
+        setStatus('转换失败', '#c92a2a');
+      }
+    }
+    function xmlNodeToJson(node) {
+      if (node.nodeType === 3) return node.textContent.trim();
+      const obj = {};
+      if (node.attributes) {
+        for (const attr of node.attributes) {
+          obj['@' + attr.name] = attr.value;
+        }
+      }
+      const children = {};
+      for (const child of node.childNodes) {
+        if (child.nodeType === 3) {
+          const t = child.textContent.trim();
+          if (t) {
+            if (Object.keys(obj).length === 0 && !node.attributes.length) return t;
+            obj['#text'] = t;
+          }
+          continue;
+        }
+        if (child.nodeType !== 1) continue;
+        const name = child.nodeName;
+        const val = xmlNodeToJson(child);
+        if (children[name]) {
+          if (!Array.isArray(children[name])) children[name] = [children[name]];
+          children[name].push(val);
+        } else {
+          children[name] = val;
+        }
+      }
+      return { ...obj, ...children };
+    }
+    function formatXml(xml, indent) {
+      let formatted = '';
+      let level = 0;
+      const tab = ' '.repeat(indent);
+      xml = xml.replace(/(>)\s*(<)/g, '$1\n$2');
+      xml.split('\n').forEach(node => {
+        node = node.trim();
+        if (!node) return;
+        if (node.match(/^<\/\w/)) level--;
+        formatted += tab.repeat(Math.max(0, level)) + node + '\n';
+        if (node.match(/^<\w[^>]*[^/]>.*$/) && !node.match(/^<\w[^>]*>.*<\/\w/)) level++;
+      });
+      return formatted.trim();
+    }
+    function copyResult() {
+      const text = document.getElementById('output').textContent;
+      navigator.clipboard.writeText(text).then(() => setStatus('已复制到剪贴板', '#4361ee'));
+    }
+    function clearAll() {
+      document.getElementById('input').value = '';
+      document.getElementById('output').textContent = '';
+      setStatus('已清空', '#666');
+    }
+    beautify();
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JWT解析器 - JWT Decode - 在线工具箱</title>
+  <meta name="description" content="免费在线JWT解析器。解码JWT Token，查看Header和Payload内容，检查签名算法和过期时间。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="JWT解析器 - JWT Decode">
+  <meta property="og:description" content="在线解码JWT Token，查看内容。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/jwt-decoder.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/jwt-decoder.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"JWT解析器","description":"在线解码JWT Token","url":"https://eitools.cn/src/tools/jwt-decoder.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>JWT 解析器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">粘贴 JWT Token，查看 Header 和 Payload 内容。所有解码在浏览器本地完成。</p>
+    <div style="max-width:900px;">
+      <textarea id="jwtInput" rows="4" oninput="decode()" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.85rem;resize:vertical;margin-bottom:16px;" placeholder="粘贴 JWT Token...">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IuW8oOS4iSIsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30</textarea>
+      <div id="result" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;"></div>
+    </div>
+  </div>
+  <script>
+    function decode() {
+      const input = document.getElementById('jwtInput').value.trim();
+      if (!input) { document.getElementById('result').innerHTML = ''; return; }
+      const parts = input.split('.');
+      if (parts.length < 2 || parts.length > 3) {
+        document.getElementById('result').innerHTML = '<div style="padding:16px;background:#fee;border-radius:12px;color:#c92a2a;grid-column:span 3;">无效的 JWT 格式，应为 Header.Payload.Signature</div>';
+        return;
+      }
+      try {
+        const header = JSON.parse(atob(parts[0].replace(/-/g,'+').replace(/_/g,'/')));
+        const payload = JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/')));
+        const now = Math.floor(Date.now()/1000);
+        const isExpired = payload.exp && payload.exp < now;
+        const expDate = payload.exp ? new Date(payload.exp * 1000) : null;
+        const iatDate = payload.iat ? new Date(payload.iat * 1000) : null;
+        let payloadHtml = '<div style="font-family:monospace;font-size:0.85rem;white-space:pre-wrap;background:#f8f9fa;padding:12px;border-radius:8px;">' + escapeHtml(JSON.stringify(payload, null, 2)) + '</div>';
+        if (isExpired) payloadHtml = '<div style="padding:8px;background:#fee;border-radius:8px;color:#c92a2a;font-size:0.85rem;margin-bottom:8px;">⚠ 已过期（' + expDate.toLocaleString() + '）</div>' + payloadHtml;
+        document.getElementById('result').innerHTML = `
+          <div>
+            <h3 style="color:#4361ee;margin-bottom:8px;">Header</h3>
+            <div style="font-family:monospace;font-size:0.85rem;white-space:pre-wrap;background:#f8f9fa;padding:12px;border-radius:8px;">${escapeHtml(JSON.stringify(header, null, 2))}</div>
+          </div>
+          <div>
+            <h3 style="color:#2f9e44;margin-bottom:8px;">Payload${isExpired?' (已过期)':''}</h3>
+            ${payloadHtml}
+          </div>
+          <div>
+            <h3 style="color:#e67700;margin-bottom:8px;">信息</h3>
+            <div style="font-size:0.85rem;">
+              <div style="margin-bottom:8px;"><strong>算法：</strong>${header.alg || '-'}</div>
+              <div style="margin-bottom:8px;"><strong>类型：</strong>${header.typ || '-'}</div>
+              ${iatDate ? '<div style="margin-bottom:8px;"><strong>签发时间：</strong>' + iatDate.toLocaleString() + '</div>' : ''}
+              ${expDate ? '<div style="margin-bottom:8px;"><strong>过期时间：</strong>' + expDate.toLocaleString() + '</div>' : ''}
+              ${expDate ? '<div style="margin-bottom:8px;"><strong>剩余时间：</strong>' + (isExpired ? '已过期' + formatDuration(now - payload.exp) : formatDuration(payload.exp - now)) + '</div>' : ''}
+              <div style="margin-top:12px;padding:8px;background:#fff3cd;border-radius:8px;font-size:0.8rem;color:#856404;">签名部分无法在前端验证，请勿将此工具用于安全验证。</div>
+            </div>
+          </div>`;
+      } catch(e) {
+        document.getElementById('result').innerHTML = `<div style="padding:16px;background:#fee;border-radius:12px;color:#c92a2a;grid-column:span 3;">解码失败：${escapeHtml(e.message)}</div>`;
+      }
+    }
+    function formatDuration(seconds) {
+      if (seconds < 60) return seconds + '秒';
+      if (seconds < 3600) return Math.floor(seconds/60) + '分' + (seconds%60) + '秒';
+      if (seconds < 86400) return Math.floor(seconds/3600) + '小时' + Math.floor((seconds%3600)/60) + '分';
+      return Math.floor(seconds/86400) + '天' + Math.floor((seconds%86400)/3600) + '小时';
+    }
+    function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    decode();
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

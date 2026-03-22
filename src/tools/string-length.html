@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>字符串长度计算 - 字节/字符/词数统计 - 在线工具箱</title>
+  <meta name="description" content="字符串长度计算工具：精确统计字符数、字节数（UTF-8/GBK）、词数、行数、中文字符数、英文字符数。支持多段文本批量统计。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="字符串长度计算器">
+  <meta property="og:description" content="字符数、字节数、词数、行数精确统计。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/string-length.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/string-length.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"字符串长度计算器","description":"精确统计字符数和字节数","url":"https://eitools.cn/src/tools/string-length.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>字符串长度计算器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">精确统计字符数、UTF-8/GBK字节数、中英文词数等。</p>
+    <div style="max-width:800px;">
+      <textarea id="input" placeholder="在此输入或粘贴文本..." style="width:100%;height:200px;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:0.95rem;line-height:1.6;resize:vertical;" oninput="calc()"></textarea>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0;">
+        <div style="padding:16px;background:#e3f2fd;border-radius:12px;text-align:center;">
+          <div style="font-size:0.8rem;color:#888;">字符数</div>
+          <div id="chars" style="font-size:1.8rem;font-weight:bold;color:#1565c0;">0</div>
+        </div>
+        <div style="padding:16px;background:#e8f5e9;border-radius:12px;text-align:center;">
+          <div style="font-size:0.8rem;color:#888;">UTF-8 字节</div>
+          <div id="utf8" style="font-size:1.8rem;font-weight:bold;color:#2e7d32;">0</div>
+        </div>
+        <div style="padding:16px;background:#fff3e0;border-radius:12px;text-align:center;">
+          <div style="font-size:0.8rem;color:#888;">GBK 字节</div>
+          <div id="gbk" style="font-size:1.8rem;font-weight:bold;color:#f57c00;">0</div>
+        </div>
+        <div style="padding:16px;background:#f3e5f5;border-radius:12px;text-align:center;">
+          <div style="font-size:0.8rem;color:#888;">行数</div>
+          <div id="lines" style="font-size:1.8rem;font-weight:bold;color:#7b1fa2;">0</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0;">
+        <div style="padding:16px;background:#fce4ec;border-radius:12px;text-align:center;">
+          <div style="font-size:0.8rem;color:#888;">中文字符</div>
+          <div id="chinese" style="font-size:1.8rem;font-weight:bold;color:#c62828;">0</div>
+        </div>
+        <div style="padding:16px;background:#e0f2f1;border-radius:12px;text-align:center;">
+          <div style="font-size:0.8rem;color:#888;">英文字母</div>
+          <div id="english" style="font-size:1.8rem;font-weight:bold;color:#00695c;">0</div>
+        </div>
+        <div style="padding:16px;background:#f5f5f5;border-radius:12px;text-align:center;">
+          <div style="font-size:0.8rem;color:#888;">数字</div>
+          <div id="numbers" style="font-size:1.8rem;font-weight:bold;color:#616161;">0</div>
+        </div>
+        <div style="padding:16px;background:#e8eaf6;border-radius:12px;text-align:center;">
+          <div style="font-size:0.8rem;color:#888;">标点/空格</div>
+          <div id="punct" style="font-size:1.8rem;font-weight:bold;color:#283593;">0</div>
+        </div>
+      </div>
+      <div style="padding:16px;background:#f9f9f9;border-radius:12px;">
+        <h3 style="font-size:0.9rem;margin-bottom:8px;">常见字符字节数参考</h3>
+        <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+          <tr style="background:#f0f2f5;"><th style="padding:8px;text-align:left;">字符</th><th style="padding:8px;">UTF-8字节</th><th style="padding:8px;">GBK字节</th></tr>
+          <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 8px;">ASCII字符 (a-z, 0-9)</td><td style="padding:6px 8px;text-align:center;">1</td><td style="padding:6px 8px;text-align:center;">1</td></tr>
+          <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 8px;">中文 (你)</td><td style="padding:6px 8px;text-align:center;">3</td><td style="padding:6px 8px;text-align:center;">2</td></tr>
+          <tr><td style="padding:6px 8px;">Emoji (😀)</td><td style="padding:6px 8px;text-align:center;">4</td><td style="padding:6px 8px;text-align:center;">-</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    function calc() {
+      var text = document.getElementById('input').value;
+      var charCount = text.length;
+      var lineCount = text ? text.split('\n').length : 0;
+      var chineseCount = (text.match(/[\u4e00-\u9fff\u3400-\u4dbf]/g) || []).length;
+      var englishCount = (text.match(/[a-zA-Z]/g) || []).length;
+      var numberCount = (text.match(/[0-9]/g) || []).length;
+      var punctCount = charCount - chineseCount - englishCount - numberCount;
+
+      var utf8Bytes = new Blob([text]).size;
+
+      // GBK: ASCII 1 byte, Chinese 2 bytes
+      var gbkBytes = 0;
+      for (var i = 0; i < text.length; i++) {
+        var code = text.charCodeAt(i);
+        if (code < 128) gbkBytes += 1;
+        else gbkBytes += 2;
+      }
+
+      document.getElementById('chars').textContent = charCount;
+      document.getElementById('utf8').textContent = utf8Bytes;
+      document.getElementById('gbk').textContent = gbkBytes;
+      document.getElementById('lines').textContent = lineCount;
+      document.getElementById('chinese').textContent = chineseCount;
+      document.getElementById('english').textContent = englishCount;
+      document.getElementById('numbers').textContent = numberCount;
+      document.getElementById('punct').textContent = punctCount;
+    }
+
+    calc();
+  </script>
+</body>
+</html>

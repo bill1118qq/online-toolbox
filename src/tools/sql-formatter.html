@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQL格式化 - SQL美化/压缩工具 - 在线工具箱</title>
+  <meta name="description" content="免费在线SQL格式化工具，美化、压缩SQL语句。支持SELECT/INSERT/UPDATE/DELETE等关键字高亮。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="SQL格式化 - SQL美化/压缩">
+  <meta property="og:description" content="在线SQL格式化、美化、压缩工具。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/sql-formatter.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/sql-formatter.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"SQL格式化","description":"在线SQL格式化、美化、压缩工具","url":"https://eitools.cn/src/tools/sql-formatter.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>SQL 格式化</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">美化、压缩 SQL 语句，支持主要 SQL 关键字高亮。</p>
+    <div style="max-width:900px;">
+      <div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap;">
+        <button onclick="formatSql()" style="padding:8px 20px;background:#4361ee;color:white;border:none;border-radius:8px;cursor:pointer;font-size:0.9rem;">美化</button>
+        <button onclick="compressSql()" style="padding:8px 20px;background:#6c757d;color:white;border:none;border-radius:8px;cursor:pointer;font-size:0.9rem;">压缩</button>
+        <button onclick="copyResult()" style="padding:8px 20px;background:#495057;color:white;border:none;border-radius:8px;cursor:pointer;font-size:0.9rem;">复制</button>
+        <button onclick="clearAll()" style="padding:8px 20px;background:#dee2e6;color:#333;border:none;border-radius:8px;cursor:pointer;font-size:0.9rem;">清空</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <label style="font-size:0.85rem;color:#888;">输入 SQL</label>
+          <textarea id="input" rows="18" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.85rem;resize:vertical;margin-top:4px;" placeholder="粘贴 SQL 语句...">SELECT u.id,u.name,u.email,o.order_id,o.total FROM users u LEFT JOIN orders o ON u.id=o.user_id WHERE u.age>18 AND u.status='active' ORDER BY u.created_at DESC LIMIT 10;</textarea>
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">输出结果</label>
+          <pre id="output" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.85rem;overflow:auto;min-height:396px;background:#fafafa;white-space:pre-wrap;word-wrap:break-word;margin-top:4px;"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const KEYWORDS = ['SELECT','FROM','WHERE','AND','OR','NOT','IN','BETWEEN','LIKE','IS','NULL','AS','ON','JOIN','LEFT','RIGHT','INNER','OUTER','CROSS','FULL','GROUP','BY','ORDER','ASC','DESC','HAVING','LIMIT','OFFSET','INSERT','INTO','VALUES','UPDATE','SET','DELETE','CREATE','TABLE','DROP','ALTER','ADD','COLUMN','INDEX','UNION','ALL','DISTINCT','CASE','WHEN','THEN','ELSE','END','EXISTS','IF','BEGIN','COMMIT','ROLLBACK','GRANT','REVOKE','WITH','RECURSIVE','OVER','PARTITION','ROW_NUMBER','RANK','DENSE_RANK','COUNT','SUM','AVG','MIN','MAX','CAST','CONVERT','COALESCE','NULLIF','PRIMARY','KEY','FOREIGN','REFERENCES','DEFAULT','CHECK','UNIQUE','CONSTRAINT','TRIGGER','VIEW','PROCEDURE','FUNCTION','RETURNS','DECLARE','CURSOR','FETCH','OPEN','CLOSE','DEALLOCATE','EXECUTE','EXEC','TOP','FETCH','NEXT','ROWS','ONLY','TRUE','FALSE','BOOLEAN','SERIAL','BIGINT','INTEGER','INT','SMALLINT','FLOAT','DOUBLE','DECIMAL','NUMERIC','VARCHAR','CHAR','TEXT','DATE','TIME','TIMESTAMP','INTERVAL','EXTRACT','YEAR','MONTH','DAY','HOUR','MINUTE','SECOND','NOW','CURRENT_DATE','CURRENT_TIMESTAMP','UPPER','LOWER','LENGTH','TRIM','SUBSTRING','REPLACE','CONCAT','ROUND','FLOOR','CEIL','ABS','MOD','POWER','SQRT','LIKE','ILIKE','SIMILAR','ANY','SOME','ALL','NATURAL','USING','LATERAL','EXCEPT','INTERSECT','MERGE','MATCHED','USING','ENABLE','DISABLE','REPLACE','IFNULL','ISNULL'];
+    const kwSet = new Set(KEYWORDS);
+    function formatSql() {
+      try {
+        const sql = document.getElementById('input').value.trim();
+        if (!sql) return;
+        const formatted = beautifySql(sql);
+        document.getElementById('output').innerHTML = highlightSql(formatted);
+      } catch(e) {
+        document.getElementById('output').textContent = '格式化错误: ' + e.message;
+      }
+    }
+    function compressSql() {
+      const sql = document.getElementById('input').value;
+      const compressed = sql.replace(/\s+/g, ' ').replace(/\s*([,()])\s*/g, '$1').trim();
+      document.getElementById('output').innerHTML = highlightSql(compressed);
+    }
+    function beautifySql(sql) {
+      const tokens = tokenize(sql);
+      let result = '';
+      let indent = 0;
+      const newlineBefore = new Set(['SELECT','FROM','WHERE','AND','OR','LEFT','RIGHT','INNER','CROSS','FULL','JOIN','GROUP','ORDER','HAVING','LIMIT','OFFSET','UNION','INSERT','INTO','VALUES','UPDATE','SET','DELETE','CREATE','TABLE','DROP','ALTER','ADD','WITH','EXCEPT','INTERSECT']);
+      for (let i = 0; i < tokens.length; i++) {
+        const t = tokens[i];
+        const upper = t.toUpperCase();
+        if (upper === '(') { indent++; result += t + ' '; continue; }
+        if (upper === ')') { indent = Math.max(0, indent - 1); result = result.trimEnd() + t; continue; }
+        if (upper === ',') { result += t + '\n' + '  '.repeat(indent); continue; }
+        if (upper === ';') { result += t; indent = 0; continue; }
+        if (newlineBefore.has(upper) && i > 0) {
+          if (['AND','OR','SET'].includes(upper)) {
+            result = result.trimEnd() + '\n' + '  '.repeat(indent) + t + ' ';
+          } else {
+            result = result.trimEnd() + '\n' + '  '.repeat(indent) + t + ' ';
+          }
+          continue;
+        }
+        result += t + ' ';
+      }
+      return result.trim();
+    }
+    function tokenize(sql) {
+      const tokens = [];
+      let i = 0;
+      while (i < sql.length) {
+        if (/\s/.test(sql[i])) { i++; continue; }
+        if (sql[i] === "'") {
+          let j = i + 1;
+          while (j < sql.length && !(sql[j] === "'" && sql[j-1] !== "\\")) j++;
+          tokens.push(sql.substring(i, j + 1));
+          i = j + 1; continue;
+        }
+        if (/[(){};,.]/.test(sql[i])) { tokens.push(sql[i]); i++; continue; }
+        if (sql[i] === '-' && sql[i+1] === '-') {
+          let j = i;
+          while (j < sql.length && sql[j] !== '\n') j++;
+          i = j; continue;
+        }
+        let j = i;
+        while (j < sql.length && !/[\s(){};,]/.test(sql[j])) j++;
+        tokens.push(sql.substring(i, j));
+        i = j;
+      }
+      return tokens;
+    }
+    function highlightSql(sql) {
+      return escapeHtml(sql).replace(/\b(\w+)\b/g, (m, w) => {
+        if (kwSet.has(w.toUpperCase())) return `<span style="color:#4361ee;font-weight:600;">${w}</span>`;
+        if (/^\d+(\.\d+)?$/.test(w)) return `<span style="color:#2f9e44;">${w}</span>`;
+        if (/^'.*'$/.test(w)) return `<span style="color:#e67700;">${w}</span>`;
+        return w;
+      }).replace(/\n/g, '<br>');
+    }
+    function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function copyResult() {
+      navigator.clipboard.writeText(document.getElementById('output').textContent).then(() => {});
+    }
+    function clearAll() {
+      document.getElementById('input').value = '';
+      document.getElementById('output').innerHTML = '';
+    }
+    formatSql();
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

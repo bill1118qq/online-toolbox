@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图片加水印 - 在线批量添加文字水印 - 在线工具箱</title>
+  <meta name="description" content="免费在线图片加水印工具，支持文字水印、自定义位置、透明度、字体大小。本地处理不上传服务器，保护版权。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="图片加水印 - 在线文字水印工具">
+  <meta property="og:description" content="在线给图片添加文字水印，自定义位置、透明度。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/image-watermark.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/image-watermark.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"图片加水印","description":"在线给图片添加文字水印","url":"https://eitools.cn/src/tools/image-watermark.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>图片加水印</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">上传图片，添加文字水印，支持自定义位置和样式。本地处理不上传。</p>
+    <div style="max-width:700px;">
+      <div style="display:grid;gap:12px;margin-bottom:16px;">
+        <input type="file" id="fileInput" accept="image/*" onchange="loadImage(this.files[0])" style="padding:10px;border:1px solid #ddd;border-radius:8px;">
+        <div><label style="font-size:0.85rem;color:#888;">水印文字</label>
+          <input type="text" id="wmText" value="在线工具箱" oninput="render()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;margin-top:4px;"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div><label style="font-size:0.85rem;color:#888;">字体大小: <span id="fsVal">36</span>px</label>
+            <input type="range" id="wmSize" min="12" max="120" value="36" oninput="document.getElementById('fsVal').textContent=this.value;render()" style="width:100%;"></div>
+          <div><label style="font-size:0.85rem;color:#888;">透明度: <span id="opVal">50</span>%</label>
+            <input type="range" id="wmOpacity" min="5" max="100" value="50" oninput="document.getElementById('opVal').textContent=this.value;render()" style="width:100%;"></div>
+        </div>
+        <div><label style="font-size:0.85rem;color:#888;">颜色</label>
+          <div style="display:flex;gap:8px;margin-top:4px;">
+            <input type="color" id="wmColor" value="#ffffff" onchange="render()" style="width:40px;height:36px;border:none;cursor:pointer;">
+            <button onclick="document.getElementById('wmColor').value='#ffffff';render()" style="padding:6px 12px;border:1px solid #ddd;border-radius:6px;background:white;cursor:pointer;">白色</button>
+            <button onclick="document.getElementById('wmColor').value='#000000';render()" style="padding:6px 12px;border:1px solid #ddd;border-radius:6px;background:white;cursor:pointer;">黑色</button>
+            <button onclick="document.getElementById('wmColor').value='#ff0000';render()" style="padding:6px 12px;border:1px solid #ddd;border-radius:6px;background:white;cursor:pointer;">红色</button>
+          </div></div>
+        <div><label style="font-size:0.85rem;color:#888;">水印位置</label>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:4px;">
+            <button onclick="setPos('tl')" class="pos-btn" data-pos="tl">左上</button>
+            <button onclick="setPos('tc')" class="pos-btn" data-pos="tc">上中</button>
+            <button onclick="setPos('tr')" class="pos-btn" data-pos="tr">右上</button>
+            <button onclick="setPos('ml')" class="pos-btn" data-pos="ml">左中</button>
+            <button onclick="setPos('mc')" class="pos-btn active" data-pos="mc">正中</button>
+            <button onclick="setPos('mr')" class="pos-btn" data-pos="mr">右中</button>
+            <button onclick="setPos('bl')" class="pos-btn" data-pos="bl">左下</button>
+            <button onclick="setPos('bc')" class="pos-btn" data-pos="bc">下中</button>
+            <button onclick="setPos('br')" class="pos-btn" data-pos="br">右下</button>
+          </div></div>
+        <div><label style="font-size:0.85rem;color:#888;"><input type="checkbox" id="wmTile" onchange="render()"> 平铺水印</label></div>
+      </div>
+      <div style="background:#f0f2f5;border-radius:12px;padding:16px;margin-bottom:16px;">
+        <canvas id="canvas" style="max-width:100%;border-radius:8px;display:none;"></canvas>
+        <p id="placeholder" style="text-align:center;color:#999;padding:40px 0;">请先上传图片</p>
+      </div>
+      <button class="btn btn-primary" onclick="download()" style="width:100%;padding:12px;">下载加水印图片</button>
+    </div>
+  </div>
+  <script>
+    let img = null, pos = 'mc';
+    const style = document.createElement('style');
+    style.textContent = '.pos-btn{padding:8px;border:1px solid #ddd;border-radius:6px;cursor:pointer;background:white;font-size:0.85rem;}.pos-btn.active{background:#4361ee;color:white;border-color:#4361ee;}';
+    document.head.appendChild(style);
+
+    function loadImage(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        img = new Image();
+        img.onload = () => {
+          const canvas = document.getElementById('canvas');
+          canvas.width = img.width; canvas.height = img.height;
+          canvas.style.display = 'block';
+          document.getElementById('placeholder').style.display = 'none';
+          render();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function setPos(p) { pos = p; document.querySelectorAll('.pos-btn').forEach(b => b.classList.toggle('active', b.dataset.pos === p)); render(); }
+
+    function render() {
+      if (!img) return;
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+      const text = document.getElementById('wmText').value || '';
+      if (!text) return;
+      const size = parseInt(document.getElementById('wmSize').value);
+      const opacity = parseInt(document.getElementById('wmOpacity').value) / 100;
+      const color = document.getElementById('wmColor').value;
+      ctx.globalAlpha = opacity;
+      ctx.fillStyle = color;
+      ctx.font = `bold ${size}px sans-serif`;
+      ctx.textBaseline = 'middle';
+      const tile = document.getElementById('wmTile').checked;
+      if (tile) {
+        ctx.globalAlpha = opacity * 0.5;
+        const step = Math.max(size * 4, 200);
+        for (let y = step / 2; y < canvas.height; y += step) {
+          for (let x = step / 2; x < canvas.width; x += step) {
+            ctx.save(); ctx.translate(x, y); ctx.rotate(-Math.PI / 6); ctx.fillText(text, 0, 0); ctx.restore();
+          }
+        }
+      } else {
+        const positions = { tl:[0.1,0.1], tc:[0.5,0.1], tr:[0.9,0.1], ml:[0.1,0.5], mc:[0.5,0.5], mr:[0.9,0.5], bl:[0.1,0.9], bc:[0.5,0.9], br:[0.9,0.9] };
+        const [rx, ry] = positions[pos] || [0.5, 0.5];
+        ctx.textAlign = 'center';
+        ctx.fillText(text, canvas.width * rx, canvas.height * ry);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    function download() {
+      if (!img) return alert('请先上传图片');
+      const canvas = document.getElementById('canvas');
+      canvas.toBlob(blob => {
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'watermarked.png'; a.click();
+      }, 'image/png');
+    }
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

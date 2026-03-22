@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>二维码识别 - 在线解码二维码内容 - 在线工具箱</title>
+  <meta name="description" content="免费在线二维码识别工具，上传二维码图片即可解码内容。支持扫描二维码、识别网址、文字等信息，本地识别不上传服务器。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="二维码识别 - 在线解码二维码">
+  <meta property="og:description" content="上传二维码图片，在线识别解码内容。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/qr-decoder.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/qr-decoder.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"二维码识别","description":"在线解码识别二维码内容","url":"https://eitools.cn/src/tools/qr-decoder.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>二维码识别</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">上传二维码图片，自动识别解码内容。也可以粘贴或拖拽图片。</p>
+    <div style="max-width:600px;">
+      <div id="drop-zone" style="border:2px dashed #ccc;border-radius:12px;padding:40px 20px;text-align:center;cursor:pointer;background:#fafafa;margin-bottom:20px;" onclick="document.getElementById('fileInput').click()">
+        <p style="font-size:1.1rem;color:#666;">点击或拖拽二维码图片到此处</p>
+        <p style="font-size:0.85rem;color:#999;margin-top:4px;">支持 JPG / PNG / WebP</p>
+        <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="decodeQR(this.files[0])">
+      </div>
+      <div id="result" style="display:none;">
+        <div style="background:#e8f5e9;padding:16px;border-radius:12px;">
+          <p style="font-weight:600;color:#2f9e44;margin-bottom:8px;">识别成功</p>
+          <div id="decoded-content" style="padding:12px;background:white;border-radius:8px;word-break:break-all;font-family:monospace;font-size:0.9rem;"></div>
+          <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="copyResult()" style="padding:8px 16px;font-size:0.85rem;">复制内容</button>
+            <a id="open-link" href="#" target="_blank" class="btn" style="display:none;padding:8px 16px;font-size:0.85rem;text-decoration:none;">打开链接</a>
+          </div>
+        </div>
+      </div>
+      <div id="error" style="display:none;background:#fee;padding:16px;border-radius:12px;color:#c92a2a;"></div>
+      <div style="margin-top:24px;padding:16px;background:#f0f2f5;border-radius:12px;">
+        <p style="font-weight:600;font-size:0.9rem;margin-bottom:8px;">支持的二维码类型</p>
+        <p style="font-size:0.85rem;color:#666;">网址链接、纯文本、WiFi信息、联系人名片、地理位置等常见二维码格式。</p>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+  <script>
+    const dropZone = document.getElementById('drop-zone');
+    dropZone.ondragover = e => { e.preventDefault(); dropZone.style.borderColor = '#4361ee'; };
+    dropZone.ondragleave = () => { dropZone.style.borderColor = '#ccc'; };
+    dropZone.ondrop = e => { e.preventDefault(); dropZone.style.borderColor = '#ccc'; if(e.dataTransfer.files[0]) decodeQR(e.dataTransfer.files[0]); };
+
+    // Also support paste
+    document.addEventListener('paste', e => {
+      const items = e.clipboardData.items;
+      for (const item of items) {
+        if (item.type.startsWith('image/')) { decodeQR(item.getAsFile()); break; }
+      }
+    });
+
+    function decodeQR(file) {
+      if (!file) return;
+      document.getElementById('result').style.display = 'none';
+      document.getElementById('error').style.display = 'none';
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width; canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          try {
+            if (typeof jsQR === 'undefined') { showError('解码库加载失败，请刷新页面重试'); return; }
+            const code = jsQR(imageData.data, imageData.width, imageData.height);
+            if (code) {
+              const text = code.data;
+              document.getElementById('decoded-content').textContent = text;
+              document.getElementById('result').style.display = 'block';
+              const linkBtn = document.getElementById('open-link');
+              if (/^https?:\/\//i.test(text)) { linkBtn.href = text; linkBtn.style.display = 'inline-block'; }
+              else { linkBtn.style.display = 'none'; }
+            } else {
+              showError('未识别到二维码，请确保图片清晰且包含有效的二维码。');
+            }
+          } catch(err) { showError('解码出错: ' + err.message); }
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function copyResult() {
+      const text = document.getElementById('decoded-content').textContent;
+      navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板'));
+    }
+
+    function showError(msg) {
+      document.getElementById('error').textContent = msg;
+      document.getElementById('error').style.display = 'block';
+    }
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数字排序 - 在线排序工具 - 在线工具箱</title>
+  <meta name="description" content="免费在线数字排序工具。支持升序降序排列、去重、统计最大值最小值平均值，输入逗号/换行分隔的数字即可。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="数字排序 - 在线排序工具">
+  <meta property="og:description" content="数字排序、去重、统计工具。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/number-sort.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/number-sort.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"数字排序","description":"数字排序、去重、统计工具","url":"https://eitools.cn/src/tools/number-sort.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>数字排序</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">输入数字（逗号、空格或换行分隔），快速排序、去重、统计。</p>
+    <div style="max-width:800px;">
+      <textarea id="input" rows="4" oninput="process()" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.9rem;resize:vertical;margin-bottom:12px;" placeholder="输入数字，如：3, 1, 4, 1, 5, 9, 2, 6">3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9, 3, 2, 3, 8, 4, 6, 2, 6, 4, 3, 3, 8, 3, 2, 7, 9, 5, 0, 2, 8, 8, 4, 1, 9, 7, 1, 6, 9, 3, 9, 9, 3, 7, 5, 1, 0</textarea>
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+        <button onclick="sortAsc()" style="padding:8px 16px;background:#4361ee;color:white;border:none;border-radius:8px;cursor:pointer;">升序</button>
+        <button onclick="sortDesc()" style="padding:8px 16px;background:#6c757d;color:white;border:none;border-radius:8px;cursor:pointer;">降序</button>
+        <button onclick="toggleDedup()" id="dedupBtn" style="padding:8px 16px;background:#2f9e44;color:white;border:none;border-radius:8px;cursor:pointer;">去重</button>
+        <button onclick="copyResult()" style="padding:8px 16px;background:#495057;color:white;border:none;border-radius:8px;cursor:pointer;">复制</button>
+      </div>
+      <div id="stats" style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:16px;"></div>
+      <div>
+        <label style="font-size:0.85rem;color:#888;">结果</label>
+        <textarea id="output" rows="4" readonly style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.85rem;background:#f8f9fa;margin-top:4px;"></textarea>
+      </div>
+    </div>
+  </div>
+  <script>
+    let dedup = false, order = 'asc';
+    function getNumbers() {
+      const text = document.getElementById('input').value;
+      return text.split(/[,\s\n\r]+/).map(s => s.trim()).filter(Boolean).map(Number).filter(n => !isNaN(n));
+    }
+    function process() {
+      let nums = getNumbers();
+      if (!nums.length) { document.getElementById('output').value = ''; document.getElementById('stats').innerHTML = ''; return; }
+      if (dedup) nums = [...new Set(nums)];
+      nums.sort((a, b) => order === 'asc' ? a - b : b - a);
+      document.getElementById('output').value = nums.join(', ');
+      const sum = nums.reduce((s, n) => s + n, 0);
+      const avg = sum / nums.length;
+      const mid = nums.length % 2 === 0 ? (nums[nums.length/2-1] + nums[nums.length/2]) / 2 : nums[Math.floor(nums.length/2)];
+      document.getElementById('stats').innerHTML = `
+        <div style="padding:10px;background:#e8f4fd;border-radius:8px;text-align:center;"><div style="font-size:0.75rem;color:#888;">数量</div><div style="font-weight:700;">${nums.length}</div></div>
+        <div style="padding:10px;background:#e8f5e9;border-radius:8px;text-align:center;"><div style="font-size:0.75rem;color:#888;">最小值</div><div style="font-weight:700;">${Math.min(...nums)}</div></div>
+        <div style="padding:10px;background:#fff3cd;border-radius:8px;text-align:center;"><div style="font-size:0.75rem;color:#888;">最大值</div><div style="font-weight:700;">${Math.max(...nums)}</div></div>
+        <div style="padding:10px;background:#f0f2f5;border-radius:8px;text-align:center;"><div style="font-size:0.75rem;color:#888;">平均值</div><div style="font-weight:700;">${avg.toFixed(2)}</div></div>
+        <div style="padding:10px;background:#fee;border-radius:8px;text-align:center;"><div style="font-size:0.75rem;color:#888;">中位数</div><div style="font-weight:700;">${mid}</div></div>`;
+    }
+    function sortAsc() { order = 'asc'; process(); }
+    function sortDesc() { order = 'desc'; process(); }
+    function toggleDedup() { dedup = !dedup; document.getElementById('dedupBtn').style.background = dedup ? '#e67700' : '#2f9e44'; document.getElementById('dedupBtn').textContent = dedup ? '不去重' : '去重'; process(); }
+    function copyResult() { navigator.clipboard.writeText(document.getElementById('output').value); }
+    process();
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

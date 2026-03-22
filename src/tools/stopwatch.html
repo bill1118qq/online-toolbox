@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>秒表计时器 - 在线精确计时工具 - 在线工具箱</title>
+  <meta name="description" content="在线秒表计时器，支持精确到毫秒的计时、分段计时、圈速记录。免费使用，无需下载。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="秒表计时器">
+  <meta property="og:description" content="在线精确秒表，支持分段计时和圈速记录。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/stopwatch.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/stopwatch.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"秒表计时器","url":"https://eitools.cn/src/tools/stopwatch.html","description":"在线精确秒表，支持分段计时和圈速记录。","applicationCategory":"UtilityApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0"}}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>秒表计时器</h1>
+    </div>
+
+    <div style="text-align:center;padding:40px 0;">
+      <div id="display" style="font-size:4rem;font-family:monospace;font-weight:bold;color:#1a1a2e;letter-spacing:2px;">00:00:00.000</div>
+    </div>
+
+    <div class="btn-group" style="justify-content:center;margin-bottom:24px;">
+      <button class="btn btn-primary" id="startBtn" onclick="toggle()" style="min-width:100px;padding:12px 32px;font-size:1rem;">开始</button>
+      <button class="btn btn-secondary" id="lapBtn" onclick="lap()" style="min-width:100px;padding:12px 32px;font-size:1rem;" disabled>计次</button>
+      <button class="btn btn-secondary" onclick="reset()" style="min-width:100px;padding:12px 32px;font-size:1rem;">重置</button>
+    </div>
+
+    <div id="laps" style="max-height:400px;overflow-y:auto;"></div>
+
+    <div id="toast" class="toast"></div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    let running = false, startTime = 0, elapsed = 0, timer = null, laps = [], lastLap = 0;
+
+    function formatTime(ms) {
+      const h = String(Math.floor(ms / 3600000)).padStart(2, '0');
+      const m = String(Math.floor((ms % 3600000) / 60000)).padStart(2, '0');
+      const s = String(Math.floor((ms % 60000) / 1000)).padStart(2, '0');
+      const mil = String(ms % 1000).padStart(3, '0');
+      return `${h}:${m}:${s}.${mil}`;
+    }
+
+    function toggle() {
+      if (!running) {
+        running = true;
+        startTime = performance.now() - elapsed;
+        timer = setInterval(update, 10);
+        document.getElementById('startBtn').textContent = '暂停';
+        document.getElementById('startBtn').style.background = '#f44336';
+        document.getElementById('lapBtn').disabled = false;
+      } else {
+        running = false;
+        clearInterval(timer);
+        document.getElementById('startBtn').textContent = '继续';
+        document.getElementById('startBtn').style.background = '#4361ee';
+      }
+    }
+
+    function update() {
+      elapsed = performance.now() - startTime;
+      document.getElementById('display').textContent = formatTime(Math.floor(elapsed));
+    }
+
+    function lap() {
+      if (!running) return;
+      const lapTime = Math.floor(elapsed) - lastLap;
+      lastLap = Math.floor(elapsed);
+      laps.push({ total: lastLap, lap: lapTime, num: laps.length + 1 });
+      renderLaps();
+    }
+
+    function renderLaps() {
+      const container = document.getElementById('laps');
+      let html = '<table style="width:100%;border-collapse:collapse;font-size:0.9rem;">';
+      html += '<tr style="background:#f0f2f5;"><th style="padding:10px;">#</th><th style="padding:10px;">分段</th><th style="padding:10px;">总计</th></tr>';
+      for (let i = laps.length - 1; i >= 0; i--) {
+        const l = laps[i];
+        const fastest = laps.every(x => x.lap >= l.lap);
+        const slowest = laps.every(x => x.lap <= l.lap);
+        let style = '';
+        if (laps.length >= 3) {
+          if (fastest) style = 'color:#4caf50;font-weight:bold;';
+          if (slowest) style = 'color:#f44336;font-weight:bold;';
+        }
+        html += `<tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">${l.num}</td><td style="padding:8px 10px;${style}">${formatTime(l.lap)}</td><td style="padding:8px 10px;">${formatTime(l.total)}</td></tr>`;
+      }
+      html += '</table>';
+      container.innerHTML = html;
+    }
+
+    function reset() {
+      running = false;
+      clearInterval(timer);
+      elapsed = 0;
+      lastLap = 0;
+      laps = [];
+      document.getElementById('display').textContent = '00:00:00.000';
+      document.getElementById('startBtn').textContent = '开始';
+      document.getElementById('startBtn').style.background = '#4361ee';
+      document.getElementById('lapBtn').disabled = true;
+      document.getElementById('laps').innerHTML = '';
+    }
+  </script>
+</body>
+</html>

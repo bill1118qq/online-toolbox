@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>进制转换教程 - 二进制八进制十六进制 - 在线工具箱</title>
+  <meta name="description" content="进制转换完全教程：什么是二进制、八进制、十六进制，各进制之间的转换方法，编程中的进制应用。附在线进制转换器。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="进制转换教程">
+  <meta property="og:description" content="二八十六进制详解与转换方法。">
+  <meta property="og:url" content="https://eitools.cn/guides/number-base-guide.html">
+  <link rel="canonical" href="https://eitools.cn/guides/number-base-guide.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"什么是二进制？","acceptedAnswer":{"@type":"Answer","text":"二进制是只用0和1两个数字表示数值的计数方式。计算机内部所有数据都以二进制存储。十进制的255等于二进制的11111111。"}}]}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">← 返回首页</a>
+      <h1>进制转换教程</h1>
+    </div>
+    <article style="line-height:1.8;">
+      <h2>常见的进制</h2>
+      <table style="width:100%;border-collapse:collapse;margin:12px 0;font-size:0.9rem;">
+        <tr style="background:#f0f2f5;"><th style="padding:10px;">进制</th><th style="padding:10px;">基数</th><th style="padding:10px;">使用符号</th><th style="padding:10px;">应用场景</th></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">二进制</td><td style="padding:8px 10px;">2</td><td style="padding:8px 10px;">0, 1</td><td style="padding:8px 10px;">计算机底层</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">八进制</td><td style="padding:8px 10px;">8</td><td style="padding:8px 10px;">0-7</td><td style="padding:8px 10px;">Linux权限</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">十进制</td><td style="padding:8px 10px;">10</td><td style="padding:8px 10px;">0-9</td><td style="padding:8px 10px;">日常生活</td></tr>
+        <tr><td style="padding:8px 10px;">十六进制</td><td style="padding:8px 10px;">16</td><td style="padding:8px 10px;">0-9, A-F</td><td style="padding:8px 10px;">颜色代码、内存地址</td></tr>
+      </table>
+
+      <h2>十进制 → 二进制（除2取余法）</h2>
+      <p>以 25 为例：</p>
+      <div style="background:#f0f2f5;padding:16px;border-radius:8px;margin:12px 0;font-family:monospace;">
+        25 ÷ 2 = 12 ... 余 1<br>
+        12 ÷ 2 = 6 ... 余 0<br>
+        6 ÷ 2 = 3 ... 余 0<br>
+        3 ÷ 2 = 1 ... 余 1<br>
+        1 ÷ 2 = 0 ... 余 1<br>
+        从下往上读：25 = 11001(二进制)
+      </div>
+
+      <h2>常用对照表</h2>
+      <table style="width:100%;border-collapse:collapse;margin:12px 0;font-size:0.9rem;">
+        <tr style="background:#f0f2f5;"><th style="padding:10px;">十进制</th><th style="padding:10px;">二进制</th><th style="padding:10px;">八进制</th><th style="padding:10px;">十六进制</th></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">0</td><td style="padding:8px 10px;">0</td><td style="padding:8px 10px;">0</td><td style="padding:8px 10px;">0</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">10</td><td style="padding:8px 10px;">1010</td><td style="padding:8px 10px;">12</td><td style="padding:8px 10px;">A</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">16</td><td style="padding:8px 10px;">10000</td><td style="padding:8px 10px;">20</td><td style="padding:8px 10px;">10</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">255</td><td style="padding:8px 10px;">11111111</td><td style="padding:8px 10px;">377</td><td style="padding:8px 10px;">FF</td></tr>
+        <tr><td style="padding:8px 10px;">1024</td><td style="padding:8px 10px;">10000000000</td><td style="padding:8px 10px;">2000</td><td style="padding:8px 10px;">400</td></tr>
+      </table>
+
+      <h2>编程中的进制</h2>
+      <div style="background:#1a1a2e;padding:12px;border-radius:8px;font-family:monospace;font-size:0.85rem;color:#4ade80;overflow-x:auto;margin:8px 0;">
+        <pre style="margin:0;">// JavaScript
+0b1010   // 二进制: 10
+0o12     // 八进制: 10
+0xA      // 十六进制: 10
+10       // 十进制: 10
+
+(255).toString(2)  // "11111111" → 二进制
+(255).toString(16) // "ff" → 十六进制
+parseInt('ff', 16) // 255 → 十进制</pre>
+      </div>
+
+      <div style="margin-top:24px;padding:20px;background:#f0f4ff;border-radius:12px;border:1px solid #4361ee;">
+        <h3 style="color:#4361ee;margin-top:0;">在线进制转换器</h3>
+        <p>使用我们的<a href="../src/tools/number-base-extended.html" style="color:#4361ee;font-weight:bold;">进制转换器</a>，输入任意数值即可实时转换为二进制、八进制、十进制和十六进制。</p>
+      </div>
+    </article>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../js/share.js"></script>
+</body>
+</html>

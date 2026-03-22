@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>对比度检测 - WCAG无障碍检查 - 在线工具箱</title>
+  <meta name="description" content="在线WCAG无障碍对比度检测工具，检查前景色和背景色的对比度是否达标。支持WCAG 2.1 AA/AAA标准。免费使用。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="对比度检测 - WCAG无障碍检查">
+  <meta property="og:description" content="在线WCAG无障碍对比度检测，检查颜色对比度是否符合AA/AAA标准。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/color-contrast.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/color-contrast.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "WCAG对比度检测",
+    "url": "https://eitools.cn/src/tools/color-contrast.html",
+    "description": "在线WCAG无障碍对比度检测工具。",
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "Any",
+    "offers": {"@type": "Offer", "price": "0"}
+  }
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>对比度检测</h1>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+      <div style="background:white;border-radius:12px;padding:24px;border:1px solid #eee;">
+        <label style="display:block;font-weight:600;margin-bottom:12px;">前景色（文字）</label>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+          <input type="color" id="fgColor" value="#333333" style="width:48px;height:48px;border:none;cursor:pointer;border-radius:8px;">
+          <input type="text" id="fgHex" value="#333333" placeholder="#333333" style="flex:1;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;font-family:monospace;">
+        </div>
+        <div style="font-size:0.85rem;color:#666;">
+          <span>RGB:</span> <span id="fgRgb">rgb(51, 51, 51)</span>
+        </div>
+      </div>
+      <div style="background:white;border-radius:12px;padding:24px;border:1px solid #eee;">
+        <label style="display:block;font-weight:600;margin-bottom:12px;">背景色</label>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+          <input type="color" id="bgColor" value="#ffffff" style="width:48px;height:48px;border:none;cursor:pointer;border-radius:8px;">
+          <input type="text" id="bgHex" value="#ffffff" placeholder="#ffffff" style="flex:1;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;font-family:monospace;">
+        </div>
+        <div style="font-size:0.85rem;color:#666;">
+          <span>RGB:</span> <span id="bgRgb">rgb(255, 255, 255)</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="check()" style="width:100%;margin-bottom:20px;">检查对比度</button>
+
+    <div id="ratioDisplay" style="background:white;border-radius:12px;padding:24px;margin-bottom:20px;border:1px solid #eee;text-align:center;display:none;">
+      <div style="font-size:0.9rem;color:#666;margin-bottom:4px;">对比度</div>
+      <div id="ratioValue" style="font-size:3rem;font-weight:bold;color:#4361ee;"></div>
+    </div>
+
+    <div id="wcagResults" style="display:none;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+        <div id="normalText" style="background:white;border-radius:12px;padding:20px;border:1px solid #eee;">
+          <h4 style="margin-bottom:12px;">普通文字 (4.5:1)</h4>
+          <div id="normalAA" style="margin-bottom:8px;font-size:0.95rem;"></div>
+          <div id="normalAAA" style="font-size:0.95rem;"></div>
+        </div>
+        <div id="largeText" style="background:white;border-radius:12px;padding:20px;border:1px solid #eee;">
+          <h4 style="margin-bottom:12px;">大号文字 (3:1)</h4>
+          <div id="largeAA" style="margin-bottom:8px;font-size:0.95rem;"></div>
+          <div id="largeAAA" style="font-size:0.95rem;"></div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+        <div style="background:white;border-radius:12px;padding:20px;border:1px solid #eee;">
+          <h4 style="margin-bottom:12px;">UI 组件 (3:1)</h4>
+          <div id="uiAA" style="font-size:0.95rem;"></div>
+        </div>
+        <div style="background:white;border-radius:12px;padding:20px;border:1px solid #eee;">
+          <h4 style="margin-bottom:12px;">实时预览</h4>
+          <div id="previewBox" style="padding:16px;border-radius:8px;font-size:1.2rem;line-height:1.6;">
+            <p style="margin:0;">这是一段示例文字<br><span style="font-size:0.85em;opacity:0.9;">This is sample text (ABCabc)</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    function hexToRgb(hex) {
+      hex = hex.replace('#', '');
+      if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+      const num = parseInt(hex, 16);
+      return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+    }
+
+    function relativeLuminance(r, g, b) {
+      const [rs, gs, bs] = [r, g, b].map(c => {
+        c /= 255;
+        return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+      });
+      return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
+    }
+
+    function contrastRatio(l1, l2) {
+      const lighter = Math.max(l1, l2);
+      const darker = Math.min(l1, l2);
+      return (lighter + 0.05) / (darker + 0.05);
+    }
+
+    function passOrFail(pass) {
+      return pass
+        ? '<span style="color:#4caf50;font-weight:bold;">✓ 通过</span>'
+        : '<span style="color:#f44336;font-weight:bold;">✗ 未通过</span>';
+    }
+
+    function check() {
+      const fgHex = document.getElementById('fgHex').value.trim();
+      const bgHex = document.getElementById('bgHex').value.trim();
+
+      if (!/^#[0-9a-fA-F]{3,6}$/.test(fgHex) || !/^#[0-9a-fA-F]{3,6}$/.test(bgHex)) {
+        showToast('请输入有效的HEX颜色值'); return;
+      }
+
+      const fg = hexToRgb(fgHex);
+      const bg = hexToRgb(bgHex);
+
+      document.getElementById('fgRgb').textContent = `rgb(${fg.r}, ${fg.g}, ${fg.b})`;
+      document.getElementById('bgRgb').textContent = `rgb(${bg.r}, ${bg.g}, ${bg.b})`;
+
+      const fgL = relativeLuminance(fg.r, fg.g, fg.b);
+      const bgL = relativeLuminance(bg.r, bg.g, bg.b);
+      const ratio = contrastRatio(fgL, bgL);
+
+      document.getElementById('ratioDisplay').style.display = 'block';
+      document.getElementById('ratioValue').textContent = ratio.toFixed(2) + ':1';
+      document.getElementById('wcagResults').style.display = 'block';
+
+      const normalAA = ratio >= 4.5;
+      const normalAAA = ratio >= 7;
+      const largeAA = ratio >= 3;
+      const largeAAA = ratio >= 4.5;
+
+      document.getElementById('normalAA').innerHTML = `AA: ${passOrFail(normalAA)} (需要 ≥ 4.5)`;
+      document.getElementById('normalAAA').innerHTML = `AAA: ${passOrFail(normalAAA)} (需要 ≥ 7)`;
+      document.getElementById('largeAA').innerHTML = `AA: ${passOrFail(largeAA)} (需要 ≥ 3)`;
+      document.getElementById('largeAAA').innerHTML = `AAA: ${passOrFail(largeAAA)} (需要 ≥ 4.5)`;
+      document.getElementById('uiAA').innerHTML = `AA: ${passOrFail(largeAA)} (需要 ≥ 3)`;
+
+      const preview = document.getElementById('previewBox');
+      preview.style.backgroundColor = bgHex;
+      preview.style.color = fgHex;
+
+      // Update border colors
+      ['normalText', 'largeText'].forEach(id => {
+        const el = document.getElementById(id);
+        el.style.borderColor = ratio >= 4.5 ? '#4caf50' : '#f44336';
+      });
+    }
+
+    document.getElementById('fgColor').addEventListener('input', e => { document.getElementById('fgHex').value = e.target.value; });
+    document.getElementById('bgColor').addEventListener('input', e => { document.getElementById('bgHex').value = e.target.value; });
+    document.getElementById('fgHex').addEventListener('change', e => {
+      if (/^#[0-9a-fA-F]{6}$/.test(e.target.value)) document.getElementById('fgColor').value = e.target.value;
+    });
+    document.getElementById('bgHex').addEventListener('change', e => {
+      if (/^#[0-9a-fA-F]{6}$/.test(e.target.value)) document.getElementById('bgColor').value = e.target.value;
+    });
+
+    // Auto-check on page load
+    check();
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>

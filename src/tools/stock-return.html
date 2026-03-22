@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>股票收益率计算器 - 持仓盈亏计算 - 在线工具箱</title>
+  <meta name="description" content="在线股票收益率计算器，计算持仓盈亏、年化收益率、定投收益。支持A股交易费用计算。免费使用，数据不上传。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="股票收益率计算器">
+  <meta property="og:description" content="在线计算股票持仓盈亏、年化收益率、交易费用。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/stock-return.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/stock-return.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "股票收益率计算器",
+    "url": "https://eitools.cn/src/tools/stock-return.html",
+    "description": "在线计算股票持仓盈亏、年化收益率、交易费用。",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "Any",
+    "offers": {"@type": "Offer", "price": "0"}
+  }
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>股票收益率计算器</h1>
+    </div>
+
+    <div style="background:white;border-radius:12px;padding:24px;margin-bottom:20px;border:1px solid #eee;">
+      <h3 style="margin-bottom:16px;">持仓盈亏计算</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">买入价格（元）</label>
+          <input type="number" id="buyPrice" step="0.001" min="0" placeholder="如 15.50" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">当前价格（元）</label>
+          <input type="number" id="currentPrice" step="0.001" min="0" placeholder="如 18.20" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">持仓数量（股）</label>
+          <input type="number" id="shares" min="0" placeholder="如 1000" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">买入日期</label>
+          <input type="date" id="buyDate" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">手续费率（%）</label>
+          <input type="number" id="feeRate" step="0.001" value="0.025" min="0" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">印花税率（卖出%，仅A股）</label>
+          <input type="number" id="stampRate" step="0.001" value="0.05" min="0" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="calcHolding()" style="margin-top:16px;width:100%;">计算盈亏</button>
+      <div id="holdingResult" class="result-box" style="margin-top:12px;padding:16px;font-size:0.95rem;line-height:2;"></div>
+    </div>
+
+    <div style="background:white;border-radius:12px;padding:24px;margin-bottom:20px;border:1px solid #eee;">
+      <h3 style="margin-bottom:16px;">定投收益计算</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">每月定投金额（元）</label>
+          <input type="number" id="monthlyAmount" min="0" placeholder="如 1000" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">定投期数（月）</label>
+          <input type="number" id="months" min="1" placeholder="如 12" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">预期年化收益率（%）</label>
+          <input type="number" id="annualReturn" step="0.1" placeholder="如 10" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">定投方式</label>
+          <select id="dcaType" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+            <option value="average">按平均成本计算</option>
+            <option value="fixed">固定收益率</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="calcDCA()" style="margin-top:16px;width:100%;">计算定投</button>
+      <div id="dcaResult" class="result-box" style="margin-top:12px;padding:16px;font-size:0.95rem;line-height:2;"></div>
+    </div>
+
+    <p style="color:#999;font-size:0.8rem;text-align:center;">* 计算结果仅供参考，不构成投资建议。实际收益受市场波动影响。</p>
+
+    <div id="toast" class="toast"></div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    function calcHolding() {
+      const buyPrice = parseFloat(document.getElementById('buyPrice').value);
+      const currentPrice = parseFloat(document.getElementById('currentPrice').value);
+      const shares = parseInt(document.getElementById('shares').value);
+      const buyDate = document.getElementById('buyDate').value;
+      const feeRate = parseFloat(document.getElementById('feeRate').value) / 100;
+      const stampRate = parseFloat(document.getElementById('stampRate').value) / 100;
+
+      if (isNaN(buyPrice) || isNaN(currentPrice) || isNaN(shares) || buyPrice <= 0 || shares <= 0) {
+        showToast('请输入有效的价格和数量'); return;
+      }
+
+      const buyCost = buyPrice * shares;
+      const buyFee = Math.max(buyCost * feeRate, 5); // 最低5元
+      const totalBuyCost = buyCost + buyFee;
+
+      const currentValue = currentPrice * shares;
+      const sellFee = currentValue * feeRate;
+      const sellStamp = currentValue * stampRate;
+      const totalSellCost = sellFee + sellStamp;
+      const netValue = currentValue - totalSellCost;
+
+      const profit = netValue - totalBuyCost;
+      const profitRate = totalBuyCost > 0 ? (profit / totalBuyCost * 100) : 0;
+
+      // 年化收益率
+      let annualizedReturn = '-';
+      if (buyDate) {
+        const days = (new Date() - new Date(buyDate)) / 86400000;
+        if (days > 0) {
+          annualizedReturn = (Math.pow(1 + profit / totalBuyCost, 365 / days) - 1) * 100;
+          annualizedReturn = annualizedReturn.toFixed(2) + '%';
+        }
+      }
+
+      const color = profit >= 0 ? '#f44336' : '#4caf50'; // A股：红涨绿跌
+      const sign = profit >= 0 ? '+' : '';
+
+      document.getElementById('holdingResult').innerHTML =
+        `<b>买入总成本：</b>${totalBuyCost.toFixed(2)} 元（含手续费 ${buyFee.toFixed(2)} 元）<br>` +
+        `<b>当前市值：</b>${currentValue.toFixed(2)} 元<br>` +
+        `<b>浮动盈亏：</b><span style="color:${color};font-size:1.2em;font-weight:bold;">${sign}${profit.toFixed(2)} 元</span><br>` +
+        `<b>收益率：</b><span style="color:${color};font-weight:bold;">${sign}${profitRate.toFixed(2)}%</span><br>` +
+        `<b>每股盈亏：</b><span style="color:${color}">${sign}${(profit / shares).toFixed(3)} 元</span><br>` +
+        `<b>年化收益率：</b><span style="color:${color}">${typeof annualizedReturn === 'string' ? sign : ''}${annualizedReturn}</span><br>` +
+        `<b>卖出总费用：</b>${totalSellCost.toFixed(2)} 元（手续费 ${sellFee.toFixed(2)} + 印花税 ${sellStamp.toFixed(2)}）`;
+    }
+
+    function calcDCA() {
+      const monthly = parseFloat(document.getElementById('monthlyAmount').value);
+      const months = parseInt(document.getElementById('months').value);
+      const annualReturn = parseFloat(document.getElementById('annualReturn').value) / 100;
+
+      if (isNaN(monthly) || isNaN(months) || monthly <= 0 || months <= 0) {
+        showToast('请输入有效的金额和期数'); return;
+      }
+
+      const totalInvested = monthly * months;
+      let totalValue, totalProfit, totalReturn;
+
+      if (document.getElementById('dcaType').value === 'fixed') {
+        if (isNaN(annualReturn)) { showToast('请输入预期年化收益率'); return; }
+        const monthlyReturn = annualReturn / 12;
+        totalValue = monthly * ((Math.pow(1 + monthlyReturn, months) - 1) / monthlyReturn) * (1 + monthlyReturn);
+        totalProfit = totalValue - totalInvested;
+        totalReturn = totalInvested > 0 ? (totalProfit / totalInvested * 100) : 0;
+      } else {
+        // 简化：假设平均成本，当前价值按预期年化增长
+        if (isNaN(annualReturn)) { showToast('请输入预期年化收益率'); return; }
+        totalValue = 0;
+        for (let i = 1; i <= months; i++) {
+          const monthsLeft = months - i;
+          const futureValue = monthly * Math.pow(1 + annualReturn, monthsLeft / 12);
+          totalValue += futureValue;
+        }
+        totalProfit = totalValue - totalInvested;
+        totalReturn = totalInvested > 0 ? (totalProfit / totalInvested * 100) : 0;
+      }
+
+      const color = totalProfit >= 0 ? '#f44336' : '#4caf50';
+      const sign = totalProfit >= 0 ? '+' : '';
+
+      document.getElementById('dcaResult').innerHTML =
+        `<b>累计投入：</b>${totalInvested.toFixed(2)} 元<br>` +
+        `<b>预期总价值：</b>${totalValue.toFixed(2)} 元<br>` +
+        `<b>预期收益：</b><span style="color:${color};font-size:1.2em;font-weight:bold;">${sign}${totalProfit.toFixed(2)} 元</span><br>` +
+        `<b>总收益率：</b><span style="color:${color};font-weight:bold;">${sign}${totalReturn.toFixed(2)}%</span><br>` +
+        `<b>定投期数：</b>${months} 个月（${(months / 12).toFixed(1)} 年）<br>` +
+        `<b>预期年化：</b>${(annualReturn * 100).toFixed(1)}%`;
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>

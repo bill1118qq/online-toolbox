@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>油耗计算器 - 汽车油耗与油费计算 - 在线工具箱</title>
+  <meta name="description" content="在线油耗计算器，输入行驶里程和加油量计算百公里油耗，输入油价计算油费。支持升/百公里和公里/升两种模式。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="油耗计算器 - 百公里油耗与油费计算">
+  <meta property="og:description" content="计算百公里油耗、油费，加油必备工具。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/fuel-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/fuel-calculator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"油耗计算器","description":"在线计算汽车百公里油耗和油费","url":"https://eitools.cn/src/tools/fuel-calculator.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>油耗计算器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">计算百公里油耗和油费，支持两种常用模式。</p>
+    <div style="max-width:500px;">
+      <h3 style="margin-bottom:12px;">计算百公里油耗</h3>
+      <div style="margin-bottom:12px;">
+        <label style="display:block;margin-bottom:4px;font-weight:600;">行驶里程（公里）</label>
+        <input type="number" id="dist" placeholder="例如：500" step="any" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;">
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="display:block;margin-bottom:4px;font-weight:600;">加油量（升）</label>
+        <input type="number" id="fuel" placeholder="例如：40" step="any" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;">
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="display:block;margin-bottom:4px;font-weight:600;">油价（元/升）</label>
+        <input type="number" id="price" placeholder="例如：7.8" step="0.01" value="7.8" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;">
+      </div>
+      <button class="btn btn-primary" onclick="calc()" style="width:100%;padding:12px;">计算</button>
+      <div id="result" style="margin-top:24px;"></div>
+    </div>
+    <div style="margin-top:32px;padding:20px;background:#f0f2f5;border-radius:12px;">
+      <h2 style="font-size:1rem;margin-bottom:12px;">常见车型油耗参考</h2>
+      <table style="width:100%;border-collapse:collapse;font-size:0.9rem;">
+        <tr style="background:#e8eaed;"><th style="padding:8px;text-align:left;">类型</th><th style="padding:8px;">百公里油耗</th></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 12px;">小型轿车</td><td style="padding:6px 12px;">5-7 L</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 12px;">紧凑型轿车</td><td style="padding:6px 12px;">6-8 L</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 12px;">中型轿车</td><td style="padding:6px 12px;">8-10 L</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 12px;">SUV</td><td style="padding:6px 12px;">8-12 L</td></tr>
+        <tr><td style="padding:6px 12px;">新能源混动</td><td style="padding:6px 12px;">3-5 L</td></tr>
+      </table>
+    </div>
+  </div>
+  <script>
+    function calc() {
+      const dist = parseFloat(document.getElementById('dist').value);
+      const fuel = parseFloat(document.getElementById('fuel').value);
+      const price = parseFloat(document.getElementById('price').value);
+      if (!dist || !fuel || dist <= 0 || fuel <= 0) { document.getElementById('result').innerHTML = '<p style="color:#e03131">请输入有效的里程和加油量</p>'; return; }
+      const l100 = fuel / dist * 100;
+      const kmL = dist / fuel;
+      const costKm = l100 * (price || 0) / 100;
+      const totalCost = fuel * (price || 0);
+      document.getElementById('result').innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="text-align:center;padding:16px;background:white;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+            <div style="font-size:0.8rem;color:#888;">百公里油耗</div>
+            <div style="font-size:1.6rem;font-weight:800;color:#4361ee;">${l100.toFixed(1)} L</div>
+          </div>
+          <div style="text-align:center;padding:16px;background:white;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+            <div style="font-size:0.8rem;color:#888;">每升行驶</div>
+            <div style="font-size:1.6rem;font-weight:800;">${kmL.toFixed(1)} km</div>
+          </div>
+          <div style="text-align:center;padding:16px;background:white;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+            <div style="font-size:0.8rem;color:#888;">每公里油费</div>
+            <div style="font-size:1.6rem;font-weight:800;color:#e67700;">${costKm.toFixed(2)} 元</div>
+          </div>
+          <div style="text-align:center;padding:16px;background:white;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+            <div style="font-size:0.8rem;color:#888;">本次油费</div>
+            <div style="font-size:1.6rem;font-weight:800;">${totalCost.toFixed(0)} 元</div>
+          </div>
+        </div>`;
+    }
+  </script>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+</body>
+</html>

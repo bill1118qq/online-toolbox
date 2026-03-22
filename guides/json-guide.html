@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON是什么 - JSON格式详解与用法 - 在线工具箱</title>
+  <meta name="description" content="JSON是什么？JSON（JavaScript Object Notation）是一种轻量级数据交换格式。本文详细介绍JSON格式语法、数据类型、使用场景和常见错误。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="JSON是什么 - 格式语法与使用详解">
+  <meta property="og:description" content="JSON格式语法、数据类型、使用场景、在线格式化工具。">
+  <meta property="og:url" content="https://eitools.cn/guides/json-guide.html">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://eitools.cn/guides/json-guide.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+    {"@type":"Question","name":"JSON是什么？","acceptedAnswer":{"@type":"Answer","text":"JSON（JavaScript Object Notation）是一种轻量级的数据交换格式，易于人类阅读和编写，也易于机器解析和生成。它是目前最常用的数据交换格式之一。"}},
+    {"@type":"Question","name":"JSON和XML有什么区别？","acceptedAnswer":{"@type":"Answer","text":"JSON比XML更轻量，没有结束标签，更适合Web应用。XML更适合文档标记。JSON可直接被JavaScript解析，XML需要专门的解析器。"}}
+  ]}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>JSON 是什么？</h1>
+    </div>
+    <article style="line-height: 1.8; color: #333;">
+      <p>JSON（<strong>J</strong>ava<strong>S</strong>cript <strong>O</strong>bject <strong>N</strong>otation，JavaScript 对象表示法）是一种轻量级的数据交换格式，由 Douglas Crockford 在 2001 年提出。它基于 JavaScript 的对象字面量语法，但独立于任何编程语言。</p>
+
+      <h2 style="margin: 24px 0 12px;">JSON 的特点</h2>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>易读易写</strong> — 人类可以直接阅读和编写</li>
+        <li><strong>轻量级</strong> — 比 XML 更小，传输更快</li>
+        <li><strong>语言无关</strong> —几乎所有编程语言都支持 JSON</li>
+        <li><strong>广泛使用</strong> — Web API 的标准数据格式</li>
+      </ul>
+
+      <h2 style="margin: 24px 0 12px;">JSON 数据类型</h2>
+      <div style="background:#f0f2f5;padding:16px;border-radius:8px;font-family:monospace;font-size:0.85rem;overflow-x:auto;">
+        <p><span style="color:#888;">// 对象（Object）</span></p>
+        <p>{"name": "张三", "age": 25}</p>
+        <br>
+        <p><span style="color:#888;">// 数组（Array）</span></p>
+        <p>[1, 2, "三", true, null]</p>
+        <br>
+        <p><span style="color:#888;">// 嵌套结构</span></p>
+        <p>{"users": [{"id": 1, "name": "张三"}, {"id": 2, "name": "李四"}]}</p>
+      </div>
+
+      <h2 style="margin: 24px 0 12px;">JSON vs XML</h2>
+      <table style="width:100%;border-collapse:collapse;font-size:0.9rem;background:white;border-radius:12px;overflow:hidden;">
+        <tr style="background:#e8eaed;"><th style="padding:8px;text-align:left;">对比项</th><th style="padding:8px;">JSON</th><th style="padding:8px;">XML</th></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 12px;">体积</td><td style="padding:6px 12px;color:#2f9e44;">更小</td><td style="padding:6px 12px;color:#e03131;">更大（标签重复）</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 12px;">解析速度</td><td style="padding:6px 12px;color:#2f9e44;">更快</td><td style="padding:6px 12px;">较慢</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 12px;">数据类型</td><td style="padding:6px 12px;">丰富（数组、布尔、null）</td><td style="padding:6px 12px;">只有字符串</td></tr>
+        <tr><td style="padding:6px 12px;">适用场景</td><td style="padding:6px 12px;">数据交换、API</td><td style="padding:6px 12px;">文档标记、配置</td></tr>
+      </table>
+
+      <h2 style="margin: 24px 0 12px;">JSON 的常见用途</h2>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>Web API</strong> — 前后端数据交换的标准格式</li>
+        <li><strong>配置文件</strong> — package.json、tsconfig.json</li>
+        <li><strong>NoSQL 数据库</strong> — MongoDB 使用 BSON（JSON 二进制扩展）</li>
+        <li><strong>日志格式</strong> — 结构化日志</li>
+      </ul>
+
+      <h2 style="margin: 24px 0 12px;">在线 JSON 工具</h2>
+      <p>使用 <a href="../src/tools/json-formatter.html" style="color: #4361ee; font-weight: 600;">在线 JSON 格式化工具</a>，美化、压缩、校验 JSON 数据。
+    </article>
+  </div>
+<div id="share-bar"></div>
+<script src="../js/share.js"></script>
+</body>
+</html>

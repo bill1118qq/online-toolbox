@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图片压缩教程 - 如何压缩图片大小不失真 - 在线工具箱</title>
+  <meta name="description" content="图片压缩完全教程：如何压缩图片大小而不失真、JPEG/PNG/WebP压缩原理、批量压缩方法、在线图片压缩工具推荐。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="图片压缩教程">
+  <meta property="og:description" content="图片压缩原理、JPEG/PNG/WebP压缩方法、批量压缩教程。">
+  <meta property="og:url" content="https://eitools.cn/guides/image-compress-tutorial.html">
+  <link rel="canonical" href="https://eitools.cn/guides/image-compress-tutorial.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"如何压缩图片大小？","acceptedAnswer":{"@type":"Answer","text":"图片压缩方法：1.在线工具压缩（如eitools.cn图片压缩工具）；2.改用WebP格式（同质量下体积减少25-35%）；3.调整图片尺寸（缩小分辨率）；4.使用专业软件如TinyPNG、ImageOptim；5.批量处理用脚本或工具。"}},{"@type":"Question","name":"压缩图片会影响画质吗？","acceptedAnswer":{"@type":"Answer","text":"有损压缩（如JPEG）在质量参数80-90%时肉眼几乎看不出区别，但体积可减少50%-70%。无损压缩（如PNG）不损失画质，但压缩率有限。建议照片用JPEG质量85%，截图用PNG。"}},{"@type":"Question","name":"JPEG和PNG有什么区别？","acceptedAnswer":{"@type":"Answer","text":"JPEG：有损压缩，适合照片、渐变色图片，体积小。PNG：无损压缩，支持透明背景，适合截图、图标、文字图片，体积大。WebP：Google推出的格式，同质量下体积比JPEG小25-35%，支持有损和无损两种模式。"}}]}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">← 返回首页</a>
+      <h1>图片压缩教程</h1>
+    </div>
+    <article style="line-height:1.8;">
+      <h2>为什么需要压缩图片？</h2>
+      <p>未压缩的图片是网页加载慢的主要原因之一。研究表明：</p>
+      <ul>
+        <li>图片占网页总大小的60%-70%</li>
+        <li>页面加载时间每增加1秒，转化率下降7%</li>
+        <li>Google将页面速度作为排名因素之一</li>
+      </ul>
+
+      <h2>图片格式对比</h2>
+      <table style="width:100%;border-collapse:collapse;margin:12px 0;font-size:0.9rem;">
+        <tr style="background:#f0f2f5;"><th style="padding:10px;">格式</th><th style="padding:10px;">压缩类型</th><th style="padding:10px;">支持透明</th><th style="padding:10px;">适用场景</th></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">JPEG</td><td style="padding:8px 10px;">有损</td><td style="padding:8px 10px;">✗</td><td style="padding:8px 10px;">照片、渐变</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">PNG</td><td style="padding:8px 10px;">无损</td><td style="padding:8px 10px;">✓</td><td style="padding:8px 10px;">截图、图标、文字</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">WebP</td><td style="padding:8px 10px;">有损/无损</td><td style="padding:8px 10px;">✓</td><td style="padding:8px 10px;">通用，推荐</td></tr>
+        <tr><td style="padding:8px 10px;">AVIF</td><td style="padding:8px 10px;">有损/无损</td><td style="padding:8px 10px;">✓</td><td style="padding:8px 10px;">下一代格式，最佳压缩</td></tr>
+      </table>
+
+      <h2>压缩率参考</h2>
+      <p>以一张 4000×3000 的照片（原图约 12MB）为例：</p>
+      <table style="width:100%;border-collapse:collapse;margin:12px 0;font-size:0.9rem;">
+        <tr style="background:#f0f2f5;"><th style="padding:10px;">设置</th><th style="padding:10px;">JPEG 大小</th><th style="padding:10px;">WebP 大小</th><th style="padding:10px;">画质</th></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">最高质量(95%)</td><td style="padding:8px 10px;">~3.2 MB</td><td style="padding:8px 10px;">~2.1 MB</td><td style="padding:8px 10px;">肉眼无损</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">高质量(85%)</td><td style="padding:8px 10px;">~1.8 MB</td><td style="padding:8px 10px;">~1.2 MB</td><td style="padding:8px 10px;">优秀</td></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">中等质量(70%)</td><td style="padding:8px 10px;">~800 KB</td><td style="padding:8px 10px;">~540 KB</td><td style="padding:8px 10px;">良好</td></tr>
+        <tr><td style="padding:8px 10px;">低质量(50%)</td><td style="padding:8px 10px;">~300 KB</td><td style="padding:8px 10px;">~200 KB</td><td style="padding:8px 10px;">可接受</td></tr>
+      </table>
+
+      <h2>压缩图片不影响画质的方法</h2>
+      <ol>
+        <li><b>选择合适的格式</b>：优先用WebP替代JPEG/PNG</li>
+        <li><b>调整质量参数</b>：JPEG质量设为80-85%，肉眼几乎看不出区别</li>
+        <li><b>缩小尺寸</b>：网页显示宽度通常不超过1200px，上传前先缩小</li>
+        <li><b>去除不必要的元数据</b>：EXIF信息可占几十KB</li>
+        <li><b>使用渐进式JPEG</b>：边下载边显示，提升用户体验</li>
+      </ol>
+
+      <div style="margin-top:24px;padding:20px;background:#f0f4ff;border-radius:12px;border:1px solid #4361ee;">
+        <h3 style="color:#4361ee;margin-top:0;">在线图片压缩工具</h3>
+        <p>使用我们的<a href="../src/tools/image-compressor.html" style="color:#4361ee;font-weight:bold;">在线图片压缩工具</a>，在浏览器本地压缩图片，不上传到服务器，保护隐私安全。还支持<a href="../src/tools/image-converter.html" style="color:#4361ee;font-weight:bold;">图片格式转换</a>将图片转为WebP格式。</p>
+      </div>
+    </article>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../js/share.js"></script>
+</body>
+</html>

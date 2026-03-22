@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文字转语音 - 在线朗读/TTS - 在线工具箱</title>
+  <meta name="description" content="免费在线文字转语音工具，支持中文、英文、日文等多语种朗读。使用浏览器原生语音合成API，无需安装插件。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="文字转语音 - 在线朗读工具">
+  <meta property="og:description" content="在线文字转语音，支持多语种，浏览器原生API。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/text-to-speech.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/text-to-speech.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"文字转语音","description":"在线文字转语音朗读工具","url":"https://eitools.cn/src/tools/text-to-speech.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>文字转语音</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">输入文字，在线朗读。使用浏览器原生语音合成，支持中文、英文、日文等多语种。</p>
+    <div style="max-width:600px;">
+      <textarea id="text" rows="6" placeholder="在此输入要朗读的文字..." style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:1rem;resize:vertical;margin-bottom:16px;">在线工具箱为您提供免费的文字转语音服务。支持中文、英文等多种语言。</textarea>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+        <div><label style="font-size:0.85rem;color:#888;">语言/声音</label>
+          <select id="voiceSelect" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;margin-top:4px;"></select></div>
+        <div><label style="font-size:0.85rem;color:#888;">语速: <span id="rateVal">1.0</span>x</label>
+          <input type="range" id="rate" min="0.5" max="2" step="0.1" value="1" oninput="document.getElementById('rateVal').textContent=parseFloat(this.value).toFixed(1)" style="width:100%;margin-top:8px;"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+        <div><label style="font-size:0.85rem;color:#888;">音调: <span id="pitchVal">1.0</span></label>
+          <input type="range" id="pitch" min="0" max="2" step="0.1" value="1" oninput="document.getElementById('pitchVal').textContent=parseFloat(this.value).toFixed(1)" style="width:100%;margin-top:8px;"></div>
+        <div><label style="font-size:0.85rem;color:#888;">音量: <span id="volVal">100</span>%</label>
+          <input type="range" id="volume" min="0" max="100" value="100" oninput="document.getElementById('volVal').textContent=this.value" style="width:100%;margin-top:8px;"></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-primary" onclick="speak()" style="flex:1;padding:12px;" id="speakBtn">开始朗读</button>
+        <button class="btn" onclick="pauseResume()" style="padding:12px 20px;">暂停</button>
+        <button class="btn" onclick="stop()" style="padding:12px 20px;">停止</button>
+      </div>
+      <div id="status" style="margin-top:12px;text-align:center;color:#888;font-size:0.85rem;"></div>
+      <div id="no-support" style="display:none;margin-top:20px;padding:16px;background:#fff3cd;border-radius:12px;color:#856404;">
+        您的浏览器不支持语音合成(Web Speech API)，请使用 Chrome、Edge 或 Safari 浏览器。
+      </div>
+    </div>
+  </div>
+  <script>
+    const synth = window.speechSynthesis;
+    const voices = [];
+    if (!synth) { document.getElementById('no-support').style.display = 'block'; }
+
+    function loadVoices() {
+      const list = synth.getVoices();
+      voices.length = 0;
+      const select = document.getElementById('voiceSelect');
+      select.innerHTML = '';
+      const zh = list.filter(v => v.lang.startsWith('zh'));
+      const en = list.filter(v => v.lang.startsWith('en'));
+      const other = list.filter(v => !v.lang.startsWith('zh') && !v.lang.startsWith('en'));
+      [...zh, ...en, ...other].forEach(v => {
+        voices.push(v);
+        const opt = document.createElement('option');
+        opt.value = v.name;
+        opt.textContent = `${v.name} (${v.lang})`;
+        select.appendChild(opt);
+      });
+    }
+    loadVoices();
+    if (synth) { synth.onvoiceschanged = loadVoices; }
+
+    function speak() {
+      if (!synth) return;
+      synth.cancel();
+      const text = document.getElementById('text').value.trim();
+      if (!text) return alert('请输入文字');
+      const utter = new SpeechSynthesisUtterance(text);
+      const selected = document.getElementById('voiceSelect').value;
+      const voice = voices.find(v => v.name === selected);
+      if (voice) utter.voice = voice;
+      utter.rate = parseFloat(document.getElementById('rate').value);
+      utter.pitch = parseFloat(document.getElementById('pitch').value);
+      utter.volume = parseInt(document.getElementById('volume').value) / 100;
+      utter.onstart = () => { document.getElementById('status').textContent = '正在朗读...'; document.getElementById('speakBtn').textContent = '朗读中...'; };
+      utter.onend = () => { document.getElementById('status').textContent = '朗读完成'; document.getElementById('speakBtn').textContent = '开始朗读'; };
+      utter.onerror = () => { document.getElementById('status').textContent = '朗读出错'; document.getElementById('speakBtn').textContent = '开始朗读'; };
+      synth.speak(utter);
+    }
+    function pauseResume() {
+      if (!synth) return;
+      if (synth.paused) { synth.resume(); document.getElementById('status').textContent = '继续朗读...'; }
+      else { synth.pause(); document.getElementById('status').textContent = '已暂停'; }
+    }
+    function stop() {
+      if (!synth) return;
+      synth.cancel();
+      document.getElementById('status').textContent = '已停止';
+      document.getElementById('speakBtn').textContent = '开始朗读';
+    }
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

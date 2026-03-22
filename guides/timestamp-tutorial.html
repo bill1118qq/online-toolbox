@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>时间戳教程 - Unix时间戳详解与转换 - 在线工具箱</title>
+  <meta name="description" content="时间戳完全教程：什么是Unix时间戳、时间戳与日期互转方法、常用编程语言时间戳操作、时间戳在开发中的应用。附在线时间戳转换工具。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="Unix时间戳详解教程">
+  <meta property="og:description" content="时间戳原理、日期转换、编程语言操作详解。">
+  <meta property="og:url" content="https://eitools.cn/guides/timestamp-tutorial.html">
+  <link rel="canonical" href="https://eitools.cn/guides/timestamp-tutorial.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"什么是Unix时间戳？","acceptedAnswer":{"@type":"Answer","text":"Unix时间戳是从1970年1月1日00:00:00 UTC到现在的总秒数。它是计算机系统中表示时间的一种方式，不受时区影响。例如1742454400代表2025年3月20日12:00:00 UTC。"}},{"@type":"Question","name":"时间戳为什么从1970年开始？","acceptedAnswer":{"@type":"Answer","text":"1970年是Unix系统诞生的年份（确切说是1970年1月1日UTC）。选择这个时间点是历史原因——Unix操作系统在这一年前后诞生，以此为起点计算秒数。"}},{"@type":"Question","name":"13位时间戳和10位有什么区别？","acceptedAnswer":{"@type":"Answer","text":"10位时间戳精确到秒，13位精确到毫秒。13位 = 10位 × 1000 + 毫秒数。JavaScript的Date.getTime()返回13位时间戳。转换时：10位→13位：×1000；13位→10位：÷1000（取整）。"}}]}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">← 返回首页</a>
+      <h1>Unix 时间戳详解</h1>
+    </div>
+    <article style="line-height:1.8;">
+      <h2>什么是时间戳？</h2>
+      <p>Unix时间戳（Unix Timestamp）是从 <b>1970年1月1日00:00:00 UTC</b> 到指定时间的总秒数（或毫秒数）。</p>
+      <div style="background:#f0f2f5;padding:16px;border-radius:8px;margin:12px 0;">
+        <b>示例：</b>时间戳 1742454400 对应 2025-03-20 12:00:00 UTC（北京时间 20:00:00）
+      </div>
+
+      <h2>10位 vs 13位时间戳</h2>
+      <table style="width:100%;border-collapse:collapse;margin:12px 0;font-size:0.9rem;">
+        <tr style="background:#f0f2f5;"><th style="padding:10px;">类型</th><th style="padding:10px;">精度</th><th style="padding:10px;">示例</th></tr>
+        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">10位</td><td style="padding:8px 10px;">秒</td><td style="padding:8px 10px;font-family:monospace;">1742454400</td></tr>
+        <tr><td style="padding:8px 10px;">13位</td><td style="padding:8px 10px;">毫秒</td><td style="padding:8px 10px;font-family:monospace;">1742454400000</td></tr>
+      </table>
+      <p><b>转换方法：</b>13位→10位：除以1000取整；10位→13位：乘以1000</p>
+
+      <h2>时区注意事项</h2>
+      <p>时间戳默认是 <b>UTC（协调世界时）</b>，而中国使用北京时间（UTC+8）。</p>
+      <ul>
+        <li>将时间戳转为本地时间需要加上时区偏移</li>
+        <li>北京时间 = UTC时间 + 8小时</li>
+        <li>存储时建议使用UTC时间戳，显示时转为本地时间</li>
+      </ul>
+
+      <h2>编程语言中的时间戳</h2>
+      <h3>JavaScript</h3>
+      <div style="background:#1a1a2e;padding:12px;border-radius:8px;font-family:monospace;font-size:0.85rem;color:#4ade80;overflow-x:auto;margin:8px 0;">
+        <pre style="margin:0;">// 获取当前时间戳（13位毫秒）
+Date.now(); // 1742454400000
+
+// 时间戳转日期
+new Date(1742454400000);
+// Thu Mar 20 2025 20:00:00 GMT+0800
+
+// 格式化
+new Date().toLocaleString('zh-CN');
+// "2025/3/20 20:00:00"</pre>
+      </div>
+
+      <h3>Python</h3>
+      <div style="background:#1a1a2e;padding:12px;border-radius:8px;font-family:monospace;font-size:0.85rem;color:#4ade80;overflow-x:auto;margin:8px 0;">
+        <pre style="margin:0;">import time
+
+# 获取当前时间戳（秒）
+ts = int(time.time())  # 1742454400
+
+# 时间戳转本地时间
+time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(ts))
+# '2025-03-20 20:00:00'</pre>
+      </div>
+
+      <h3>Java</h3>
+      <div style="background:#1a1a2e;padding:12px;border-radius:8px;font-family:monospace;font-size:0.85rem;color:#4ade80;overflow-x:auto;margin:8px 0;">
+        <pre style="margin:0;">// 获取当前时间戳（毫秒）
+long ts = System.currentTimeMillis();
+
+// 时间戳转日期
+SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+sdf.format(new Date(ts));</pre>
+      </div>
+
+      <h2>时间戳的常见用途</h2>
+      <ul>
+        <li><b>数据库主键</b>：Snowflake算法生成唯一ID的一部分</li>
+        <li><b>API缓存</b>：HTTP响应头 Last-Modified 使用时间戳</li>
+        <li><b>日志记录</b>：每条日志带时间戳方便排查问题</li>
+        <li><b>Token过期</b>：JWT的exp字段使用时间戳</li>
+        <li><b>文件命名</b>：上传文件名加时间戳避免冲突</li>
+      </ul>
+
+      <div style="margin-top:24px;padding:20px;background:#f0f4ff;border-radius:12px;border:1px solid #4361ee;">
+        <h3 style="color:#4361ee;margin-top:0;">在线时间戳转换工具</h3>
+        <p>使用我们的<a href="../src/tools/timestamp.html" style="color:#4361ee;font-weight:bold;">时间戳转换工具</a>，支持秒/毫秒时间戳与日期实时互转，显示当前时间戳。</p>
+      </div>
+    </article>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../js/share.js"></script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>人民币大写转换 - 金额大写在线转换 - 在线工具箱</title>
+  <meta name="description" content="在线人民币金额大写转换，输入数字自动生成财务标准大写金额，支持到分，符合银行报销和合同要求。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="人民币大写转换 - 金额转财务大写">
+  <meta property="og:description" content="数字金额转人民币大写，银行报销合同专用。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/rmb-uppercase.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/rmb-uppercase.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"人民币大写转换","description":"数字金额转人民币大写","url":"https://eitools.cn/src/tools/rmb-uppercase.html","applicationCategory":"FinanceApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>人民币大写转换</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">输入数字金额，转换为财务标准大写金额。适用于银行、报销、合同等场景。</p>
+    <div style="max-width:500px;">
+      <div style="margin-bottom:16px;">
+        <label style="display:block;margin-bottom:6px;font-weight:600;">金额（元）</label>
+        <input type="text" id="amount" placeholder="例如：12345.67" oninput="convert()" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:1.2rem;">
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+          <button class="btn btn-secondary" onclick="setAmt('100')" style="font-size:0.8rem;padding:4px 10px;">100</button>
+          <button class="btn btn-secondary" onclick="setAmt('1000')" style="font-size:0.8rem;padding:4px 10px;">1,000</button>
+          <button class="btn btn-secondary" onclick="setAmt('10000')" style="font-size:0.8rem;padding:4px 10px;">1万</button>
+          <button class="btn btn-secondary" onclick="setAmt('100000')" style="font-size:0.8rem;padding:4px 10px;">10万</button>
+          <button class="btn btn-secondary" onclick="setAmt('1000000')" style="font-size:0.8rem;padding:4px 10px;">100万</button>
+          <button class="btn btn-secondary" onclick="setAmt('10000000')" style="font-size:0.8rem;padding:4px 10px;">1000万</button>
+        </div>
+      </div>
+      <div id="result"></div>
+    </div>
+    <div style="margin-top:32px;padding:20px;background:#f0f2f5;border-radius:12px;">
+      <h2 style="font-size:1rem;margin-bottom:12px;">人民币大写规则</h2>
+      <ul style="font-size:0.9rem;color:#555;line-height:2;margin-left:20px;">
+        <li>大写金额到"元"为止，后面加"整"或"正"</li>
+        <li>有"角"无"分"时，后面加"整"或"正"</li>
+        <li>有"分"时，"分"后面不加"整"</li>
+        <li>"壹拾"前须加"零"，如 ¥10 → 零壹拾元整</li>
+        <li>中间有连续"零"时，只写一个"零"</li>
+      </ul>
+    </div>
+  </div>
+  <script>
+    function convert() {
+      const val = document.getElementById('amount').value.replace(/,/g, '').trim();
+      if (!val || isNaN(val)) { document.getElementById('result').innerHTML = ''; return; }
+      const num = parseFloat(val);
+      if (num < 0 || num > 9999999999999.99) { document.getElementById('result').innerHTML = '<p style="color:#e03131">金额超出范围（0 - 9999999999999.99）</p>'; return; }
+      const upper = numToChinese(num);
+      document.getElementById('result').innerHTML = `
+        <div style="padding:20px;background:linear-gradient(135deg,#eef1ff,#f8f9ff);border:2px solid #4361ee;border-radius:12px;text-align:center;">
+          <div style="font-size:0.85rem;color:#888;">人民币（大写）</div>
+          <div style="font-size:1.4rem;font-weight:800;color:#1a1a2e;margin-top:8px;word-break:break-all;letter-spacing:2px;">${upper}</div>
+        </div>
+        <div style="margin-top:12px;text-align:center;">
+          <button class="btn btn-secondary" onclick="copyResult('${upper.replace(/'/g, "\\'")}')" style="padding:8px 20px;">复制大写金额</button>
+        </div>`;
+    }
+    function numToChinese(n) {
+      const digits = ['零','壹','贰','叁','肆','伍','陆','柒','捌','玖'];
+      const units = ['','拾','佰','仟'];
+      const bigUnits = ['','万','亿','万亿'];
+      const [intPart, decPart] = n.toFixed(2).split('.');
+      let result = '';
+      if (intPart === '0' && decPart === '00') return '零元整';
+      if (intPart !== '0') {
+        const intStr = intPart.padStart(1, '0');
+        const groups = [];
+        for (let i = intStr.length; i > 0; i -= 4) groups.unshift(intStr.substring(Math.max(0, i - 4), i));
+        groups.forEach((g, gi) => {
+          let gStr = '', zeroFlag = false;
+          for (let j = 0; j < g.length; j++) {
+            const d = parseInt(g[j]);
+            if (d === 0) { zeroFlag = true; }
+            else { if (zeroFlag) { gStr += '零'; zeroFlag = false; } gStr += digits[d] + units[g.length - 1 - j]; }
+          }
+          if (gStr) result += gStr + bigUnits[groups.length - 1 - gi];
+          else if (result && result.slice(-1) !== '零') result += '零';
+        });
+        result += '元';
+      }
+      if (decPart === '00') { result += '整'; }
+      else {
+        const jiao = parseInt(decPart[0]), fen = parseInt(decPart[1]);
+        if (jiao) { result += digits[jiao] + '角'; }
+        else if (fen) { result += '零'; }
+        if (fen) { result += digits[fen] + '分'; }
+      }
+      return result;
+    }
+    function setAmt(v) { document.getElementById('amount').value = v; convert(); }
+    function copyResult(text) {
+      navigator.clipboard.writeText(text);
+    }
+  </script>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+</body>
+</html>

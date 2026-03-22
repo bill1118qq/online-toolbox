@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>二进制计算器 - 二进制加减乘除 - 在线工具箱</title>
+  <meta name="description" content="免费在线二进制计算器。支持二进制加减乘除、位运算(AND/OR/XOR/NOT)、进制实时转换。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="二进制计算器 - 二进制运算">
+  <meta property="og:description" content="二进制加减乘除和位运算工具。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/binary-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/binary-calculator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"二进制计算器","description":"二进制加减乘除和位运算工具","url":"https://eitools.cn/src/tools/binary-calculator.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>二进制计算器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">二进制加减乘除、位运算，实时显示多种进制结果。</p>
+    <div style="max-width:700px;">
+      <div style="margin-bottom:16px;">
+        <label style="font-size:0.85rem;color:#888;">输入（支持十进制/十六进制/二进制/Octal）</label>
+        <input type="text" id="inputA" value="1010" oninput="sync('A')" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:1.1rem;margin-top:4px;">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:4px;">
+          <span style="font-size:0.75rem;color:#888;">BIN: <span id="aBin">1010</span></span>
+          <span style="font-size:0.75rem;color:#888;">DEC: <span id="aDec">10</span></span>
+          <span style="font-size:0.75rem;color:#888;">HEX: <span id="aHex">A</span></span>
+          <span style="font-size:0.75rem;color:#888;">OCT: <span id="aOct">12</span></span>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;">
+        <button onclick="setOp('+')" class="op-btn" data-op="+" style="padding:10px 18px;background:#4361ee;color:white;border:none;border-radius:8px;cursor:pointer;font-size:1rem;">+</button>
+        <button onclick="setOp('-')" class="op-btn" data-op="-" style="padding:10px 18px;background:#6c757d;color:white;border:none;border-radius:8px;cursor:pointer;font-size:1rem;">-</button>
+        <button onclick="setOp('*')" class="op-btn" data-op="*" style="padding:10px 18px;background:#6c757d;color:white;border:none;border-radius:8px;cursor:pointer;font-size:1rem;">&times;</button>
+        <button onclick="setOp('/')" class="op-btn" data-op="/" style="padding:10px 18px;background:#6c757d;color:white;border:none;border-radius:8px;cursor:pointer;font-size:1rem;">&divide;</button>
+        <span style="width:8px;"></span>
+        <button onclick="setOp('&')" class="op-btn" data-op="&" style="padding:10px 18px;background:#e67700;color:white;border:none;border-radius:8px;cursor:pointer;font-size:0.85rem;">AND</button>
+        <button onclick="setOp('|')" class="op-btn" data-op="|" style="padding:10px 18px;background:#e67700;color:white;border:none;border-radius:8px;cursor:pointer;font-size:0.85rem;">OR</button>
+        <button onclick="setOp('^')" class="op-btn" data-op="^" style="padding:10px 18px;background:#e67700;color:white;border:none;border-radius:8px;cursor:pointer;font-size:0.85rem;">XOR</button>
+        <button onclick="setOp('<<')" class="op-btn" data-op="<<" style="padding:10px 18px;background:#e67700;color:white;border:none;border-radius:8px;cursor:pointer;font-size:0.85rem;">&lt;&lt;</button>
+        <button onclick="setOp('>>')" class="op-btn" data-op=">>" style="padding:10px 18px;background:#e67700;color:white;border:none;border-radius:8px;cursor:pointer;font-size:0.85rem;">&gt;&gt;</button>
+        <button onclick="setOp('~')" class="op-btn" data-op="~" style="padding:10px 18px;background:#c92a2a;color:white;border:none;border-radius:8px;cursor:pointer;font-size:0.85rem;">NOT</button>
+      </div>
+      <div id="inputBWrap" style="margin-bottom:16px;">
+        <label style="font-size:0.85rem;color:#888;">第二个数</label>
+        <input type="text" id="inputB" value="1100" oninput="sync('B')" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:1.1rem;margin-top:4px;">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:4px;">
+          <span style="font-size:0.75rem;color:#888;">BIN: <span id="bBin">1100</span></span>
+          <span style="font-size:0.75rem;color:#888;">DEC: <span id="bDec">12</span></span>
+          <span style="font-size:0.75rem;color:#888;">HEX: <span id="bHex">C</span></span>
+          <span style="font-size:0.75rem;color:#888;">OCT: <span id="bOct">14</span></span>
+        </div>
+      </div>
+      <div style="padding:20px;background:#f8f9fa;border-radius:12px;">
+        <div style="font-size:0.9rem;color:#888;margin-bottom:8px;">计算结果</div>
+        <div id="resultDisplay" style="font-family:monospace;font-size:1.1rem;font-weight:600;color:#4361ee;"></div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px;">
+          <div style="text-align:center;padding:8px;background:white;border-radius:8px;">
+            <div style="font-size:0.75rem;color:#888;">BIN</div>
+            <div id="rBin" style="font-family:monospace;font-size:0.85rem;word-break:break-all;"></div>
+          </div>
+          <div style="text-align:center;padding:8px;background:white;border-radius:8px;">
+            <div style="font-size:0.75rem;color:#888;">DEC</div>
+            <div id="rDec" style="font-family:monospace;font-size:0.85rem;"></div>
+          </div>
+          <div style="text-align:center;padding:8px;background:white;border-radius:8px;">
+            <div style="font-size:0.75rem;color:#888;">HEX</div>
+            <div id="rHex" style="font-family:monospace;font-size:0.85rem;"></div>
+          </div>
+          <div style="text-align:center;padding:8px;background:white;border-radius:8px;">
+            <div style="font-size:0.75rem;color:#888;">OCT</div>
+            <div id="rOct" style="font-family:monospace;font-size:0.85rem;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    let currentOp = '+';
+    function setOp(op) {
+      currentOp = op;
+      document.querySelectorAll('.op-btn').forEach(b => {
+        b.style.background = b.dataset.op === op ? '#4361ee' : (b.dataset.op === '~' ? '#c92a2a' : '#6c757d');
+      });
+      document.getElementById('inputBWrap').style.display = op === '~' ? 'none' : 'block';
+      calc();
+    }
+    function parseNum(s) {
+      s = s.trim();
+      if (/^0b/i.test(s)) return parseInt(s.slice(2), 2);
+      if (/^0x/i.test(s)) return parseInt(s.slice(2), 16);
+      if (/^0o/i.test(s)) return parseInt(s.slice(2), 8);
+      if (/^[01]+$/.test(s)) return parseInt(s, 2);
+      return parseInt(s, 10);
+    }
+    function sync(which) {
+      const input = document.getElementById(which === 'A' ? 'inputA' : 'inputB');
+      const val = parseNum(input.value);
+      if (isNaN(val)) return;
+      document.getElementById(which.toLowerCase()+'Bin').textContent = (val >>> 0).toString(2);
+      document.getElementById(which.toLowerCase()+'Dec').textContent = val;
+      document.getElementById(which.toLowerCase()+'Hex').textContent = val.toString(16).toUpperCase();
+      document.getElementById(which.toLowerCase()+'Oct').textContent = val.toString(8);
+      calc();
+    }
+    function calc() {
+      const a = parseNum(document.getElementById('inputA').value);
+      if (isNaN(a)) return;
+      let result;
+      const opSymbols = {'+':'+', '-':'-', '*':'×', '/':'÷', '&':'AND', '|':'OR', '^':'XOR', '<<':'<<', '>>':'>>', '~':'NOT'};
+      if (currentOp === '~') {
+        result = ~a;
+        document.getElementById('resultDisplay').textContent = `~${a} = ${result}`;
+      } else {
+        const b = parseNum(document.getElementById('inputB').value);
+        if (isNaN(b)) return;
+        if (currentOp === '/' && b === 0) {
+          document.getElementById('resultDisplay').textContent = '除数不能为零';
+          return;
+        }
+        switch(currentOp) {
+          case '+': result = a + b; break;
+          case '-': result = a - b; break;
+          case '*': result = a * b; break;
+          case '/': result = Math.floor(a / b); break;
+          case '&': result = a & b; break;
+          case '|': result = a | b; break;
+          case '^': result = a ^ b; break;
+          case '<<': result = a << b; break;
+          case '>>': result = a >> b; break;
+        }
+        document.getElementById('resultDisplay').textContent = `${a} ${opSymbols[currentOp]} ${b} = ${result}`;
+      }
+      document.getElementById('rBin').textContent = (result >>> 0).toString(2);
+      document.getElementById('rDec').textContent = result;
+      document.getElementById('rHex').textContent = (result >>> 0).toString(16).toUpperCase();
+      document.getElementById('rOct').textContent = (result >>> 0).toString(8);
+    }
+    setOp('+');
+    sync('A');
+    sync('B');
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

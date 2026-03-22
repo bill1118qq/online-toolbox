@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>五险一金计算器 - 社保公积金计算 - 在线工具箱</title>
+  <meta name="description" content="五险一金计算器：输入月薪自动计算养老、医疗、失业、工伤、生育保险和住房公积金个人及单位缴纳金额，显示到手工资。支持多城市基数。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="五险一金计算器">
+  <meta property="og:description" content="五险一金缴纳明细计算，显示个人扣除和单位缴纳金额。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/social-insurance-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/social-insurance-calculator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"五险一金计算器","description":"五险一金个人及单位缴纳金额计算","url":"https://eitools.cn/src/tools/social-insurance-calculator.html","applicationCategory":"FinanceApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>五险一金计算器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">输入税前月薪，自动计算五险一金个人和单位缴纳明细。</p>
+    <div style="max-width:900px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+        <div>
+          <label style="font-size:0.85rem;color:#888;">税前月薪（元）</label>
+          <input type="number" id="salary" value="10000" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;font-size:1rem;" oninput="calc()">
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">城市</label>
+          <select id="city" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;font-size:1rem;" onchange="calc()">
+            <option value="beijing">北京</option>
+            <option value="shanghai">上海</option>
+            <option value="guangzhou">广州</option>
+            <option value="shenzhen" selected>深圳</option>
+            <option value="chengdu">成都</option>
+            <option value="hangzhou">杭州</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">公积金比例（%）</label>
+          <select id="fundRate" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;font-size:1rem;" onchange="calc()">
+            <option value="5">5%</option>
+            <option value="7">7%</option>
+            <option value="8">8%</option>
+            <option value="10">10%</option>
+            <option value="12" selected>12%</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">社保基数（0=自动取月薪）</label>
+          <input type="number" id="base" value="0" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;font-size:1rem;" oninput="calc()">
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;margin-bottom:20px;font-size:0.9rem;">
+          <thead>
+            <tr style="background:#4361ee;color:white;">
+              <th style="padding:10px;text-align:left;border-radius:8px 0 0 0;">项目</th>
+              <th style="padding:10px;text-align:center;">个人比例</th>
+              <th style="padding:10px;text-align:right;">个人金额</th>
+              <th style="padding:10px;text-align:center;">单位比例</th>
+              <th style="padding:10px;text-align:right;border-radius:0 8px 0 0;">单位金额</th>
+            </tr>
+          </thead>
+          <tbody id="resultTable">
+          </tbody>
+        </table>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;">
+        <div style="padding:20px;background:#fff3e0;border-radius:12px;text-align:center;">
+          <div style="font-size:0.8rem;color:#888;">个人五险一金合计</div>
+          <div id="personalTotal" style="font-size:1.5rem;font-weight:bold;color:#f57c00;">-</div>
+        </div>
+        <div style="padding:20px;background:#e8f5e9;border-radius:12px;text-align:center;">
+          <div style="font-size:0.8rem;color:#888;">单位五险一金合计</div>
+          <div id="companyTotal" style="font-size:1.5rem;font-weight:bold;color:#2e7d32;">-</div>
+        </div>
+        <div style="padding:20px;background:#e3f2fd;border-radius:12px;text-align:center;">
+          <div style="font-size:0.8rem;color:#888;">扣除后到手工资</div>
+          <div id="takeHome" style="font-size:1.5rem;font-weight:bold;color:#1565c0;">-</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+        <div style="padding:20px;background:#f3e5f5;border-radius:12px;text-align:center;">
+          <div style="font-size:0.8rem;color:#888;">用工总成本</div>
+          <div id="totalCost" style="font-size:1.5rem;font-weight:bold;color:#7b1fa2;">-</div>
+        </div>
+        <div style="padding:20px;background:#fce4ec;border-radius:12px;text-align:center;">
+          <div style="font-size:0.8rem;color:#888;">应纳税所得额</div>
+          <div id="taxableIncome" style="font-size:1.5rem;font-weight:bold;color:#c62828;">-</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    const RATES = {
+      beijing: { name: '北京', baseMin: 6326, baseMax: 33891, pension: [8, 16], medical: [2, 9.8], unemployment: [0.5, 0.5], injury: [0, 0.4], birth: [0, 0.8] },
+      shanghai: { name: '上海', baseMin: 7310, baseMax: 36549, pension: [8, 16], medical: [2, 9.5], unemployment: [0.5, 0.5], injury: [0, 0.16], birth: [0, 1] },
+      guangzhou: { name: '广州', baseMin: 5500, baseMax: 27501, pension: [8, 14], medical: [2, 5.45], unemployment: [0.2, 0.8], injury: [0, 0.2], birth: [0, 0.85] },
+      shenzhen: { name: '深圳', baseMin: 2360, baseMax: 27501, pension: [8, 15], medical: [2, 5.2], unemployment: [0.3, 0.7], injury: [0, 0.14], birth: [0, 0.45] },
+      chengdu: { name: '成都', baseMin: 4246, baseMax: 21228, pension: [8, 16], medical: [2, 6.7], unemployment: [0.4, 0.6], injury: [0, 0.2], birth: [0, 0.8] },
+      hangzhou: { name: '杭州', baseMin: 4462, baseMax: 22311, pension: [8, 14], medical: [2, 9.5], unemployment: [0.5, 0.5], injury: [0, 0.2], birth: [0, 1.2] }
+    };
+
+    function calc() {
+      var salary = parseFloat(document.getElementById('salary').value) || 0;
+      var city = document.getElementById('city').value;
+      var fundRate = parseFloat(document.getElementById('fundRate').value) / 100;
+      var baseInput = parseFloat(document.getElementById('base').value) || 0;
+
+      if (salary <= 0) {
+        document.getElementById('resultTable').innerHTML = '<tr><td colspan="5" style="padding:20px;text-align:center;color:#999;">请输入月薪</td></tr>';
+        return;
+      }
+
+      var r = RATES[city];
+      var socialBase = baseInput > 0 ? baseInput : Math.max(r.baseMin, Math.min(r.baseMax, salary));
+      var fundBase = Math.max(r.baseMin, Math.min(r.baseMax, salary));
+
+      var items = [
+        { name: '养老保险', pRate: r.pension[0], cRate: r.pension[1], base: socialBase },
+        { name: '医疗保险', pRate: r.medical[0], cRate: r.medical[1], base: socialBase },
+        { name: '失业保险', pRate: r.unemployment[0], cRate: r.unemployment[1], base: socialBase },
+        { name: '工伤保险', pRate: r.injury[0], cRate: r.injury[1], base: socialBase },
+        { name: '生育保险', pRate: r.birth[0], cRate: r.birth[1], base: socialBase }
+      ];
+
+      var fundPersonal = Math.round(fundBase * fundRate);
+      var fundCompany = Math.round(fundBase * fundRate);
+      items.push({ name: '住房公积金', pRate: fundRate * 100, cRate: fundRate * 100, pAmt: fundPersonal, cAmt: fundCompany, custom: true });
+
+      var html = '';
+      var pTotal = 0, cTotal = 0;
+      for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+        var pAmt = item.custom ? item.pAmt : Math.round(item.base * item.pRate / 100);
+        var cAmt = item.custom ? item.cAmt : Math.round(item.base * item.cRate / 100);
+        pTotal += pAmt;
+        cTotal += cAmt;
+        var pRateStr = item.custom ? fundRate * 100 + '%' : item.pRate + '%';
+        var cRateStr = item.custom ? fundRate * 100 + '%' : item.cRate + '%';
+        html += '<tr style="border-bottom:1px solid #eee;">';
+        html += '<td style="padding:8px 10px;">' + item.name + '</td>';
+        html += '<td style="padding:8px 10px;text-align:center;">' + pRateStr + '</td>';
+        html += '<td style="padding:8px 10px;text-align:right;color:#f57c00;font-weight:600;">' + pAmt.toFixed(2) + '</td>';
+        html += '<td style="padding:8px 10px;text-align:center;">' + cRateStr + '</td>';
+        html += '<td style="padding:8px 10px;text-align:right;color:#2e7d32;font-weight:600;">' + cAmt.toFixed(2) + '</td>';
+        html += '</tr>';
+      }
+
+      html += '<tr style="background:#f5f5f5;font-weight:bold;">';
+      html += '<td style="padding:10px;">合计</td>';
+      html += '<td style="padding:10px;text-align:center;">-</td>';
+      html += '<td style="padding:10px;text-align:right;color:#f57c00;">' + pTotal.toFixed(2) + '</td>';
+      html += '<td style="padding:10px;text-align:center;">-</td>';
+      html += '<td style="padding:10px;text-align:right;color:#2e7d32;">' + cTotal.toFixed(2) + '</td>';
+      html += '</tr>';
+
+      document.getElementById('resultTable').innerHTML = html;
+      document.getElementById('personalTotal').textContent = pTotal.toFixed(2) + ' 元';
+      document.getElementById('companyTotal').textContent = cTotal.toFixed(2) + ' 元';
+      document.getElementById('takeHome').textContent = Math.max(0, salary - pTotal).toFixed(2) + ' 元';
+      document.getElementById('totalCost').textContent = (salary + cTotal).toFixed(2) + ' 元';
+      document.getElementById('taxableIncome').textContent = Math.max(0, salary - pTotal - 5000).toFixed(2) + ' 元';
+    }
+
+    calc();
+  </script>
+</body>
+</html>

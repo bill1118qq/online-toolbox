@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>时间戳是什么？时间戳转换方法 - 在线工具箱</title>
+  <meta name="description" content="时间戳是什么？Unix时间戳怎么转成日期？日期怎么转成时间戳？JavaScript/Python/Java中怎么获取当前时间戳？本文全面讲解时间戳知识。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="时间戳是什么？时间戳转换方法">
+  <meta property="og:description" content="详解Unix时间戳原理和各种编程语言的转换方法。">>
+  <meta property="og:url" content="https://eitools.cn/guides/timestamp-faq-guide.html">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://eitools.cn/guides/timestamp-faq-guide.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"时间戳是什么？","acceptedAnswer":{"@type":"Answer","text":"时间戳（Timestamp）是从1970年1月1日00:00:00 UTC到现在的总秒数（或毫秒数），也称为Unix时间戳或Epoch时间。它是计算机中常用的时间表示方式，便于计算和存储。"}},{"@type":"Question","name":"时间戳怎么转成日期？","acceptedAnswer":{"@type":"Answer","text":"JavaScript中：new Date(timestamp * 1000)。Python中：datetime.fromtimestamp(timestamp)。Java中：new Date(timestamp * 1000)。也可以使用在线工具直接转换。"}},{"@type":"Question","name":"13位和10位时间戳有什么区别？","acceptedAnswer":{"@type":"Answer","text":"10位时间戳单位是秒，13位时间戳单位是毫秒。13位时间戳除以1000并取整即可得到10位时间戳。10位时间戳乘以1000得到13位毫秒时间戳。"}}]}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>时间戳是什么？</h1>
+    </div>
+    <article style="max-width:700px;line-height:1.8;color:#333;">
+      <p>时间戳（Timestamp）是计算机系统中常用的时间表示方式，在编程开发、数据库存储、API接口中广泛使用。</p>
+
+      <h2 style="margin-top:32px;color:#4361ee;">什么是时间戳？</h2>
+      <p><strong>Unix时间戳</strong>是从 <strong>1970年1月1日 00:00:00 UTC</strong> 到指定时间的总秒数。例如，<code style="padding:2px 6px;background:#f0f2f5;border-radius:4px;">1700000000</code> 表示从1970年1月1日经过了17亿秒。</p>
+      <p>时间戳的优点：</p>
+      <ul>
+        <li>全球统一标准，不受时区影响</li>
+        <li>便于存储和计算时间差</li>
+        <li>格式简单（一个数字即可表示时间）</li>
+      </ul>
+
+      <h2 style="margin-top:32px;color:#4361ee;">10位和13位时间戳的区别</h2>
+      <table style="width:100%;border-collapse:collapse;margin:16px 0;">
+        <tr style="background:#4361ee;color:white;"><th style="padding:10px;border:1px solid #ddd;">类型</th><th style="padding:10px;border:1px solid #ddd;">单位</th><th style="padding:10px;border:1px solid #ddd;">示例</th><th style="padding:10px;border:1px solid #ddd;">转换</th></tr>
+        <tr><td style="padding:10px;border:1px solid #eee;">10位</td><td style="padding:10px;border:1px solid #eee;">秒</td><td style="padding:10px;border:1px solid #eee;">1700000000</td><td style="padding:10px;border:1px solid #eee;">×1000 → 毫秒</td></tr>
+        <tr><td style="padding:10px;border:1px solid #eee;">13位</td><td style="padding:10px;border:1px solid #eee;">毫秒</td><td style="padding:10px;border:1px solid #eee;">1700000000000</td><td style="padding:10px;border:1px solid #eee;">÷1000 → 秒</td></tr>
+      </table>
+
+      <h2 style="margin-top:32px;color:#4361ee;">各语言获取当前时间戳</h2>
+      <div style="background:#1a1a2e;padding:16px;border-radius:8px;margin:16px 0;">
+        <p style="color:#a8dadc;font-size:0.85rem;">// JavaScript（秒）</p>
+        <p style="color:#a8dadc;font-size:0.85rem;">Math.floor(Date.now() / 1000)</p>
+        <br>
+        <p style="color:#a8dadc;font-size:0.85rem;">// Python</p>
+        <p style="color:#a8dadc;font-size:0.85rem;">import time; int(time.time())</p>
+        <br>
+        <p style="color:#a8dadc;font-size:0.85rem;">// Java</p>
+        <p style="color:#a8dadc;font-size:0.85rem;">System.currentTimeMillis() / 1000</p>
+        <br>
+        <p style="color:#a8dadc;font-size:0.85rem;">// MySQL</p>
+        <p style="color:#a8dadc;font-size:0.85rem;">SELECT UNIX_TIMESTAMP();</p>
+      </div>
+
+      <h2 style="margin-top:32px;color:#4361ee;">各语言时间戳转日期</h2>
+      <div style="background:#1a1a2e;padding:16px;border-radius:8px;margin:16px 0;">
+        <p style="color:#a8dadc;font-size:0.85rem;">// JavaScript</p>
+        <p style="color:#a8dadc;font-size:0.85rem;">new Date(timestamp * 1000).toLocaleString()</p>
+        <br>
+        <p style="color:#a8dadc;font-size:0.85rem;">// Python</p>
+        <p style="color:#a8dadc;font-size:0.85rem;">datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')</p>
+      </div>
+
+      <div style="margin-top:32px;padding:20px;background:#f0f2f5;border-radius:12px;">
+        <p style="font-weight:600;margin-bottom:8px;">相关工具</p>
+        <a href="../src/tools/timestamp.html" style="color:#4361ee;font-weight:500;display:block;">→ 在线时间戳转换工具</a>
+      </div>
+    </article>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../js/share.js"></script>
+</body>
+</html>

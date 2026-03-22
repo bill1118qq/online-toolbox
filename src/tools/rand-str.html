@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>随机字符串生成器 - 随机码/订单号/验证码 - 在线工具箱</title>
+  <meta name="description" content="随机字符串生成器：自定义长度和字符集，生成随机码、订单号、验证码、邀请码。支持大小写字母、数字、特殊字符组合。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="随机字符串生成器">
+  <meta property="og:description" content="自定义随机码、订单号、验证码生成工具。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/rand-str.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/rand-str.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"随机字符串生成器","description":"自定义随机码和字符串生成","url":"https://eitools.cn/src/tools/rand-str.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any"}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>随机字符串生成器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">生成随机码、订单号、验证码等，支持自定义字符集和长度。</p>
+    <div style="max-width:800px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px;">
+        <div>
+          <label style="font-size:0.85rem;color:#888;">长度</label>
+          <input type="number" id="length" value="16" min="1" max="1000" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;">
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">数量</label>
+          <input type="number" id="count" value="5" min="1" max="100" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;">
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">前缀（可选）</label>
+          <input type="text" id="prefix" placeholder="如 ORD-" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;">
+        </div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="font-size:0.85rem;color:#888;">字符集</label>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:8px;">
+          <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="lowercase" checked> 小写字母 (a-z)</label>
+          <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="uppercase" checked> 大写字母 (A-Z)</label>
+          <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="digits" checked> 数字 (0-9)</label>
+          <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="special"> 特殊字符 (!@#)</label>
+        </div>
+        <div style="margin-top:8px;">
+          <label style="font-size:0.85rem;color:#888;">排除字符</label>
+          <input type="text" id="exclude" placeholder="如 0OlI1" style="width:300px;padding:8px;border:1px solid #ddd;border-radius:6px;margin-top:4px;font-family:monospace;" title="排除容易混淆的字符如 0O、lI1">
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+        <button onclick="generate()" style="padding:10px 24px;background:#4361ee;color:white;border:none;border-radius:8px;cursor:pointer;font-size:1rem;">生成</button>
+        <button onclick="generateOrderNo()" style="padding:10px 24px;background:#e3f2fd;color:#4361ee;border:1px solid #4361ee;border-radius:8px;cursor:pointer;">生成订单号</button>
+        <button onclick="generateInviteCode()" style="padding:10px 24px;background:#e3f2fd;color:#4361ee;border:1px solid #4361ee;border-radius:8px;cursor:pointer;">生成邀请码</button>
+        <button onclick="generateVerifyCode()" style="padding:10px 24px;background:#e3f2fd;color:#4361ee;border:1px solid #4361ee;border-radius:8px;cursor:pointer;">生成验证码</button>
+      </div>
+      <div style="margin-bottom:16px;">
+        <button onclick="copyAll()" style="padding:6px 16px;background:#4361ee;color:white;border:none;border-radius:6px;cursor:pointer;font-size:0.85rem;">复制全部</button>
+      </div>
+      <div id="result" style="background:#f5f5f5;border-radius:12px;padding:16px;min-height:60px;font-family:monospace;font-size:0.95rem;line-height:2;"></div>
+      <div style="margin-top:16px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+        <div style="padding:12px;background:#e3f2fd;border-radius:8px;text-align:center;cursor:pointer;" onclick="document.getElementById('length').value=4;generate();">
+          <div style="font-size:0.8rem;color:#888;">PIN码</div>
+          <div style="font-weight:600;">4位数字</div>
+        </div>
+        <div style="padding:12px;background:#e8f5e9;border-radius:8px;text-align:center;cursor:pointer;" onclick="document.getElementById('length').value=6;generate();">
+          <div style="font-size:0.8rem;color:#888;">验证码</div>
+          <div style="font-weight:600;">6位数字</div>
+        </div>
+        <div style="padding:12px;background:#fff3e0;border-radius:8px;text-align:center;cursor:pointer;" onclick="document.getElementById('length').value=8;generate();">
+          <div style="font-size:0.8rem;color:#888;">短密码</div>
+          <div style="font-weight:600;">8位混合</div>
+        </div>
+        <div style="padding:12px;background:#f3e5f5;border-radius:8px;text-align:center;cursor:pointer;" onclick="document.getElementById('length').value=32;generate();">
+          <div style="font-size:0.8rem;color:#888;">Token</div>
+          <div style="font-weight:600;">32位</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    function getCharset() {
+      var chars = '';
+      if (document.getElementById('lowercase').checked) chars += 'abcdefghijklmnopqrstuvwxyz';
+      if (document.getElementById('uppercase').checked) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      if (document.getElementById('digits').checked) chars += '0123456789';
+      if (document.getElementById('special').checked) chars += '!@#$%^&*()_+-=';
+      var exclude = document.getElementById('exclude').value;
+      for (var i = 0; i < exclude.length; i++) {
+        chars = chars.split(exclude[i]).join('');
+      }
+      return chars;
+    }
+
+    function randomStr(len, charset) {
+      var result = '';
+      var arr = new Uint32Array(len);
+      crypto.getRandomValues(arr);
+      for (var i = 0; i < len; i++) {
+        result += charset[arr[i] % charset.length];
+      }
+      return result;
+    }
+
+    function generate() {
+      var len = parseInt(document.getElementById('length').value) || 16;
+      var count = parseInt(document.getElementById('count').value) || 5;
+      var prefix = document.getElementById('prefix').value || '';
+      var charset = getCharset();
+      if (!charset) { document.getElementById('result').innerHTML = '<span style="color:#f44;">请至少选择一种字符类型</span>'; return; }
+
+      var html = '';
+      for (var i = 0; i < count; i++) {
+        var str = prefix + randomStr(len, charset);
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 8px;border-bottom:1px solid #e0e0e0;" onclick="copySingle(this)">';
+        html += '<span>' + escapeHtml(str) + '</span>';
+        html += '<span style="color:#888;font-size:0.8rem;">点击复制</span>';
+        html += '</div>';
+      }
+      document.getElementById('result').innerHTML = html;
+    }
+
+    function generateOrderNo() {
+      var now = new Date();
+      var dateStr = now.getFullYear().toString() +
+        String(now.getMonth() + 1).padStart(2, '0') +
+        String(now.getDate()).padStart(2, '0');
+      var timeStr = String(now.getHours()).padStart(2, '0') +
+        String(now.getMinutes()).padStart(2, '0') +
+        String(now.getSeconds()).padStart(2, '0');
+      var rand = randomStr(6, '0123456789');
+      document.getElementById('prefix').value = 'ORD';
+      document.getElementById('length').value = 6;
+      document.getElementById('count').value = 1;
+      document.getElementById('lowercase').checked = false;
+      document.getElementById('uppercase').checked = false;
+      document.getElementById('digits').checked = true;
+      document.getElementById('special').checked = false;
+      var html = '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 8px;cursor:pointer;" onclick="copySingle(this)"><span>ORD' + dateStr + timeStr + rand + '</span><span style="color:#888;font-size:0.8rem;">点击复制</span></div>';
+      document.getElementById('result').innerHTML = html;
+    }
+
+    function generateInviteCode() {
+      document.getElementById('prefix').value = '';
+      document.getElementById('length').value = 8;
+      document.getElementById('count').value = 5;
+      document.getElementById('lowercase').checked = true;
+      document.getElementById('uppercase').checked = true;
+      document.getElementById('digits').checked = true;
+      document.getElementById('special').checked = false;
+      document.getElementById('exclude').value = '0OlI1';
+      generate();
+    }
+
+    function generateVerifyCode() {
+      document.getElementById('prefix').value = '';
+      document.getElementById('length').value = 6;
+      document.getElementById('count').value = 3;
+      document.getElementById('lowercase').checked = false;
+      document.getElementById('uppercase').checked = false;
+      document.getElementById('digits').checked = true;
+      document.getElementById('special').checked = false;
+      document.getElementById('exclude').value = '';
+      generate();
+    }
+
+    function copySingle(el) {
+      var text = el.querySelector('span').textContent;
+      navigator.clipboard.writeText(text).then(function() {
+        var hint = el.querySelector('span:last-child');
+        hint.textContent = '已复制';
+        setTimeout(function() { hint.textContent = '点击复制'; }, 1500);
+      });
+    }
+
+    function copyAll() {
+      var items = document.querySelectorAll('#result > div');
+      var texts = [];
+      items.forEach(function(item) { texts.push(item.querySelector('span').textContent); });
+      navigator.clipboard.writeText(texts.join('\n')).then(function() {
+        event.target.textContent = '已复制';
+        setTimeout(function() { event.target.textContent = '复制全部'; }, 1500);
+      });
+    }
+
+    function escapeHtml(str) {
+      var div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    generate();
+  </script>
+</body>
+</html>

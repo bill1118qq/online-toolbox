@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>生肖查询 - 出生年份属相计算 - 在线工具箱</title>
+  <meta name="description" content="在线生肖查询工具，输入出生年份即可查看对应的生肖属相、天干地支、五行属性。支持1900-2100年查询。免费使用。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="生肖查询工具">
+  <meta property="og:description" content="输入出生年份查询生肖属相、天干地支、五行属性。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/chinese-zodiac.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/chinese-zodiac.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "生肖查询",
+    "url": "https://eitools.cn/src/tools/chinese-zodiac.html",
+    "description": "输入出生年份查询生肖属相、天干地支、五行属性。",
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "Any",
+    "offers": {"@type": "Offer", "price": "0"}
+  }
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>生肖查询</h1>
+    </div>
+
+    <div style="background:white;border-radius:12px;padding:24px;margin-bottom:20px;border:1px solid #eee;">
+      <div style="display:flex;gap:12px;align-items:end;flex-wrap:wrap;">
+        <div style="flex:1;min-width:200px;">
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">出生年份</label>
+          <input type="number" id="yearInput" placeholder="如 1990" min="1900" max="2100" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:16px;">
+        </div>
+        <button class="btn btn-primary" onclick="query()" style="padding:12px 32px;">查询</button>
+      </div>
+    </div>
+
+    <div id="result" style="display:none;">
+      <div id="zodiacCard" style="background:white;border-radius:16px;padding:32px;text-align:center;margin-bottom:20px;border:2px solid #4361ee;">
+        <div id="zodiacEmoji" style="font-size:5rem;margin-bottom:12px;"></div>
+        <div id="zodiacName" style="font-size:2rem;font-weight:bold;color:#4361ee;margin-bottom:8px;"></div>
+        <div id="zodiacInfo" style="font-size:1rem;color:#666;line-height:2;"></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px;">
+        <div style="background:white;border-radius:12px;padding:20px;text-align:center;border:1px solid #eee;">
+          <div style="font-size:0.85rem;color:#999;">天干</div>
+          <div id="tianGan" style="font-size:1.5rem;font-weight:bold;margin-top:4px;color:#4361ee;"></div>
+        </div>
+        <div style="background:white;border-radius:12px;padding:20px;text-align:center;border:1px solid #eee;">
+          <div style="font-size:0.85rem;color:#999;">地支</div>
+          <div id="diZhi" style="font-size:1.5rem;font-weight:bold;margin-top:4px;color:#4361ee;"></div>
+        </div>
+        <div style="background:white;border-radius:12px;padding:20px;text-align:center;border:1px solid #eee;">
+          <div style="font-size:0.85rem;color:#999;">五行</div>
+          <div id="wuXing" style="font-size:1.5rem;font-weight:bold;margin-top:4px;color:#4361ee;"></div>
+        </div>
+      </div>
+
+      <div style="background:white;border-radius:12px;padding:24px;border:1px solid #eee;">
+        <h3 style="margin-bottom:12px;">属相性格特点</h3>
+        <div id="zodiacDesc" style="font-size:0.95rem;line-height:1.8;color:#444;"></div>
+      </div>
+    </div>
+
+    <div style="background:white;border-radius:12px;padding:24px;margin-bottom:20px;border:1px solid #eee;">
+      <h3 style="margin-bottom:16px;">十二生肖速查表</h3>
+      <div id="zodiacTable" style="overflow-x:auto;"></div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    const ZODIACS = [
+      { name:'鼠', emoji:'🐭', desc:'属鼠的人聪明机灵、适应力强、善于社交。他们做事细致，善于抓住机会，但在感情上可能显得多变。财运方面，属鼠人精打细算，善于理财。' },
+      { name:'牛', emoji:'🐮', desc:'属牛的人踏实稳重、勤恳努力、意志坚定。他们为人可靠，做事有条不紊，但有时过于固执。在事业上稳步前进，是值得信赖的伙伴。' },
+      { name:'虎', emoji:'🐯', desc:'属虎的人勇敢果断、充满自信、具有领导力。他们热情洋溢、敢作敢当，但有时过于冲动。天生的领导者，在事业上容易获得成功。' },
+      { name:'兔', emoji:'🐰', desc:'属兔的人温文尔雅、心思细腻、善解人意。他们追求和平与美，善于交际，但有时优柔寡断。在艺术和设计方面有天赋。' },
+      { name:'龙', emoji:'🐲', desc:'属龙的人充满活力、志向远大、魅力四射。他们天生自信、善于表达，但可能过于骄傲。龙在中国文化中是最吉祥的生肖之一。' },
+      { name:'蛇', emoji:'🐍', desc:'属蛇的人智慧深邃、思维敏捷、优雅神秘。他们善于观察和思考，直觉敏锐，但有时显得冷漠。在商业和研究中常有大成就。' },
+      { name:'马', emoji:'🐴', desc:'属马的人热情开朗、自由奔放、精力充沛。他们喜欢冒险和旅行，社交能力强，但有时缺乏耐心。在创造性工作中表现出色。' },
+      { name:'羊', emoji:'🐑', desc:'属羊的人温和善良、富有同情心、艺术气质浓厚。他们内心柔软、善解人意，但有时过于依赖他人。在文学和艺术领域有天赋。' },
+      { name:'猴', emoji:'🐵', desc:'属猴的人聪明好动、幽默风趣、善于学习。他们思维灵活、善于模仿和创新，但有时过于好动。在技术和创新领域有优势。' },
+      { name:'鸡', emoji:'🐔', desc:'属鸡的人勤奋务实、注重细节、观察力强。他们做事有条理、追求完美，但有时过于挑剔。在管理和财务方面能力突出。' },
+      { name:'狗', emoji:'🐶', desc:'属狗的人忠诚正直、诚实可靠、富有正义感。他们对朋友和家人忠心耿耿，但有时过于悲观。是最值得信赖的朋友和伙伴。' },
+      { name:'猪', emoji:'🐷', desc:'属猪的人诚实善良、豁达乐观、享受生活。他们为人真诚、慷慨大方，但有时过于懒散。在美食和享受方面有独特的品味。' }
+    ];
+
+    const TIAN_GAN = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+    const DI_ZHI = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+    const WU_XING = ['木','木','火','火','土','土','金','金','水','水'];
+    const WU_XING_EMOJI = ['🌿','🌿','🔥','🔥','⛰️','⛰️','⚔️','⚔️','💧','💧'];
+
+    function query() {
+      const year = parseInt(document.getElementById('yearInput').value);
+      if (isNaN(year) || year < 1900 || year > 2100) { showToast('请输入1900-2100之间的年份'); return; }
+
+      const index = (year - 4) % 12;
+      const ganIndex = (year - 4) % 10;
+      const zodiac = ZODIACS[index];
+
+      document.getElementById('zodiacEmoji').textContent = zodiac.emoji;
+      document.getElementById('zodiacName').textContent = `${year}年 · ${zodiac.name}年`;
+      document.getElementById('tianGan').textContent = TIAN_GAN[ganIndex];
+      document.getElementById('diZhi').textContent = DI_ZHI[index];
+      document.getElementById('wuXing').textContent = WU_XING[ganIndex];
+      document.getElementById('zodiacInfo').innerHTML =
+        `${TIAN_GAN[ganIndex]}${DI_ZHI[index]}年 · 五行属${WU_XING[ganIndex]} · 农历${zodiac.name}年`;
+      document.getElementById('zodiacDesc').textContent = zodiac.desc;
+      document.getElementById('result').style.display = 'block';
+    }
+
+    function renderTable() {
+      let html = '<table style="width:100%;border-collapse:collapse;font-size:0.9rem;">';
+      html += '<tr style="background:#f0f2f5;"><th style="padding:10px;">年份</th>';
+      for (const z of ZODIACS) html += `<th style="padding:10px;">${z.emoji} ${z.name}</th>`;
+      html += '</tr>';
+      html += '<tr>';
+      const startYear = 2024 - ((2024 - 4) % 12);
+      for (let i = 0; i < 12; i++) {
+        const y = startYear + i;
+        html += `<td style="padding:8px;text-align:center;border:1px solid #eee;font-weight:bold;">${y}</td>`;
+      }
+      html += '</tr></table>';
+      document.getElementById('zodiacTable').innerHTML = html;
+    }
+
+    document.getElementById('yearInput').addEventListener('keydown', e => { if (e.key === 'Enter') query(); });
+    renderTable();
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>

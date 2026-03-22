@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>在线计数器 - 点击计数/倒计时/正计时 - 在线工具箱</title>
+  <meta name="description" content="在线计数器工具，支持点击计数、加减计数、步数记录。界面简洁，大按钮操作方便。免费使用。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="在线计数器">
+  <meta property="og:description" content="点击计数器，支持加减计数和自定义步长。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/counter.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/counter.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"在线计数器","url":"https://eitools.cn/src/tools/counter.html","description":"点击计数器，支持加减计数。","applicationCategory":"UtilityApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0"}}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>在线计数器</h1>
+    </div>
+
+    <div style="text-align:center;padding:40px 0;">
+      <div id="count" style="font-size:6rem;font-weight:bold;color:#4361ee;font-family:monospace;letter-spacing:4px;user-select:none;">0</div>
+      <div style="font-size:0.9rem;color:#999;margin-top:8px;">当前计数</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;max-width:400px;margin:0 auto 24px;">
+      <button onclick="changeCount(-10)" style="padding:16px;font-size:1.2rem;background:#f44336;color:white;border:none;border-radius:12px;cursor:pointer;">-10</button>
+      <button onclick="changeCount(-1)" style="padding:16px;font-size:1.2rem;background:#ff7043;color:white;border:none;border-radius:12px;cursor:pointer;">-1</button>
+      <button onclick="changeCount(1)" style="padding:16px;font-size:1.2rem;background:#4caf50;color:white;border:none;border-radius:12px;cursor:pointer;">+1</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:270px;margin:0 auto 24px;">
+      <button onclick="changeCount(10)" style="padding:12px;font-size:1rem;background:#42a5f5;color:white;border:none;border-radius:12px;cursor:pointer;">+10</button>
+      <button onclick="changeCount(100)" style="padding:12px;font-size:1rem;background:#5c6bc0;color:white;border:none;border-radius:12px;cursor:pointer;">+100</button>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:270px;margin:0 auto 24px;">
+      <button onclick="resetCount()" style="padding:12px;font-size:0.95rem;background:#f0f2f5;border:none;border-radius:12px;cursor:pointer;">重置</button>
+      <button onclick="saveCount()" style="padding:12px;font-size:0.95rem;background:#f0f2f5;border:none;border-radius:12px;cursor:pointer;">保存</button>
+    </div>
+
+    <div style="background:white;border-radius:12px;padding:24px;border:1px solid #eee;">
+      <h3 style="margin-bottom:16px;">自定义步长</h3>
+      <div style="display:flex;gap:12px;align-items:center;">
+        <input type="number" id="step" value="1" min="1" style="width:100px;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;text-align:center;">
+        <button onclick="changeCount(document.getElementById('step').value * 1)" class="btn btn-secondary">加上</button>
+        <button onclick="changeCount(-document.getElementById('step').value * 1)" class="btn btn-secondary">减去</button>
+      </div>
+    </div>
+
+    <div style="background:white;border-radius:12px;padding:24px;margin-top:20px;border:1px solid #eee;">
+      <h3 style="margin-bottom:12px;">历史记录</h3>
+      <div id="history" style="font-size:0.9rem;color:#666;">暂无记录</div>
+    </div>
+  </div>
+  <script>
+    let count = 0;
+    let history = JSON.parse(localStorage.getItem('counter_history') || '[]');
+
+    // Restore saved count
+    const saved = localStorage.getItem('counter_count');
+    if (saved !== null) count = parseInt(saved);
+    document.getElementById('count').textContent = count;
+
+    function changeCount(n) {
+      count += n;
+      document.getElementById('count').textContent = count;
+      localStorage.setItem('counter_count', count);
+    }
+
+    function resetCount() {
+      if (count !== 0) {
+        history.push({ count, time: new Date().toLocaleString() });
+        if (history.length > 20) history.shift();
+        localStorage.setItem('counter_history', JSON.stringify(history));
+      }
+      count = 0;
+      document.getElementById('count').textContent = 0;
+      localStorage.setItem('counter_count', 0);
+      renderHistory();
+    }
+
+    function saveCount() {
+      history.push({ count, time: new Date().toLocaleString() });
+      if (history.length > 20) history.shift();
+      localStorage.setItem('counter_history', JSON.stringify(history));
+      renderHistory();
+    }
+
+    function renderHistory() {
+      if (history.length === 0) {
+        document.getElementById('history').textContent = '暂无记录';
+        return;
+      }
+      let html = '<div style="display:flex;flex-wrap:wrap;gap:8px;">';
+      history.slice().reverse().forEach(h => {
+        html += `<span style="background:#f0f2f5;padding:6px 12px;border-radius:20px;font-size:0.85rem;"><b>${h.count}</b> <span style="color:#999;">${h.time}</span></span>`;
+      });
+      html += '</div>';
+      document.getElementById('history').innerHTML = html;
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', e => {
+      if (e.target.tagName === 'INPUT') return;
+      if (e.key === '+' || e.key === '=') changeCount(1);
+      else if (e.key === '-') changeCount(-1);
+      else if (e.key === '0') resetCount();
+    });
+
+    renderHistory();
+  </script>
+</body>
+</html>

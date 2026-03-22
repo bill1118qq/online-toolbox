@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>食物热量查询 - 每日热量计算器 - 在线工具箱</title>
+  <meta name="description" content="在线食物热量查询工具，包含常见食物热量表、每日热量需求计算、BMI热量推荐。支持减肥增肌热量规划。免费使用。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="食物热量查询">
+  <meta property="og:description" content="常见食物热量表、每日热量需求计算、减肥增肌热量规划。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/food-calorie.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/food-calorie.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"食物热量查询","url":"https://eitools.cn/src/tools/food-calorie.html","description":"常见食物热量表和每日热量计算。","applicationCategory":"HealthApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0"}}
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">← 返回首页</a>
+      <h1>食物热量查询</h1>
+    </div>
+
+    <div style="background:white;border-radius:12px;padding:24px;margin-bottom:20px;border:1px solid #eee;">
+      <h3 style="margin-bottom:16px;">每日热量需求计算</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">性别</label>
+          <select id="gender" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+            <option value="male">男</option><option value="female">女</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">体重（kg）</label>
+          <input type="number" id="weight" placeholder="如 65" step="0.1" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">身高（cm）</label>
+          <input type="number" id="height" placeholder="如 170" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">年龄</label>
+          <input type="number" id="age" placeholder="如 25" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        </div>
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">活动水平</label>
+          <select id="activity" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+            <option value="1.2">久坐不动</option>
+            <option value="1.375">轻度活动（每周1-3天）</option>
+            <option value="1.55" selected>中度活动（每周3-5天）</option>
+            <option value="1.725">高度活动（每周6-7天）</option>
+            <option value="1.9">极高活动（体力劳动/运动员）</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">目标</label>
+          <select id="goal" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+            <option value="lose">减肥</option>
+            <option value="maintain" selected>维持体重</option>
+            <option value="gain">增肌</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="calcCalorie()" style="margin-top:16px;width:100%;">计算</button>
+      <div id="calorieResult" class="result-box" style="margin-top:12px;padding:16px;font-size:0.95rem;line-height:2;"></div>
+    </div>
+
+    <div style="background:white;border-radius:12px;padding:24px;margin-bottom:20px;border:1px solid #eee;">
+      <h3 style="margin-bottom:12px;">常见食物热量表（每100g）</h3>
+      <input type="text" id="foodSearch" placeholder="搜索食物..." oninput="filterFood()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:12px;">
+      <div id="foodTable" style="overflow-x:auto;"></div>
+    </div>
+
+    <div style="background:white;border-radius:12px;padding:24px;margin-bottom:20px;border:1px solid #eee;">
+      <h3 style="margin-bottom:16px;">每日饮食记录</h3>
+      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+        <input type="text" id="mealName" placeholder="食物名称" style="flex:1;min-width:120px;padding:8px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        <input type="number" id="mealCal" placeholder="热量(kcal)" style="width:120px;padding:8px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        <button class="btn btn-primary" onclick="addMeal()" style="padding:8px 20px;">添加</button>
+      </div>
+      <div id="mealList"></div>
+      <div id="totalIntake" style="margin-top:12px;padding:12px;background:#f0f2f5;border-radius:8px;font-size:0.95rem;text-align:center;"></div>
+    </div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    const FOODS = [
+      {name:'白米饭',cal:116,cat:'主食'},{name:'馒头',cal:221,cat:'主食'},{name:'面条(煮)',cal:110,cat:'主食'},{name:'全麦面包',cal:246,cat:'主食'},{name:'红薯',cal:86,cat:'主食'},{name:'玉米',cal:112,cat:'主食'},{name:'燕麦片',cal:377,cat:'主食'},
+      {name:'鸡胸肉',cal:133,cat:'肉类'},{name:'猪肉(瘦)',cal:143,cat:'肉类'},{name:'牛肉',cal:125,cat:'肉类'},{name:'鸡腿',cal:181,cat:'肉类'},{name:'鱼肉',cal:104,cat:'肉类'},{name:'虾仁',cal:93,cat:'肉类'},{name:'鸡蛋',cal:144,cat:'蛋奶'},
+      {name:'牛奶',cal:54,cat:'蛋奶'},{name:'酸奶',cal:72,cat:'蛋奶'},{name:'豆腐',cal:81,cat:'蛋奶'},
+      {name:'苹果',cal:53,cat:'水果'},{name:'香蕉',cal:93,cat:'水果'},{name:'橙子',cal:48,cat:'水果'},{name:'葡萄',cal:44,cat:'水果'},{name:'西瓜',cal:31,cat:'水果'},{name:'草莓',cal:32,cat:'水果'},
+      {name:'西兰花',cal:34,cat:'蔬菜'},{name:'菠菜',cal:24,cat:'蔬菜'},{name:'胡萝卜',cal:37,cat:'蔬菜'},{name:'番茄',cal:19,cat:'蔬菜'},{name:'黄瓜',cal:16,cat:'蔬菜'},{name:'土豆',cal:76,cat:'蔬菜'},{name:'生菜',cal:14,cat:'蔬菜'},
+      {name:'可乐',cal:43,cat:'饮品'},{name:'奶茶',cal:52,cat:'饮品'},{name:'啤酒',cal:32,cat:'饮品'},{name:'橙汁',cal:45,cat:'饮品'},{name:'咖啡(黑)',cal:2,cat:'饮品'},
+      {name:'炸鸡',cal:246,cat:'快餐'},{name:'薯条',cal:312,cat:'快餐'},{name:'汉堡',cal:295,cat:'快餐'},{name:'披萨',cal:266,cat:'快餐'},{name:'油条',cal:386,cat:'快餐'},
+      {name:'花生',cal:563,cat:'坚果'},{name:'核桃',cal:654,cat:'坚果'},{name:'杏仁',cal:578,cat:'坚果'},
+      {name:'巧克力',cal:546,cat:'零食'},{name:'薯片',cal:547,cat:'零食'},{name:'饼干',cal:433,cat:'零食'},
+      {name:'豆浆',cal:16,cat:'饮品'},{name:'豆腐脑',cal:15,cat:'蛋奶'},{name:'饺子(猪肉)',cal:196,cat:'主食'}
+    ];
+
+    let meals = [];
+
+    function calcCalorie() {
+      const g = document.getElementById('gender').value;
+      const w = parseFloat(document.getElementById('weight').value);
+      const h = parseFloat(document.getElementById('height').value);
+      const a = parseInt(document.getElementById('age').value);
+      const act = parseFloat(document.getElementById('activity').value);
+      const goal = document.getElementById('goal').value;
+
+      if (!w || !h || !a) { showToast('请填写完整信息'); return; }
+
+      let bmr;
+      if (g === 'male') bmr = 10 * w + 6.25 * h - 5 * a + 5;
+      else bmr = 10 * w + 6.25 * h - 5 * a - 161;
+
+      const tdee = bmr * act;
+      let target = tdee;
+      let label = '维持体重';
+      if (goal === 'lose') { target = tdee - 500; label = '减肥（-500kcal）'; }
+      else if (goal === 'gain') { target = tdee + 300; label = '增肌（+300kcal）'; }
+
+      document.getElementById('calorieResult').innerHTML =
+        `<b>基础代谢率(BMR)：</b>${Math.round(bmr)} kcal/天<br>` +
+        `<b>每日总消耗(TDEE)：</b>${Math.round(tdee)} kcal/天<br>` +
+        `<b>目标（${label}）：</b><span style="color:#4361ee;font-size:1.2em;font-weight:bold;">${Math.round(target)} kcal/天</span><br>` +
+        `<b>蛋白质建议：</b>${(w * 1.6).toFixed(0)}-${(w * 2.0).toFixed(0)}g/天<br>` +
+        `<b>饮水建议：</b>${(w * 35).toFixed(0)}ml/天`;
+    }
+
+    function renderFoodTable(foods) {
+      let html = '<table style="width:100%;border-collapse:collapse;font-size:0.9rem;">';
+      html += '<tr style="background:#f0f2f5;"><th style="padding:10px;text-align:left;">分类</th><th style="padding:10px;text-align:left;">食物</th><th style="padding:10px;text-align:right;">热量(kcal/100g)</th></tr>';
+      foods.forEach(f => {
+        const color = f.cal > 300 ? '#f44336' : f.cal > 150 ? '#ff9800' : '#4caf50';
+        html += `<tr style="border-bottom:1px solid #eee;"><td style="padding:8px 10px;">${f.cat}</td><td style="padding:8px 10px;">${f.name}</td><td style="padding:8px 10px;text-align:right;color:${color};font-weight:bold;">${f.cal}</td></tr>`;
+      });
+      html += '</table>';
+      document.getElementById('foodTable').innerHTML = html;
+    }
+
+    function filterFood() {
+      const q = document.getElementById('foodSearch').value.trim().toLowerCase();
+      const filtered = q ? FOODS.filter(f => f.name.includes(q) || f.cat.includes(q)) : FOODS;
+      renderFoodTable(filtered);
+    }
+
+    function addMeal() {
+      const name = document.getElementById('mealName').value.trim();
+      const cal = parseFloat(document.getElementById('mealCal').value);
+      if (!name || isNaN(cal) || cal <= 0) { showToast('请输入食物名称和热量'); return; }
+      meals.push({ name, cal });
+      document.getElementById('mealName').value = '';
+      document.getElementById('mealCal').value = '';
+      renderMeals();
+    }
+
+    function renderMeals() {
+      let html = '<table style="width:100%;border-collapse:collapse;font-size:0.9rem;">';
+      html += '<tr style="background:#f0f2f5;"><th style="padding:8px;text-align:left;">食物</th><th style="padding:8px;text-align:right;">热量</th><th style="padding:8px;width:50px;"></th></tr>';
+      let total = 0;
+      meals.forEach((m, i) => {
+        total += m.cal;
+        html += `<tr style="border-bottom:1px solid #eee;"><td style="padding:8px;">${m.name}</td><td style="padding:8px;text-align:right;">${m.cal} kcal</td><td style="padding:8px;text-align:center;"><button onclick="removeMeal(${i})" style="background:none;border:none;color:#f44336;cursor:pointer;font-size:1.1rem;">×</button></td></tr>`;
+      });
+      html += '</table>';
+      document.getElementById('mealList').innerHTML = html;
+      document.getElementById('totalIntake').innerHTML = `<b>今日总摄入：${total} kcal</b>`;
+    }
+
+    function removeMeal(i) { meals.splice(i, 1); renderMeals(); }
+
+    renderFoodTable(FOODS);
+
+    function showToast(msg) {
+      const t = document.createElement('div');
+      t.textContent = msg;
+      t.style.cssText = 'position:fixed;bottom:40px;left:50%;transform:translateX(-50%);background:#333;color:white;padding:8px 20px;border-radius:20px;font-size:14px;z-index:9999;';
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2000);
+    }
+  </script>
+</body>
+</html>
