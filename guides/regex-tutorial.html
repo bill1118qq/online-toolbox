@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>正则表达式教程 - 正则表达式入门与常用正则大全 - 在线工具箱</title>
+  <meta name="description" content="正则表达式怎么写？本文提供正则表达式入门教程、常用正则表达式大全（邮箱、手机号、URL等），附带在线正则测试工具。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="正则表达式入门教程与常用正则大全">
+  <meta property="og:description" content="从零学习正则表达式：语法规则、常用正则大全、在线测试工具。">
+  <meta property="og:url" content="https://eitools.cn/guides/regex-tutorial.html">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://eitools.cn/guides/regex-tutorial.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "如何编写正则表达式",
+    "description": "正则表达式入门教程，包含语法规则和常用正则表达式大全。",
+    "url": "https://eitools.cn/guides/regex-tutorial.html"
+  }
+  </script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>正则表达式入门教程</h1>
+    </div>
+
+    <article style="line-height: 1.8; color: #333;">
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">什么是正则表达式？</h2>
+      <p>正则表达式（Regular Expression，简称 Regex 或 RegExp）是一种用于匹配字符串模式的强大工具。它可以用于文本搜索、替换、验证和提取等操作。</p>
+      <p>几乎所有编程语言（JavaScript、Python、Java、Go 等）都支持正则表达式，是开发者必备的技能之一。</p>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">基础语法</h2>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><code>.</code> 匹配任意单个字符（除换行符）</li>
+        <li><code>\d</code> 匹配数字 [0-9]</li>
+        <li><code>\w</code> 匹配字母、数字和下划线 [a-zA-Z0-9_]</li>
+        <li><code>\s</code> 匹配空白字符（空格、制表符、换行）</li>
+        <li><code>^</code> 匹配字符串开头</li>
+        <li><code>$</code> 匹配字符串结尾</li>
+        <li><code>*</code> 匹配前一个元素 0 次或多次</li>
+        <li><code>+</code> 匹配前一个元素 1 次或多次</li>
+        <li><code>?</code> 匹配前一个元素 0 次或 1 次</li>
+        <li><code>{n,m}</code> 匹配前一个元素 n 到 m 次</li>
+        <li><code>[abc]</code> 匹配方括号中的任意一个字符</li>
+        <li><code>(abc)</code> 分组匹配</li>
+      </ul>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">常用正则表达式大全</h2>
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; background: white; border-radius: 12px; overflow: hidden;">
+          <tr style="background: #4361ee; color: white;"><th style="padding: 12px; text-align: left;">用途</th><th style="padding: 12px; text-align: left;">正则表达式</th></tr>
+          <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">邮箱</td><td style="padding: 10px 12px;"><code>\b[\w.-]+@[\w.-]+\.\w+\b</code></td></tr>
+          <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">手机号（中国）</td><td style="padding: 10px 12px;"><code>1[3-9]\d{9}</code></td></tr>
+          <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">URL</td><td style="padding: 10px 12px;"><code>https?://[\w./-]+</code></td></tr>
+          <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">日期（YYYY-MM-DD）</td><td style="padding: 10px 12px;"><code>\d{4}-\d{2}-\d{2}</code></td></tr>
+          <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">IP 地址</td><td style="padding: 10px 12px;"><code>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}</code></td></tr>
+          <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">中文字符</td><td style="padding: 10px 12px;"><code>[\u4e00-\u9fff]+</code></td></tr>
+          <tr><td style="padding: 10px 12px;">身份证号</td><td style="padding: 10px 12px;"><code>\d{17}[\dXx]</code></td></tr>
+        </table>
+      </div>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">在线正则测试工具</h2>
+      <p>使用我们的 <a href="../src/tools/regex-tester.html" style="color: #4361ee; font-weight: 600;">在线正则表达式测试工具</a>，实时匹配高亮，内置常用正则模板，无需安装任何软件。</p>
+
+      <div style="background: #eef1ff; padding: 20px; border-radius: 12px; margin: 20px 0;">
+        <h3 style="margin-bottom: 8px;">相关工具</h3>
+        <ul style="margin-left: 20px;">
+          <li><a href="../src/tools/regex-tester.html" style="color: #4361ee;">正则表达式测试工具</a></li>
+          <li><a href="../src/tools/text-diff.html" style="color: #4361ee;">文本差异对比工具</a></li>
+          <li><a href="../src/tools/text-dedup.html" style="color: #4361ee;">文本去重工具</a></li>
+        </ul>
+      </div>
+    </article>
+  </div>
+</body>
+</html>

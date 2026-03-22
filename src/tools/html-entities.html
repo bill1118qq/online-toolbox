@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML 实体编解码 - 在线工具箱</title>
+  <meta name="description" content="免费在线 HTML 实体编码解码工具，支持 HTML 特殊字符与实体互相转换。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>HTML 实体编解码</h1>
+    </div>
+
+    <h3 style="margin-bottom: 8px;">输入文本</h3>
+    <textarea id="input" placeholder="输入 HTML 或包含特殊字符的文本...">&lt;div class="test"&gt;Hello &amp; "World"&lt;/div&gt;</textarea>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="encodeEntities()">编码为 HTML 实体</button>
+      <button class="btn btn-primary" onclick="decodeEntities()">解码 HTML 实体</button>
+      <button class="btn btn-secondary" onclick="copyResult()">复制结果</button>
+    </div>
+
+    <h3 style="margin: 16px 0 8px;">结果</h3>
+    <div id="result" class="result-box" style="min-height: 120px;"></div>
+
+    <h3 style="margin: 24px 0 12px;">常用 HTML 实体参考</h3>
+    <div style="background: white; padding: 16px; border-radius: 12px; overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+        <tr style="background: #f0f2f5;"><th style="text-align: left; padding: 8px;">字符</th><th style="text-align: left; padding: 8px;">实体</th><th style="text-align: left; padding: 8px;">描述</th></tr>
+        <tr><td style="padding: 6px 8px;">&lt;</td><td style="padding: 6px 8px;">&amp;lt;</td><td style="padding: 6px 8px;">小于号</td></tr>
+        <tr><td style="padding: 6px 8px;">&gt;</td><td style="padding: 6px 8px;">&amp;gt;</td><td style="padding: 6px 8px;">大于号</td></tr>
+        <tr><td style="padding: 6px 8px;">&amp;</td><td style="padding: 6px 8px;">&amp;amp;</td><td style="padding: 6px 8px;">和号</td></tr>
+        <tr><td style="padding: 6px 8px;">"</td><td style="padding: 6px 8px;">&amp;quot;</td><td style="padding: 6px 8px;">双引号</td></tr>
+        <tr><td style="padding: 6px 8px;">&nbsp;</td><td style="padding: 6px 8px;">&amp;nbsp;</td><td style="padding: 6px 8px;">不换行空格</td></tr>
+        <tr><td style="padding: 6px 8px;">&copy;</td><td style="padding: 6px 8px;">&amp;copy;</td><td style="padding: 6px 8px;">版权符号</td></tr>
+        <tr><td style="padding: 6px 8px;">&yen;</td><td style="padding: 6px 8px;">&amp;yen;</td><td style="padding: 6px 8px;">人民币符号</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    function encodeEntities() {
+      const text = document.getElementById('input').value;
+      if (!text) { showToast('请输入文本'); return; }
+      const div = document.createElement('div');
+      div.appendChild(document.createTextNode(text));
+      document.getElementById('result').textContent = div.innerHTML;
+    }
+
+    function decodeEntities() {
+      const text = document.getElementById('input').value;
+      if (!text) { showToast('请输入文本'); return; }
+      const div = document.createElement('textarea');
+      div.innerHTML = text;
+      document.getElementById('result').textContent = div.value;
+    }
+
+    function copyResult() {
+      const text = document.getElementById('result').textContent;
+      if (!text) { showToast('请先转换'); return; }
+      navigator.clipboard.writeText(text).then(() => showToast('已复制'));
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>

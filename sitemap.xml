@@ -15,4 +15,12 @@
   <url><loc>https://eitools.cn/src/tools/regex-tester.html</loc><priority>0.8</priority></url>
   <url><loc>https://eitools.cn/src/tools/text-diff.html</loc><priority>0.8</priority></url>
   <url><loc>https://eitools.cn/src/tools/lorem-ipsum.html</loc><priority>0.8</priority></url>
+  <url><loc>https://eitools.cn/src/tools/hash-generator.html</loc><priority>0.8</priority></url>
+  <url><loc>https://eitools.cn/src/tools/case-converter.html</loc><priority>0.8</priority></url>
+  <url><loc>https://eitools.cn/src/tools/number-base-converter.html</loc><priority>0.8</priority></url>
+  <url><loc>https://eitools.cn/src/tools/html-entities.html</loc><priority>0.8</priority></url>
+  <url><loc>https://eitools.cn/src/tools/text-dedup.html</loc><priority>0.8</priority></url>
+  <url><loc>https://eitools.cn/guides/json-tutorial.html</loc><priority>0.7</priority></url>
+  <url><loc>https://eitools.cn/guides/regex-tutorial.html</loc><priority>0.7</priority></url>
+  <url><loc>https://eitools.cn/guides/password-security.html</loc><priority>0.7</priority></url>
 </urlset>
