@@ -5,12 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>文本加密解密 - ROT13/Base64/AES - 在线工具箱</title>
   <meta name="description" content="在线文本加密解密工具：ROT13替换密码、Base64编解码、URL编解码、凯撒密码。支持中英文文本加密，完全在浏览器本地处理。">
-  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
   <meta property="og:title" content="文本加密解密工具">
   <meta property="og:description" content="ROT13/Base64/凯撒密码在线加密解密。">
   <meta property="og:url" content="https://eitools.cn/src/tools/rot13-cipher.html">
   <link rel="canonical" href="https://eitools.cn/src/tools/rot13-cipher.html">
   <link rel="stylesheet" href="../../css/style.css">
+  <meta property="og:type" content="website">
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"WebApplication","name":"文本加密解密","description":"ROT13/Base64/凯撒密码加密解密","url":"https://eitools.cn/src/tools/rot13-cipher.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
   </script>
@@ -32,6 +33,7 @@
           <button onclick="setMethod('url')" id="btn-url" class="method-btn" style="padding:8px 16px;background:white;color:#333;border:2px solid #ddd;border-radius:8px;cursor:pointer;">URL编码</button>
           <button onclick="setMethod('reverse')" id="btn-reverse" class="method-btn" style="padding:8px 16px;background:white;color:#333;border:2px solid #ddd;border-radius:8px;cursor:pointer;">反转文本</button>
           <button onclick="setMethod('morse')" id="btn-morse" class="method-btn" style="padding:8px 16px;background:white;color:#333;border:2px solid #ddd;border-radius:8px;cursor:pointer;">摩尔斯码</button>
+          <button onclick="setMethod('binary')" id="btn-binary" class="method-btn" style="padding:8px 16px;background:white;color:#333;border:2px solid #ddd;border-radius:8px;cursor:pointer;">二进制编码</button>
         </div>
       </div>
       <div id="caesarOption" style="display:none;margin-bottom:16px;">
@@ -64,7 +66,8 @@
       base64: '<b>Base64</b>：将二进制数据编码为ASCII字符串。常用于电子邮件附件、URL中的数据传输。不是加密，只是编码。',
       url: '<b>URL编码</b>：将特殊字符转换为%XX格式。如空格变为%20，中文变为%E4%B8%AD等。',
       reverse: '<b>反转文本</b>：将文本完全倒序。hello → olleh。中英文均支持。',
-      morse: '<b>摩尔斯码</b>：用点和划表示字母和数字。如 SOS → ... --- ... 是国际通用的求救信号。'
+      morse: '<b>摩尔斯码</b>：用点和划表示字母和数字。如 SOS → ... --- ... 是国际通用的求救信号。',
+      binary: '<b>二进制编码</b>：将每个字符转换为其ASCII码的二进制表示。如 A → 01000001。支持编码和解码。'
     };
 
     function setMethod(method) {
@@ -123,6 +126,14 @@
             result = text.toUpperCase().split(' ').map(function(word) {
               return word.split('').map(function(c) { return MORSE_MAP[c] || c; }).join(' ');
             }).join(' / ');
+          }
+          break;
+        case 'binary':
+          var isBin = /^[01\s]+$/.test(text.trim());
+          if (isBin) {
+            result = text.trim().split(/\s+/).map(function(b) { return String.fromCharCode(parseInt(b, 2)); }).join('');
+          } else {
+            result = text.split('').map(function(c) { return c.charCodeAt(0).toString(2).padStart(8, '0'); }).join(' ');
           }
           break;
       }

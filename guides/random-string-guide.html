@@ -11,6 +11,7 @@
   <meta property="og:url" content="https://eitools.cn/guides/random-string-guide.html">
   <link rel="canonical" href="https://eitools.cn/guides/random-string-guide.html">
   <link rel="stylesheet" href="../css/style.css">
+  <meta property="og:type" content="article">
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"订单号怎么生成？","acceptedAnswer":{"@type":"Answer","text":"常见订单号格式：日期(14位)+时间(6位)+随机数(4-6位)，如ORD20260322143025000001。需要保证唯一性，高并发场景可用雪花算法或UUID。"}},{"@type":"Question","name":"验证码多少位安全？","acceptedAnswer":{"@type":"Answer","text":"4位数字验证码有10000种可能（10^4），6位有100万种（10^6）。建议使用6位数字验证码，暴力破解需要平均50万次尝试。结合频率限制和过期时间更安全。"}}]}
   </script>

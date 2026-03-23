@@ -5,12 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>星期计算器 - 某天是星期几 - 在线工具箱</title>
   <meta name="description" content="免费在线星期计算器。输入任意日期，快速计算是星期几。支持历史日期和未来日期查询。">
-  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
   <meta property="og:title" content="星期计算器 - 某天是星期几">
   <meta property="og:description" content="输入日期快速计算星期几。">
   <meta property="og:url" content="https://eitools.cn/src/tools/weekday-calc.html">
   <link rel="canonical" href="https://eitools.cn/src/tools/weekday-calc.html">
   <link rel="stylesheet" href="../../css/style.css">
+  <meta property="og:type" content="website">
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"WebApplication","name":"星期计算器","description":"计算任意日期是星期几","url":"https://eitools.cn/src/tools/weekday-calc.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
   </script>
@@ -64,6 +65,7 @@
       document.getElementById('dateInput').value = d.toISOString().split('T')[0];
       showResult(d);
     }
+    const HOLIDAYS = {'1-1':'元旦','2-14':'情人节','3-8':'妇女节','4-1':'愚人节','5-1':'劳动节','5-4':'青年节','6-1':'儿童节','10-1':'国庆节','12-25':'圣诞节'};
     function showResult(d) {
       const weekday = WEEKDAYS[d.getDay()];
       const isWeekend = d.getDay() === 0 || d.getDay() === 6;
@@ -73,11 +75,15 @@
       if (diffDays > 0) relText = `${diffDays} 天后`;
       else if (diffDays < 0) relText = `${Math.abs(diffDays)} 天前`;
       const yearDays = Math.round((d - new Date(d.getFullYear(),0,1)) / 86400000) + 1;
+      const m = d.getMonth() + 1, dd = d.getDate();
+      const holiday = HOLIDAYS[`${m}-${dd}`] || '';
+      const holidayHtml = holiday ? `<div style="margin-top:6px;color:#e03131;font-weight:600;">${holiday}</div>` : '';
       document.getElementById('result').innerHTML = `
         <div style="font-size:2rem;font-weight:700;color:#4361ee;">${weekday}</div>
-        <div style="margin-top:8px;color:#666;">${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日</div>
+        <div style="margin-top:8px;color:#666;">${d.getFullYear()}年${m}月${dd}日</div>
         <div style="margin-top:4px;color:#888;">${relText} · 第${d.getDay()===0?7:d.getDay()}天 · 今年第${yearDays}天</div>
-        <div style="margin-top:8px;display:inline-block;padding:4px 16px;border-radius:20px;font-size:0.85rem;background:${isWeekend?'#fff3cd':'#e8f5e9'};color:${isWeekend?'#e67700':'#2f9e44'};">${isWeekend?'周末':'工作日'}</div>`;
+        <div style="margin-top:8px;display:inline-block;padding:4px 16px;border-radius:20px;font-size:0.85rem;background:${isWeekend?'#fff3cd':'#e8f5e9'};color:${isWeekend?'#e67700':'#2f9e44'};">${isWeekend?'周末':'工作日'}</div>
+        ${holidayHtml}`;
     }
     function calcYearStats() {
       const now = new Date();

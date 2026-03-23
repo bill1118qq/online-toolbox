@@ -4,13 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>汇率换算 - 人民币美元欧元在线换算 - 在线工具箱</title>
-  <meta name="description" content="在线汇率换算工具，支持人民币、美元、欧元、日元、英镑、港币等主流货币互转。参考汇率实时更新。免费使用。">
+  <meta name="description" content="在线汇率换算工具，支持人民币、美元、欧元、日元、英镑、港币等主流货币互转。参考汇率（手动更新），仅供估算参考。免费使用。">
   <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
   <meta property="og:title" content="汇率换算工具">
   <meta property="og:description" content="人民币、美元、欧元、日元等主流货币在线换算。">
   <meta property="og:url" content="https://eitools.cn/src/tools/exchange-rate.html">
   <link rel="canonical" href="https://eitools.cn/src/tools/exchange-rate.html">
   <link rel="stylesheet" href="../../css/style.css">
+  <meta property="og:type" content="website">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -31,7 +32,7 @@
       <h1>汇率换算</h1>
     </div>
 
-    <p style="color:#999;font-size:0.85rem;margin-bottom:16px;">* 汇率为参考值，不构成投资建议。实际交易以银行报价为准。</p>
+    <p style="color:#e67700;font-size:0.85rem;margin-bottom:16px;background:#fff3cd;padding:10px 16px;border-radius:8px;">* 汇率为手动更新的参考值（2026年3月），仅供估算参考，不构成投资建议。实际交易请以银行或外汇平台实时报价为准。</p>
 
     <div style="background:white;border-radius:12px;padding:24px;margin-bottom:20px;border:1px solid #eee;">
       <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:end;">
@@ -70,7 +71,8 @@
   <div id="share-bar"></div>
   <script src="../../js/share.js"></script>
   <script>
-    // 基准货币：1 单位外币 = ? 人民币
+    // 基准货币：1 单位外币 = ? 人民币（参考汇率，手动更新于 2026年3月）
+    // 数据来源：公开汇率参考，仅供估算，不构成投资建议
     const RATES = {
       'CNY': { name: '人民币', symbol: '¥', rate: 1 },
       'USD': { name: '美元', symbol: '$', rate: 7.25 },

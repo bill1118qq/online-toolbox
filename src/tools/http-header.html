@@ -11,6 +11,7 @@
   <meta property="og:url" content="https://eitools.cn/src/tools/http-header.html">
   <link rel="canonical" href="https://eitools.cn/src/tools/http-header.html">
   <link rel="stylesheet" href="../../css/style.css">
+  <meta property="og:type" content="website">
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"WebApplication","name":"HTTP状态码大全","url":"https://eitools.cn/src/tools/http-header.html","description":"HTTP状态码完整参考手册，支持搜索和分类筛选","applicationCategory":"DeveloperApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}
   </script>
@@ -62,10 +63,13 @@
       {code:'415',name:'Unsupported Media Type',desc:'不支持的媒体类型',cat:'4xx'},
       {code:'422',name:'Unprocessable Entity',desc:'语义错误无法处理',cat:'4xx'},
       {code:'429',name:'Too Many Requests',desc:'请求过于频繁（限流）',cat:'4xx'},
+      {code:'431',name:'Request Header Fields Too Large',desc:'请求头字段过大',cat:'4xx'},
+      {code:'451',name:'Unavailable For Legal Reasons',desc:'因法律原因不可用',cat:'4xx'},
       {code:'500',name:'Internal Server Error',desc:'服务器内部错误',cat:'5xx'},
       {code:'502',name:'Bad Gateway',desc:'网关/代理错误',cat:'5xx'},
       {code:'503',name:'Service Unavailable',desc:'服务不可用',cat:'5xx'},
       {code:'504',name:'Gateway Timeout',desc:'网关超时',cat:'5xx'},
+      {code:'505',name:'HTTP Version Not Supported',desc:'HTTP版本不支持',cat:'5xx'},
     ];
     const catColors = {'1xx':'#4361ee','2xx':'#4ade80','3xx':'#f59e0b','4xx':'#f44','5xx':'#a855f7'};
     const catNames = {'1xx':'信息响应','2xx':'成功','3xx':'重定向','4xx':'客户端错误','5xx':'服务器错误'};

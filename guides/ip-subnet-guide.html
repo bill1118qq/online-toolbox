@@ -11,6 +11,7 @@
   <meta property="og:url" content="https://eitools.cn/guides/ip-subnet-guide.html">
   <link rel="canonical" href="https://eitools.cn/guides/ip-subnet-guide.html">
   <link rel="stylesheet" href="../css/style.css">
+  <meta property="og:type" content="article">
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"什么是CIDR？","acceptedAnswer":{"@type":"Answer","text":"CIDR（无类别域间路由）是用斜杠表示法标记IP地址的网络前缀长度。如192.168.1.0/24表示前24位是网络部分。CIDR取代了传统的A/B/C类网络划分，更灵活高效地分配IP地址。"}},{"@type":"Question","name":"子网掩码怎么算？","acceptedAnswer":{"@type":"Answer","text":"子网掩码是由网络前缀决定的。/24的子网掩码是255.255.255.0，/16是255.255.0.0，/8是255.0.0.0。网络地址 = IP地址 AND 子网掩码（按位与运算），广播地址 = 网络地址 OR 反转子网掩码。"}}]}
   </script>
