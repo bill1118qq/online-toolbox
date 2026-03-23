@@ -94,9 +94,18 @@
       reader.readAsDataURL(file);
     }
 
+    function showToast(msg) {
+      var t = document.createElement('div');
+      t.textContent = msg;
+      t.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 24px;border-radius:8px;z-index:99999;font-size:0.9rem;opacity:0;transition:opacity 0.3s;';
+      document.body.appendChild(t);
+      requestAnimationFrame(function(){ t.style.opacity = '1'; });
+      setTimeout(function(){ t.style.opacity = '0'; setTimeout(function(){ t.remove(); }, 300); }, 2000);
+    }
+
     function copyResult() {
       const text = document.getElementById('decoded-content').textContent;
-      navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板'));
+      navigator.clipboard.writeText(text).then(() => showToast('已复制到剪贴板'));
     }
 
     function showError(msg) {

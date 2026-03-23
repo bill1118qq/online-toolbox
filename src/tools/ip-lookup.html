@@ -8,9 +8,21 @@
   <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../../css/style.css">
   <meta property="og:type" content="website">
+  <meta property="og:title" content="IP 地址查询 - 在线工具箱">
   <meta property="og:description" content="免费在线 IP 地址查询工具，查看本机 IP 地址、IP 归属地、运营商信息。">
   <meta property="og:url" content="https://eitools.cn/src/tools/ip-lookup.html">
   <link rel="canonical" href="https://eitools.cn/src/tools/ip-lookup.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "IP 地址查询",
+    "url": "https://eitools.cn/src/tools/ip-lookup.html",
+    "description": "免费在线 IP 地址查询工具，查看本机 IP 地址、IP 归属地、运营商信息。",
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "All"
+  }
+  </script>
 </head>
 <body>
   <div class="tool-page">
@@ -89,6 +101,13 @@
 
     getMyIp();
   </script>
+<div style="margin-top:32px;padding:20px;background:#f0f2f5;border-radius:12px;">
+  <h3 style="font-size:0.95rem;margin:0 0 12px;color:#333;">相关工具推荐</h3>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;">
+    <a href="subnet-calculator.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">子网计算器</a>
+    <a href="ip-converter.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">IP 格式转换</a>
+  </div>
+</div>
 <div id="share-bar"></div>
 <script src="../../js/share.js"></script>
 </body>

@@ -69,7 +69,15 @@
     dropZone.ondrop = e => { e.preventDefault(); dropZone.style.borderColor = '#ccc'; if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); };
 
     function handleFile(file) {
-      if (!file || !file.type.match(/^image\/(png|jpeg|webp)$/)) return alert('请选择 PNG/JPG/WebP 图片');
+      function showToast(msg) {
+        var t = document.createElement('div');
+        t.textContent = msg;
+        t.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 24px;border-radius:8px;z-index:99999;font-size:0.9rem;opacity:0;transition:opacity 0.3s;';
+        document.body.appendChild(t);
+        requestAnimationFrame(function(){ t.style.opacity = '1'; });
+        setTimeout(function(){ t.style.opacity = '0'; setTimeout(function(){ t.remove(); }, 300); }, 2000);
+      }
+      if (!file || !file.type.match(/^image\/(png|jpeg|webp)$/)) { showToast('请选择 PNG/JPG/WebP 图片'); return; }
       currentFile = file;
       const reader = new FileReader();
       reader.onload = e => {
@@ -101,7 +109,7 @@
         const quality = parseInt(document.getElementById('quality').value) / 100;
         const ext = currentFormat === 'image/png' ? 'png' : currentFormat === 'image/jpeg' ? 'jpg' : 'webp';
         canvas.toBlob(blob => {
-          if (!blob) return alert('转换失败，浏览器不支持该格式');
+          if (!blob) { showToast('转换失败，浏览器不支持该格式'); return; }
           const url = URL.createObjectURL(blob);
           const origKB = (currentFile.size / 1024).toFixed(1);
           const newKB = (blob.size / 1024).toFixed(1);

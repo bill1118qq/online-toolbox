@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>在线工具箱 - 免费实用小工具</title>
-  <meta name="description" content="免费在线工具集合：JSON格式化、Base64编解码、二维码生成、图片压缩、图片格式转换、加水印、BMI计算器、房贷计算器、个税计算器、五险一金计算器、退休金计算器、存款利息计算器、SEO检测等155+实用工具。无需安装，打开即用。">
+  <meta name="description" content="免费在线工具集合：JSON格式化、Base64编解码、二维码生成、图片压缩、图片格式转换、加水印、BMI计算器、房贷计算器、个税计算器、五险一金计算器、退休金计算器、存款利息计算器、SEO检测等144个实用工具。无需安装，打开即用。">
   <meta name="keywords" content="在线工具,JSON格式化,Base64,二维码生成,图片压缩,BMI计算器,房贷计算器,个税计算器,年龄计算器,温度换算,长度换算,密码生成器,正则测试,Hash计算,免费工具">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <meta property="og:title" content="在线工具箱 - 免费实用小工具">
@@ -166,7 +166,7 @@
       {"@type": "ListItem","position":127,"name":"退休金计算器","url":"https://eitools.cn/src/tools/retirement-calculator.html"},
       {"@type": "ListItem","position":128,"name":"文本排版工具","url":"https://eitools.cn/src/tools/text-wrap.html"},
       {"@type": "ListItem","position":129,"name":"JSON转YAML","url":"https://eitools.cn/src/tools/json-to-yaml.html"},
-      {"@type": "ListItem","position":130,"name":"行计数器","url":"https://eitools.cn/src/tools/line-counter.html"},
+      {"@type": "ListItem","position":130,"name":"科学计算器","url":"https://eitools.cn/src/tools/line-counter.html"},
       {"@type": "ListItem","position":131,"name":"随机字符串生成","url":"https://eitools.cn/src/tools/rand-str.html"},
       {"@type": "ListItem","position":132,"name":"网页SEO检测","url":"https://eitools.cn/src/tools/seo-checker.html"},
       {"@type": "ListItem","position":133,"name":"国际BMI计算","url":"https://eitools.cn/src/tools/bmi-intl.html"},
@@ -991,18 +991,6 @@
         <p>中文排版美化/缩进/去空行</p>
       </a>
 
-      <a href="src/tools/number-base-extended.html" class="tool-card">
-        <div class="tool-icon">进制</div>
-        <h2>进制转换器</h2>
-        <p>二八十六进制互转/自定义进制</p>
-      </a>
-
-      <a href="src/tools/rot13-cipher.html" class="tool-card">
-        <div class="tool-icon">🔒</div>
-        <h2>文本加密解密</h2>
-        <p>ROT13/凯撒/Base64/摩尔斯码</p>
-      </a>
-
       <a href="src/tools/json-to-yaml.html" class="tool-card">
         <div class="tool-icon">YML</div>
         <h2>JSON转YAML</h2>
@@ -1010,9 +998,9 @@
       </a>
 
       <a href="src/tools/line-counter.html" class="tool-card">
-        <div class="tool-icon">CALC</div>
+        <div class="tool-icon">SCI</div>
         <h2>科学计算器</h2>
-        <p>四则运算/括号/百分比/历史</p>
+        <p>四则运算/括号/开方/百分比/历史</p>
       </a>
 
       <a href="src/tools/rand-str.html" class="tool-card">
@@ -1361,15 +1349,19 @@
     }
 
     // ===== Search input events =====
+    var debounceTimer;
     searchInput.addEventListener('input', function() {
-      currentQuery = searchInput.value;
-      filterTools();
-      // Update URL without reload
-      if (currentQuery) {
-        history.replaceState(null, '', '?q=' + encodeURIComponent(currentQuery));
-      } else {
-        history.replaceState(null, '', window.location.pathname);
-      }
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(function() {
+        currentQuery = searchInput.value;
+        filterTools();
+        // Update URL without reload
+        if (currentQuery) {
+          history.replaceState(null, '', '?q=' + encodeURIComponent(currentQuery));
+        } else {
+          history.replaceState(null, '', window.location.pathname);
+        }
+      }, 200);
     });
 
     searchClear.addEventListener('click', function() {

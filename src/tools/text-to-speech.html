@@ -76,7 +76,15 @@
       if (!synth) return;
       synth.cancel();
       const text = document.getElementById('text').value.trim();
-      if (!text) return alert('请输入文字');
+      if (!text) { showToast('请输入文字'); return; }
+      function showToast(msg) {
+        var t = document.createElement('div');
+        t.textContent = msg;
+        t.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 24px;border-radius:8px;z-index:99999;font-size:0.9rem;opacity:0;transition:opacity 0.3s;';
+        document.body.appendChild(t);
+        requestAnimationFrame(function(){ t.style.opacity = '1'; });
+        setTimeout(function(){ t.style.opacity = '0'; setTimeout(function(){ t.remove(); }, 300); }, 2000);
+      }
       const utter = new SpeechSynthesisUtterance(text);
       const selected = document.getElementById('voiceSelect').value;
       const voice = voices.find(v => v.name === selected);

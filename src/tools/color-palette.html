@@ -37,6 +37,14 @@
     </div>
   </div>
   <script>
+    function showToast(msg) {
+      var t = document.createElement('div');
+      t.textContent = msg;
+      t.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 24px;border-radius:8px;z-index:99999;font-size:0.9rem;opacity:0;transition:opacity 0.3s;';
+      document.body.appendChild(t);
+      requestAnimationFrame(function(){ t.style.opacity = '1'; });
+      setTimeout(function(){ t.style.opacity = '0'; setTimeout(function(){ t.remove(); }, 300); }, 2000);
+    }
     function hslToHex(h, s, l) {
       h /= 360; s /= 100; l /= 100;
       let r, g, b;
@@ -107,7 +115,7 @@
       const [h, s, l] = hexToHsl(hex);
       const css = `:root {\n  --color-primary: ${hex};\n  --color-secondary: ${hslToHex((h+120)%360, s, l)};\n  --color-accent: ${hslToHex((h+180)%360, s, l)};\n  --color-light: ${hslToHex(h, s, Math.min(l+20, 95))};\n  --color-dark: ${hslToHex(h, s, Math.max(l-20, 5))};\n}`;
       navigator.clipboard.writeText(css);
-      alert('CSS变量已复制！');
+      showToast('CSS变量已复制！');
     }
 
     function exportTailwind() {
@@ -115,7 +123,7 @@
       const [h, s, l] = hexToHsl(hex);
       const config = `colors: {\n  primary: '${hex}',\n  secondary: '${hslToHex((h+120)%360, s, l)}',\n  accent: '${hslToHex((h+180)%360, s, l)}',\n}`;
       navigator.clipboard.writeText(config);
-      alert('Tailwind配置已复制！');
+      showToast('Tailwind配置已复制！');
     }
 
     generate();

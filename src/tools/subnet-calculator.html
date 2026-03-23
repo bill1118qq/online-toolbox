@@ -8,9 +8,21 @@
   <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../../css/style.css">
   <meta property="og:type" content="website">
+  <meta property="og:title" content="子网计算器 - 在线工具箱">
   <meta property="og:description" content="免费在线子网掩码计算器，IP 子网划分，计算网络地址、广播地址、可用主机数。">
   <meta property="og:url" content="https://eitools.cn/src/tools/subnet-calculator.html">
   <link rel="canonical" href="https://eitools.cn/src/tools/subnet-calculator.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "子网计算器",
+    "url": "https://eitools.cn/src/tools/subnet-calculator.html",
+    "description": "免费在线子网掩码计算器，IP 子网划分，计算网络地址、广播地址、可用主机数。",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "All"
+  }
+  </script>
 </head>
 <body>
   <div class="tool-page">
@@ -34,14 +46,22 @@
   </div>
 
   <script>
+    function showToast(msg) {
+      var t = document.createElement('div');
+      t.textContent = msg;
+      t.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 24px;border-radius:8px;z-index:99999;font-size:0.9rem;opacity:0;transition:opacity 0.3s;';
+      document.body.appendChild(t);
+      requestAnimationFrame(function(){ t.style.opacity = '1'; });
+      setTimeout(function(){ t.style.opacity = '0'; setTimeout(function(){ t.remove(); }, 300); }, 2000);
+    }
     function calculate() {
       const ip = document.getElementById('ipInput').value.trim();
       const cidr = parseInt(document.getElementById('cidr').value);
 
-      if (!ip) { alert('请输入 IP 地址'); return; }
+      if (!ip) { showToast('请输入 IP 地址'); return; }
       const parts = ip.split('.').map(Number);
       if (parts.length !== 4 || parts.some(p => isNaN(p) || p < 0 || p > 255)) {
-        alert('IP 地址格式不正确'); return;
+        showToast('IP 地址格式不正确'); return;
       }
 
       const ipNum = (parts[0] << 24 | parts[1] << 16 | parts[2] << 8 | parts[3]) >>> 0;

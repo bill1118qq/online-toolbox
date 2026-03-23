@@ -42,12 +42,28 @@
       </div>
     </div>
   </div>
-  <div id="share-bar"></div>
+  <div style="margin-top:32px;padding:20px;background:#f0f2f5;border-radius:12px;">
+  <h3 style="font-size:0.95rem;margin:0 0 12px;color:#333;">相关工具推荐</h3>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;">
+    <a href="html-minify.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">HTML 压缩</a>
+    <a href="css-minify.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">CSS 压缩</a>
+    <a href="json-minify.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">JSON 压缩</a>
+  </div>
+</div>
+<div id="share-bar"></div>
   <script src="../../js/share.js"></script>
   <script>
     function analyze() {
       var html = document.getElementById('htmlInput').value;
-      if (!html.trim()) { alert('请粘贴HTML代码'); return; }
+      function showToast(msg) {
+        var t = document.createElement('div');
+        t.textContent = msg;
+        t.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 24px;border-radius:8px;z-index:99999;font-size:0.9rem;opacity:0;transition:opacity 0.3s;';
+        document.body.appendChild(t);
+        requestAnimationFrame(function(){ t.style.opacity = '1'; });
+        setTimeout(function(){ t.style.opacity = '0'; setTimeout(function(){ t.remove(); }, 300); }, 2000);
+      }
+      if (!html.trim()) { showToast('请粘贴HTML代码'); return; }
       var parser = new DOMParser();
       var doc = parser.parseFromString(html, 'text/html');
       var checks = [];

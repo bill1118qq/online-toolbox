@@ -8,9 +8,21 @@
   <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../../css/style.css">
   <meta property="og:type" content="website">
+  <meta property="og:title" content="颜色选择器 - 在线工具箱">
   <meta property="og:description" content="免费在线颜色选择器，支持 HEX/RGB/HSL 互转，复制色值。">
   <meta property="og:url" content="https://eitools.cn/src/tools/color-picker.html">
   <link rel="canonical" href="https://eitools.cn/src/tools/color-picker.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "颜色选择器",
+    "url": "https://eitools.cn/src/tools/color-picker.html",
+    "description": "免费在线颜色选择器，支持 HEX/RGB/HSL 互转，复制色值。",
+    "applicationCategory": "DesignerApplication",
+    "operatingSystem": "All"
+  }
+  </script>
 </head>
 <body>
   <div class="tool-page">
@@ -140,6 +152,14 @@
 
     updateFromHex('#4361ee');
   </script>
+<div style="margin-top:32px;padding:20px;background:#f0f2f5;border-radius:12px;">
+  <h3 style="font-size:0.95rem;margin:0 0 12px;color:#333;">相关工具推荐</h3>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;">
+    <a href="color-converter.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">颜色转换器</a>
+    <a href="color-palette.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">调色板生成</a>
+    <a href="random-color.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">随机颜色</a>
+  </div>
+</div>
 <div id="share-bar"></div>
 <script src="../../js/share.js"></script>
 </body>
