@@ -1,3 +1,15 @@
+// Google Analytics
+(function(){
+  var s = document.createElement('script');
+  s.src = 'https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG';
+  s.async = true;
+  document.head.appendChild(s);
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-HHMQZC85HG');
+})();
+
 // share.js - 社交分享按钮（微信/微博/QQ/复制链接）
 // 在工具页面底部引入: <script src="../../js/share.js"></script>
 (function() {
