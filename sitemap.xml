@@ -36,7 +36,6 @@
     <priority>0.8</priority>
   </url>
 <url>
-    <loc>https://eitools.cn/src/tools/base-converter.html</loc>
     <lastmod>2026-03-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -81,7 +80,6 @@
   </url>
 <url><loc>https://eitools.cn/src/tools/case-converter.html</loc><priority>0.8</priority></url>
 <url>
-    <loc>https://eitools.cn/src/tools/case-transform.html</loc>
     <lastmod>2026-03-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -269,7 +267,6 @@
     <priority>0.8</priority>
   </url>
 <url>
-    <loc>https://eitools.cn/src/tools/markdown-table.html</loc>
     <lastmod>2026-03-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -291,7 +288,6 @@
   </url>
 <url><loc>https://eitools.cn/src/tools/percentage-calculator.html</loc><priority>0.8</priority></url>
 <url>
-    <loc>https://eitools.cn/src/tools/percentage-change.html</loc>
     <lastmod>2026-03-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -355,7 +351,6 @@
 <url><loc>https://eitools.cn/src/tools/text-wrap.html</loc><priority>0.8</priority></url>
 <url><loc>https://eitools.cn/guides/social-insurance-guide.html</loc><priority>0.7</priority></url>
 <url>
-    <loc>https://eitools.cn/src/tools/timestamp-convert.html</loc>
     <lastmod>2026-03-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -376,7 +371,6 @@
     <priority>0.8</priority>
   </url>
 <url>
-    <loc>https://eitools.cn/src/tools/web-color.html</loc>
     <lastmod>2026-03-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
