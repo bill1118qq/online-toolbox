@@ -208,6 +208,8 @@ body {
   align-items: center;
   justify-content: center;
   margin-bottom: 16px;
+  overflow: hidden;
+  line-height: 1;
 }
 
 .tool-card h2 {
@@ -274,6 +276,16 @@ textarea, input[type="text"], input[type="number"] {
 textarea:focus, input:focus {
   outline: none;
   border-color: #4361ee;
+}
+
+/* Form group spacing */
+.form-group {
+  margin-bottom: 16px;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
 }
 
 textarea {
@@ -346,9 +358,13 @@ textarea {
   .tools-grid {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 16px;
+    padding: 20px 0;
   }
   .logo {
     font-size: 2rem;
+  }
+  .tagline {
+    font-size: 0.9rem;
   }
   .search-section {
     padding: 12px 0 12px;
@@ -357,11 +373,23 @@ textarea {
     margin-bottom: 12px;
   }
   .search-input {
-    padding: 10px 40px 10px 44px;
+    padding: 10px 40px 10px 48px;
     font-size: 0.95rem;
+  }
+  .search-clear {
+    right: 8px;
   }
   .category-tabs {
     gap: 6px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    justify-content: flex-start;
+    padding: 0 4px;
+  }
+  .category-tabs::-webkit-scrollbar {
+    display: none;
   }
   .category-tab {
     padding: 5px 14px;
@@ -421,3 +449,83 @@ textarea {
   font-size: 0.75rem;
   color: #888;
 }
+
+/* ===== Fix #1: Constrain share-bar and related-tools to tool-page width ===== */
+#share-bar {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.related-tools {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ===== Fix #3: Focus-visible accessibility styles ===== */
+.category-tab:focus-visible,
+.tool-card a:focus-visible,
+.search-input:focus-visible,
+.btn:focus-visible,
+button:focus-visible {
+  outline: 2px solid #4361ee;
+  outline-offset: 2px;
+}
+
+/* ===== Fix #4: Range input global styles ===== */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: #e0e0e0;
+  outline: none;
+  transition: background 0.2s;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #4361ee;
+  cursor: pointer;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #4361ee;
+  cursor: pointer;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+input[type="range"]:focus-visible {
+  outline: 2px solid #4361ee;
+  outline-offset: 2px;
+}
+
+/* ===== Fix #5: Footer link hover effect ===== */
+.site-footer a:hover {
+  color: #4361ee !important;
+  text-decoration: underline !important;
+}
+
+/* ===== Fix #7: Hide ad slots by default ===== */
+.ad-slot {
+  display: none;
+}
+
+/* ===== Fix #8: Category tabs horizontal scroll on mobile (merged into main 768px block) ===== */

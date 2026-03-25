@@ -12,6 +12,30 @@
   <link rel="canonical" href="https://eitools.cn/src/tools/bmi-calculator.html">
   <link rel="stylesheet" href="../../css/style.css">
   <meta property="og:type" content="website">
+  <style>
+    .bmi-intro { color: #666; margin-bottom: 20px; }
+    .bmi-form { max-width: 500px; }
+    .bmi-form .form-group { margin-bottom: 16px; }
+    .bmi-form label { display: block; margin-bottom: 6px; font-weight: 600; }
+    .bmi-btn { width: 100%; padding: 12px; font-size: 1.05rem; }
+    .bmi-result { margin-top: 24px; }
+    .bmi-result .error { color: #e03131; }
+    .bmi-ref { margin-top: 40px; padding: 20px; background: #f0f2f5; border-radius: 12px; }
+    .bmi-ref h2 { font-size: 1.1rem; margin-bottom: 12px; }
+    .bmi-ref table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    .bmi-ref th, .bmi-ref td { padding: 8px; }
+    .bmi-ref th { text-align: left; }
+    .bmi-ref thead { background: #e8eaed; }
+    .bmi-ref tbody tr { border-bottom: 1px solid #eee; }
+    .bmi-ref .risk-low { color: green; }
+    .bmi-ref .risk-medium { color: #e67700; }
+    .bmi-ref .risk-high { color: #e03131; }
+    .bmi-ref .related-tools { margin-top: 32px; padding: 20px; background: #f0f2f5; border-radius: 12px; }
+    .bmi-ref .related-tools h3 { font-size: 0.95rem; margin: 0 0 12px; color: #333; }
+    .bmi-ref .related-links { display: flex; flex-wrap: wrap; gap: 8px; }
+    .bmi-ref .related-link { padding: 6px 14px; background: white; border: 1px solid #ddd; border-radius: 16px; color: #4361ee; text-decoration: none; font-size: 0.85rem; }
+    .bmi-ref .related-link:hover { background: #eef1ff; }
+  </style>
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"WebApplication","name":"BMI计算器","description":"在线计算BMI身体质量指数","url":"https://eitools.cn/src/tools/bmi-calculator.html","applicationCategory":"HealthApplication","operatingSystem":"Any"}
   </script>
@@ -22,29 +46,41 @@
       <a href="../../index.html" class="back-link">&larr; 返回首页</a>
       <h1>BMI 计算器</h1>
     </div>
-    <p style="color:#666;margin-bottom:20px;">输入身高和体重，计算您的 BMI 身体质量指数。</p>
-    <div style="max-width:500px;">
-      <div style="margin-bottom:16px;">
-        <label style="display:block;margin-bottom:6px;font-weight:600;">身高（厘米）</label>
-        <input type="number" id="height" placeholder="例如：170" min="50" max="250" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:1rem;">
+    <p class="bmi-intro">输入身高和体重，计算您的 BMI 身体质量指数。</p>
+    <div class="bmi-form">
+      <div class="form-group">
+        <label for="height">身高（厘米）</label>
+        <input type="number" id="height" placeholder="例如：170" min="50" max="250">
       </div>
-      <div style="margin-bottom:16px;">
-        <label style="display:block;margin-bottom:6px;font-weight:600;">体重（公斤）</label>
-        <input type="number" id="weight" placeholder="例如：65" min="10" max="500" step="0.1" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:1rem;">
+      <div class="form-group">
+        <label for="weight">体重（公斤）</label>
+        <input type="number" id="weight" placeholder="例如：65" min="10" max="500" step="0.1">
       </div>
-      <button class="btn btn-primary" onclick="calcBMI()" style="width:100%;padding:12px;font-size:1.05rem;">计算 BMI</button>
-      <div id="result" style="margin-top:24px;"></div>
+      <button class="btn btn-primary bmi-btn" onclick="calcBMI()">计算 BMI</button>
+      <div id="result" class="bmi-result"></div>
     </div>
 
-    <div style="margin-top:40px;padding:20px;background:#f0f2f5;border-radius:12px;">
-      <h2 style="font-size:1.1rem;margin-bottom:12px;">BMI 参考标准（中国）</h2>
-      <table style="width:100%;border-collapse:collapse;font-size:0.9rem;">
-        <tr style="background:#e8eaed;"><th style="padding:8px;text-align:left;">BMI 范围</th><th style="padding:8px;">分类</th><th style="padding:8px;">健康风险</th></tr>
-        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px;">&lt; 18.5</td><td style="padding:8px;">偏瘦</td><td style="padding:8px;">营养不良风险</td></tr>
-        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px;">18.5 - 23.9</td><td style="padding:8px;">正常</td><td style="padding:8px;color:green;">低风险</td></tr>
-        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px;">24.0 - 27.9</td><td style="padding:8px;">偏胖</td><td style="padding:8px;color:#e67700;">中等风险</td></tr>
-        <tr><td style="padding:8px;">&ge; 28.0</td><td style="padding:8px;">肥胖</td><td style="padding:8px;color:#e03131;">高风险</td></tr>
+    <div class="bmi-ref">
+      <h2>BMI 参考标准（中国）</h2>
+      <table>
+        <thead>
+          <tr><th>BMI 范围</th><th>分类</th><th>健康风险</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>&lt; 18.5</td><td>偏瘦</td><td>营养不良风险</td></tr>
+          <tr><td>18.5 - 23.9</td><td>正常</td><td class="risk-low">低风险</td></tr>
+          <tr><td>24.0 - 27.9</td><td>偏胖</td><td class="risk-medium">中等风险</td></tr>
+          <tr><td>&ge; 28.0</td><td>肥胖</td><td class="risk-high">高风险</td></tr>
+        </tbody>
       </table>
+
+      <div class="related-tools">
+        <h3>相关工具推荐</h3>
+        <div class="related-links">
+          <a href="bmi-intl.html" class="related-link">BMI 国际版</a>
+          <a href="ideal-weight.html" class="related-link">理想体重</a>
+        </div>
+      </div>
     </div>
   </div>
   <script>
@@ -52,7 +88,7 @@
       const h = parseFloat(document.getElementById('height').value);
       const w = parseFloat(document.getElementById('weight').value);
       if (!h || !w || h < 50 || h > 250 || w < 10 || w > 500) {
-        document.getElementById('result').innerHTML = '<p style="color:#e03131;">请输入有效的身高（50-250cm）和体重（10-500kg）</p>';
+        document.getElementById('result').innerHTML = '<p class="error">请输入有效的身高（50-250cm）和体重（10-500kg）</p>';
         return;
       }
       const bmi = w / ((h / 100) ** 2);
@@ -64,24 +100,17 @@
       else { category = '肥胖'; color = '#e03131'; advice = '建议咨询医生，制定科学的减重计划。'; }
       const idealMin = (18.5 * (h / 100) ** 2).toFixed(1);
       const idealMax = (23.9 * (h / 100) ** 2).toFixed(1);
-      document.getElementById('result').innerHTML = `
-        <div style="text-align:center;padding:20px;background:${color}11;border:2px solid ${color};border-radius:12px;">
-          <div style="font-size:2.5rem;font-weight:800;color:${color};">${bmiRound}</div>
-          <div style="font-size:1.2rem;font-weight:600;color:${color};margin:8px 0;">${category}</div>
-          <p style="color:#555;">${advice}</p>
-          <p style="color:#888;font-size:0.9rem;margin-top:12px;">您的健康体重范围：${idealMin} - ${idealMax} kg</p>
-        </div>`;
+      document.getElementById('result').innerHTML =
+        '<div style="text-align:center;padding:20px;background:' + color + '11;border:2px solid ' + color + ';border-radius:12px;">' +
+          '<div style="font-size:2.5rem;font-weight:800;color:' + color + ';">' + bmiRound + '</div>' +
+          '<div style="font-size:1.2rem;font-weight:600;color:' + color + ';margin:8px 0;">' + category + '</div>' +
+          '<p style="color:#555;">' + advice + '</p>' +
+          '<p style="color:#888;font-size:0.9rem;margin-top:12px;">您的健康体重范围：' + idealMin + ' - ' + idealMax + ' kg</p>' +
+        '</div>';
     }
     document.getElementById('height').addEventListener('keydown', e => { if (e.key === 'Enter') calcBMI(); });
     document.getElementById('weight').addEventListener('keydown', e => { if (e.key === 'Enter') calcBMI(); });
   </script>
-<div style="margin-top:32px;padding:20px;background:#f0f2f5;border-radius:12px;">
-  <h3 style="font-size:0.95rem;margin:0 0 12px;color:#333;">相关工具推荐</h3>
-  <div style="display:flex;flex-wrap:wrap;gap:8px;">
-    <a href="bmi-intl.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">BMI 国际版</a>
-    <a href="ideal-weight.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">理想体重</a>
-  </div>
-</div>
 <div id="share-bar"></div>
 <script src="../../js/share.js"></script>
 </body>
