@@ -278,6 +278,20 @@ textarea:focus, input:focus {
   border-color: #4361ee;
 }
 
+/* Override global input styles for search input (needs custom padding for icon/clear) */
+.search-box-wrapper .search-input {
+  padding: 12px 44px 12px 48px;
+  border-radius: 28px;
+  background: #f8f9fa;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.search-box-wrapper .search-input:focus {
+  outline: none;
+  border-color: #4361ee;
+  box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+  background: #fff;
+}
+
 /* Form group spacing */
 .form-group {
   margin-bottom: 16px;
@@ -372,7 +386,7 @@ textarea {
   .search-box-wrapper {
     margin-bottom: 12px;
   }
-  .search-input {
+  .search-box-wrapper .search-input {
     padding: 10px 40px 10px 48px;
     font-size: 0.95rem;
   }
