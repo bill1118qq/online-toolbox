@@ -92,7 +92,7 @@
       const dateStr = target.toISOString().split('T')[0];
       document.getElementById('result2').innerHTML = `
         <p style="font-size:0.9rem;color:#666;">从 ${start} 起算 <strong>${n}</strong> 个工作日后是：</p>
-        <div style="font-size:1.8rem;font-weight:800;color:#2f9e44;margin-top:8px;">${dateStr}（${['日','一','二','三','四','五','六'][target.getDay()]）</div>`;
+        <div style="font-size:1.8rem;font-weight:800;color:#2f9e44;margin-top:8px;">${dateStr}（${['日','一','二','三','四','五','六'][target.getDay()]}）</div>`;
     }
     initDates();
     calc();
