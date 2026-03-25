@@ -133,14 +133,19 @@
 
     function setStyle(s) {
       style = s;
-      document.querySelectorAll('.style-btn').forEach(btn => {
-        btn.style.background = 'white';
-        btn.style.color = '#333';
-        btn.style.borderColor = '#ddd';
+      var styles = ['chinese','english','mix','poetic'];
+      var idx = styles.indexOf(s);
+      document.querySelectorAll('.style-btn').forEach(function(btn, i) {
+        if (i === idx) {
+          btn.style.background = '#4361ee';
+          btn.style.color = 'white';
+          btn.style.borderColor = '#4361ee';
+        } else {
+          btn.style.background = 'white';
+          btn.style.color = '#333';
+          btn.style.borderColor = '#ddd';
+        }
       });
-      event.target.style.background = '#4361ee';
-      event.target.style.color = 'white';
-      event.target.style.borderColor = '#4361ee';
       formatTime();
     }
 

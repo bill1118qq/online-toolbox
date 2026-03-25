@@ -46,7 +46,7 @@
     <div style="max-width:1000px;">
       <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
         <button onclick="loadExample()" style="padding:6px 16px;background:#e3f2fd;border:1px solid #4361ee;border-radius:6px;cursor:pointer;color:#4361ee;font-size:0.85rem;">示例</button>
-        <button onclick="copyHTML()" style="padding:6px 16px;background:#e8f5e9;border:1px solid #4caf50;border-radius:6px;cursor:pointer;color:#2e7d32;font-size:0.85rem;">复制HTML</button>
+        <button onclick="copyHTML()" class="copy-html-btn" style="padding:6px 16px;background:#e8f5e9;border:1px solid #4caf50;border-radius:6px;cursor:pointer;color:#2e7d32;font-size:0.85rem;">复制HTML</button>
         <button onclick="clearAll()" style="padding:6px 16px;background:#fee;border:1px solid #fcc;border-radius:6px;cursor:pointer;color:#c00;font-size:0.85rem;">清空</button>
       </div>
       <div class="md-editor">
@@ -101,10 +101,12 @@
       // Strikethrough
       html = html.replace(/~~(.+?)~~/g, '<del>$1</del>');
       // Tables
+      var isFirstTableRow = true;
       html = html.replace(/^\|(.+)\|$/gm, function(m, row) {
         if (/^\|[\s-:|]+\|$/.test(m)) return '';
         var cells = row.split('|').filter(function(c) { return c.trim(); });
-        var tag = 'td';
+        var tag = isFirstTableRow ? 'th' : 'td';
+        isFirstTableRow = false;
         return '<tr>' + cells.map(function(c) { return '<' + tag + '>' + c.trim() + '</' + tag + '>'; }).join('') + '</tr>';
       });
       // Paragraphs
@@ -122,8 +124,8 @@
     }
 
     function copyHTML() {
+      var btn = document.querySelector('.copy-html-btn');
       navigator.clipboard.writeText(document.getElementById('preview').innerHTML).then(function() {
-        var btn = event.target;
         btn.textContent = '已复制';
         setTimeout(function() { btn.textContent = '复制HTML'; }, 1500);
       });
