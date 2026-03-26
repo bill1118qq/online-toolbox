@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON 工具完全指南：格式化、校验、比对与 Path 查询 - 在线工具箱</title>
+  <meta name="description" content="JSON工具完全指南：JSON格式基础教程、JSON格式化和美化、JSON语法校验、JSON比对差异、JSONPath查询的使用场景，常见JSON错误和修复方法，帮助开发者高效处理JSON数据。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../manifest.json">
+  <meta property="og:title" content="JSON 工具完全指南：格式化、校验、比对与 Path 查询">
+  <meta property="og:description" content="从JSON基础到高级用法：格式化、校验、比对、Path查询一站搞定，附常见错误修复指南。">
+  <meta property="og:url" content="https://eitools.cn/guides/json-tool-guide.html">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://eitools.cn/guides/json-tool-guide.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "什么是JSON？它和XML有什么区别？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "JSON（JavaScript Object Notation）是一种轻量级的数据交换格式，采用键值对的方式组织数据。与XML相比，JSON更简洁、解析速度更快、更易读。JSON使用花括号{}表示对象，方括号[]表示数组，而XML使用标签体系。现代Web API绝大多数都使用JSON作为数据格式。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "JSON格式化有什么用？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "JSON格式化（也叫JSON美化或JSON Pretty Print）将压缩的单行JSON数据转换为带有缩进的易读格式。这在开发调试时非常重要：当你从API收到一串压缩的JSON响应时，格式化后可以清晰地看到数据结构、字段名和值，大大提高开发和调试效率。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "常见的JSON错误有哪些？如何修复？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "最常见的JSON错误包括：1) 键名没有用双引号包裹；2) 字符串值中包含未转义的双引号或换行符；3) 多余的尾逗号（最后一个元素后面加了逗号）；4) 使用单引号代替双引号；5) 注释语法（标准JSON不支持注释）。使用JSON校验工具可以快速定位这些错误。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "JSONPath是什么？和XPath有什么区别？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "JSONPath是JSON数据的查询语言，类似于XML的XPath。它允许你使用表达式从JSON文档中提取特定的数据。例如$.store.book[0].title可以获取store中第一本书的标题。JSONPath专门为JSON数据结构设计，语法比XPath更简洁，是前端开发和API测试中常用的数据提取工具。"
+        }
+      }
+    ]
+  }
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>JSON 工具完全指南：格式化、校验、比对与 Path 查询</h1>
+    </div>
+
+    <article style="line-height: 1.8; color: #333;">
+      <p style="color: #666; margin-bottom: 24px;">最后更新：2026年3月26日 | 阅读时间约 10 分钟</p>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">一、JSON 格式基础教程</h2>
+      <p>JSON（JavaScript Object Notation）是一种轻量级的数据交换格式，由 Douglas Crockford 在 2001 年提出。它基于 JavaScript 编程语言的一个子集，但独立于编程语言，几乎所有现代编程语言都支持 JSON 的解析和生成。</p>
+      <p>JSON 已经成为 Web 开发中最主流的数据交换格式，几乎所有的 RESTful API 都使用 JSON 作为请求和响应的数据格式。理解 JSON 的语法规则是每个开发者的必备技能。</p>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">1.1 JSON 的基本数据类型</h3>
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; background: white; border-radius: 12px; overflow: hidden; margin: 12px 0;">
+        <tr style="background: #4361ee; color: white;"><th style="padding: 12px;">数据类型</th><th style="padding: 12px;">说明</th><th style="padding: 12px;">示例</th></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">对象 (Object)</td><td style="padding: 10px 12px;">无序的键值对集合，用花括号包裹</td><td style="padding: 10px 12px;">{"name": "张三"}</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">数组 (Array)</td><td style="padding: 10px 12px;">有序的值列表，用方括号包裹</td><td style="padding: 10px 12px;">[1, 2, 3]</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">字符串 (String)</td><td style="padding: 10px 12px;">用双引号包裹的文本</td><td style="padding: 10px 12px;">"Hello World"</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">数字 (Number)</td><td style="padding: 10px 12px;">整数或浮点数</td><td style="padding: 10px 12px;">42, 3.14</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">布尔值 (Boolean)</td><td style="padding: 10px 12px;">true 或 false</td><td style="padding: 10px 12px;">true</td></tr>
+        <tr><td style="padding: 10px 12px;">空值 (null)</td><td style="padding: 10px 12px;">表示空值</td><td style="padding: 10px 12px;">null</td></tr>
+      </table>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">1.2 JSON 语法规则</h3>
+      <p>JSON 的语法规则非常严格，以下是必须遵守的核心规则：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>键名必须用双引号</strong>：{"name": "张三"} 是合法的，{name: "张三"} 不是合法的 JSON</li>
+        <li><strong>字符串值必须用双引号</strong>：不支持单引号包裹字符串</li>
+        <li><strong>不支持注释</strong>：标准 JSON 不支持 // 或 /* */ 形式的注释（JSONC 格式支持）</li>
+        <li><strong>不支持尾逗号</strong>：{"a": 1,} 中的尾逗号会导致解析错误</li>
+        <li><strong>不支持 undefined</strong>：JSON 只有 null，没有 undefined</li>
+        <li><strong>特殊字符需要转义</strong>：字符串中的双引号用 \" 转义，换行用 \n 转义</li>
+      </ul>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">1.3 JSON 与 XML 的对比</h3>
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; background: white; border-radius: 12px; overflow: hidden; margin: 12px 0;">
+        <tr style="background: #4361ee; color: white;"><th style="padding: 12px;">对比项</th><th style="padding: 12px;">JSON</th><th style="padding: 12px;">XML</th></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">可读性</td><td style="padding: 10px 12px;">简洁直观</td><td style="padding: 10px 12px;">标签冗长</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">数据量</td><td style="padding: 10px 12px;">更小（少30-50%）</td><td style="padding: 10px 12px;">较大</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">解析速度</td><td style="padding: 10px 12px;">更快</td><td style="padding: 10px 12px;">较慢</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">数据类型</td><td style="padding: 10px 12px;">原生支持多种类型</td><td style="padding: 10px 12px;">所有值都是字符串</td></tr>
+        <tr><td style="padding: 10px 12px;">适用场景</td><td style="padding: 10px 12px;">Web API、配置文件</td><td style="padding: 10px 12px;">文档标记、SOAP 服务</td></tr>
+      </table>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">二、JSON 格式化与美化</h2>
+      <p>JSON 格式化（JSON Formatting / Pretty Print）是将压缩的单行 JSON 字符串转换为带有缩进的易读格式。这是日常开发中最频繁使用的 JSON 操作之一。</p>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">2.1 什么时候需要格式化？</h3>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>调试 API 响应</strong>：从后端接口收到的 JSON 通常是压缩格式，格式化后才能看清数据结构</li>
+        <li><strong>阅读配置文件</strong>：package.json、tsconfig.json 等配置文件需要良好的缩进才能理解</li>
+        <li><strong>代码审查</strong>：在代码中嵌入的 JSON 字符串需要格式化以提高可读性</li>
+        <li><strong>编写文档</strong>：在技术文档中展示 JSON 示例时，需要格式化以提高可读性</li>
+      </ul>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">2.2 在线格式化工具</h3>
+      <p>使用 <a href="../src/tools/json-formatter.html" style="color: #4361ee;">JSON 格式化工具</a> 只需三步：粘贴压缩的 JSON 文本，点击"格式化"按钮，即可得到带缩进的美化结果。优质的格式化工具还支持自定义缩进空格数（2空格或4空格）。</p>
+      <p>对于需要将格式化后的 JSON 压缩回单行的场景，可以使用 <a href="../src/tools/json-minify.html" style="color: #4361ee;">JSON 压缩工具</a>，减少 JSON 文件的体积，适合在生产环境中传输。</p>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">三、JSON 校验与错误修复</h2>
+      <p>JSON 校验是验证一段文本是否符合 JSON 语法规范的过程。由于 JSON 语法非常严格，一个小小的语法错误就会导致整个 JSON 无法解析。使用 <a href="../src/tools/json-validator.html" style="color: #4361ee;">JSON 校验工具</a>可以快速发现并定位错误。</p>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">3.1 常见 JSON 错误及修复方法</h3>
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; background: white; border-radius: 12px; overflow: hidden; margin: 12px 0;">
+        <tr style="background: #4361ee; color: white;"><th style="padding: 12px;">错误类型</th><th style="padding: 12px;">错误示例</th><th style="padding: 12px;">修复方法</th></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">键名缺少引号</td><td style="padding: 10px 12px;">{name: "张三"}</td><td style="padding: 10px 12px;">改为 {"name": "张三"}</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">使用单引号</td><td style="padding: 10px 12px;">{'name': '张三'}</td><td style="padding: 10px 12px;">改为 {"name": "张三"}</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">尾逗号</td><td style="padding: 10px 12px;">{"a": 1, "b": 2,}</td><td style="padding: 10px 12px;">去掉最后的逗号</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">未转义字符</td><td style="padding: 10px 12px;">{"text": "hello"world"}</td><td style="padding: 10px 12px;">改为 {"text": "hello\"world"}</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">注释</td><td style="padding: 10px 12px;">{"a": 1 // 注释}</td><td style="padding: 10px 12px;">删除注释（标准JSON不支持）</td></tr>
+        <tr><td style="padding: 10px 12px;">undefined 值</td><td style="padding: 10px 12px;">{"a": undefined}</td><td style="padding: 10px 12px;">改为 {"a": null}</td></tr>
+      </table>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">3.2 校验技巧</h3>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>使用在线校验工具粘贴 JSON 文本，工具会高亮显示错误位置和原因</li>
+        <li>在代码中使用 try-catch 包裹 JSON.parse() 调用，捕获语法错误</li>
+        <li>在浏览器开发者工具的 Console 面板中直接粘贴 JSON.parse('...') 测试</li>
+        <li>使用 VS Code 等编辑器打开 .json 文件，编辑器会自动检测语法错误</li>
+      </ul>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">四、JSON 比对与差异分析</h2>
+      <p>JSON 比对工具用于比较两段 JSON 数据之间的差异。这在开发和测试中非常有用。</p>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">4.1 使用场景</h3>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>API 测试</strong>：比较实际 API 响应与预期响应的差异</li>
+        <li><strong>版本对比</strong>：比较不同版本的配置文件差异</li>
+        <li><strong>数据同步验证</strong>：验证两个数据源之间的数据是否一致</li>
+        <li><strong>Bug 排查</strong>：比较正常数据和异常数据，找出差异点</li>
+        <li><strong>代码审查</strong>：比较提交前后的 JSON 配置变化</li>
+      </ul>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">4.2 使用在线比对工具</h3>
+      <p>使用 <a href="../src/tools/json-diff.html" style="color: #4361ee;">JSON 比对工具</a>，将两段 JSON 分别粘贴到左右面板，点击"比对"即可看到差异。好的比对工具会以不同颜色标注新增、删除和修改的字段，让你一目了然地看到两段 JSON 的所有差异。</p>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">五、JSONPath 查询教程</h2>
+      <p>JSONPath 是一种用于从 JSON 文档中提取特定数据的查询语言，类似于 XML 的 XPath。它在 API 测试、数据提取和自动化脚本中非常实用。</p>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">5.1 JSONPath 基本语法</h3>
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; background: white; border-radius: 12px; overflow: hidden; margin: 12px 0;">
+        <tr style="background: #4361ee; color: white;"><th style="padding: 12px;">表达式</th><th style="padding: 12px;">说明</th><th style="padding: 12px;">示例</th></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">$</td><td style="padding: 10px 12px;">根对象</td><td style="padding: 10px 12px;">$ 代表整个 JSON</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">.</td><td style="padding: 10px 12px;">子元素访问</td><td style="padding: 10px 12px;">$.name 获取根的 name 字段</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">[]</td><td style="padding: 10px 12px;">数组下标</td><td style="padding: 10px 12px;">$.items[0] 获取第一项</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">..</td><td style="padding: 10px 12px;">递归下降</td><td style="padding: 10px 12px;">$..price 获取所有 price</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">*</td><td style="padding: 10px 12px;">通配符</td><td style="padding: 10px 12px;">$.store.* 获取 store 所有子元素</td></tr>
+        <tr><td style="padding: 10px 12px;">[?()]</td><td style="padding: 10px 12px;">过滤表达式</td><td style="padding: 10px 12px;">$.books[?(@.price<10)]</td></tr>
+      </table>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">5.2 实际使用示例</h3>
+      <p>假设有以下 JSON 数据：</p>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">{
+  "store": {
+    "books": [
+      {"title": "JavaScript高级编程", "price": 89},
+      {"title": "Python入门", "price": 59},
+      {"title": "算法导论", "price": 128}
+    ],
+    "location": "北京"
+  }
+}</pre>
+      <p>常用 JSONPath 表达式：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><code>$.store.books</code> - 获取所有书籍</li>
+        <li><code>$.store.books[0].title</code> - 获取第一本书的标题</li>
+        <li><code>$.store.books[?(@.price &gt; 80)].title</code> - 获取价格大于80的书名</li>
+        <li><code>$..price</code> - 获取所有价格字段</li>
+      </ul>
+      <p>使用 <a href="../src/tools/json-path.html" style="color: #4361ee;">JSONPath 查询工具</a>，粘贴 JSON 数据和查询表达式，即可实时查看匹配结果。</p>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">六、其他常用 JSON 工具</h2>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">6.1 JSON 编辑器</h3>
+      <p><a href="../src/tools/json-editor.html" style="color: #4361ee;">JSON 编辑器</a>提供类似 IDE 的编辑体验，支持语法高亮、自动补全、实时校验。当你需要手动编辑大型 JSON 文件时，专用的 JSON 编辑器比普通文本编辑器好用得多。</p>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">6.2 JSON 与其他格式互转</h3>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><a href="../src/tools/json-to-yaml.html" style="color: #4361ee;">JSON 转 YAML</a>：在配置管理中，YAML 比 JSON 更易读，常用于 Kubernetes、Docker 等场景</li>
+        <li><a href="../src/tools/json-to-csv.html" style="color: #4361ee;">JSON 转 CSV</a>：将 JSON 数组数据转换为 CSV 表格格式，方便在 Excel 中打开分析</li>
+        <li><a href="../src/tools/json-pretty.html" style="color: #4361ee;">JSON 美化</a>：快速将压缩的 JSON 转换为格式化的可读形式</li>
+      </ul>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">6.3 JSON 数据处理</h3>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><a href="../src/tools/csv-to-markdown.html" style="color: #4361ee;">CSV 转 Markdown</a>：将结构化数据转换为 Markdown 表格</li>
+        <li><a href="../src/tools/base64.html" style="color: #4361ee;">Base64 编解码</a>：JSON 数据的 Base64 编码和解码</li>
+      </ul>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">七、为什么开发者需要在线 JSON 工具？</h2>
+      <p>虽然大多数编程语言和 IDE 都内置了 JSON 处理能力，但在线 JSON 工具仍然有其不可替代的优势：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>即开即用</strong>：无需安装任何软件或插件，打开浏览器就能用</li>
+        <li><strong>跨设备</strong>：在手机上也能快速查看和格式化 JSON 数据</li>
+        <li><strong>功能聚焦</strong>：每个工具专注一件事，界面简洁，操作高效</li>
+        <li><strong>数据安全</strong>：优质工具（如 eitools.cn）在浏览器端处理数据，不上传服务器</li>
+        <li><strong>分享方便</strong>：将工具链接分享给同事，对方无需安装任何东西</li>
+        <li><strong>持续更新</strong>：在线工具可以快速迭代，添加新功能不需要用户升级</li>
+      </ul>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">八、总结</h2>
+      <p>JSON 是现代 Web 开发的基石，掌握 JSON 工具的使用可以显著提升开发效率。从基础的格式化和校验，到高级的比对和 JSONPath 查询，一套完整的 JSON 工具集是每个开发者的必备利器。推荐将常用的 JSON 工具加入书签，在需要时快速访问。</p>
+
+      <div style="margin-top: 24px; padding: 20px; background: #f0f4ff; border-radius: 12px; border: 1px solid #4361ee;">
+        <h3 style="color: #4361ee; margin-top: 0;">在线 JSON 工具箱</h3>
+        <p>访问 <a href="../index.html" style="color: #4361ee; font-weight: 600;">eitools.cn</a> 获取完整的 JSON 工具集：格式化、校验、比对、编辑、Path查询、格式转换，一个平台全部搞定，所有数据仅在浏览器端处理。</p>
+      </div>
+
+      <div style="background: #eef1ff; padding: 20px; border-radius: 12px; margin: 20px 0;">
+        <h3 style="margin-bottom: 8px;">相关 JSON 工具</h3>
+        <ul style="margin-left: 20px;">
+          <li><a href="../src/tools/json-formatter.html" style="color: #4361ee;">JSON 格式化工具</a> - 美化和格式化 JSON 数据</li>
+          <li><a href="../src/tools/json-validator.html" style="color: #4361ee;">JSON 校验工具</a> - 验证 JSON 语法正确性</li>
+          <li><a href="../src/tools/json-diff.html" style="color: #4361ee;">JSON 比对工具</a> - 比较两段 JSON 的差异</li>
+          <li><a href="../src/tools/json-path.html" style="color: #4361ee;">JSONPath 查询工具</a> - 用表达式提取 JSON 数据</li>
+          <li><a href="../src/tools/json-editor.html" style="color: #4361ee;">JSON 编辑器</a> - 在线编辑 JSON 数据</li>
+          <li><a href="../src/tools/json-to-yaml.html" style="color: #4361ee;">JSON 转 YAML</a> - 数据格式转换</li>
+          <li><a href="seo-beginner-guide.html" style="color: #4361ee;">SEO 入门指南</a> - 了解网站优化基础知识</li>
+        </ul>
+      </div>
+    </article>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../js/share.js"></script>
+</body>
+</html>

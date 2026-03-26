@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图片优化完全指南：压缩、格式转换与 Web 优化 - 在线工具箱</title>
+  <meta name="description" content="图片优化完全指南：图片压缩原理和方法、WebP/AVIF新格式介绍、图片尺寸优化技巧、网站图片SEO最佳实践、在线图片压缩工具使用教程，全面提升网站性能和用户体验。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../manifest.json">
+  <meta property="og:title" content="图片优化完全指南：压缩、格式转换与 Web 优化">
+  <meta property="og:description" content="从压缩到格式转换，全面掌握图片优化技巧，提升网站加载速度和搜索排名。">
+  <meta property="og:url" content="https://eitools.cn/guides/image-optimization-guide.html">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://eitools.cn/guides/image-optimization-guide.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "图片压缩会降低画质吗？无损压缩和有损压缩有什么区别？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "无损压缩不会降低画质，它通过优化编码方式减少文件大小，图片像素数据完全不变，适合需要精确还原的场景（如产品图、设计稿）。有损压缩会丢弃一些人眼不易察觉的图像细节来换取更大的压缩比，通常在视觉上几乎看不出差别，但文件大小可以减少50-90%。对于网站展示的图片，推荐使用质量参数为80-85的有损压缩，在保持视觉质量的同时大幅减小文件体积。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "WebP格式比JPEG好吗？应该全面使用WebP吗？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "WebP在同画质下通常比JPEG小25-35%，比PNG小26%（有损模式）甚至更多。2026年WebP已经被所有主流浏览器支持（包括Safari），是网站图片的首选格式。但建议同时提供JPEG/PNG作为后备格式，使用HTML的picture标签或服务端内容协商来为不同浏览器提供最合适的格式。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "网站图片应该多大？有什么最佳实践？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "网站图片大小没有固定标准，取决于图片的显示尺寸和用途。一般建议：JPEG图片控制在100-200KB以内，PNG图片控制在200-300KB以内，Hero大图不超过500KB。关键原则是图片尺寸应与显示尺寸匹配（不要用2000px宽的图片显示在500px的区域），使用合适的格式（照片用JPEG/WebP，图标用SVG/PNG），并在保证画质的前提下尽可能压缩。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "什么是响应式图片？如何实现？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "响应式图片是指根据用户的设备屏幕尺寸和分辨率，自动加载最合适的图片版本。实现方式有三种：1）HTML的srcset属性为不同屏幕提供不同尺寸的图片；2）picture标签为不同格式提供不同版本的图片；3）CSS的image-set()函数。这样可以避免在手机上加载桌面端大图，大幅减少不必要的带宽消耗。"
+        }
+      }
+    ]
+  }
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>图片优化完全指南：压缩、格式转换与 Web 优化</h1>
+    </div>
+
+    <article style="line-height: 1.8; color: #333;">
+      <p style="color: #666; margin-bottom: 24px;">最后更新：2026年3月26日 | 阅读时间约 10 分钟</p>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">一、为什么图片优化如此重要？</h2>
+      <p>图片是网页中占据空间最大的资源类型。根据 HTTP Archive 的统计，图片平均占网页总传输量的 50-65%。一张未经优化的图片可能就有几 MB，而一个经过充分优化的网页（包含所有资源）通常只有 1-2 MB。</p>
+      <p>图片优化带来的好处是全方位的：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>加载速度提升</strong>：图片体积减小 50%，页面加载时间可缩短 30-50%</li>
+        <li><strong>SEO 排名提升</strong>：页面加载速度是 Google 的排名因素，Core Web Vitals 中的 LCP（最大内容渲染）通常由图片决定</li>
+        <li><strong>用户体验改善</strong>：快速加载的页面降低跳出率，提高用户停留时间和转化率</li>
+        <li><strong>带宽成本降低</strong>：对于高流量网站，图片优化可以显著减少 CDN 和服务器带宽费用</li>
+        <li><strong>移动端友好</strong>：移动设备的网络和性能受限，优化后的图片让移动端体验大幅改善</li>
+      </ul>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">二、图片压缩原理与方法</h2>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">2.1 无损压缩 vs 有损压缩</h3>
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; background: white; border-radius: 12px; overflow: hidden; margin: 12px 0;">
+        <tr style="background: #4361ee; color: white;"><th style="padding: 12px;">对比项</th><th style="padding: 12px;">无损压缩</th><th style="padding: 12px;">有损压缩</th></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">画质</td><td style="padding: 10px 12px;">完全不变</td><td style="padding: 10px 12px;">轻微降低（肉眼通常看不出来）</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">压缩比</td><td style="padding: 10px 12px;">较小（约 10-30%）</td><td style="padding: 10px 12px;">较大（50-90%）</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">原理</td><td style="padding: 10px 12px;">优化编码方式，不丢弃数据</td><td style="padding: 10px 12px;">丢弃人眼不敏感的细节</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">适用格式</td><td style="padding: 10px 12px;">PNG、GIF、BMP</td><td style="padding: 10px 12px;">JPEG、WebP、AVIF</td></tr>
+        <tr><td style="padding: 10px 12px;">适用场景</td><td style="padding: 10px 12px;">产品图、设计稿、截图</td><td style="padding: 10px 12px;">网站展示图、照片、背景图</td></tr>
+      </table>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">2.2 JPEG 压缩技巧</h3>
+      <p>JPEG 是照片类图片最常用的格式。JPEG 的压缩质量参数（通常用 0-100 表示）直接影响文件大小和画质。</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>质量 80-85</strong>：推荐的通用设置，画质和文件大小达到最佳平衡</li>
+        <li><strong>质量 60-75</strong>：适合缩略图和不太重要的展示图</li>
+        <li><strong>质量 90-95</strong>：适合需要高质量的产品图和详情图</li>
+        <li>避免使用质量 100，因为这会产生不必要的巨大文件，而画质提升微乎其微</li>
+      </ul>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">2.3 PNG 优化技巧</h3>
+      <p>PNG 适合包含文字、线条、图标和需要透明背景的图片。PNG 的优化方法：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>减少颜色数量：PNG-8（256色）比 PNG-24（1600万色）小得多，对于颜色较少的图标类图片够用</li>
+        <li>去除不必要的元数据（EXIF 信息、创建时间等）</li>
+        <li>如果不需要透明背景，考虑使用 JPEG 或 WebP 代替</li>
+        <li>对于简单的图形和图标，优先使用 SVG 格式</li>
+      </ul>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">2.4 使用在线图片压缩工具</h3>
+      <p>使用 <a href="../src/tools/image-compressor.html" style="color: #4361ee;">在线图片压缩工具</a>，无需安装任何软件，直接在浏览器中完成图片压缩：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>支持 JPEG、PNG、WebP 等主流格式</li>
+        <li>可选择无损压缩或有损压缩（自定义质量参数）</li>
+        <li>批量压缩多张图片</li>
+        <li>实时预览压缩效果和文件大小对比</li>
+        <li>所有处理在浏览器端完成，图片不会上传到服务器</li>
+      </ul>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">三、现代图片格式介绍</h2>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">3.1 WebP 格式</h3>
+      <p>WebP 是 Google 在 2010 年推出的图片格式，旨在替代 JPEG 和 PNG。2026 年，WebP 已经被所有主流浏览器（包括 Chrome、Firefox、Edge、Safari 14+）支持。</p>
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; background: white; border-radius: 12px; overflow: hidden; margin: 12px 0;">
+        <tr style="background: #4361ee; color: white;"><th style="padding: 12px;">特性</th><th style="padding: 12px;">说明</th></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">有损模式</td><td style="padding: 10px 12px;">比同质量 JPEG 小 25-35%</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">无损模式</td><td style="padding: 10px 12px;">比 PNG 小 26%，支持透明通道</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">动态图片</td><td style="padding: 10px 12px;">支持动画，可替代 GIF（文件更小）</td></tr>
+        <tr><td style="padding: 10px 12px;">浏览器支持</td><td style="padding: 10px 12px;">全球浏览器支持率超过 97%</td></tr>
+      </table>
+      <p>使用 <a href="../src/tools/image-converter.html" style="color: #4361ee;">在线图片格式转换工具</a> 可以将 JPEG/PNG 图片批量转换为 WebP 格式。</p>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">3.2 AVIF 格式</h3>
+      <p>AVIF 是基于 AV1 视频编码的图片格式，由开放媒体联盟（AOM）开发。它是目前压缩效率最高的图片格式之一。</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>比 JPEG 小 50% 左右（同画质下）</li>
+        <li>比 WebP 小约 20%</li>
+        <li>支持有损、无损和动画</li>
+        <li>支持 HDR 和广色域</li>
+        <li>2026 年主流浏览器支持率约 92%（Safari 支持 AVIF 仍在推进中）</li>
+      </ul>
+      <p>AVIF 的主要缺点是编码速度较慢，但解码速度可以接受。对于新项目，建议优先使用 AVIF，并使用 picture 标签提供 WebP 和 JPEG 作为后备格式。</p>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">3.3 SVG 格式</h3>
+      <p>SVG（可缩放矢量图形）是基于 XML 的矢量图格式，适合图标、Logo、插画等图形元素。</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>任意缩放不失真，完美适配高分辨率屏幕</li>
+        <li>文件通常很小（几 KB）</li>
+        <li>可以用 CSS 控制颜色和大小</li>
+        <li>可被搜索引擎索引（提升 SEO）</li>
+        <li>注意：使用前需清理不必要的元数据和编辑器添加的冗余代码</li>
+      </ul>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">3.4 格式选择指南</h3>
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; background: white; border-radius: 12px; overflow: hidden; margin: 12px 0;">
+        <tr style="background: #4361ee; color: white;"><th style="padding: 12px;">图片类型</th><th style="padding: 12px;">推荐格式</th><th style="padding: 12px;">理由</th></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">照片</td><td style="padding: 10px 12px;">AVIF > WebP > JPEG</td><td style="padding: 10px 12px;">有损压缩效率最高</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">截图</td><td style="padding: 10px 12px;">WebP > PNG</td><td style="padding: 10px 12px;">需要无损压缩但也要控制体积</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">图标/Logo</td><td style="padding: 10px 12px;">SVG</td><td style="padding: 10px 12px;">矢量格式，任意缩放不失真</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">需要透明背景</td><td style="padding: 10px 12px;">WebP > PNG</td><td style="padding: 10px 12px;">WebP 透明文件比 PNG 更小</td></tr>
+        <tr><td style="padding: 10px 12px;">动画</td><td style="padding: 10px 12px;">视频 (MP4) > WebP</td><td style="padding: 10px 12px;">用视频替代 GIF 动画，体积小 90%+</td></tr>
+      </table>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">四、图片尺寸优化技巧</h2>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">4.1 图片尺寸与显示尺寸匹配</h3>
+      <p>这是图片优化中最重要也最容易被忽略的原则：图片的实际尺寸应该与它在页面上的显示尺寸相匹配。</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>如果一张图片在页面上显示为 800x600 像素，就不要上传 4000x3000 像素的原图</li>
+        <li>对于高分辨率屏幕（2x、3x），准备 2 倍和 3 倍尺寸的图片即可</li>
+        <li>使用 <a href="../src/tools/image-cropper.html" style="color: #4361ee;">在线图片裁剪工具</a> 快速调整图片尺寸</li>
+      </ul>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">4.2 响应式图片</h3>
+      <p>响应式图片技术可以根据设备的屏幕大小加载不同尺寸的图片，避免在手机上加载桌面端的超大图片。</p>
+      <p>使用 HTML 的 srcset 属性：</p>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">&lt;img src="photo-800.jpg"
+     srcset="photo-400.jpg 400w,
+             photo-800.jpg 800w,
+             photo-1200.jpg 1200w"
+     sizes="(max-width: 600px) 400px,
+            (max-width: 1000px) 800px,
+            1200px"
+     alt="产品展示"&gt;</pre>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">4.3 使用 picture 标签提供多种格式</h3>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">&lt;picture&gt;
+  &lt;source srcset="photo.avif" type="image/avif"&gt;
+  &lt;source srcset="photo.webp" type="image/webp"&gt;
+  &lt;img src="photo.jpg" alt="产品展示"&gt;
+&lt;/picture&gt;</pre>
+      <p>浏览器会按照顺序选择它支持的最优格式：优先 AVIF，其次 WebP，最后回退到 JPEG。</p>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">五、网站图片 SEO 最佳实践</h2>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">5.1 Alt 属性（替代文本）</h3>
+      <p>Alt 属性是图片 SEO 最基本的要素。它告诉搜索引擎图片的内容，并在图片无法加载时为用户提供文字描述。</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>每张图片都应该有描述性的 Alt 文本</li>
+        <li>描述图片的实际内容，不要堆砌关键词</li>
+        <li>装饰性图片可以使用空 Alt 属性（alt=""）</li>
+        <li>好的示例：<code>alt="深圳湾公园日落风景"</code></li>
+        <li>差的示例：<code>alt="图片1"</code> 或 <code>alt="风景照片公园日落美景"</code></li>
+      </ul>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">5.2 图片文件名</h3>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>使用有意义的、描述性的文件名</li>
+        <li>用连字符（-）分隔单词</li>
+        <li>好的示例：<code>shenzhen-bay-sunset.jpg</code></li>
+        <li>差的示例：<code>IMG_20260326_001.jpg</code> 或 <code>微信图片_20260326.jpg</code></li>
+      </ul>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">5.3 图片懒加载</h3>
+      <p>对于首屏以下的图片，使用懒加载可以显著提升页面初始加载速度：</p>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">&lt;img src="photo.jpg" alt="描述" loading="lazy"&gt;</pre>
+      <p>浏览器会延迟加载设置了 loading="lazy" 的图片，直到用户滚动到图片附近的位置。</p>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">5.4 设置尺寸属性</h3>
+      <p>为图片设置 width 和 height 属性可以避免布局偏移（CLS），提升 Core Web Vitals 评分：</p>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">&lt;img src="photo.jpg" alt="描述" width="800" height="600"&gt;</pre>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">5.5 图片站点地图</h3>
+      <p>如果你的网站有大量图片，创建图片站点地图可以帮助搜索引擎发现和索引你的图片：</p>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">&lt;urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"&gt;
+  &lt;url&gt;
+    &lt;loc&gt;https://example.com/page.html&lt;/loc&gt;
+    &lt;image:image&gt;
+      &lt;image:loc&gt;https://example.com/images/photo.jpg&lt;/image:loc&gt;
+      &lt;image:title&gt;深圳湾公园日落&lt;/image:title&gt;
+      &lt;image:caption&gt;深圳湾公园的日落风景照&lt;/image:caption&gt;
+    &lt;/image:image&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;</pre>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">六、在线图片优化工具</h2>
+      <p>以下工具均可在浏览器中直接使用，无需安装软件：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><a href="../src/tools/image-compressor.html" style="color: #4361ee;">图片压缩工具</a> - 压缩 JPEG、PNG、WebP 图片，支持批量和自定义质量</li>
+        <li><a href="../src/tools/image-converter.html" style="color: #4361ee;">图片格式转换工具</a> - 在 JPEG、PNG、WebP、AVIF 等格式之间转换</li>
+        <li><a href="../src/tools/image-cropper.html" style="color: #4361ee;">图片裁剪工具</a> - 在线裁剪图片、调整尺寸</li>
+        <li><a href="../src/tools/image-watermark.html" style="color: #4361ee;">图片水印工具</a> - 为图片添加文字或图片水印</li>
+        <li><a href="../src/tools/image-base64.html" style="color: #4361ee;">图片 Base64 转换</a> - 将图片转换为 Base64 编码</li>
+        <li><a href="../src/tools/placeholder-image.html" style="color: #4361ee;">占位图生成器</a> - 生成自定义尺寸的占位图片</li>
+        <li><a href="../src/tools/favicon-generator.html" style="color: #4361ee;">Favicon 生成器</a> - 从图片生成网站图标</li>
+      </ul>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">七、图片优化检查清单</h2>
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; background: white; border-radius: 12px; overflow: hidden; margin: 12px 0;">
+        <tr style="background: #f0f2f5;"><th style="padding: 10px; text-align: left;">优化项</th><th style="padding: 10px;">目标</th><th style="padding: 10px;">方法</th></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 8px 10px;">格式选择</td><td style="padding: 8px 10px;">使用最优格式</td><td style="padding: 8px 10px;">照片用 WebP/AVIF，图标用 SVG</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 8px 10px;">图片压缩</td><td style="padding: 8px 10px;">JPEG &lt; 200KB，PNG &lt; 300KB</td><td style="padding: 8px 10px;">使用在线压缩工具，质量 80-85</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 8px 10px;">尺寸匹配</td><td style="padding: 8px 10px;">与显示尺寸匹配</td><td style="padding: 8px 10px;">裁剪或缩放到实际需要的大小</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 8px 10px;">Alt 属性</td><td style="padding: 8px 10px;">每张图都有描述性 Alt</td><td style="padding: 8px 10px;">手动添加准确的替代文本</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 8px 10px;">懒加载</td><td style="padding: 8px 10px;">首屏以下图片懒加载</td><td style="padding: 8px 10px;">添加 loading="lazy" 属性</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 8px 10px;">尺寸属性</td><td style="padding: 8px 10px;">设置 width 和 height</td><td style="padding: 8px 10px;">避免 CLS 布局偏移</td></tr>
+        <tr><td style="padding: 8px 10px;">响应式</td><td style="padding: 8px 10px;">多尺寸适配</td><td style="padding: 8px 10px;">使用 srcset 和 sizes 属性</td></tr>
+      </table>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">八、总结</h2>
+      <p>图片优化是网站性能优化中投入产出比最高的环节之一。通过选择合适的格式（WebP/AVIF）、合理的压缩策略（质量 80-85）、匹配的尺寸、完善的 SEO 属性（Alt 文本、文件名）以及现代的加载技术（懒加载、响应式图片），你可以大幅提升网站的加载速度和搜索引擎排名。推荐将常用的图片优化工具加入书签，在发布内容前快速完成图片优化。</p>
+
+      <div style="margin-top: 24px; padding: 20px; background: #f0f4ff; border-radius: 12px; border: 1px solid #4361ee;">
+        <h3 style="color: #4361ee; margin-top: 0;">在线图片优化工具箱</h3>
+        <p>访问 <a href="../index.html" style="color: #4361ee; font-weight: 600;">eitools.cn</a> 获取图片压缩、格式转换、裁剪、水印等全套图片处理工具，所有操作在浏览器端完成，图片不会上传到服务器。</p>
+      </div>
+
+      <div style="background: #eef1ff; padding: 20px; border-radius: 12px; margin: 20px 0;">
+        <h3 style="margin-bottom: 8px;">相关图片工具</h3>
+        <ul style="margin-left: 20px;">
+          <li><a href="../src/tools/image-compressor.html" style="color: #4361ee;">图片压缩工具</a> - 在线压缩图片，支持批量和自定义质量</li>
+          <li><a href="../src/tools/image-converter.html" style="color: #4361ee;">图片格式转换</a> - JPEG/PNG/WebP/AVIF 格式互转</li>
+          <li><a href="../src/tools/image-cropper.html" style="color: #4361ee;">图片裁剪工具</a> - 在线裁剪和调整图片尺寸</li>
+          <li><a href="../src/tools/image-watermark.html" style="color: #4361ee;">图片水印工具</a> - 为图片添加文字或图片水印</li>
+          <li><a href="seo-beginner-guide.html" style="color: #4361ee;">SEO 入门指南</a> - 了解网站优化完整知识体系</li>
+        </ul>
+      </div>
+    </article>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../js/share.js"></script>
+</body>
+</html>
