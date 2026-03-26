@@ -6,3 +6,18 @@ Disallow: /test/
 Disallow: /node_modules/
 
 Sitemap: https://eitools.cn/sitemap.xml
+# Sitemap for Baidu
+User-agent: Baiduspider
+Allow: /
+Disallow: /tmp/
+Disallow: /_private/
+Disallow: /test/
+Disallow: /node_modules/
+# Sitemap for Bing
+User-agent: Bingbot
+Allow: /
+Disallow: /tmp/
+Disallow: /_private/
+Disallow: /test/
+Disallow: /node_modules/
+Crawl-delay: 1
