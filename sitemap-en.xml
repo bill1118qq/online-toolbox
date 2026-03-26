@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<url><loc>https://eitools.cn/en/</loc><priority>1.0</priority>
+  <xhtml:link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/" />
+  <xhtml:link rel="alternate" hreflang="x-default" href="https://eitools.cn/en/" />
+</url>
+<url><loc>https://eitools.cn/en/src/tools/bmi-calculator.html</loc><priority>0.9</priority>
+  <xhtml:link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/bmi-calculator.html" />
+</url>
+<url><loc>https://eitools.cn/en/src/tools/json-formatter.html</loc><priority>0.9</priority>
+  <xhtml:link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/json-formatter.html" />
+</url>
+<url><loc>https://eitools.cn/en/src/tools/password-generator.html</loc><priority>0.9</priority>
+  <xhtml:link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/password-generator.html" />
+</url>
+<url><loc>https://eitools.cn/en/src/tools/age-calculator.html</loc><priority>0.9</priority>
+  <xhtml:link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/age-calculator.html" />
+</url>
+<url><loc>https://eitools.cn/en/src/tools/loan-calculator.html</loc><priority>0.9</priority>
+  <xhtml:link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/loan-calculator.html" />
+</url>
+<url><loc>https://eitools.cn/en/src/tools/mortgage-calculator.html</loc><priority>0.9</priority>
+  <xhtml:link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/mortgage-calculator.html" />
+</url>
+<url><loc>https://eitools.cn/en/src/tools/tax-calculator.html</loc><priority>0.9</priority>
+  <xhtml:link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/tax-calculator.html" />
+</url>
+<url><loc>https://eitools.cn/en/src/tools/timestamp.html</loc><priority>0.9</priority>
+  <xhtml:link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/timestamp.html" />
+</url>
+<url><loc>https://eitools.cn/en/src/tools/base64.html</loc><priority>0.9</priority>
+  <xhtml:link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/base64.html" />
+</url>
+<url><loc>https://eitools.cn/en/src/tools/qrcode.html</loc><priority>0.9</priority>
+  <xhtml:link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/qrcode.html" />
+</url>
+<url><loc>https://eitools.cn/en/src/tools/uuid-generator.html</loc><priority>0.8</priority>
+  <xhtml:link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/uuid-generator.html" />
+</url>
+<url><loc>https://eitools.cn/en/src/tools/image-compressor.html</loc><priority>0.9</priority>
+  <xhtml:link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/image-compressor.html" />
+</url>
+<url><loc>https://eitools.cn/en/src/tools/color-converter.html</loc><priority>0.8</priority>
+  <xhtml:link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/color-converter.html" />
+</url>
+<url><loc>https://eitools.cn/en/src/tools/word-counter.html</loc><priority>0.8</priority>
+  <xhtml:link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/word-counter.html" />
+</url>
+<url><loc>https://eitools.cn/en/src/tools/url-encoder.html</loc><priority>0.8</priority>
+  <xhtml:link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/url-encoder.html" />
+</url>
+<url><loc>https://eitools.cn/en/src/tools/hash-generator.html</loc><priority>0.8</priority>
+  <xhtml:link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/hash-generator.html" />
+</url>
+<url><loc>https://eitools.cn/en/src/tools/percentage-calculator.html</loc><priority>0.8</priority>
+  <xhtml:link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/percentage-calculator.html" />
+</url>
+<url><loc>https://eitools.cn/en/src/tools/discount-calculator.html</loc><priority>0.8</priority>
+  <xhtml:link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/discount-calculator.html" />
+</url>
+<url><loc>https://eitools.cn/en/src/tools/compound-interest-calculator.html</loc><priority>0.8</priority>
+  <xhtml:link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/compound-interest-calculator.html" />
+</url>
+<url><loc>https://eitools.cn/en/src/tools/date-diff-calculator.html</loc><priority>0.8</priority>
+  <xhtml:link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/date-diff-calculator.html" />
+</url>
+<url><loc>https://eitools.cn/en/tools/calculator-tools.html</loc><priority>0.8</priority>
+  <xhtml:link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/tools/calculator-tools.html" />
+</url>
+<url><loc>https://eitools.cn/en/tools/dev-tools.html</loc><priority>0.8</priority>
+  <xhtml:link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/tools/dev-tools.html" />
+</url>
+<url><loc>https://eitools.cn/en/tools/text-tools.html</loc><priority>0.8</priority>
+  <xhtml:link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/tools/text-tools.html" />
+</url>
+<url><loc>https://eitools.cn/en/tools/image-tools.html</loc><priority>0.8</priority>
+  <xhtml:link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/tools/image-tools.html" />
+</url>
+<url><loc>https://eitools.cn/en/tools/json-tools.html</loc><priority>0.8</priority>
+  <xhtml:link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/tools/json-tools.html" />
+</url>
+</urlset>
