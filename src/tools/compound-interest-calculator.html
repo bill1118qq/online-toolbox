@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>复利计算器 - 在线投资收益计算器 - 在线工具箱</title>
+  <meta name="description" content="免费在线复利计算器，支持一次性和每月定投模式，输入本金、年利率、投资年限即可计算复利收益，包含年度表格和增长曲线图。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <meta property="og:title" content="复利计算器 - 免费在线投资收益计算">
+  <meta property="og:description" content="计算复利收益，支持定投模式，年度收益表格和可视化增长曲线。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/compound-interest-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/compound-interest-calculator.html">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="../../css/style.css">
+  <style>
+    .ci-intro { color: #666; margin-bottom: 20px; }
+    .ci-section { margin-bottom: 32px; }
+    .ci-section h2 { font-size: 1.15rem; margin-bottom: 14px; color: #1a1a2e; }
+    .ci-form { max-width: 600px; }
+    .ci-form .form-group { margin-bottom: 14px; }
+    .ci-form label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.95rem; }
+    .ci-form input[type="number"], .ci-form select {
+      width: 100%; padding: 10px 14px; border: 2px solid #e0e0e0;
+      border-radius: 8px; font-size: 1rem; font-family: inherit; transition: border-color 0.2s;
+    }
+    .ci-form input[type="number"]:focus, .ci-form select:focus { outline: none; border-color: #4361ee; }
+    .ci-form .input-row { display: flex; gap: 12px; }
+    .ci-form .input-row .form-group { flex: 1; }
+    .ci-toggle-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+    .ci-toggle {
+      position: relative; width: 44px; height: 24px; background: #ccc;
+      border-radius: 12px; cursor: pointer; transition: background 0.3s; border: none;
+    }
+    .ci-toggle.active { background: #4361ee; }
+    .ci-toggle::after {
+      content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px;
+      background: white; border-radius: 50%; transition: transform 0.3s;
+    }
+    .ci-toggle.active::after { transform: translateX(20px); }
+    .ci-toggle-label { font-size: 0.95rem; font-weight: 600; }
+    .ci-btn {
+      padding: 10px 28px; font-size: 1rem; cursor: pointer; border: none;
+      border-radius: 8px; font-family: inherit; transition: all 0.2s; background: #4361ee; color: white;
+    }
+    .ci-btn:hover { background: #3a56d4; }
+    .ci-btn-secondary { background: #e8eaed; color: #333; margin-left: 8px; }
+    .ci-btn-secondary:hover { background: #d0d3d9; }
+    .ci-result { margin-top: 20px; }
+    .ci-summary {
+      background: white; border-radius: 12px; padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 2px solid #2f9e44;
+    }
+    .ci-summary.error { border-color: #e03131; }
+    .ci-price-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .ci-price-item { text-align: center; padding: 14px 10px; background: #f8f9fa; border-radius: 8px; }
+    .ci-price-item .label { font-size: 0.82rem; color: #888; margin-bottom: 4px; }
+    .ci-price-item .value { font-size: 1.3rem; font-weight: 700; }
+    .ci-price-item .value.total { color: #4361ee; }
+    .ci-price-item .value.principal { color: #333; }
+    .ci-price-item .value.interest { color: #2f9e44; }
+    .ci-chart-wrap {
+      margin-top: 20px; background: white; border-radius: 12px; padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .ci-chart-wrap h3 { font-size: 1rem; margin-bottom: 12px; }
+    .ci-chart-canvas { width: 100%; height: 300px; display: block; }
+    .ci-table-wrap {
+      margin-top: 20px; background: white; border-radius: 12px; padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow-x: auto;
+    }
+    .ci-table-wrap h3 { font-size: 1rem; margin-bottom: 12px; }
+    .ci-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 500px; }
+    .ci-table th, .ci-table td { padding: 10px 12px; text-align: right; border-bottom: 1px solid #eee; }
+    .ci-table th:first-child, .ci-table td:first-child { text-align: left; }
+    .ci-table thead { background: #f0f2f5; }
+    .ci-table th { font-weight: 600; color: #333; }
+    .ci-formula {
+      margin-top: 28px; padding: 20px; background: #f0f2f5; border-radius: 12px;
+    }
+    .ci-formula h3 { font-size: 1rem; margin-bottom: 10px; }
+    .ci-formula p { font-size: 0.9rem; color: #555; margin-bottom: 8px; }
+    .ci-related { margin-top: 32px; padding: 20px; background: #f0f2f5; border-radius: 12px; }
+    .ci-related h3 { font-size: 0.95rem; margin: 0 0 12px; color: #333; }
+    .ci-related .related-links { display: flex; flex-wrap: wrap; gap: 8px; }
+    .ci-related .related-link {
+      padding: 6px 14px; background: white; border: 1px solid #ddd;
+      border-radius: 16px; color: #4361ee; text-decoration: none; font-size: 0.85rem;
+    }
+    .ci-related .related-link:hover { background: #eef1ff; }
+    @media (max-width: 600px) {
+      .ci-price-grid { grid-template-columns: 1fr 1fr; }
+      .ci-form .input-row { flex-direction: column; gap: 0; }
+      .ci-chart-canvas { height: 220px; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"复利计算器","description":"在线计算复利投资收益","url":"https://eitools.cn/src/tools/compound-interest-calculator.html","applicationCategory":"FinanceApplication","operatingSystem":"Any"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"复利是怎么计算的？","acceptedAnswer":{"@type":"Answer","text":"复利计算公式为：FV = PV × (1 + r/n)^(n×t)，其中 PV 为本金，r 为年利率，n 为每年复利次数，t 为投资年限。复利与单利的区别在于，利息也会产生利息，即\"利滚利\"。"}},{"@type":"Question","name":"每月定投和一次性投资的区别是什么？","acceptedAnswer":{"@type":"Answer","text":"一次性投资是在开始时投入全部本金，复利在整个投资期间作用于全部资金。每月定投是分期投入，早期投入的资金享受更长的复利时间。长期来看，两者最终收益不同，定投可以降低市场波动风险。"}},{"@type":"Question","name":"复利频率对收益有多大影响？","acceptedAnswer":{"@type":"Answer","text":"复利频率越高，收益越大。例如年利率10%，按年复利10年后收益为159.4%，按月复利为170.7%，按日复利为171.5%。但频率越高，边际收益递减，月复利和日复利差距很小。"}},{"@type":"Question","name":"72法则是什么？","acceptedAnswer":{"@type":"Answer","text":"72法则是一个快速估算投资翻倍时间的经验法则：翻倍年数 ≈ 72 ÷ 年利率(%)。例如年利率6%，大约需要72÷6=12年翻倍。这个法则在利率4%-10%之间比较准确。"}}]}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>复利计算器</h1>
+    </div>
+    <p class="ci-intro">输入本金、年利率和投资年限，计算复利收益，支持每月定投模式和可视化增长曲线。</p>
+
+    <div class="ci-section">
+      <div class="ci-form">
+        <div class="ci-toggle-row">
+          <button id="dip-toggle" class="ci-toggle" onclick="toggleDIP()"></button>
+          <span class="ci-toggle-label">每月定投模式</span>
+        </div>
+
+        <div class="form-group">
+          <label for="ci-principal">初始本金（元）</label>
+          <input type="number" id="ci-principal" placeholder="例如：100000" min="0" step="100">
+        </div>
+
+        <div id="dip-group" class="form-group" style="display:none;">
+          <label for="ci-monthly">每月定投金额（元）</label>
+          <input type="number" id="ci-monthly" placeholder="例如：1000" min="0" step="100">
+        </div>
+
+        <div class="input-row">
+          <div class="form-group">
+            <label for="ci-rate">年利率（%）</label>
+            <input type="number" id="ci-rate" placeholder="例如：5" min="0" max="100" step="0.1">
+          </div>
+          <div class="form-group">
+            <label for="ci-years">投资年限（年）</label>
+            <input type="number" id="ci-years" placeholder="例如：10" min="1" max="100" step="1">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="ci-freq">复利频率</label>
+          <select id="ci-freq">
+            <option value="1">每年复利</option>
+            <option value="4">每季度复利</option>
+            <option value="12" selected>每月复利</option>
+            <option value="365">每日复利</option>
+          </select>
+        </div>
+
+        <button class="ci-btn" onclick="calcCompound()">计算收益</button>
+        <button class="ci-btn ci-btn-secondary" onclick="resetForm()">重置</button>
+        <div id="ci-result" class="ci-result"></div>
+      </div>
+    </div>
+
+    <div class="ci-formula">
+      <h3>复利计算公式</h3>
+      <p><strong>一次性投资</strong>：FV = PV x (1 + r/n)^(n x t)</p>
+      <p><strong>每月定投</strong>：FV = PV x (1 + r/n)^(n x t) + PMT x [((1 + r/n)^(n x t) - 1) / (r/n)]</p>
+      <p>其中 PV=初始本金，PMT=每月定投额，r=年利率，n=年复利次数，t=投资年限</p>
+      <p><strong>72法则</strong>：翻倍年数 约 72 / 年利率(%)，可快速估算资金翻倍时间</p>
+    </div>
+
+    <div class="ci-related">
+      <h3>相关工具推荐</h3>
+      <div class="related-links">
+        <a href="loan-calculator.html" class="related-link">贷款计算器</a>
+        <a href="discount-calculator.html" class="related-link">折扣计算器</a>
+        <a href="percentage-calculator.html" class="related-link">百分比计算器</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showToast(msg) {
+      var existing = document.querySelector('.toast');
+      if (existing) existing.remove();
+      var t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(function () { t.remove(); }, 2000);
+    }
+
+    function toggleDIP() {
+      var btn = document.getElementById('dip-toggle');
+      var group = document.getElementById('dip-group');
+      btn.classList.toggle('active');
+      var isDIP = btn.classList.contains('active');
+      group.style.display = isDIP ? 'block' : 'none';
+    }
+
+    function resetForm() {
+      document.getElementById('ci-principal').value = '';
+      document.getElementById('ci-rate').value = '';
+      document.getElementById('ci-years').value = '';
+      document.getElementById('ci-monthly').value = '';
+      document.getElementById('ci-freq').value = '12';
+      document.getElementById('ci-result').innerHTML = '';
+    }
+
+    function formatMoney(v) {
+      return parseFloat(v.toFixed(2)).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function calcCompound() {
+      var principal = parseFloat(document.getElementById('ci-principal').value) || 0;
+      var ratePercent = parseFloat(document.getElementById('ci-rate').value);
+      var years = parseInt(document.getElementById('ci-years').value);
+      var freq = parseInt(document.getElementById('ci-freq').value);
+      var isDIP = document.getElementById('dip-toggle').classList.contains('active');
+      var monthly = isDIP ? (parseFloat(document.getElementById('ci-monthly').value) || 0) : 0;
+      var resultEl = document.getElementById('ci-result');
+
+      if (isNaN(ratePercent) || ratePercent < 0) {
+        resultEl.innerHTML = '<div class="ci-summary error"><p style="color:#e03131;">请输入有效的年利率</p></div>';
+        return;
+      }
+      if (isNaN(years) || years < 1) {
+        resultEl.innerHTML = '<div class="ci-summary error"><p style="color:#e03131;">请输入有效的投资年限</p></div>';
+        return;
+      }
+      if (principal < 0 || monthly < 0) {
+        resultEl.innerHTML = '<div class="ci-summary error"><p style="color:#e03131;">本金和定投金额不能为负数</p></div>';
+        return;
+      }
+      if (principal === 0 && monthly === 0) {
+        resultEl.innerHTML = '<div class="ci-summary error"><p style="color:#e03131;">请至少输入初始本金或每月定投金额</p></div>';
+        return;
+      }
+
+      var r = ratePercent / 100;
+      var n = freq;
+      var t = years;
+      var rn = r / n;
+      var nt = n * t;
+
+      // Build yearly data
+      var yearlyData = [];
+      var prevBalance = 0;
+
+      for (var y = 0; y <= t; y++) {
+        var balance;
+        if (y === 0) {
+          balance = principal;
+        } else {
+          var periods = y * n;
+          // Compound the principal
+          balance = principal * Math.pow(1 + rn, periods);
+          // Add monthly contributions
+          if (monthly > 0) {
+            // Each monthly contribution compounds for remaining periods
+            // Simplified: for monthly DIP, use months
+            var mRate = r / 12;
+            for (var m = 1; m <= y * 12; m++) {
+              balance += monthly * Math.pow(1 + mRate, (y * 12 - m));
+            }
+          }
+        }
+        var interest = balance - prevBalance;
+        if (y === 0) interest = 0;
+        var totalDeposited = principal + monthly * y * 12;
+
+        yearlyData.push({
+          year: y,
+          balance: balance,
+          totalDeposited: totalDeposited,
+          interest: balance - totalDeposited
+        });
+        prevBalance = balance;
+      }
+
+      var finalBalance = yearlyData[t].balance;
+      var totalDeposited = yearlyData[t].totalDeposited;
+      var totalInterest = finalBalance - totalDeposited;
+
+      // Render summary
+      var html = '<div class="ci-summary"><div class="ci-price-grid">' +
+        '<div class="ci-price-item"><div class="label">最终总额</div><div class="value total">' + formatMoney(finalBalance) + ' 元</div></div>' +
+        '<div class="ci-price-item"><div class="label">累计投入</div><div class="value principal">' + formatMoney(totalDeposited) + ' 元</div></div>' +
+        '<div class="ci-price-item"><div class="label">复利收益</div><div class="value interest">' + formatMoney(totalInterest) + ' 元</div></div>' +
+        '</div>';
+      html += '<div style="margin-top:12px;text-align:right;"><button class="ci-btn ci-btn-secondary" onclick="copyResult()">复制结果</button></div></div>';
+
+      // Chart
+      html += '<div class="ci-chart-wrap"><h3>资产增长曲线</h3><canvas id="ci-chart" class="ci-chart-canvas"></canvas></div>';
+
+      // Table
+      html += '<div class="ci-table-wrap"><h3>年度收益明细</h3><table class="ci-table"><thead><tr>' +
+        '<th>年份</th><th>累计投入</th><th>账户余额</th><th>累计收益</th><th>收益率</th></tr></thead><tbody>';
+      yearlyData.forEach(function (d) {
+        if (d.year === 0) return;
+        var returnRate = d.totalDeposited > 0 ? ((d.interest / d.totalDeposited) * 100).toFixed(1) : '0.0';
+        html += '<tr><td>第 ' + d.year + ' 年</td>' +
+          '<td>' + formatMoney(d.totalDeposited) + '</td>' +
+          '<td>' + formatMoney(d.balance) + '</td>' +
+          '<td>' + formatMoney(d.interest) + '</td>' +
+          '<td>' + returnRate + '%</td></tr>';
+      });
+      html += '</tbody></table></div>';
+
+      resultEl.innerHTML = html;
+
+      // Store for copy
+      window._ciResult = '投资 ' + t + ' 年 | 累计投入：' + formatMoney(totalDeposited) + '元 | 最终总额：' + formatMoney(finalBalance) + '元 | 复利收益：' + formatMoney(totalInterest) + '元';
+
+      // Draw chart
+      drawChart(yearlyData);
+    }
+
+    function copyResult() {
+      if (window._ciResult) {
+        navigator.clipboard.writeText(window._ciResult).then(function () {
+          showToast('已复制到剪贴板');
+        });
+      }
+    }
+
+    function drawChart(data) {
+      var canvas = document.getElementById('ci-chart');
+      if (!canvas) return;
+      var dpr = window.devicePixelRatio || 1;
+      var rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      var ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+
+      var w = rect.width;
+      var h = rect.height;
+      var pad = { top: 20, right: 20, bottom: 40, left: 70 };
+      var cw = w - pad.left - pad.right;
+      var ch = h - pad.top - pad.bottom;
+
+      var filtered = data.filter(function (d) { return d.year >= 0; });
+      var maxVal = Math.max.apply(null, filtered.map(function (d) { return d.balance; }));
+      if (maxVal === 0) maxVal = 1;
+
+      // Y axis scale
+      var niceMax = getNiceMax(maxVal);
+      var ySteps = 5;
+
+      // Clear
+      ctx.clearRect(0, 0, w, h);
+
+      // Grid lines
+      ctx.strokeStyle = '#eee';
+      ctx.lineWidth = 1;
+      for (var i = 0; i <= ySteps; i++) {
+        var y = pad.top + ch - (i / ySteps) * ch;
+        ctx.beginPath();
+        ctx.moveTo(pad.left, y);
+        ctx.lineTo(pad.left + cw, y);
+        ctx.stroke();
+        // Label
+        ctx.fillStyle = '#888';
+        ctx.font = '11px sans-serif';
+        ctx.textAlign = 'right';
+        var val = (i / ySteps) * niceMax;
+        ctx.fillText(formatCompact(val), pad.left - 8, y + 4);
+      }
+
+      // X axis labels
+      var xStep = filtered.length > 1 ? cw / (filtered.length - 1) : cw;
+      ctx.fillStyle = '#888';
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      var labelSkip = Math.max(1, Math.floor(filtered.length / 10));
+      filtered.forEach(function (d, i) {
+        if (i % labelSkip === 0 || i === filtered.length - 1) {
+          var x = pad.left + i * xStep;
+          ctx.fillText(d.year + '年', x, h - pad.bottom + 20);
+        }
+      });
+
+      // Deposited area
+      ctx.beginPath();
+      ctx.moveTo(pad.left, pad.top + ch);
+      filtered.forEach(function (d, i) {
+        var x = pad.left + i * xStep;
+        var y = pad.top + ch - (d.totalDeposited / niceMax) * ch;
+        ctx.lineTo(x, y);
+      });
+      ctx.lineTo(pad.left + (filtered.length - 1) * xStep, pad.top + ch);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(67, 97, 238, 0.1)';
+      ctx.fill();
+
+      // Deposited line
+      ctx.beginPath();
+      ctx.strokeStyle = '#4361ee';
+      ctx.lineWidth = 2;
+      filtered.forEach(function (d, i) {
+        var x = pad.left + i * xStep;
+        var y = pad.top + ch - (d.totalDeposited / niceMax) * ch;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      // Balance area
+      ctx.beginPath();
+      ctx.moveTo(pad.left, pad.top + ch);
+      filtered.forEach(function (d, i) {
+        var x = pad.left + i * xStep;
+        var y = pad.top + ch - (d.balance / niceMax) * ch;
+        ctx.lineTo(x, y);
+      });
+      ctx.lineTo(pad.left + (filtered.length - 1) * xStep, pad.top + ch);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(47, 158, 68, 0.1)';
+      ctx.fill();
+
+      // Balance line
+      ctx.beginPath();
+      ctx.strokeStyle = '#2f9e44';
+      ctx.lineWidth = 2.5;
+      filtered.forEach(function (d, i) {
+        var x = pad.left + i * xStep;
+        var y = pad.top + ch - (d.balance / niceMax) * ch;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      // Legend
+      var lx = pad.left + 10;
+      var ly = pad.top + 10;
+      ctx.font = '12px sans-serif';
+      ctx.fillStyle = '#2f9e44';
+      ctx.fillRect(lx, ly, 14, 14);
+      ctx.fillStyle = '#333';
+      ctx.textAlign = 'left';
+      ctx.fillText('账户总额', lx + 20, ly + 12);
+
+      ctx.fillStyle = '#4361ee';
+      ctx.fillRect(lx + 100, ly, 14, 14);
+      ctx.fillStyle = '#333';
+      ctx.fillText('累计投入', lx + 120, ly + 12);
+    }
+
+    function getNiceMax(val) {
+      if (val <= 0) return 10;
+      var mag = Math.pow(10, Math.floor(Math.log10(val)));
+      var norm = val / mag;
+      var nice;
+      if (norm <= 1) nice = 1;
+      else if (norm <= 2) nice = 2;
+      else if (norm <= 5) nice = 5;
+      else nice = 10;
+      return nice * mag;
+    }
+
+    function formatCompact(val) {
+      if (val >= 1e8) return (val / 1e8).toFixed(1) + '亿';
+      if (val >= 1e4) return (val / 1e4).toFixed(1) + '万';
+      if (val >= 1000) return (val / 1000).toFixed(0) + 'k';
+      return val.toFixed(0);
+    }
+
+    // Enter key support
+    ['ci-principal', 'ci-monthly', 'ci-rate', 'ci-years'].forEach(function (id) {
+      document.getElementById(id).addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') calcCompound();
+      });
+    });
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

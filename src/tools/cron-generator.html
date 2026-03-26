@@ -16,6 +16,54 @@
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"WebApplication","name":"Cron表达式生成器","description":"在线可视化Cron表达式生成和解析","url":"https://eitools.cn/src/tools/cron-generator.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any"}
   </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "什么是Cron表达式？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Cron表达式是一种用于定义定时任务执行时间的字符串格式，起源于Unix/Linux系统。标准Cron表达式由5个字段组成：分钟、小时、日期、月份、星期。例如0 9 * * 1-5表示每周一到周五早上9点执行。广泛应用于服务器定时任务、数据备份、自动化脚本等场景。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Cron表达式各字段代表什么？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "标准5字段Cron表达式格式为：分钟(0-59) 小时(0-23) 日期(1-31) 月份(1-12) 星期(0-7，0和7都代表周日)。每个字段支持特殊字符：*表示任意值，*/n表示每隔n个单位，n-m表示范围，n,m表示列举。例如*/5 * * * *表示每5分钟执行一次。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "如何快速生成常用的Cron表达式？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "使用在线Cron表达式生成器，通过可视化下拉菜单选择执行时间，工具会自动生成对应的Cron表达式并提供中文说明。工具还提供常用模板，如每5分钟、每小时整点、每天午夜、工作日早9点等，一键应用即可，非常适合不熟悉Cron语法的用户使用。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Cron表达式5字段和6字段有什么区别？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "5字段格式为：分 时 日 月 周，是Linux系统标准的Cron格式；6字段格式在前面加了秒字段：秒 分 时 日 月 周，常用于Spring等Java框架。本工具使用5字段标准格式，生成的表达式可直接用于Linux crontab、Docker、Kubernetes等环境。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "在线Cron生成器安全吗？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "完全安全。本工具在浏览器本地运行，所有生成和解析操作都在您的设备上完成，不会将您的Cron表达式上传到任何服务器。您的定时任务配置信息不会被泄露，可以放心使用。"
+        }
+      }
+    ]
+  }
+  </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
   <script src="../../js/analytics.js"></script>
 </head>

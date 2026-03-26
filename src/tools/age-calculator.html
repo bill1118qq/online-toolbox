@@ -16,6 +16,46 @@
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"WebApplication","name":"年龄计算器","description":"在线计算精确年龄","url":"https://eitools.cn/src/tools/age-calculator.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
   </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "如何精确计算自己的年龄？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "使用在线年龄计算器，输入您的出生日期即可精确计算出您的年龄（年、月、日），还会显示您已经活了多少天、多少周、多少小时，以及距离下一个生日还有多少天。计算结果精确到天，考虑了闰年和每月天数差异。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "年龄计算器是怎么算的？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "年龄计算器通过比较出生日期和当前日期来计算精确年龄。它会逐位对比年、月、日，如果当前月份小于出生月份或月份相同但日期不足，则会从年份中减去1并补上相应的月数，从而得到精确的周岁年龄。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "年龄计算器还能显示什么信息？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "除了精确的周岁年龄，本工具还会显示：已出生的总天数、总周数、总小时数、您的星座、以及距离下一个生日还有多少天的倒计时信息，帮助您全面了解自己的年龄相关信息。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "在线年龄计算器准确吗？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "准确。本工具基于标准日期差值算法计算，会自动处理闰年、大小月等情况，确保计算结果精确到天。所有计算在浏览器本地完成，无需联网即可使用，结果可靠准确。"
+        }
+      }
+    ]
+  }
+  </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
   <script src="../../js/analytics.js"></script>
 </head>

@@ -24,6 +24,46 @@
     "operatingSystem": "All"
   }
   </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "如何统计文章的字数？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "使用在线字数统计工具，将文章文本粘贴到输入框中，工具会自动统计总字符数、中文字数、英文单词数、段落数、行数和不含空格的字符数。实时统计，输入即可看到结果，无需点击按钮，方便快捷。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "中文字数和英文字数的统计方式有什么不同？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "中文字数是按单个汉字计算的，每个汉字算一个字；英文字数则是按单词计算的，以空格分隔的连续英文字母为一个单词。本工具能同时识别和分别统计中文和英文，适合处理中英文混排的文章内容。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "字数统计工具适合什么场景使用？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "字数统计工具适用于多种场景：写论文时检查字数是否达标、写社交媒体文案时控制字数限制、写作时统计稿件字数、SEO优化时控制文章长度、翻译任务中对比中英文字数等。也适合学生检查作文字数是否满足要求。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "在线字数统计安全吗？会上传我的文本吗？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "完全安全。本字数统计工具在浏览器本地运行，所有文本数据只在您的设备上处理，不会上传到任何服务器。您可以放心统计包含敏感信息或未公开内容的文本，隐私得到充分保障。"
+        }
+      }
+    ]
+  }
+  </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
   <script src="../../js/analytics.js"></script>
 </head>
@@ -61,6 +101,17 @@
         <div id="noSpaces" style="font-size: 2rem; font-weight: 700; color: #4361ee;">0</div>
         <div style="color: #666; font-size: 0.9rem;">不含空格字符</div>
       </div>
+    </div>
+  </div>
+
+  <div class="related-tools" style="margin-top:30px;padding:20px;background:#f8f9fa;border-radius:8px;">
+    <h3>相关工具推荐</h3>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;">
+      <a href="string-length.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">字符串长度</a>
+      <a href="markdown-live.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">Markdown 编辑器</a>
+      <a href="text-diff.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">文本差异对比</a>
+      <a href="lorem-ipsum.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">Lorem Ipsum</a>
+      <a href="pinyin-converter.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">汉字转拼音</a>
     </div>
   </div>
 

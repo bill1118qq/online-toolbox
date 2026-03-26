@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>折扣计算器 - 在线打折优惠计算器 - 在线工具箱</title>
+  <meta name="description" content="免费在线折扣计算器，输入原价和折扣比例即可计算折扣价和节省金额。支持多件折扣、反向计算和多商品对比，帮您快速算出最优惠价格。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <meta property="og:title" content="折扣计算器 - 免费在线打折优惠计算">
+  <meta property="og:description" content="输入原价和折扣比例，快速计算折扣价和节省金额，支持多件折扣和多商品对比。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/discount-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/discount-calculator.html">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="../../css/style.css">
+  <style>
+    .dc-intro { color: #666; margin-bottom: 20px; }
+    .dc-section { margin-bottom: 32px; }
+    .dc-section h2 { font-size: 1.15rem; margin-bottom: 14px; color: #1a1a2e; }
+    .dc-tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 2px solid #e0e0e0; }
+    .dc-tab {
+      padding: 8px 18px; cursor: pointer; border: none; background: none;
+      font-size: 0.95rem; color: #666; font-weight: 500; border-bottom: 2px solid transparent;
+      margin-bottom: -2px; transition: all 0.2s; font-family: inherit;
+    }
+    .dc-tab.active { color: #4361ee; border-bottom-color: #4361ee; }
+    .dc-tab:hover { color: #4361ee; }
+    .dc-panel { display: none; }
+    .dc-panel.active { display: block; }
+    .dc-form { max-width: 600px; }
+    .dc-form .form-group { margin-bottom: 14px; }
+    .dc-form label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.95rem; }
+    .dc-form input[type="number"], .dc-form select {
+      width: 100%; padding: 10px 14px; border: 2px solid #e0e0e0;
+      border-radius: 8px; font-size: 1rem; font-family: inherit; transition: border-color 0.2s;
+    }
+    .dc-form input[type="number"]:focus, .dc-form select:focus {
+      outline: none; border-color: #4361ee;
+    }
+    .dc-form .input-row { display: flex; gap: 12px; }
+    .dc-form .input-row .form-group { flex: 1; }
+    .dc-btn {
+      padding: 10px 28px; font-size: 1rem; cursor: pointer;
+      border: none; border-radius: 8px; font-family: inherit; transition: all 0.2s;
+    }
+    .dc-btn-primary { background: #4361ee; color: white; }
+    .dc-btn-primary:hover { background: #3a56d4; }
+    .dc-btn-secondary { background: #e8eaed; color: #333; }
+    .dc-btn-secondary:hover { background: #d0d3d9; }
+    .dc-btn-row { display: flex; gap: 10px; margin-top: 6px; flex-wrap: wrap; }
+    .dc-result { margin-top: 20px; }
+    .dc-result-card {
+      background: white; border-radius: 12px; padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .dc-result-card.error { border: 2px solid #e03131; }
+    .dc-result-card.success { border: 2px solid #2f9e44; }
+    .dc-price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .dc-price-item { text-align: center; padding: 12px; background: #f8f9fa; border-radius: 8px; }
+    .dc-price-item .label { font-size: 0.85rem; color: #888; margin-bottom: 4px; }
+    .dc-price-item .value { font-size: 1.5rem; font-weight: 700; }
+    .dc-price-item .value.original { color: #999; text-decoration: line-through; }
+    .dc-price-item .value.discount { color: #2f9e44; }
+    .dc-price-item .value.saved { color: #e03131; }
+    .dc-compare-table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.9rem; }
+    .dc-compare-table th, .dc-compare-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #eee; }
+    .dc-compare-table thead { background: #f0f2f5; }
+    .dc-compare-table th { font-weight: 600; color: #333; }
+    .dc-compare-table .best { color: #2f9e44; font-weight: 600; }
+    .dc-item-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
+    .dc-item-row input { padding: 8px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 0.9rem; font-family: inherit; }
+    .dc-item-row input:focus { outline: none; border-color: #4361ee; }
+    .dc-item-row .name-input { width: 140px; }
+    .dc-item-row .price-input { width: 100px; }
+    .dc-item-row .disc-input { width: 80px; }
+    .dc-remove-btn {
+      background: none; border: none; color: #e03131; font-size: 1.2rem;
+      cursor: pointer; padding: 4px 8px; border-radius: 4px; line-height: 1;
+    }
+    .dc-remove-btn:hover { background: #ffe3e3; }
+    .dc-formula {
+      margin-top: 28px; padding: 20px; background: #f0f2f5; border-radius: 12px;
+    }
+    .dc-formula h3 { font-size: 1rem; margin-bottom: 10px; }
+    .dc-formula p { font-size: 0.9rem; color: #555; margin-bottom: 8px; }
+    .dc-related { margin-top: 32px; padding: 20px; background: #f0f2f5; border-radius: 12px; }
+    .dc-related h3 { font-size: 0.95rem; margin: 0 0 12px; color: #333; }
+    .dc-related .related-links { display: flex; flex-wrap: wrap; gap: 8px; }
+    .dc-related .related-link {
+      padding: 6px 14px; background: white; border: 1px solid #ddd;
+      border-radius: 16px; color: #4361ee; text-decoration: none; font-size: 0.85rem;
+    }
+    .dc-related .related-link:hover { background: #eef1ff; }
+    @media (max-width: 600px) {
+      .dc-price-grid { grid-template-columns: 1fr; }
+      .dc-form .input-row { flex-direction: column; gap: 0; }
+      .dc-item-row { flex-direction: column; align-items: stretch; }
+      .dc-item-row input { width: 100% !important; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"折扣计算器","description":"在线计算折扣价格和节省金额","url":"https://eitools.cn/src/tools/discount-calculator.html","applicationCategory":"FinanceApplication","operatingSystem":"Any"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"折扣怎么计算？","acceptedAnswer":{"@type":"Answer","text":"折扣价 = 原价 × 折扣比例。例如原价100元，打8折，折扣价 = 100 × 0.8 = 80元，节省20元。"}},{"@type":"Question","name":"8折和20%折扣有什么区别？","acceptedAnswer":{"@type":"Answer","text":"8折表示价格为原价的80%，即减去20%。20%折扣也等于减去20%，所以8折和20%折扣是相同的意思。折数和折扣百分比是两种不同的表达方式。"}},{"@type":"Question","name":"多件折扣怎么算最划算？","acceptedAnswer":{"@type":"Answer","text":"多件折扣需要计算总价。例如第2件半价，相当于两件总价为原价的1.5倍，平均每件为原价的75%，即2.5折。可以通过折扣计算器的多件对比功能快速比较不同优惠方案。"}},{"@type":"Question","name":"满减和打折哪个更划算？","acceptedAnswer":{"@type":"Answer","text":"这取决于商品价格。例如满200减50，商品价200元时等于75折；商品价300元时约83折。一般商品价格刚好达到满减门槛时最划算，超过越多优惠比例越低。"}},{"@type":"Question","name":"如何反向计算折扣力度？","acceptedAnswer":{"@type":"Answer","text":"知道折扣价和原价后，折扣比例 = 折扣价 ÷ 原价。节省比例 = (原价 - 折扣价) ÷ 原价 × 100%。例如原价200元，现价150元，折扣为75折，节省25%。"}}]}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>折扣计算器</h1>
+    </div>
+    <p class="dc-intro">快速计算折扣价格、节省金额，支持多件折扣、反向计算和多商品对比。</p>
+
+    <div class="dc-tabs">
+      <button class="dc-tab active" onclick="switchTab('basic')">基础折扣</button>
+      <button class="dc-tab" onclick="switchTab('multi')">多件折扣</button>
+      <button class="dc-tab" onclick="switchTab('reverse')">反向计算</button>
+      <button class="dc-tab" onclick="switchTab('compare')">多商品对比</button>
+    </div>
+
+    <!-- 基础折扣 -->
+    <div id="panel-basic" class="dc-panel active">
+      <div class="dc-form">
+        <div class="form-group">
+          <label for="basic-price">商品原价（元）</label>
+          <input type="number" id="basic-price" placeholder="例如：299" min="0" step="0.01">
+        </div>
+        <div class="form-group">
+          <label for="basic-disc">折扣比例</label>
+          <select id="basic-disc-type" style="width:auto;margin-bottom:8px;">
+            <option value="zhe">几折（输入8即8折）</option>
+            <option value="percent">折扣百分比（输入20即减20%）</option>
+          </select>
+          <input type="number" id="basic-disc" placeholder="例如：8" min="0" max="100" step="0.1">
+        </div>
+        <button class="dc-btn dc-btn-primary" onclick="calcBasic()">计算折扣价</button>
+        <div id="basic-result" class="dc-result"></div>
+      </div>
+    </div>
+
+    <!-- 多件折扣 -->
+    <div id="panel-multi" class="dc-panel">
+      <div class="dc-form">
+        <div class="form-group">
+          <label for="multi-price">商品单价（元）</label>
+          <input type="number" id="multi-price" placeholder="例如：199" min="0" step="0.01">
+        </div>
+        <div class="input-row">
+          <div class="form-group">
+            <label for="multi-count">购买数量</label>
+            <input type="number" id="multi-count" placeholder="例如：3" min="1" step="1">
+          </div>
+          <div class="form-group">
+            <label for="multi-buy">满件数</label>
+            <input type="number" id="multi-buy" placeholder="例如：2" min="1" step="1">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="multi-off">满件后折扣（几折）</label>
+          <input type="number" id="multi-off" placeholder="例如：7（即7折）" min="0" max="10" step="0.1">
+        </div>
+        <button class="dc-btn dc-btn-primary" onclick="calcMulti()">计算总价</button>
+        <div id="multi-result" class="dc-result"></div>
+      </div>
+    </div>
+
+    <!-- 反向计算 -->
+    <div id="panel-reverse" class="dc-panel">
+      <div class="dc-form">
+        <div class="form-group">
+          <label for="rev-original">商品原价（元）</label>
+          <input type="number" id="rev-original" placeholder="例如：500" min="0" step="0.01">
+        </div>
+        <div class="form-group">
+          <label for="rev-sale">实际售价（元）</label>
+          <input type="number" id="rev-sale" placeholder="例如：350" min="0" step="0.01">
+        </div>
+        <button class="dc-btn dc-btn-primary" onclick="calcReverse()">计算折扣力度</button>
+        <div id="reverse-result" class="dc-result"></div>
+      </div>
+    </div>
+
+    <!-- 多商品对比 -->
+    <div id="panel-compare" class="dc-panel">
+      <div class="dc-form">
+        <div id="compare-items"></div>
+        <div class="dc-btn-row">
+          <button class="dc-btn dc-btn-secondary" onclick="addCompareItem()">+ 添加商品</button>
+          <button class="dc-btn dc-btn-primary" onclick="calcCompare()">对比计算</button>
+        </div>
+        <div id="compare-result" class="dc-result"></div>
+      </div>
+    </div>
+
+    <div class="dc-formula">
+      <h3>折扣计算公式</h3>
+      <p><strong>折扣价</strong> = 原价 x (折扣 / 10)</p>
+      <p><strong>节省金额</strong> = 原价 - 折扣价</p>
+      <p><strong>折扣力度</strong> = (节省金额 / 原价) x 100%</p>
+      <p>例如：原价 200 元，8 折 -> 折扣价 = 200 x 0.8 = 160 元，节省 40 元</p>
+    </div>
+
+    <div class="dc-related">
+      <h3>相关工具推荐</h3>
+      <div class="related-links">
+        <a href="loan-calculator.html" class="related-link">贷款计算器</a>
+        <a href="compound-interest-calculator.html" class="related-link">复利计算器</a>
+        <a href="percentage-calculator.html" class="related-link">百分比计算器</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showToast(msg) {
+      var existing = document.querySelector('.toast');
+      if (existing) existing.remove();
+      var t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(function () { t.remove(); }, 2000);
+    }
+
+    function switchTab(name) {
+      var tabs = document.querySelectorAll('.dc-tab');
+      var panels = document.querySelectorAll('.dc-panel');
+      tabs.forEach(function (tab, i) {
+        var names = ['basic', 'multi', 'reverse', 'compare'];
+        if (names[i] === name) {
+          tab.classList.add('active');
+        } else {
+          tab.classList.remove('active');
+        }
+      });
+      panels.forEach(function (p) {
+        if (p.id === 'panel-' + name) {
+          p.classList.add('active');
+        } else {
+          p.classList.remove('active');
+        }
+      });
+    }
+
+    function parseDiscount(val, type) {
+      var d = parseFloat(val);
+      if (isNaN(d) || d < 0) return NaN;
+      if (type === 'zhe') return d / 10;
+      return (100 - d) / 100;
+    }
+
+    function formatMoney(v) {
+      return parseFloat(v.toFixed(2)).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function copyResult(text) {
+      navigator.clipboard.writeText(text).then(function () {
+        showToast('已复制到剪贴板');
+      });
+    }
+
+    function calcBasic() {
+      var price = parseFloat(document.getElementById('basic-price').value);
+      var discVal = parseFloat(document.getElementById('basic-disc').value);
+      var discType = document.getElementById('basic-disc-type').value;
+      var resultEl = document.getElementById('basic-result');
+
+      if (isNaN(price) || price < 0) {
+        resultEl.innerHTML = '<div class="dc-result-card error"><p style="color:#e03131;">请输入有效的商品原价</p></div>';
+        return;
+      }
+      var rate = parseDiscount(discVal, discType);
+      if (isNaN(rate) || rate < 0 || rate > 1) {
+        resultEl.innerHTML = '<div class="dc-result-card error"><p style="color:#e03131;">请输入有效的折扣值</p></div>';
+        return;
+      }
+
+      var discounted = price * rate;
+      var saved = price - discounted;
+      var zheVal = (rate * 10).toFixed(1);
+      var savePercent = ((saved / price) * 100).toFixed(1);
+
+      var copyText = '原价：' + formatMoney(price) + '元 | ' + zheVal + '折 | 折扣价：' + formatMoney(discounted) + '元 | 节省：' + formatMoney(saved) + '元';
+
+      resultEl.innerHTML =
+        '<div class="dc-result-card success">' +
+          '<div class="dc-price-grid">' +
+            '<div class="dc-price-item"><div class="label">商品原价</div><div class="value original">' + formatMoney(price) + ' 元</div></div>' +
+            '<div class="dc-price-item"><div class="label">折扣力度</div><div class="value" style="color:#4361ee;">' + zheVal + ' 折（省 ' + savePercent + '%）</div></div>' +
+            '<div class="dc-price-item"><div class="label">折扣价</div><div class="value discount">' + formatMoney(discounted) + ' 元</div></div>' +
+            '<div class="dc-price-item"><div class="label">节省金额</div><div class="value saved">' + formatMoney(saved) + ' 元</div></div>' +
+          '</div>' +
+          '<div style="margin-top:12px;text-align:right;"><button class="dc-btn dc-btn-secondary" onclick="copyResult(\'' + copyText.replace(/'/g, "\\'") + '\')">复制结果</button></div>' +
+        '</div>';
+    }
+
+    function calcMulti() {
+      var unitPrice = parseFloat(document.getElementById('multi-price').value);
+      var total = parseInt(document.getElementById('multi-count').value);
+      var buyThreshold = parseInt(document.getElementById('multi-buy').value);
+      var discRate = parseFloat(document.getElementById('multi-off').value);
+      var resultEl = document.getElementById('multi-result');
+
+      if (isNaN(unitPrice) || unitPrice < 0 || isNaN(total) || total < 1 || isNaN(buyThreshold) || buyThreshold < 1 || isNaN(discRate) || discRate <= 0 || discRate > 10) {
+        resultEl.innerHTML = '<div class="dc-result-card error"><p style="color:#e03131;">请输入有效的数值</p></div>';
+        return;
+      }
+
+      var discMultiplier = discRate / 10;
+      var discountedCount = total >= buyThreshold ? total : 0;
+      var originalTotal = unitPrice * total;
+      var savedAmount = discountedCount * unitPrice * (1 - discMultiplier);
+      var finalTotal = originalTotal - savedAmount;
+      var avgPrice = total > 0 ? finalTotal / total : 0;
+
+      var copyText = '单价：' + formatMoney(unitPrice) + '元 x ' + total + '件 | 满' + buyThreshold + '件' + discRate + '折 | 总价：' + formatMoney(finalTotal) + '元';
+
+      resultEl.innerHTML =
+        '<div class="dc-result-card success">' +
+          '<div class="dc-price-grid">' +
+            '<div class="dc-price-item"><div class="label">原总价</div><div class="value original">' + formatMoney(originalTotal) + ' 元</div></div>' +
+            '<div class="dc-price-item"><div class="label">折后总价</div><div class="value discount">' + formatMoney(finalTotal) + ' 元</div></div>' +
+            '<div class="dc-price-item"><div class="label">节省金额</div><div class="value saved">' + formatMoney(savedAmount) + ' 元</div></div>' +
+            '<div class="dc-price-item"><div class="label">平均单价</div><div class="value" style="color:#4361ee;">' + formatMoney(avgPrice) + ' 元</div></div>' +
+          '</div>' +
+          '<div style="margin-top:12px;text-align:right;"><button class="dc-btn dc-btn-secondary" onclick="copyResult(\'' + copyText.replace(/'/g, "\\'") + '\')">复制结果</button></div>' +
+        '</div>';
+    }
+
+    function calcReverse() {
+      var original = parseFloat(document.getElementById('rev-original').value);
+      var sale = parseFloat(document.getElementById('rev-sale').value);
+      var resultEl = document.getElementById('reverse-result');
+
+      if (isNaN(original) || original <= 0 || isNaN(sale) || sale < 0) {
+        resultEl.innerHTML = '<div class="dc-result-card error"><p style="color:#e03131;">请输入有效的价格</p></div>';
+        return;
+      }
+      if (sale > original) {
+        resultEl.innerHTML = '<div class="dc-result-card error"><p style="color:#e03131;">售价不能高于原价</p></div>';
+        return;
+      }
+
+      var rate = sale / original;
+      var zheVal = (rate * 10).toFixed(1);
+      var savePercent = ((1 - rate) * 100).toFixed(1);
+      var saved = original - sale;
+
+      var copyText = '原价：' + formatMoney(original) + '元 -> 售价：' + formatMoney(sale) + '元 | ' + zheVal + '折（省' + savePercent + '%）';
+
+      resultEl.innerHTML =
+        '<div class="dc-result-card success">' +
+          '<div class="dc-price-grid">' +
+            '<div class="dc-price-item"><div class="label">原价</div><div class="value original">' + formatMoney(original) + ' 元</div></div>' +
+            '<div class="dc-price-item"><div class="label">售价</div><div class="value discount">' + formatMoney(sale) + ' 元</div></div>' +
+            '<div class="dc-price-item"><div class="label">折扣力度</div><div class="value" style="color:#4361ee;">' + zheVal + ' 折</div></div>' +
+            '<div class="dc-price-item"><div class="label">节省比例</div><div class="value saved">' + savePercent + '%（' + formatMoney(saved) + '元）</div></div>' +
+          '</div>' +
+          '<div style="margin-top:12px;text-align:right;"><button class="dc-btn dc-btn-secondary" onclick="copyResult(\'' + copyText.replace(/'/g, "\\'") + '\')">复制结果</button></div>' +
+        '</div>';
+    }
+
+    var compareItemCount = 0;
+
+    function addCompareItem() {
+      compareItemCount++;
+      var container = document.getElementById('compare-items');
+      var row = document.createElement('div');
+      row.className = 'dc-item-row';
+      row.id = 'compare-item-' + compareItemCount;
+      row.innerHTML =
+        '<input type="text" class="name-input" placeholder="商品名称" value="商品' + compareItemCount + '">' +
+        '<input type="number" class="price-input" placeholder="原价" min="0" step="0.01">' +
+        '<input type="number" class="disc-input" placeholder="几折" min="0" max="10" step="0.1">' +
+        '<button class="dc-remove-btn" onclick="removeCompareItem(' + compareItemCount + ')">x</button>';
+      container.appendChild(row);
+    }
+
+    function removeCompareItem(id) {
+      var el = document.getElementById('compare-item-' + id);
+      if (el) el.remove();
+    }
+
+    function calcCompare() {
+      var rows = document.querySelectorAll('#compare-items .dc-item-row');
+      var resultEl = document.getElementById('compare-result');
+
+      if (rows.length < 2) {
+        resultEl.innerHTML = '<div class="dc-result-card error"><p style="color:#e03131;">请至少添加 2 个商品进行对比</p></div>';
+        return;
+      }
+
+      var items = [];
+      var hasError = false;
+      rows.forEach(function (row) {
+        var inputs = row.querySelectorAll('input');
+        var name = inputs[0].value.trim() || '未命名';
+        var price = parseFloat(inputs[1].value);
+        var disc = parseFloat(inputs[2].value);
+        if (isNaN(price) || price < 0 || isNaN(disc) || disc <= 0 || disc > 10) {
+          hasError = true;
+          return;
+        }
+        var rate = disc / 10;
+        items.push({
+          name: name,
+          original: price,
+          disc: disc,
+          final: price * rate,
+          saved: price * (1 - rate),
+          saveRate: ((1 - rate) * 100).toFixed(1)
+        });
+      });
+
+      if (hasError || items.length < 2) {
+        resultEl.innerHTML = '<div class="dc-result-card error"><p style="color:#e03131;">请确保所有商品的价格和折扣都填写正确</p></div>';
+        return;
+      }
+
+      var bestIdx = 0;
+      items.forEach(function (item, i) {
+        if (item.final < items[bestIdx].final) bestIdx = i;
+      });
+
+      var html = '<div class="dc-result-card success"><table class="dc-compare-table"><thead><tr>' +
+        '<th>商品</th><th>原价</th><th>折扣</th><th>折后价</th><th>节省</th><th>优惠力度</th></tr></thead><tbody>';
+
+      items.forEach(function (item, i) {
+        var bestClass = i === bestIdx ? ' class="best"' : '';
+        html += '<tr' + bestClass + '>' +
+          '<td>' + item.name + (i === bestIdx ? ' (最优)' : '') + '</td>' +
+          '<td>' + formatMoney(item.original) + '元</td>' +
+          '<td>' + item.disc + '折</td>' +
+          '<td>' + formatMoney(item.final) + '元</td>' +
+          '<td>' + formatMoney(item.saved) + '元</td>' +
+          '<td>' + item.saveRate + '%</td></tr>';
+      });
+
+      html += '</tbody></table></div>';
+      resultEl.innerHTML = html;
+    }
+
+    // Init compare with 2 items
+    addCompareItem();
+    addCompareItem();
+
+    // Enter key support for basic panel
+    document.getElementById('basic-price').addEventListener('keydown', function (e) { if (e.key === 'Enter') calcBasic(); });
+    document.getElementById('basic-disc').addEventListener('keydown', function (e) { if (e.key === 'Enter') calcBasic(); });
+    document.getElementById('rev-original').addEventListener('keydown', function (e) { if (e.key === 'Enter') calcReverse(); });
+    document.getElementById('rev-sale').addEventListener('keydown', function (e) { if (e.key === 'Enter') calcReverse(); });
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

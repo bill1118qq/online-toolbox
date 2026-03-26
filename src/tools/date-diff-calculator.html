@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>日期差计算器 - 在线天数计算器 - 在线工具箱</title>
+  <meta name="description" content="免费在线日期差计算器，输入两个日期即可计算相差天数、周数、月数。支持工作日计算、日期加减和倒计时功能。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <meta property="og:title" content="日期差计算器 - 免费在线天数间隔计算">
+  <meta property="og:description" content="计算两个日期之间相差的天数、周数、月数，支持工作日计算和倒计时功能。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/date-diff-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/date-diff-calculator.html">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="../../css/style.css">
+  <style>
+    .dd-intro { color: #666; margin-bottom: 20px; }
+    .dd-section { margin-bottom: 32px; }
+    .dd-section h2 { font-size: 1.15rem; margin-bottom: 14px; color: #1a1a2e; }
+    .dd-tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 2px solid #e0e0e0; }
+    .dd-tab {
+      padding: 8px 18px; cursor: pointer; border: none; background: none;
+      font-size: 0.95rem; color: #666; font-weight: 500; border-bottom: 2px solid transparent;
+      margin-bottom: -2px; transition: all 0.2s; font-family: inherit;
+    }
+    .dd-tab.active { color: #4361ee; border-bottom-color: #4361ee; }
+    .dd-tab:hover { color: #4361ee; }
+    .dd-panel { display: none; }
+    .dd-panel.active { display: block; }
+    .dd-form { max-width: 600px; }
+    .dd-form .form-group { margin-bottom: 14px; }
+    .dd-form label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.95rem; }
+    .dd-form input[type="date"], .dd-form input[type="number"], .dd-form select {
+      width: 100%; padding: 10px 14px; border: 2px solid #e0e0e0;
+      border-radius: 8px; font-size: 1rem; font-family: inherit; transition: border-color 0.2s;
+    }
+    .dd-form input:focus, .dd-form select:focus { outline: none; border-color: #4361ee; }
+    .dd-form .input-row { display: flex; gap: 12px; }
+    .dd-form .input-row .form-group { flex: 1; }
+    .dd-form .or-text { display: flex; align-items: center; justify-content: center; padding: 8px 0; color: #999; font-size: 0.9rem; }
+    .dd-btn {
+      padding: 10px 28px; font-size: 1rem; cursor: pointer; border: none;
+      border-radius: 8px; font-family: inherit; transition: all 0.2s; background: #4361ee; color: white;
+    }
+    .dd-btn:hover { background: #3a56d4; }
+    .dd-btn-secondary { background: #e8eaed; color: #333; margin-left: 8px; }
+    .dd-btn-secondary:hover { background: #d0d3d9; }
+    .dd-btn-row { display: flex; gap: 10px; margin-top: 6px; flex-wrap: wrap; }
+    .dd-result { margin-top: 20px; }
+    .dd-result-card {
+      background: white; border-radius: 12px; padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 2px solid #2f9e44;
+    }
+    .dd-result-card.error { border-color: #e03131; }
+    .dd-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .dd-stat-item { text-align: center; padding: 14px 10px; background: #f8f9fa; border-radius: 8px; }
+    .dd-stat-item .label { font-size: 0.82rem; color: #888; margin-bottom: 4px; }
+    .dd-stat-item .value { font-size: 1.4rem; font-weight: 700; color: #4361ee; }
+    .dd-stat-item .value.highlight { color: #2f9e44; }
+    .dd-stat-item .value.warn { color: #e67700; }
+    .dd-detail-list { margin-top: 16px; }
+    .dd-detail-item {
+      display: flex; justify-content: space-between; padding: 8px 12px;
+      border-bottom: 1px solid #f0f0f0; font-size: 0.92rem;
+    }
+    .dd-detail-item:last-child { border-bottom: none; }
+    .dd-detail-item .dl { color: #666; }
+    .dd-detail-item .dv { font-weight: 600; color: #333; }
+    .dd-countdown-box {
+      text-align: center; padding: 24px; background: #f8f9fa; border-radius: 12px; margin-top: 12px;
+    }
+    .dd-countdown-box .cd-label { font-size: 0.9rem; color: #666; margin-bottom: 8px; }
+    .dd-countdown-box .cd-value { font-size: 2.2rem; font-weight: 800; color: #4361ee; }
+    .dd-countdown-box .cd-sub { font-size: 0.9rem; color: #888; margin-top: 6px; }
+    .dd-countdown-grid { display: flex; justify-content: center; gap: 20px; margin-top: 16px; }
+    .dd-countdown-unit { text-align: center; }
+    .dd-countdown-unit .num { font-size: 1.6rem; font-weight: 700; color: #333; display: block; }
+    .dd-countdown-unit .txt { font-size: 0.8rem; color: #888; }
+    .dd-holiday-info {
+      margin-top: 12px; padding: 12px 16px; background: #fff8e1; border-radius: 8px;
+      font-size: 0.9rem; color: #666;
+    }
+    .dd-formula {
+      margin-top: 28px; padding: 20px; background: #f0f2f5; border-radius: 12px;
+    }
+    .dd-formula h3 { font-size: 1rem; margin-bottom: 10px; }
+    .dd-formula p { font-size: 0.9rem; color: #555; margin-bottom: 8px; }
+    .dd-related { margin-top: 32px; padding: 20px; background: #f0f2f5; border-radius: 12px; }
+    .dd-related h3 { font-size: 0.95rem; margin: 0 0 12px; color: #333; }
+    .dd-related .related-links { display: flex; flex-wrap: wrap; gap: 8px; }
+    .dd-related .related-link {
+      padding: 6px 14px; background: white; border: 1px solid #ddd;
+      border-radius: 16px; color: #4361ee; text-decoration: none; font-size: 0.85rem;
+    }
+    .dd-related .related-link:hover { background: #eef1ff; }
+    @media (max-width: 600px) {
+      .dd-stats-grid { grid-template-columns: 1fr 1fr; }
+      .dd-form .input-row { flex-direction: column; gap: 0; }
+      .dd-countdown-grid { gap: 12px; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"日期差计算器","description":"在线计算两个日期之间的天数差","url":"https://eitools.cn/src/tools/date-diff-calculator.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"两个日期之间怎么算天数？","acceptedAnswer":{"@type":"Answer","text":"将两个日期转换为时间戳，相减后除以一天的毫秒数（86400000），再取整即可得到相差天数。例如2024年1月1日到2024年12月31日相差365天。"}},{"@type":"Question","name":"工作日怎么计算？","acceptedAnswer":{"@type":"Answer","text":"工作日计算需要排除周六和周日。一般一年约有250-252个工作日（不含法定节假日）。日期差计算器可以自动排除周末来计算工作日天数。"}},{"@type":"Question","name":"日期加减天数怎么算？","acceptedAnswer":{"@type":"Answer","text":"在原日期的基础上加上或减去指定的天数即可。JavaScript中可以使用Date对象的setDate方法，例如日期加30天：date.setDate(date.getDate() + 30)。需要注意跨月和闰年的自动处理。"}},{"@type":"Question","name":"闰年怎么判断？","acceptedAnswer":{"@type":"Answer","text":"闰年判断规则：能被4整除但不能被100整除的是闰年，能被400整除的也是闰年。例如2024年是闰年（366天），2023年不是（365天）。闰年2月有29天，平年2月有28天。"}}]}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>日期差计算器</h1>
+    </div>
+    <p class="dd-intro">计算两个日期之间的天数、工作日、周数和月数，支持日期加减和倒计时功能。</p>
+
+    <div class="dd-tabs">
+      <button class="dd-tab active" onclick="switchTab('diff')">日期差</button>
+      <button class="dd-tab" onclick="switchTab('add')">日期加减</button>
+      <button class="dd-tab" onclick="switchTab('countdown')">倒计时</button>
+    </div>
+
+    <!-- 日期差 -->
+    <div id="panel-diff" class="dd-panel active">
+      <div class="dd-form">
+        <div class="form-group">
+          <label for="diff-start">开始日期</label>
+          <input type="date" id="diff-start">
+        </div>
+        <div class="or-text">至</div>
+        <div class="form-group">
+          <label for="diff-end">结束日期</label>
+          <input type="date" id="diff-end">
+        </div>
+        <div class="dd-btn-row">
+          <button class="dd-btn" onclick="calcDiff()">计算日期差</button>
+          <button class="dd-btn dd-btn-secondary" onclick="setTodayDiff()">设为今天</button>
+        </div>
+        <div id="diff-result" class="dd-result"></div>
+      </div>
+    </div>
+
+    <!-- 日期加减 -->
+    <div id="panel-add" class="dd-panel">
+      <div class="dd-form">
+        <div class="form-group">
+          <label for="add-base">起始日期</label>
+          <input type="date" id="add-base">
+        </div>
+        <div class="input-row">
+          <div class="form-group">
+            <label for="add-op">操作</label>
+            <select id="add-op">
+              <option value="add">加</option>
+              <option value="sub">减</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="add-val">数值</label>
+            <input type="number" id="add-val" placeholder="例如：30" min="0" step="1">
+          </div>
+          <div class="form-group">
+            <label for="add-unit">单位</label>
+            <select id="add-unit">
+              <option value="day">天</option>
+              <option value="week">周</option>
+              <option value="month">月</option>
+              <option value="year">年</option>
+            </select>
+          </div>
+        </div>
+        <div class="dd-btn-row">
+          <button class="dd-btn" onclick="calcAdd()">计算</button>
+          <button class="dd-btn dd-btn-secondary" onclick="setTodayAdd()">设为今天</button>
+        </div>
+        <div id="add-result" class="dd-result"></div>
+      </div>
+    </div>
+
+    <!-- 倒计时 -->
+    <div id="panel-countdown" class="dd-panel">
+      <div class="dd-form">
+        <div class="form-group">
+          <label for="cd-target">目标日期</label>
+          <input type="date" id="cd-target">
+        </div>
+        <div class="form-group">
+          <label for="cd-name">事件名称（可选）</label>
+          <input type="text" id="cd-name" placeholder="例如：新年、国庆节、考试" style="width:100%;padding:10px 14px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;font-family:inherit;">
+        </div>
+        <div class="dd-btn-row">
+          <button class="dd-btn" onclick="calcCountdown()">开始倒计时</button>
+          <button class="dd-btn dd-btn-secondary" onclick="stopCountdown()">停止</button>
+        </div>
+        <div id="cd-result" class="dd-result"></div>
+      </div>
+    </div>
+
+    <div class="dd-formula">
+      <h3>日期计算说明</h3>
+      <p><strong>天数计算</strong>：将日期转为毫秒时间戳，相减后除以 86,400,000（一天的毫秒数）</p>
+      <p><strong>工作日计算</strong>：排除周六和周日，注意不含法定节假日</p>
+      <p><strong>闰年规则</strong>：能被4整除但不能被100整除，或能被400整除的年份</p>
+      <p><strong>日期加减</strong>：自动处理跨月、跨年和闰年等情况</p>
+    </div>
+
+    <div class="dd-related">
+      <h3>相关工具推荐</h3>
+      <div class="related-links">
+        <a href="age-calculator.html" class="related-link">年龄计算器</a>
+        <a href="timestamp-converter.html" class="related-link">时间戳转换</a>
+        <a href="weekday-calculator.html" class="related-link">星期计算器</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showToast(msg) {
+      var existing = document.querySelector('.toast');
+      if (existing) existing.remove();
+      var t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(function () { t.remove(); }, 2000);
+    }
+
+    function switchTab(name) {
+      var tabs = document.querySelectorAll('.dd-tab');
+      var panels = document.querySelectorAll('.dd-panel');
+      var names = ['diff', 'add', 'countdown'];
+      tabs.forEach(function (tab, i) {
+        tab.classList.toggle('active', names[i] === name);
+      });
+      panels.forEach(function (p) {
+        p.classList.toggle('active', p.id === 'panel-' + name);
+      });
+    }
+
+    function formatDate(d) {
+      var y = d.getFullYear();
+      var m = String(d.getMonth() + 1).padStart(2, '0');
+      var day = String(d.getDate()).padStart(2, '0');
+      return y + '-' + m + '-' + day;
+    }
+
+    function formatDateCN(d) {
+      return d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日';
+    }
+
+    function getWeekdayCN(d) {
+      return ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][d.getDay()];
+    }
+
+    function isLeapYear(y) {
+      return (y % 4 === 0 && y % 100 !== 0) || (y % 400 === 0);
+    }
+
+    function countWorkdays(start, end) {
+      var count = 0;
+      var d = new Date(start);
+      d.setHours(0, 0, 0, 0);
+      var endD = new Date(end);
+      endD.setHours(0, 0, 0, 0);
+      while (d < endD) {
+        var dow = d.getDay();
+        if (dow !== 0 && dow !== 6) count++;
+        d.setDate(d.getDate() + 1);
+      }
+      return count;
+    }
+
+    function countWeekendDays(start, end) {
+      var count = 0;
+      var d = new Date(start);
+      d.setHours(0, 0, 0, 0);
+      var endD = new Date(end);
+      endD.setHours(0, 0, 0, 0);
+      while (d < endD) {
+        var dow = d.getDay();
+        if (dow === 0 || dow === 6) count++;
+        d.setDate(d.getDate() + 1);
+      }
+      return count;
+    }
+
+    function daysInMonth(y, m) {
+      return new Date(y, m + 1, 0).getDate();
+    }
+
+    function diffMonths(start, end) {
+      var months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
+      if (end.getDate() < start.getDate()) months--;
+      return Math.max(0, months);
+    }
+
+    function copyResult(text) {
+      navigator.clipboard.writeText(text).then(function () {
+        showToast('已复制到剪贴板');
+      });
+    }
+
+    // Date diff
+    function setTodayDiff() {
+      document.getElementById('diff-start').value = formatDate(new Date());
+    }
+
+    function calcDiff() {
+      var startStr = document.getElementById('diff-start').value;
+      var endStr = document.getElementById('diff-end').value;
+      var resultEl = document.getElementById('diff-result');
+
+      if (!startStr || !endStr) {
+        resultEl.innerHTML = '<div class="dd-result-card error"><p style="color:#e03131;">请选择开始和结束日期</p></div>';
+        return;
+      }
+
+      var start = new Date(startStr);
+      var end = new Date(endStr);
+      start.setHours(0, 0, 0, 0);
+      end.setHours(0, 0, 0, 0);
+
+      if (end < start) {
+        var temp = start;
+        start = end;
+        end = temp;
+      }
+
+      var diffMs = end - start;
+      var totalDays = Math.round(diffMs / 86400000);
+      var weeks = Math.floor(totalDays / 7);
+      var remainDays = totalDays % 7;
+      var months = diffMonths(start, end);
+      var workdays = countWorkdays(start, end);
+      var weekendDays = countWeekendDays(start, end);
+      var hours = totalDays * 24;
+      var minutes = hours * 60;
+
+      var copyText = formatDateCN(start) + ' 至 ' + formatDateCN(end) + ' | 相差 ' + totalDays + ' 天（' + weeks + ' 周 ' + remainDays + ' 天）| 工作日 ' + workdays + ' 天';
+
+      var html = '<div class="dd-result-card">' +
+        '<div class="dd-stats-grid">' +
+          '<div class="dd-stat-item"><div class="label">总天数</div><div class="value highlight">' + totalDays + ' 天</div></div>' +
+          '<div class="dd-stat-item"><div class="label">工作日</div><div class="value warn">' + workdays + ' 天</div></div>' +
+          '<div class="dd-stat-item"><div class="label">周末天数</div><div class="value" style="color:#888;">' + weekendDays + ' 天</div></div>' +
+          '<div class="dd-stat-item"><div class="label">周数</div><div class="value">' + weeks + ' 周 ' + remainDays + ' 天</div></div>' +
+        '</div>';
+
+      html += '<div class="dd-detail-list">' +
+        '<div class="dd-detail-item"><span class="dl">开始日期</span><span class="dv">' + formatDateCN(start) + ' ' + getWeekdayCN(start) + '</span></div>' +
+        '<div class="dd-detail-item"><span class="dl">结束日期</span><span class="dv">' + formatDateCN(end) + ' ' + getWeekdayCN(end) + '</span></div>' +
+        '<div class="dd-detail-item"><span class="dl">月数差</span><span class="dv">约 ' + months + ' 个月</span></div>' +
+        '<div class="dd-detail-item"><span class="dl">小时数</span><span class="dv">' + hours.toLocaleString() + ' 小时</span></div>' +
+        '<div class="dd-detail-item"><span class="dl">分钟数</span><span class="dv">' + minutes.toLocaleString() + ' 分钟</span></div>' +
+        '</div>';
+
+      html += '<div style="margin-top:12px;text-align:right;"><button class="dd-btn dd-btn-secondary" onclick="copyResult(\'' + copyText.replace(/'/g, "\\'") + '\')">复制结果</button></div>';
+      html += '</div>';
+
+      resultEl.innerHTML = html;
+    }
+
+    // Date add/sub
+    function setTodayAdd() {
+      document.getElementById('add-base').value = formatDate(new Date());
+    }
+
+    function calcAdd() {
+      var baseStr = document.getElementById('add-base').value;
+      var val = parseInt(document.getElementById('add-val').value);
+      var op = document.getElementById('add-op').value;
+      var unit = document.getElementById('add-unit').value;
+      var resultEl = document.getElementById('add-result');
+
+      if (!baseStr) {
+        resultEl.innerHTML = '<div class="dd-result-card error"><p style="color:#e03131;">请选择起始日期</p></div>';
+        return;
+      }
+      if (isNaN(val) || val < 0) {
+        resultEl.innerHTML = '<div class="dd-result-card error"><p style="color:#e03131;">请输入有效的数值</p></div>';
+        return;
+      }
+
+      var base = new Date(baseStr);
+      base.setHours(0, 0, 0, 0);
+
+      var num = op === 'sub' ? -val : val;
+      var result = new Date(base);
+
+      switch (unit) {
+        case 'day':
+          result.setDate(result.getDate() + num);
+          break;
+        case 'week':
+          result.setDate(result.getDate() + num * 7);
+          break;
+        case 'month':
+          result.setMonth(result.getMonth() + num);
+          break;
+        case 'year':
+          result.setFullYear(result.getFullYear() + num);
+          break;
+      }
+
+      var diffDays = Math.round((result - base) / 86400000);
+      var label = (op === 'add' ? '加' : '减') + val + ' ' + { day: '天', week: '周', month: '个月', year: '年' }[unit];
+
+      var copyText = formatDateCN(base) + ' ' + label + ' = ' + formatDateCN(result) + ' ' + getWeekdayCN(result);
+
+      resultEl.innerHTML =
+        '<div class="dd-result-card">' +
+          '<div style="text-align:center;padding:16px;">' +
+            '<div style="font-size:0.9rem;color:#666;margin-bottom:8px;">' + formatDateCN(base) + '</div>' +
+            '<div style="font-size:1rem;color:#4361ee;font-weight:600;margin-bottom:8px;">' + label + '</div>' +
+            '<div style="font-size:1.6rem;font-weight:800;color:#333;">' + formatDateCN(result) + '</div>' +
+            '<div style="font-size:1rem;color:#888;margin-top:4px;">' + getWeekdayCN(result) + '</div>' +
+            (isLeapYear(result.getFullYear()) ? '<div style="margin-top:8px;font-size:0.85rem;color:#e67700;">' + result.getFullYear() + '年是闰年（366天）</div>' : '') +
+          '</div>' +
+          '<div style="margin-top:12px;text-align:right;"><button class="dd-btn dd-btn-secondary" onclick="copyResult(\'' + copyText.replace(/'/g, "\\'") + '\')">复制结果</button></div>' +
+        '</div>';
+    }
+
+    // Countdown
+    var countdownTimer = null;
+
+    function stopCountdown() {
+      if (countdownTimer) {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+      }
+    }
+
+    function calcCountdown() {
+      var targetStr = document.getElementById('cd-target').value;
+      var name = document.getElementById('cd-name').value.trim() || '目标日期';
+      var resultEl = document.getElementById('cd-result');
+
+      if (!targetStr) {
+        resultEl.innerHTML = '<div class="dd-result-card error"><p style="color:#e03131;">请选择目标日期</p></div>';
+        return;
+      }
+
+      stopCountdown();
+
+      var target = new Date(targetStr);
+      target.setHours(0, 0, 0, 0);
+
+      function update() {
+        var now = new Date();
+        var diffMs = target - now;
+        var resultEl2 = document.getElementById('cd-result');
+        if (!resultEl2) { stopCountdown(); return; }
+
+        if (diffMs <= 0) {
+          var pastDays = Math.abs(Math.round(diffMs / 86400000));
+          resultEl2.innerHTML =
+            '<div class="dd-result-card">' +
+              '<div class="dd-countdown-box">' +
+                '<div class="cd-label">' + name + '</div>' +
+                '<div class="cd-value" style="color:#e67700;">已过去</div>' +
+                '<div class="cd-sub">距离 ' + formatDateCN(target) + ' 已过去 ' + pastDays + ' 天</div>' +
+              '</div></div>';
+          stopCountdown();
+          return;
+        }
+
+        var totalDays = Math.ceil(diffMs / 86400000);
+        var days = Math.floor(diffMs / 86400000);
+        var hours = Math.floor((diffMs % 86400000) / 3600000);
+        var mins = Math.floor((diffMs % 3600000) / 60000);
+        var secs = Math.floor((diffMs % 60000) / 1000);
+        var weeks = Math.floor(totalDays / 7);
+
+        resultEl2.innerHTML =
+          '<div class="dd-result-card">' +
+            '<div class="dd-countdown-box">' +
+              '<div class="cd-label">' + name + '</div>' +
+              '<div class="cd-value">' + totalDays + ' 天</div>' +
+              '<div class="cd-sub">距离 ' + formatDateCN(target) + ' ' + getWeekdayCN(target) + '（约 ' + weeks + ' 周）</div>' +
+              '<div class="dd-countdown-grid">' +
+                '<div class="dd-countdown-unit"><span class="num">' + days + '</span><span class="txt">天</span></div>' +
+                '<div class="dd-countdown-unit"><span class="num">' + String(hours).padStart(2, '0') + '</span><span class="txt">时</span></div>' +
+                '<div class="dd-countdown-unit"><span class="num">' + String(mins).padStart(2, '0') + '</span><span class="txt">分</span></div>' +
+                '<div class="dd-countdown-unit"><span class="num">' + String(secs).padStart(2, '0') + '</span><span class="txt">秒</span></div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="dd-holiday-info">提示：工作日计算已排除周末，实际可用工作日约 ' + countWorkdays(now, target) + ' 天（不含法定节假日）</div>' +
+          '</div>';
+      }
+
+      update();
+      countdownTimer = setInterval(update, 1000);
+    }
+
+    // Set default dates
+    document.getElementById('diff-start').value = formatDate(new Date());
+    var futureDate = new Date();
+    futureDate.setMonth(futureDate.getMonth() + 1);
+    document.getElementById('diff-end').value = formatDate(futureDate);
+    document.getElementById('add-base').value = formatDate(new Date());
+
+    // Enter key support
+    ['diff-start', 'diff-end'].forEach(function (id) {
+      document.getElementById(id).addEventListener('change', function () { calcDiff(); });
+    });
+    ['add-base', 'add-val'].forEach(function (id) {
+      document.getElementById(id).addEventListener('keydown', function (e) { if (e.key === 'Enter') calcAdd(); });
+    });
+    ['cd-target'].forEach(function (id) {
+      document.getElementById(id).addEventListener('change', function () { calcCountdown(); });
+    });
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>
