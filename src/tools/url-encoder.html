@@ -24,6 +24,9 @@
     "operatingSystem": "All"
   }
   </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"什么是URL编码？","acceptedAnswer":{"@type":"Answer","text":"URL编码（也叫百分号编码）是将URL中的非安全字符转换为%加两位十六进制数的形式。例如空格会被编码为%20，中文字符"你好"会被编码为%E4%BD%A0%E5%A5%BD。这确保了URL中只包含ASCII安全字符。"}},{"@type":"Question","name":"encodeURI和encodeURIComponent有什么区别？","acceptedAnswer":{"@type":"Answer","text":"encodeURI用于编码完整的URL，不会对URL中的保留字符（如://、?、&、=等）进行编码，适合编码整个URL地址。encodeURIComponent会对所有非字母数字字符进行编码，包括保留字符，适合编码URL中的查询参数值。"}},{"@type":"Question","name":"为什么URL中的中文需要编码？","acceptedAnswer":{"@type":"Answer","text":"URL标准只允许ASCII字符集（字母、数字和部分符号）。中文字符属于Unicode字符，不在ASCII范围内，直接放入URL可能导致解析错误、乱码或安全问题。URL编码将中文转为ASCII可表示的%XX格式，确保URL在各系统和浏览器中正确传输。"}},{"@type":"Question","name":"URL编码后的数据安全吗？","acceptedAnswer":{"@type":"Answer","text":"本URL编码工具完全在浏览器端运行，不会将任何输入数据发送到服务器。所有编码和解码操作在本地完成，不存在数据泄露风险。适合处理包含敏感信息的URL。"}}]}
+  </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
   <script src="../../js/analytics.js"></script>
 </head>

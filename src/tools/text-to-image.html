@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文字转图片 - 在线工具箱</title>
+  <meta name="description" content="免费在线文字转图片工具，输入文字一键生成精美图片，支持自定义字体、颜色、背景、模板样式，适合微信朋友圈、微博等社交媒体分享。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="stylesheet" href="../../css/style.css">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="文字转图片 - 在线工具箱">
+  <meta property="og:description" content="免费在线文字转图片工具，支持自定义字体、颜色、背景，适合微信朋友圈、微博分享。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/text-to-image.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/text-to-image.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type": "Question", "name": "文字转图片工具怎么用？", "acceptedAnswer": {"@type": "Answer", "text": "在输入框中输入文字内容，选择或自定义字体大小、文字颜色、背景颜色、对齐方式等样式，点击生成按钮即可预览效果，满意后点击下载按钮保存为PNG图片。"}},
+      {"@type": "Question", "name": "生成的图片可以用于微信朋友圈吗？", "acceptedAnswer": {"@type": "Answer", "text": "可以。本工具生成的图片为PNG格式，分辨率清晰，可直接保存到手机相册后分享到微信朋友圈、微博、QQ空间等社交平台。"}},
+      {"@type": "Question", "name": "有哪些预设模板可用？", "acceptedAnswer": {"@type": "Answer", "text": "提供经典白底黑字、朋友圈金句、公告通知、唯美渐变、极简黑白等多种模板，每种模板预设了合适的字体大小、颜色和背景，您也可以在模板基础上自由调整。"}},
+      {"@type": "Question", "name": "支持哪些中文字体？", "acceptedAnswer": {"@type": "Answer", "text": "使用系统自带中文字体渲染，包括苹方(PingFang)、微软雅黑、思源黑体等。不同操作系统显示效果可能略有差异，但均能正确显示中文内容。"}}
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "文字转图片工具",
+    "url": "https://eitools.cn/src/tools/text-to-image.html",
+    "description": "免费在线文字转图片，支持自定义样式和模板，适合社交媒体分享。",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any",
+    "offers": {"@type": "Offer", "price": "0", "priceCurrency": "CNY"}
+  }
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js"></script>
+  <style>
+    #canvasWrapper { background: repeating-conic-gradient(#f0f0f0 0% 25%, transparent 0% 50%) 50%/16px 16px; border:2px solid #e0e0e0; border-radius:8px; overflow:hidden; display:flex; align-items:center; justify-content:center; min-height:300px; }
+    #canvasWrapper canvas { display:block; max-width:100%; height:auto; }
+  </style>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>文字转图片</h1>
+    </div>
+
+    <p style="color:#666;margin-bottom:20px;">输入文字，选择样式，一键生成精美图片。适合微信朋友圈、微博等社交平台分享。</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <!-- Left: Settings -->
+      <div>
+        <div class="form-group">
+          <label>预设模板</label>
+          <select id="templateSelect" style="width:100%;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;">
+            <option value="custom">自定义</option>
+            <option value="classic" selected>经典白底黑字</option>
+            <option value="quote">朋友圈金句</option>
+            <option value="notice">公告通知</option>
+            <option value="gradient">唯美渐变</option>
+            <option value="minimal">极简黑白</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>文字内容</label>
+          <textarea id="textInput" rows="6" placeholder="输入你想转换为图片的文字内容...">生活不是等待暴风雨过去，而是学会在雨中翩翩起舞。</textarea>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group">
+            <label>字体大小：<span id="fontSizeVal">28</span>px</label>
+            <input type="range" id="fontSize" min="14" max="72" value="28">
+          </div>
+          <div class="form-group">
+            <label>行间距：<span id="lineHeightVal">1.8</span></label>
+            <input type="range" id="lineHeight" min="12" max="30" value="18" step="1">
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+          <div class="form-group">
+            <label>文字颜色</label>
+            <input type="color" id="textColor" value="#333333" style="width:100%;height:36px;border:2px solid #e0e0e0;border-radius:8px;cursor:pointer;padding:2px;">
+          </div>
+          <div class="form-group">
+            <label>背景颜色</label>
+            <input type="color" id="bgColor" value="#ffffff" style="width:100%;height:36px;border:2px solid #e0e0e0;border-radius:8px;cursor:pointer;padding:2px;">
+          </div>
+          <div class="form-group">
+            <label>对齐方式</label>
+            <select id="textAlign" style="width:100%;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:0.9rem;">
+              <option value="center" selected>居中</option>
+              <option value="left">左对齐</option>
+              <option value="right">右对齐</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group">
+            <label>内边距：<span id="paddingVal">40</span>px</label>
+            <input type="range" id="padding" min="20" max="80" value="40">
+          </div>
+          <div class="form-group">
+            <label>圆角：<span id="radiusVal">0</span>px</label>
+            <input type="range" id="borderRadius" min="0" max="40" value="0">
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group">
+            <label>画布宽度：<span id="canvasWidthVal">600</span>px</label>
+            <input type="range" id="canvasWidth" min="400" max="1200" value="600" step="50">
+          </div>
+          <div class="form-group">
+            <label>加粗文字</label>
+            <label style="display:flex;align-items:center;gap:6px;padding-top:8px;cursor:pointer;">
+              <input type="checkbox" id="boldText"> <span style="font-size:0.9rem;">启用加粗</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="generateImage()">生成图片</button>
+          <button class="btn btn-secondary" onclick="downloadImage()">下载图片</button>
+        </div>
+      </div>
+
+      <!-- Right: Preview -->
+      <div>
+        <h3 style="font-size:0.95rem;margin-bottom:8px;">实时预览</h3>
+        <div id="canvasWrapper">
+          <canvas id="outputCanvas" width="600" height="400"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ Section -->
+  <div style="max-width:960px;margin:32px auto 0;padding:0 20px;">
+    <div style="background:white;border-radius:12px;padding:24px;">
+      <h2 style="font-size:1.2rem;margin-bottom:16px;">常见问题</h2>
+      <div style="border-top:1px solid #eee;padding:16px 0;">
+        <h3 style="font-size:0.95rem;margin-bottom:8px;">文字转图片工具怎么用？</h3>
+        <p style="font-size:0.9rem;color:#666;">在输入框中输入文字内容，选择或自定义字体大小、文字颜色、背景颜色、对齐方式等样式，点击生成按钮即可预览效果，满意后点击下载按钮保存为PNG图片。</p>
+      </div>
+      <div style="border-top:1px solid #eee;padding:16px 0;">
+        <h3 style="font-size:0.95rem;margin-bottom:8px;">生成的图片可以用于微信朋友圈吗？</h3>
+        <p style="font-size:0.9rem;color:#666;">可以。本工具生成的图片为PNG格式，分辨率清晰，可直接保存到手机相册后分享到微信朋友圈、微博、QQ空间等社交平台。</p>
+      </div>
+      <div style="border-top:1px solid #eee;padding:16px 0;">
+        <h3 style="font-size:0.95rem;margin-bottom:8px;">有哪些预设模板可用？</h3>
+        <p style="font-size:0.9rem;color:#666;">提供经典白底黑字、朋友圈金句、公告通知、唯美渐变、极简黑白等多种模板，每种模板预设了合适的字体大小、颜色和背景，您也可以在模板基础上自由调整。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Related tools -->
+  <div style="max-width:960px;margin:24px auto 0;padding:0 20px;">
+    <div style="background:#f0f2f5;border-radius:12px;padding:20px;">
+      <h3 style="font-size:0.95rem;margin:0 0 12px;color:#333;">相关工具推荐</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        <a href="image-cropper.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">图片裁剪</a>
+        <a href="color-palette-generator.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">配色方案生成器</a>
+        <a href="text-stats.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">文本统计</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+
+  <script>
+    (function() {
+      var canvas = document.getElementById('outputCanvas');
+      var ctx = canvas.getContext('2d');
+      var textInput = document.getElementById('textInput');
+      var fontSizeSlider = document.getElementById('fontSize');
+      var lineHeightSlider = document.getElementById('lineHeight');
+      var textColorInput = document.getElementById('textColor');
+      var bgColorInput = document.getElementById('bgColor');
+      var textAlignSelect = document.getElementById('textAlign');
+      var paddingSlider = document.getElementById('padding');
+      var borderRadiusSlider = document.getElementById('borderRadius');
+      var canvasWidthSlider = document.getElementById('canvasWidth');
+      var boldCheckbox = document.getElementById('boldText');
+      var templateSelect = document.getElementById('templateSelect');
+
+      var TEMPLATES = {
+        classic: { fontSize:28, lineHeight:18, textColor:'#333333', bgColor:'#ffffff', textAlign:'center', padding:40, bold:false },
+        quote: { fontSize:32, lineHeight:20, textColor:'#ffffff', bgColor:'#1a1a2e', textAlign:'center', padding:60, bold:false },
+        notice: { fontSize:26, lineHeight:18, textColor:'#c62828', bgColor:'#fff8e1', textAlign:'left', padding:40, bold:true },
+        gradient: { fontSize:30, lineHeight:18, textColor:'#ffffff', bgColor:'linear', textAlign:'center', padding:50, bold:false },
+        minimal: { fontSize:28, lineHeight:18, textColor:'#000000', bgColor:'#f5f5f5', textAlign:'center', padding:60, bold:false }
+      };
+
+      // Slider value displays
+      fontSizeSlider.addEventListener('input', function() { document.getElementById('fontSizeVal').textContent = this.value; scheduleRender(); });
+      lineHeightSlider.addEventListener('input', function() { document.getElementById('lineHeightVal').textContent = (this.value / 10).toFixed(1); scheduleRender(); });
+      paddingSlider.addEventListener('input', function() { document.getElementById('paddingVal').textContent = this.value; scheduleRender(); });
+      borderRadiusSlider.addEventListener('input', function() { document.getElementById('radiusVal').textContent = this.value; scheduleRender(); });
+      canvasWidthSlider.addEventListener('input', function() { document.getElementById('canvasWidthVal').textContent = this.value; scheduleRender(); });
+      textColorInput.addEventListener('input', function() { scheduleRender(); });
+      bgColorInput.addEventListener('input', function() { scheduleRender(); });
+      textAlignSelect.addEventListener('change', function() { scheduleRender(); });
+      boldCheckbox.addEventListener('change', function() { scheduleRender(); });
+      textInput.addEventListener('input', function() { scheduleRender(); });
+
+      templateSelect.addEventListener('change', function() {
+        var tpl = TEMPLATES[this.value];
+        if (tpl) {
+          fontSizeSlider.value = tpl.fontSize; document.getElementById('fontSizeVal').textContent = tpl.fontSize;
+          lineHeightSlider.value = tpl.lineHeight; document.getElementById('lineHeightVal').textContent = (tpl.lineHeight / 10).toFixed(1);
+          textColorInput.value = tpl.textColor === '#ffffff' ? '#ffffff' : tpl.textColor;
+          if (tpl.bgColor === 'linear') {
+            bgColorInput.value = '#4361ee';
+          } else {
+            bgColorInput.value = tpl.bgColor;
+          }
+          textAlignSelect.value = tpl.textAlign;
+          paddingSlider.value = tpl.padding; document.getElementById('paddingVal').textContent = tpl.padding;
+          boldCheckbox.checked = tpl.bold;
+        }
+        scheduleRender();
+      });
+
+      var renderTimer = null;
+      function scheduleRender() {
+        clearTimeout(renderTimer);
+        renderTimer = setTimeout(renderCanvas, 100);
+      }
+
+      function renderCanvas() {
+        var text = textInput.value || '请输入文字内容';
+        var fs = parseInt(fontSizeSlider.value, 10);
+        var lh = parseInt(lineHeightSlider.value, 10);
+        var tc = textColorInput.value;
+        var bg = bgColorInput.value;
+        var align = textAlignSelect.value;
+        var pad = parseInt(paddingSlider.value, 10);
+        var radius = parseInt(borderRadiusSlider.value, 10);
+        var bold = boldCheckbox.checked ? 'bold ' : '';
+        var cw = parseInt(canvasWidthSlider.value, 10);
+        var tpl = templateSelect.value;
+
+        var fontFamily = '"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif';
+        ctx.font = bold + fs + 'px ' + fontFamily;
+        ctx.textAlign = align;
+        ctx.textBaseline = 'top';
+
+        // Word wrap
+        var lines = [];
+        var paragraphs = text.split('\n');
+        for (var pi = 0; pi < paragraphs.length; pi++) {
+          var para = paragraphs[pi];
+          if (para === '') { lines.push(''); continue; }
+          var line = '';
+          for (var ci = 0; ci < para.length; ci++) {
+            var testLine = line + para[ci];
+            var metrics = ctx.measureText(testLine);
+            if (metrics.width > cw - pad * 2 && line.length > 0) {
+              lines.push(line);
+              line = para[ci];
+            } else {
+              line = testLine;
+            }
+          }
+          if (line) lines.push(line);
+        }
+
+        var lineSpacing = lh;
+        var textHeight = lines.length * lineSpacing;
+        var ch = Math.max(200, textHeight + pad * 2);
+
+        canvas.width = cw;
+        canvas.height = ch;
+
+        // Background
+        if (tpl === 'gradient') {
+          var grd = ctx.createLinearGradient(0, 0, cw, ch);
+          grd.addColorStop(0, '#667eea');
+          grd.addColorStop(1, '#764ba2');
+          ctx.fillStyle = grd;
+        } else {
+          ctx.fillStyle = bg;
+        }
+
+        if (radius > 0) {
+          roundRect(ctx, 0, 0, cw, ch, radius);
+          ctx.fill();
+        } else {
+          ctx.fillRect(0, 0, cw, ch);
+        }
+
+        // Draw text
+        ctx.font = bold + fs + 'px ' + fontFamily;
+        ctx.fillStyle = tc;
+        ctx.textAlign = align;
+
+        var x = align === 'center' ? cw / 2 : align === 'right' ? cw - pad : pad;
+        var y = pad;
+
+        for (var i = 0; i < lines.length; i++) {
+          ctx.fillText(lines[i], x, y + i * lineSpacing);
+        }
+      }
+
+      function roundRect(ctx2, x, y, w, h, r) {
+        ctx2.beginPath();
+        ctx2.moveTo(x + r, y);
+        ctx2.lineTo(x + w - r, y);
+        ctx2.quadraticCurveTo(x + w, y, x + w, y + r);
+        ctx2.lineTo(x + w, y + h - r);
+        ctx2.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        ctx2.lineTo(x + r, y + h);
+        ctx2.quadraticCurveTo(x, y + h, x, y + h - r);
+        ctx2.lineTo(x, y + r);
+        ctx2.quadraticCurveTo(x, y, x + r, y);
+        ctx2.closePath();
+      }
+
+      window.generateImage = function() {
+        renderCanvas();
+        showToast('图片已生成');
+      };
+
+      window.downloadImage = function() {
+        renderCanvas();
+        var link = document.createElement('a');
+        link.download = 'text-image-' + Date.now() + '.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        showToast('图片已下载');
+      };
+
+      // Initial render
+      setTimeout(renderCanvas, 200);
+
+      function showToast(msg) {
+        var toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(function() { toast.classList.remove('show'); }, 2000);
+      }
+    })();
+  </script>
+</body>
+</html>

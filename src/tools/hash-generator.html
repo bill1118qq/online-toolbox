@@ -24,6 +24,9 @@
     "operatingSystem": "All"
   }
   </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"什么是Hash哈希？","acceptedAnswer":{"@type":"Answer","text":"Hash（哈希）是将任意长度的输入数据通过哈希算法转换为固定长度输出值的过程。常见的哈希算法有MD5（128位）、SHA-1（160位）、SHA-256（256位）和SHA-512（512位）。哈希值常用于数据完整性校验、密码存储和数字签名。"}},{"@type":"Question","name":"MD5和SHA-256有什么区别？","acceptedAnswer":{"@type":"Answer","text":"MD5产生128位（32个十六进制字符）的哈希值，SHA-256产生256位（64个十六进制字符）的哈希值。SHA-256安全性更高，已被证明不存在已知的碰撞攻击漏洞。MD5虽然速度快，但由于存在安全漏洞，不建议用于安全敏感场景。"}},{"@type":"Question","name":"哈希值可以反向解密吗？","acceptedAnswer":{"@type":"Answer","text":"哈希是单向函数，理论上不可逆。虽然可以通过彩虹表或暴力穷举来猜测原文，但SHA-256等安全哈希算法的计算量极大，使得暴力破解在实际中不可行。这就是为什么哈希被广泛用于密码存储。"}},{"@type":"Question","name":"为什么文件下载后需要校验哈希？","acceptedAnswer":{"@type":"Answer","text":"文件在下载过程中可能因网络问题导致损坏或被篡改。通过对比下载文件的哈希值与官方提供的哈希值，可以验证文件是否完整且未被篡改。如果两个哈希值一致，说明文件是完整可信的。"}}]}
+  </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
   <script src="../../js/analytics.js"></script>
 </head>

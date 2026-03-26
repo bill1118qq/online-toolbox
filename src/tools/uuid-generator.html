@@ -24,6 +24,9 @@
     "operatingSystem": "All"
   }
   </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"什么是UUID？","acceptedAnswer":{"@type":"Answer","text":"UUID（通用唯一识别码）是一个128位的标识符，通常显示为32个十六进制字符，用短横线分隔成5段，格式如 550e8400-e29b-41d4-a716-446655440000。UUID的全局唯一性极高，常用于数据库主键、分布式系统标识等场景。"}},{"@type":"Question","name":"UUID v4和其他版本有什么区别？","acceptedAnswer":{"@type":"Answer","text":"UUID有多个版本：v1基于时间和MAC地址生成、v3基于MD5哈希、v4基于随机数生成、v5基于SHA-1哈希。其中UUID v4是最常用的版本，完全随机生成，无需提供任何输入参数。"}},{"@type":"Question","name":"UUID生成是随机的吗？会重复吗？","acceptedAnswer":{"@type":"Answer","text":"UUID v4使用密码学安全的随机数生成器，理论上有2的122次方（约5.3×10的36次方）种可能。实际上两个随机生成的UUID重复的概率几乎为零，可以放心使用。"}},{"@type":"Question","name":"UUID可以去掉短横线吗？","acceptedAnswer":{"@type":"Answer","text":"可以。去掉短横线后的UUID是32个连续的十六进制字符，本质上与带短横线的UUID是同一个值。去掉短横线可以节省存储空间，常用于URL缩短和数据库优化等场景。"}}]}
+  </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
   <script src="../../js/analytics.js"></script>
 </head>

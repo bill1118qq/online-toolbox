@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>证件照制作 - 在线工具箱</title>
+  <meta name="description" content="免费在线证件照制作工具，支持一寸、二寸、小二寸等标准尺寸，红底/蓝底/白底换底色，纯浏览器端处理，不上传服务器，保护隐私。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="stylesheet" href="../../css/style.css">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="证件照制作 - 在线工具箱">
+  <meta property="og:description" content="免费在线证件照制作工具，支持一寸、二寸、小二寸等标准尺寸，红蓝白换底色，纯本地处理。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/id-photo.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/id-photo.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type": "Question", "name": "证件照制作工具安全吗？会上传我的照片吗？", "acceptedAnswer": {"@type": "Answer", "text": "完全安全。本工具使用浏览器Canvas API在本地处理照片，您的照片不会上传到任何服务器，所有操作均在您的设备上完成，充分保护个人隐私。"}},
+      {"@type": "Question", "name": "支持哪些证件照尺寸？", "acceptedAnswer": {"@type": "Answer", "text": "支持一寸（25x35mm）、二寸（35x49mm）、小二寸（33x48mm）、大一寸（33x48mm）等常见证件照尺寸，并显示对应的像素分辨率，可满足身份证、护照、签证、驾驶证等需求。"}},
+      {"@type": "Question", "name": "如何更换证件照背景颜色？", "acceptedAnswer": {"@type": "Answer", "text": "上传照片后，选择目标背景颜色（红色、蓝色或白色），工具会自动识别原背景并进行替换。建议使用背景较纯、人物与背景色差较大的照片以获得最佳效果。"}},
+      {"@type": "Question", "name": "证件照的打印分辨率是多少？", "acceptedAnswer": {"@type": "Answer", "text": "本工具默认按300DPI（每英寸300像素）的打印标准生成证件照。一寸照片输出413x579像素，二寸照片输出413x579像素，满足标准证件照打印要求。"}}
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "证件照制作工具",
+    "url": "https://eitools.cn/src/tools/id-photo.html",
+    "description": "免费在线证件照制作，支持标准尺寸裁剪和背景颜色替换。",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any",
+    "offers": {"@type": "Offer", "price": "0", "priceCurrency": "CNY"}
+  }
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>证件照制作</h1>
+    </div>
+
+    <p style="color:#666;margin-bottom:20px;">上传照片，选择尺寸和背景颜色，一键生成标准证件照。所有处理均在本地完成，不上传服务器。</p>
+
+    <!-- Upload area -->
+    <div id="dropZone" style="border:2px dashed #ccc;border-radius:12px;padding:40px;text-align:center;cursor:pointer;background:#fafafa;margin-bottom:24px;">
+      <p style="font-size:1.1rem;color:#666;">拖拽照片到此处，或点击选择文件</p>
+      <p style="font-size:0.85rem;color:#999;margin-top:8px;">支持 JPG、PNG 格式</p>
+      <input type="file" id="fileInput" accept="image/jpeg,image/png" style="display:none;">
+    </div>
+
+    <!-- Settings -->
+    <div id="settings" style="display:none;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+        <div class="form-group">
+          <label>证件照尺寸</label>
+          <select id="sizeSelect" style="width:100%;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;">
+            <option value="1inch">一寸 (25x35mm / 413x579px)</option>
+            <option value="2inch">二寸 (35x49mm / 579x811px)</option>
+            <option value="small2inch">小二寸 (33x48mm / 531x771px)</option>
+            <option value="big1inch">大一寸 (33x48mm / 531x771px)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>背景颜色</label>
+          <div style="display:flex;gap:10px;align-items:center;padding-top:4px;">
+            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;">
+              <input type="radio" name="bgColor" value="white" checked> <span style="display:inline-block;width:20px;height:20px;background:#fff;border:2px solid #ddd;border-radius:4px;"></span> 白色
+            </label>
+            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;">
+              <input type="radio" name="bgColor" value="blue"> <span style="display:inline-block;width:20px;height:20px;background:#438edb;border-radius:4px;"></span> 蓝色
+            </label>
+            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;">
+              <input type="radio" name="bgColor" value="red"> <span style="display:inline-block;width:20px;height:20px;background:#c2185b;border-radius:4px;"></span> 红色
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>背景替换容差：<span id="toleranceValue">30</span></label>
+        <input type="range" id="toleranceSlider" min="10" max="80" value="30">
+        <p style="font-size:0.8rem;color:#999;margin-top:4px;">数值越大，替换范围越广。如果背景替换不完整，可适当增大容差。</p>
+      </div>
+
+      <!-- Preview area -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+        <div>
+          <h3 style="font-size:0.95rem;margin-bottom:8px;">原图预览</h3>
+          <div style="background:#f8f9fa;border:2px solid #e0e0e0;border-radius:8px;padding:8px;display:flex;align-items:center;justify-content:center;min-height:200px;">
+            <canvas id="originalCanvas" style="max-width:100%;max-height:300px;border-radius:4px;"></canvas>
+          </div>
+        </div>
+        <div>
+          <h3 style="font-size:0.95rem;margin-bottom:8px;">效果预览</h3>
+          <div style="background:#f8f9fa;border:2px solid #e0e0e0;border-radius:8px;padding:8px;display:flex;align-items:center;justify-content:center;min-height:200px;">
+            <canvas id="previewCanvas" style="max-width:100%;max-height:300px;border-radius:4px;"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="processPhoto()">生成证件照</button>
+        <button class="btn btn-secondary" onclick="downloadPhoto()">下载证件照</button>
+        <button class="btn btn-secondary" onclick="resetAll()">重新选择</button>
+      </div>
+    </div>
+
+    <!-- Size reference table -->
+    <div style="margin-top:32px;background:#f0f2f5;border-radius:12px;padding:20px;">
+      <h3 style="font-size:0.95rem;margin:0 0 12px;">常用证件照尺寸参考（300DPI）</h3>
+      <table style="width:100%;border-collapse:collapse;font-size:0.9rem;">
+        <thead>
+          <tr style="border-bottom:2px solid #ddd;">
+            <th style="text-align:left;padding:8px;">尺寸名称</th>
+            <th style="text-align:center;padding:8px;">毫米 (mm)</th>
+            <th style="text-align:center;padding:8px;">像素 (px)</th>
+            <th style="text-align:left;padding:8px;">常见用途</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid #eee;"><td style="padding:8px;">一寸</td><td style="text-align:center;padding:8px;">25 x 35</td><td style="text-align:center;padding:8px;">295 x 413</td><td style="padding:8px;">身份证、护照、简历</td></tr>
+          <tr style="border-bottom:1px solid #eee;"><td style="padding:8px;">二寸</td><td style="text-align:center;padding:8px;">35 x 49</td><td style="text-align:center;padding:8px;">413 x 579</td><td style="padding:8px;">护照、签证、结婚照</td></tr>
+          <tr style="border-bottom:1px solid #eee;"><td style="padding:8px;">小二寸</td><td style="text-align:center;padding:8px;">33 x 48</td><td style="text-align:center;padding:8px;">390 x 567</td><td style="padding:8px;">驾驶证、体检表</td></tr>
+          <tr><td style="padding:8px;">大一寸</td><td style="text-align:center;padding:8px;">33 x 48</td><td style="text-align:center;padding:8px;">390 x 567</td><td style="padding:8px;">部分签证、各类证件</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- FAQ Section -->
+  <div style="max-width:960px;margin:32px auto 0;padding:0 20px;">
+    <div style="background:white;border-radius:12px;padding:24px;">
+      <h2 style="font-size:1.2rem;margin-bottom:16px;">常见问题</h2>
+      <div style="border-top:1px solid #eee;padding:16px 0;">
+        <h3 style="font-size:0.95rem;margin-bottom:8px;">证件照制作工具安全吗？会上传我的照片吗？</h3>
+        <p style="font-size:0.9rem;color:#666;">完全安全。本工具使用浏览器Canvas API在本地处理照片，您的照片不会上传到任何服务器，所有操作均在您的设备上完成，充分保护个人隐私。</p>
+      </div>
+      <div style="border-top:1px solid #eee;padding:16px 0;">
+        <h3 style="font-size:0.95rem;margin-bottom:8px;">支持哪些证件照尺寸？</h3>
+        <p style="font-size:0.9rem;color:#666;">支持一寸（25x35mm）、二寸（35x49mm）、小二寸（33x48mm）、大一寸（33x48mm）等常见证件照尺寸，并显示对应的像素分辨率，可满足身份证、护照、签证、驾驶证等需求。</p>
+      </div>
+      <div style="border-top:1px solid #eee;padding:16px 0;">
+        <h3 style="font-size:0.95rem;margin-bottom:8px;">如何更换证件照背景颜色？</h3>
+        <p style="font-size:0.9rem;color:#666;">上传照片后，选择目标背景颜色（红色、蓝色或白色），工具会自动识别原背景并进行替换。建议使用背景较纯、人物与背景色差较大的照片以获得最佳效果。</p>
+      </div>
+      <div style="border-top:1px solid #eee;padding:16px 0;">
+        <h3 style="font-size:0.95rem;margin-bottom:8px;">证件照的打印分辨率是多少？</h3>
+        <p style="font-size:0.9rem;color:#666;">本工具默认按300DPI（每英寸300像素）的打印标准生成证件照。一寸照片输出295x413像素，二寸照片输出413x579像素，满足标准证件照打印要求。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Related tools -->
+  <div style="max-width:960px;margin:24px auto 0;padding:0 20px;">
+    <div style="background:#f0f2f5;border-radius:12px;padding:20px;">
+      <h3 style="font-size:0.95rem;margin:0 0 12px;color:#333;">相关工具推荐</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        <a href="image-cropper.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">图片裁剪</a>
+        <a href="image-compressor.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">图片压缩</a>
+        <a href="image-converter.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">图片格式转换</a>
+        <a href="color-palette-generator.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">配色方案生成器</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+
+  <script>
+    (function() {
+      var dropZone = document.getElementById('dropZone');
+      var fileInput = document.getElementById('fileInput');
+      var settings = document.getElementById('settings');
+      var originalCanvas = document.getElementById('originalCanvas');
+      var previewCanvas = document.getElementById('previewCanvas');
+      var toleranceSlider = document.getElementById('toleranceSlider');
+      var toleranceValue = document.getElementById('toleranceValue');
+      var originalImage = null;
+
+      var SIZES = {
+        '1inch':    { w: 295, h: 413, label: '一寸' },
+        '2inch':    { w: 413, h: 579, label: '二寸' },
+        'small2inch': { w: 390, h: 567, label: '小二寸' },
+        'big1inch': { w: 390, h: 567, label: '大一寸' }
+      };
+
+      var BG_COLORS = {
+        'white': [255, 255, 255],
+        'blue':  [67, 142, 219],
+        'red':   [194, 24, 91]
+      };
+
+      dropZone.addEventListener('click', function() { fileInput.click(); });
+      dropZone.addEventListener('dragover', function(e) { e.preventDefault(); dropZone.style.borderColor = '#4361ee'; });
+      dropZone.addEventListener('dragleave', function() { dropZone.style.borderColor = '#ccc'; });
+      dropZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        dropZone.style.borderColor = '#ccc';
+        if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
+      });
+      fileInput.addEventListener('change', function() {
+        if (fileInput.files.length > 0) handleFile(fileInput.files[0]);
+      });
+
+      toleranceSlider.addEventListener('input', function() {
+        toleranceValue.textContent = toleranceSlider.value;
+      });
+
+      function handleFile(file) {
+        if (!file.type.match(/^image\/(jpeg|png)$/)) {
+          showToast('仅支持 JPG 和 PNG 格式');
+          return;
+        }
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var img = new Image();
+          img.onload = function() {
+            originalImage = img;
+            drawOriginal(img);
+            settings.style.display = '';
+            dropZone.style.display = 'none';
+            showToast('照片已加载');
+          };
+          img.onerror = function() { showToast('图片加载失败，请重试'); };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function drawOriginal(img) {
+        var ctx = originalCanvas.getContext('2d');
+        var maxW = 300, maxH = 400;
+        var scale = Math.min(maxW / img.width, maxH / img.height, 1);
+        originalCanvas.width = img.width * scale;
+        originalCanvas.height = img.height * scale;
+        ctx.drawImage(img, 0, 0, originalCanvas.width, originalCanvas.height);
+      }
+
+      function getSelectedBgColor() {
+        var radios = document.querySelectorAll('input[name="bgColor"]');
+        for (var i = 0; i < radios.length; i++) {
+          if (radios[i].checked) return radios[i].value;
+        }
+        return 'white';
+      }
+
+      window.processPhoto = function() {
+        if (!originalImage) { showToast('请先上传照片'); return; }
+
+        var sizeKey = document.getElementById('sizeSelect').value;
+        var size = SIZES[sizeKey];
+        var targetW = size.w;
+        var targetH = size.h;
+        var bgColorName = getSelectedBgColor();
+        var bgColor = BG_COLORS[bgColorName];
+        var tolerance = parseInt(toleranceSlider.value, 10);
+
+        previewCanvas.width = targetW;
+        previewCanvas.height = targetH;
+        var ctx = previewCanvas.getContext('2d');
+
+        // Fill background
+        ctx.fillStyle = 'rgb(' + bgColor[0] + ',' + bgColor[1] + ',' + bgColor[2] + ')';
+        ctx.fillRect(0, 0, targetW, targetH);
+
+        // Draw image covering the target area (center crop)
+        var img = originalImage;
+        var imgRatio = img.width / img.height;
+        var targetRatio = targetW / targetH;
+        var sx, sy, sw, sh;
+        if (imgRatio > targetRatio) {
+          sh = img.height;
+          sw = img.height * targetRatio;
+          sx = (img.width - sw) / 2;
+          sy = 0;
+        } else {
+          sw = img.width;
+          sh = img.width / targetRatio;
+          sx = 0;
+          sy = (img.height - sh) / 2;
+        }
+        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, targetW, targetH);
+
+        // Replace background: sample corners to detect original bg color
+        var imageData = ctx.getImageData(0, 0, targetW, targetH);
+        var data = imageData.data;
+
+        // Sample corner pixels to detect background color
+        var samples = [];
+        var sampleCount = 5;
+        for (var yi = 0; yi < sampleCount; yi++) {
+          for (var xi = 0; xi < sampleCount; xi++) {
+            var px = Math.floor(xi * targetW / sampleCount);
+            var py = Math.floor(yi * targetH / sampleCount);
+            // Top-left corner area
+            if (px < targetW * 0.2 && py < targetH * 0.2) {
+              var idx = (py * targetW + px) * 4;
+              samples.push([data[idx], data[idx + 1], data[idx + 2]]);
+            }
+            // Top-right corner area
+            if (px > targetW * 0.8 && py < targetH * 0.2) {
+              var idx2 = (py * targetW + px) * 4;
+              samples.push([data[idx2], data[idx2 + 1], data[idx2 + 2]]);
+            }
+          }
+        }
+
+        // Average the sampled colors
+        var avgR = 0, avgG = 0, avgB = 0;
+        for (var s = 0; s < samples.length; s++) {
+          avgR += samples[s][0]; avgG += samples[s][1]; avgB += samples[s][2];
+        }
+        avgR = Math.round(avgR / samples.length);
+        avgG = Math.round(avgG / samples.length);
+        avgB = Math.round(avgB / samples.length);
+
+        // Replace pixels close to the detected background color
+        for (var py2 = 0; py2 < targetH; py2++) {
+          for (var px2 = 0; px2 < targetW; px2++) {
+            var idx3 = (py2 * targetW + px2) * 4;
+            var dr = data[idx3] - avgR;
+            var dg = data[idx3 + 1] - avgG;
+            var db = data[idx3 + 2] - avgB;
+            var dist = Math.sqrt(dr * dr + dg * dg + db * db);
+            if (dist < tolerance * 3) {
+              var blend = Math.min(1, (tolerance * 3 - dist) / (tolerance * 1.5));
+              data[idx3] = Math.round(data[idx3] * (1 - blend) + bgColor[0] * blend);
+              data[idx3 + 1] = Math.round(data[idx3 + 1] * (1 - blend) + bgColor[1] * blend);
+              data[idx3 + 2] = Math.round(data[idx3 + 2] * (1 - blend) + bgColor[2] * blend);
+            }
+          }
+        }
+
+        ctx.putImageData(imageData, 0, 0);
+        showToast('证件照生成完成: ' + size.label + ' (' + targetW + 'x' + targetH + 'px)');
+      };
+
+      window.downloadPhoto = function() {
+        if (previewCanvas.width < 10) { showToast('请先生成证件照'); return; }
+        var link = document.createElement('a');
+        link.download = 'id-photo-' + document.getElementById('sizeSelect').value + '.png';
+        link.href = previewCanvas.toDataURL('image/png');
+        link.click();
+        showToast('证件照已下载');
+      };
+
+      window.resetAll = function() {
+        originalImage = null;
+        settings.style.display = 'none';
+        dropZone.style.display = '';
+        fileInput.value = '';
+        var ctx1 = originalCanvas.getContext('2d');
+        ctx1.clearRect(0, 0, originalCanvas.width, originalCanvas.height);
+        var ctx2 = previewCanvas.getContext('2d');
+        ctx2.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+      };
+
+      function showToast(msg) {
+        var toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(function() { toast.classList.remove('show'); }, 2000);
+      }
+      window.showToast = showToast;
+    })();
+  </script>
+</body>
+</html>

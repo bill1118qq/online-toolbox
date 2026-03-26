@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>二维码完全指南：生成、解码、美化与安全 - 在线工具箱</title>
+  <meta name="description" content="二维码完全指南：二维码工作原理、QR Code与Micro QR区别、纠错等级详解、如何生成和解码二维码、二维码美化技巧、二维码安全防范，附带在线工具。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../manifest.json">
+  <meta property="og:title" content="二维码完全指南：生成、解码、美化与安全">
+  <meta property="og:description" content="从原理到实践，全面了解二维码：生成、解码、美化定制与安全防护。">
+  <meta property="og:url" content="https://eitools.cn/guides/qrcode-tutorial.html">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://eitools.cn/guides/qrcode-tutorial.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "如何生成、解码和美化二维码",
+    "description": "二维码完全指南，包含二维码原理、生成方法、解码技巧、美化和安全防护。",
+    "url": "https://eitools.cn/guides/qrcode-tutorial.html",
+    "step": [
+      {
+        "@type": "HowToStep",
+        "name": "了解二维码原理",
+        "text": "学习二维码的编码原理、版本号、纠错等级和容量限制等基础知识。"
+      },
+      {
+        "@type": "HowToStep",
+        "name": "生成二维码",
+        "text": "使用在线二维码生成器，输入文本或链接，选择纠错等级和尺寸，生成二维码图片。"
+      },
+      {
+        "@type": "HowToStep",
+        "name": "美化二维码",
+        "text": "利用高纠错等级的特性，在二维码中嵌入Logo、自定义颜色和圆角样式。"
+      },
+      {
+        "@type": "HowToStep",
+        "name": "安全扫描",
+        "text": "不扫描来源不明的二维码，扫描前先查看预览URL，使用正规App扫码。"
+      }
+    ]
+  }
+  </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+<script src="../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>二维码完全指南：生成、解码、美化与安全</h1>
+    </div>
+
+    <article style="line-height: 1.8; color: #333;">
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">一、什么是二维码？</h2>
+      <p>二维码（QR Code，Quick Response Code）是一种二维矩阵式条码，由日本 Denso Wave 公司的腾弘原（Masahiro Hara）于 1994 年发明。与传统的条形码只能存储一维数字不同，二维码可以在水平和垂直两个方向上同时存储信息，因此容量大幅提升。</p>
+      <p>二维码之所以被称为"快速响应"码，是因为它的设计初衷是为了加速汽车制造业的零部件追踪——扫描器可以在极短时间内读取二维码中的信息，速度远超传统条形码。</p>
+      <p>如今，二维码已经渗透到日常生活的方方面面：移动支付、健康码、电子名片、Wi-Fi 连接、网址跳转、产品溯源、电子票务等等。根据统计，2024 年全球二维码扫描量超过数十亿次，中国更是全球最大的二维码使用市场。</p>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">二、二维码的工作原理</h2>
+      <p>要理解二维码的工作原理，需要了解以下几个核心概念：</p>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">2.1 二维码的结构</h3>
+      <p>一个标准的二维码由以下几个部分组成：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>定位图案（Position Detection Pattern）</strong>：二维码三个角上的大方块图案，帮助扫描器快速定位二维码的位置和方向。无论二维码旋转或倾斜，这三个定位图案都能被识别。</li>
+        <li><strong>校正图案（Alignment Pattern）</strong>：版本 2 及以上的二维码中会出现的小方块图案，用于帮助扫描器在二维码弯曲或扭曲时正确解码。</li>
+        <li><strong>定时图案（Timing Pattern）</strong>：连接定位图案的交替黑白点线，帮助扫描器确定模块的坐标位置。</li>
+        <li><strong>格式信息（Format Information）</strong>：存储纠错等级和掩码模式信息。</li>
+        <li><strong>版本信息（Version Information）</strong>：版本 7 及以上的二维码中包含，标识二维码的版本号。</li>
+        <li><strong>数据和纠错码字</strong>：实际存储的用户数据和用于纠错的冗余数据。</li>
+        <li><strong>静区（Quiet Zone）</strong>：二维码四周的空白边距区域，宽度至少为 4 个模块，确保扫描器能正确区分二维码和背景。</li>
+      </ul>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">2.2 二维码的版本与容量</h3>
+      <p>QR Code 共有 40 个版本（Version 1 到 Version 40）。版本号越大，二维码中包含的模块数越多，能存储的数据也越多：</p>
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; background: white; border-radius: 12px; overflow: hidden; margin: 12px 0;">
+        <tr style="background: #4361ee; color: white;"><th style="padding: 12px;">版本</th><th style="padding: 12px;">模块数</th><th style="padding: 12px;">数字</th><th style="padding: 12px;">字母</th><th style="padding: 12px;">二进制</th><th style="padding: 12px;">汉字</th></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">1</td><td style="padding: 10px 12px;">21x21</td><td style="padding: 10px 12px;">41</td><td style="padding: 10px 12px;">25</td><td style="padding: 10px 12px;">17</td><td style="padding: 10px 12px;">10</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">10</td><td style="padding: 10px 12px;">57x57</td><td style="padding: 10px 12px;">652</td><td style="padding: 10px 12px;">395</td><td style="padding: 10px 12px;">271</td><td style="padding: 10px 12px;">154</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">20</td><td style="padding: 10px 12px;">97x97</td><td style="padding: 10px 12px;">2,844</td><td style="padding: 10px 12px;">1,729</td><td style="padding: 10px 12px;">1,185</td><td style="padding: 10px 12px;">677</td></tr>
+        <tr><td style="padding: 10px 12px;">40</td><td style="padding: 10px 12px;">177x177</td><td style="padding: 10px 12px;">7,089</td><td style="padding: 10px 12px;">4,296</td><td style="padding: 10px 12px;">2,953</td><td style="padding: 10px 12px;">1,817</td></tr>
+      </table>
+      <p>注意：以上容量基于最低纠错等级（L级）。使用更高的纠错等级会减少可用数据容量。</p>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">2.3 纠错等级</h3>
+      <p>二维码最强大的特性之一就是内置纠错机制。即使二维码被部分遮挡或损坏，仍然可以正确读取其中的信息。QR Code 定义了四个纠错等级：</p>
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; background: white; border-radius: 12px; overflow: hidden; margin: 12px 0;">
+        <tr style="background: #4361ee; color: white;"><th style="padding: 12px;">等级</th><th style="padding: 12px;">名称</th><th style="padding: 12px;">纠错能力</th><th style="padding: 12px;">适用场景</th></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">L</td><td style="padding: 10px 12px;">Low（低）</td><td style="padding: 10px 12px;">约 7%</td><td style="padding: 10px 12px;">数据密度优先，二维码不会被遮挡</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">M</td><td style="padding: 10px 12px;">Medium（中）</td><td style="padding: 10px 12px;">约 15%</td><td style="padding: 10px 12px;">通用场景，推荐默认选择</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">Q</td><td style="padding: 10px 12px;">Quartile（较高）</td><td style="padding: 10px 12px;">约 25%</td><td style="padding: 10px 12px;">需要嵌入 Logo 或可能被部分遮挡</td></tr>
+        <tr><td style="padding: 10px 12px;">H</td><td style="padding: 10px 12px;">High（高）</td><td style="padding: 10px 12px;">约 30%</td><td style="padding: 10px 12px;">需要嵌入大 Logo 或恶劣环境使用</td></tr>
+      </table>
+      <p>纠错等级越高，二维码的数据容量越小，但容错能力越强。例如，使用 H 级纠错时，即使二维码有 30% 的面积被遮挡或损坏，仍然可以正确读取。</p>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">2.4 QR Code 与 Micro QR 的区别</h3>
+      <p>除了标准 QR Code，还有一种精简版本叫做 Micro QR Code，主要区别如下：</p>
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; background: white; border-radius: 12px; overflow: hidden; margin: 12px 0;">
+        <tr style="background: #4361ee; color: white;"><th style="padding: 12px;">特性</th><th style="padding: 12px;">QR Code</th><th style="padding: 12px;">Micro QR Code</th></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">版本</td><td style="padding: 10px 12px;">1-40</td><td style="padding: 10px 12px;">M1-M4</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">模块数</td><td style="padding: 10px 12px;">21x21 ~ 177x177</td><td style="padding: 10px 12px;">11x11 ~ 17x17</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">定位图案</td><td style="padding: 10px 12px;">3 个</td><td style="padding: 10px 12px;">1 个</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">最大容量</td><td style="padding: 10px 12px;">7,089 数字字符</td><td style="padding: 10px 12px;">35 数字字符</td></tr>
+        <tr><td style="padding: 10px 12px;">纠错等级</td><td style="padding: 10px 12px;">L/M/Q/H</td><td style="padding: 10px 12px;">固定（按版本）</td></tr>
+      </table>
+      <p>Micro QR Code 适用于空间极其有限的场景，如电子元件标识等工业用途。日常生活中绝大多数场景使用的都是标准 QR Code。</p>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">三、如何生成二维码？</h2>
+      <p>生成二维码非常简单，以下是几种常见方法：</p>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">3.1 使用在线工具生成（推荐）</h3>
+      <p>最简单的方法是使用在线二维码生成器。打开我们的 <a href="../src/tools/qrcode.html" style="color: #4361ee; font-weight: 600;">在线二维码生成器</a>，按以下步骤操作：</p>
+      <ol style="margin: 12px 0 12px 24px;">
+        <li>在输入框中输入要编码的内容（网址、文字、电话号码等）</li>
+        <li>选择纠错等级（建议选择 M 级，如需嵌入 Logo 则选 H 级）</li>
+        <li>可选：自定义二维码的颜色和大小</li>
+        <li>点击"生成"按钮</li>
+        <li>下载生成的二维码图片（PNG 或 SVG 格式）</li>
+      </ol>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">3.2 二维码可编码的内容类型</h3>
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; background: white; border-radius: 12px; overflow: hidden; margin: 12px 0;">
+        <tr style="background: #4361ee; color: white;"><th style="padding: 12px;">类型</th><th style="padding: 12px;">格式说明</th><th style="padding: 12px;">示例</th></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">网址</td><td style="padding: 10px 12px;">直接输入 URL</td><td style="padding: 10px 12px;">https://eitools.cn</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">纯文本</td><td style="padding: 10px 12px;">直接输入文字</td><td style="padding: 10px 12px;">你好，欢迎使用二维码！</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">电话</td><td style="padding: 10px 12px;">tel: 前缀</td><td style="padding: 10px 12px;">tel:+8613800138000</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">短信</td><td style="padding: 10px 12px;">smsto: 格式</td><td style="padding: 10px 12px;">smsto:13800138000:你好</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">邮箱</td><td style="padding: 10px 12px;">mailto: 前缀</td><td style="padding: 10px 12px;">mailto:test@example.com</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">Wi-Fi</td><td style="padding: 10px 12px;">WIFI: 格式</td><td style="padding: 10px 12px;">WIFI:T:WPA;S:MyWiFi;P:password123;;</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">名片</td><td style="padding: 10px 12px;">vCard 格式</td><td style="padding: 10px 12px;">BEGIN:VCARD...END:VCARD</td></tr>
+        <tr><td style="padding: 10px 12px;">地理位置</td><td style="padding: 10px 12px;">geo: 格式</td><td style="padding: 10px 12px;">geo:39.9042,116.4074</td></tr>
+      </table>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">3.3 编程生成二维码</h3>
+      <p>开发者可以使用以下常用库在代码中生成二维码：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>JavaScript</strong>：qrcode.js、qr-code-styling</li>
+        <li><strong>Python</strong>：qrcode 库、opencv</li>
+        <li><strong>Java</strong>：ZXing（Zebra Crossing）</li>
+        <li><strong>PHP</strong>：phpqrcode、endroid/qr-code</li>
+        <li><strong>Go</strong>：skip2/go-qrcode</li>
+      </ul>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">四、如何解码（识别）二维码？</h2>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">4.1 手机扫码</h3>
+      <p>智能手机自带扫码功能是解码二维码最常用的方式：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>微信</strong>：点击"发现" → "扫一扫"，或长按图片识别二维码</li>
+        <li><strong>支付宝</strong>：首页点击"扫一扫"</li>
+        <li><strong>iOS 相机</strong>：打开相机 App 对准二维码即可自动识别</li>
+        <li><strong>Android</strong>：部分手机相机自带扫码功能，或使用 Google Lens</li>
+      </ul>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">4.2 在线解码工具</h3>
+      <p>如果需要在电脑上识别二维码内容，可以使用我们的 <a href="../src/tools/qr-decoder.html" style="color: #4361ee; font-weight: 600;">在线二维码解码器</a>。操作步骤：</p>
+      <ol style="margin: 12px 0 12px 24px;">
+        <li>上传二维码图片或拖拽图片到页面</li>
+        <li>工具自动解析并显示二维码中的内容</li>
+        <li>如果内容是网址，可以直接点击跳转</li>
+        <li>如果是文本信息，可以一键复制</li>
+      </ol>
+      <p>所有解码过程均在浏览器本地完成，不会上传图片到服务器，保护您的隐私安全。</p>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">4.3 二维码解码原理</h3>
+      <p>二维码解码是一个复杂的信号处理过程，主要步骤包括：</p>
+      <ol style="margin: 12px 0 12px 24px;">
+        <li><strong>图像采集</strong>：通过摄像头或图像扫描获取二维码图像</li>
+        <li><strong>二值化处理</strong>：将灰度图像转换为黑白二值图像</li>
+        <li><strong>定位</strong>：通过定位图案确定二维码的位置和方向</li>
+        <li><strong>采样</strong>：按照网格坐标对每个模块进行采样判断黑白</li>
+        <li><strong>纠错</strong>：使用 Reed-Solomon 算法纠正读取错误</li>
+        <li><strong>解码</strong>：将二进制数据还原为原始内容</li>
+      </ol>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">五、二维码美化技巧</h2>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">5.1 嵌入 Logo</h3>
+      <p>在二维码中间嵌入品牌 Logo 是最常见的美化方式。这利用了二维码的纠错特性：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>L 级纠错</strong>：Logo 面积不超过二维码总面积的 7%</li>
+        <li><strong>M 级纠错</strong>：Logo 面积不超过 15%</li>
+        <li><strong>Q 级纠错</strong>：Logo 面积不超过 25%</li>
+        <li><strong>H 级纠错</strong>：Logo 面积不超过 30%</li>
+      </ul>
+      <p>建议将 Logo 放在二维码正中央，并保持周围有一定间距。嵌入 Logo 后务必进行扫描测试，确保能正常识别。</p>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">5.2 自定义颜色</h3>
+      <p>二维码的前景色和背景色都可以自定义，但需要注意以下原则：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>前景色和背景色之间需要有足够的对比度</li>
+        <li>背景色建议使用白色或浅色，前景色使用深色</li>
+        <li>避免使用相近色系，如深蓝背景配浅蓝前景</li>
+        <li>每个模块的边界必须清晰可辨</li>
+        <li>定位图案（三个角的大方块）建议保持原始黑白配色</li>
+      </ul>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">5.3 圆角和自定义形状</h3>
+      <p>现代二维码设计中，可以将方形的模块替换为圆点、圆角矩形或水滴形状。这种设计方式在保持可读性的同时，视觉上更加友好和美观。不过需要注意：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>自定义形状会降低扫描成功率</li>
+        <li>变形程度越大，越需要高纠错等级来补偿</li>
+        <li>生成后必须进行多设备、多 App 的扫描测试</li>
+      </ul>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">5.4 渐变色和图案背景</h3>
+      <p>高级美化技巧包括为二维码添加渐变色、在背景中加入品牌图案等。这些技巧需要在美观和可读性之间找到平衡点，强烈建议使用专业的设计工具来完成。</p>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">六、二维码安全指南</h2>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">6.1 二维码的安全风险</h3>
+      <p>二维码本身是安全的——它只是一个信息编码载体。但恶意分子可以利用二维码来传播恶意内容：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>钓鱼链接</strong>：伪造银行、电商等网站的登录页面，骗取账号密码</li>
+        <li><strong>恶意软件下载</strong>：扫描后自动下载木马病毒或间谍软件</li>
+        <li><strong>支付陷阱</strong>：替换商家收款码，将款项转向攻击者账户</li>
+        <li><strong>信息窃取</strong>：引导用户授权获取个人信息或通讯录权限</li>
+        <li><strong>恶意 Wi-Fi</strong>：扫描后自动连接恶意热点，劫持网络流量</li>
+      </ul>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">6.2 如何安全使用二维码</h3>
+      <p>以下安全建议可以帮助你避免二维码安全风险：</p>
+      <ol style="margin: 12px 0 12px 24px;">
+        <li><strong>确认来源</strong>：只扫描可信来源的二维码，如官方渠道、正规商家</li>
+        <li><strong>先看后扫</strong>：部分扫码 App（如微信）会在跳转前显示目标网址，检查 URL 是否异常</li>
+        <li><strong>不轻信</strong>：如果扫码后要求输入密码或支付信息，务必核实网站真实性</li>
+        <li><strong>使用正规 App</strong>：优先使用微信、支付宝等大厂的扫码功能</li>
+        <li><strong>关闭自动跳转</strong>：在设置中关闭"扫码自动打开网页"功能</li>
+        <li><strong>定期检查</strong>：如果发现异常扣费或账户异常，立即修改密码并联系客服</li>
+        <li><strong>保护个人码</strong>：不要将付款二维码截图发给他人，以免被盗刷</li>
+      </ol>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">6.3 商家防范收款码被替换</h3>
+      <p>针对商家收款码被替换的常见骗局，建议：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>将收款码固定在可见位置，定期检查</li>
+        <li>使用有品牌标识的收款码牌</li>
+        <li>开启收款语音提示，每笔到账播报金额</li>
+        <li>顾客付款后确认到账再离开</li>
+      </ul>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">七、二维码的常见应用场景</h2>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">7.1 移动支付</h3>
+      <p>中国移动支付市场是全球最大的。支付宝和微信支付通过二维码实现了无现金社会的愿景。用户只需出示付款码或扫描商家收款码，即可完成支付。</p>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">7.2 营销推广</h3>
+      <p>企业将二维码印在广告、宣传册、名片、包装上，用户扫码即可访问官网、领取优惠券或关注社交媒体账号。与传统的网址输入相比，扫码的转化率高出数倍。</p>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">7.3 电子票务</h3>
+      <p>电影院、演唱会、展会等场景广泛使用二维码作为电子门票。入场时扫描二维码即可验证票务信息，无需纸质票据。</p>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">7.4 产品溯源</h3>
+      <p>食品、药品、电子产品等行业在产品包装上印制二维码，消费者扫码可查看产品的生产日期、批次信息、检测报告等，实现全程可追溯。</p>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">八、二维码生成最佳实践</h2>
+      <ol style="margin: 12px 0 12px 24px;">
+        <li><strong>选择合适的纠错等级</strong>：一般使用 M 级，需美化或嵌入 Logo 使用 H 级</li>
+        <li><strong>保持足够的尺寸</strong>：印刷品上建议不低于 2cm x 2cm，户外广告不低于 5cm x 5cm</li>
+        <li><strong>留足静区</strong>：二维码四周至少保留 4 个模块宽度的白色边距</li>
+        <li><strong>使用矢量格式</strong>：如果需要大幅印刷，使用 SVG 格式以避免锯齿</li>
+        <li><strong>测试多种设备</strong>：生成后用不同手机和扫码 App 测试识别率</li>
+        <li><strong>避免过度压缩</strong>：二维码图片压缩过度会导致模块边界模糊，影响识别</li>
+      </ol>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">九、常见问题解答</h2>
+
+      <h3 style="font-size: 1.05rem;">二维码会过期吗？</h3>
+      <p>二维码本身不会过期，它只是静态编码的数据。但如果二维码指向的是一个动态网页（如短链接），短链接可能会过期或被回收。</p>
+
+      <h3 style="font-size: 1.05rem;">二维码能存储图片吗？</h3>
+      <p>标准二维码不能直接存储图片。但可以将图片转换为 Base64 编码的文本存储在二维码中（容量有限），更常见的方式是存储图片的 URL，扫码后在线查看。</p>
+
+      <h3 style="font-size: 1.05rem;">二维码和条形码哪个更好？</h3>
+      <p>各有优势。条形码更简单、成本更低，适合商品标识和物流追踪。二维码容量更大、支持中文、可从任意角度扫描，适合需要存储更多信息或面向消费者的场景。</p>
+
+      <h3 style="font-size: 1.05rem;">动态二维码和静态二维码有什么区别？</h3>
+      <p>静态二维码的内容直接编码在图案中，生成后无法修改。动态二维码实际上是一个短链接，扫码后跳转到服务器，服务器可以将这个链接重定向到任意 URL，因此可以随时修改目标地址而无需重新生成二维码。</p>
+
+      <h3 style="font-size: 1.05rem;">如何判断二维码是否安全？</h3>
+      <p>无法从外观判断二维码的安全性。最有效的方法是使用正规扫码 App（如微信），在跳转前查看目标 URL，如果网址看起来可疑或与预期不符，不要继续访问。</p>
+
+      <div style="margin-top: 24px; padding: 20px; background: #f0f4ff; border-radius: 12px; border: 1px solid #4361ee;">
+        <h3 style="color: #4361ee; margin-top: 0;">在线二维码工具</h3>
+        <p>使用我们的免费在线工具，所有处理在浏览器本地完成，不上传数据到服务器：</p>
+        <ul style="margin-left: 20px;">
+          <li><a href="../src/tools/qrcode.html" style="color: #4361ee; font-weight: 600;">二维码生成器</a> — 支持自定义颜色、尺寸、纠错等级</li>
+          <li><a href="../src/tools/qr-decoder.html" style="color: #4361ee; font-weight: 600;">二维码解码器</a> — 上传图片即可识别二维码内容</li>
+          <li><a href="../src/tools/barcode-generator.html" style="color: #4361ee;">条形码生成器</a> — 生成各种格式的条形码</li>
+        </ul>
+      </div>
+
+      <div style="background: #eef1ff; padding: 20px; border-radius: 12px; margin: 20px 0;">
+        <h3 style="margin-bottom: 8px;">相关文章</h3>
+        <ul style="margin-left: 20px;">
+          <li><a href="qrcode-guide.html" style="color: #4361ee;">二维码原理详解</a></li>
+          <li><a href="qrcode-faq-guide.html" style="color: #4361ee;">二维码常见问题</a></li>
+        </ul>
+      </div>
+    </article>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../js/share.js"></script>
+</body>
+</html>

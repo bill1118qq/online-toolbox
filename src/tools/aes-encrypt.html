@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AES加密解密 - 在线工具箱</title>
+  <meta name="description" content="免费在线AES加密解密工具，支持AES-256-CBC和AES-256-GCM模式，使用PBKDF2密钥派生，纯浏览器端处理，零数据传输，保障安全。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="stylesheet" href="../../css/style.css">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="AES加密解密 - 在线工具箱">
+  <meta property="og:description" content="免费在线AES加密解密工具，支持AES-256-CBC和AES-256-GCM，PBKDF2密钥派生，纯本地处理。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/aes-encrypt.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/aes-encrypt.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type": "Question", "name": "AES加密安全吗？", "acceptedAnswer": {"@type": "Answer", "text": "AES（高级加密标准）是目前最广泛使用的对称加密算法之一，被美国政府、军方及全球企业采用。本工具使用AES-256（256位密钥），是最高安全级别的AES加密，配合PBKDF2密钥派生函数，能有效抵抗暴力破解攻击。"}},
+      {"@type": "Question", "name": "我的数据会被上传到服务器吗？", "acceptedAnswer": {"@type": "Answer", "text": "不会。本工具使用浏览器原生Web Crypto API进行加密解密运算，所有数据完全在您的设备本地处理，不会通过网络传输到任何服务器。您可以断开网络后仍能正常使用本工具。"}},
+      {"@type": "Question", "name": "AES-CBC和AES-GCM有什么区别？", "acceptedAnswer": {"@type": "Answer", "text": "AES-CBC（密码分组链接模式）是一种经典的加密模式，需要单独的初始化向量(IV)。AES-GCM（伽罗瓦/计数器模式）是认证加密模式，除了加密外还提供数据完整性验证，推荐优先使用GCM模式。"}},
+      {"@type": "Question", "name": "加密后的密文可以跨平台解密吗？", "acceptedAnswer": {"@type": "Answer", "text": "可以。本工具输出的加密结果使用Base64编码，包含完整的IV和Salt信息。只需知道密码，在任何支持AES-256的平台上（如OpenSSL、Python、Node.js等）均可正确解密。"}},
+      {"@type": "Question", "name": "什么是PBKDF2？", "acceptedAnswer": {"@type": "Answer", "text": "PBKDF2（基于密码的密钥派生函数2）是一种安全地将用户密码转换为加密密钥的算法。它通过多次迭代（本工具默认310,000次）对密码进行加盐处理，有效防止字典攻击和彩虹表攻击。"}}
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "AES加密解密工具",
+    "url": "https://eitools.cn/src/tools/aes-encrypt.html",
+    "description": "免费在线AES-256加密解密，支持CBC和GCM模式，PBKDF2密钥派生。",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any",
+    "offers": {"@type": "Offer", "price": "0", "priceCurrency": "CNY"}
+  }
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>AES 加密解密</h1>
+    </div>
+
+    <p style="color:#666;margin-bottom:20px;">使用 AES-256 对称加密算法对文本进行加密或解密，支持 CBC 和 GCM 模式，所有计算在浏览器本地完成。</p>
+
+    <!-- Mode selection -->
+    <div style="display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap;">
+      <div class="form-group" style="margin-bottom:0;">
+        <label>加密模式</label>
+        <select id="modeSelect" style="padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;">
+          <option value="AES-GCM">AES-256-GCM（推荐）</option>
+          <option value="AES-CBC">AES-256-CBC</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label>操作</label>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-primary" id="encryptBtn" onclick="doEncrypt()">加密</button>
+          <button class="btn btn-secondary" id="decryptBtn" onclick="doDecrypt()">解密</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Password -->
+    <div class="form-group">
+      <label>密码 / 密钥</label>
+      <div style="position:relative;">
+        <input type="password" id="passwordInput" placeholder="输入加密密码（至少6位）" style="width:100%;padding-right:40px;">
+        <button id="togglePwd" onclick="togglePassword()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1.1rem;color:#666;">&#128065;</button>
+      </div>
+      <p style="font-size:0.8rem;color:#999;margin-top:4px;">使用PBKDF2（310,000次迭代）从密码派生256位加密密钥</p>
+    </div>
+
+    <!-- Input -->
+    <div class="form-group">
+      <label>输入内容</label>
+      <textarea id="inputText" rows="5" placeholder="输入要加密的明文，或粘贴要解密的Base64密文..."></textarea>
+    </div>
+
+    <!-- Output -->
+    <div class="form-group">
+      <label>输出结果</label>
+      <div id="outputBox" class="result-box" style="min-height:120px;"></div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-secondary" onclick="copyOutput()">复制结果</button>
+      <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+      <button class="btn btn-secondary" onclick="swapText()">交换输入输出</button>
+    </div>
+
+    <!-- Info box -->
+    <div style="margin-top:24px;background:#e8f5e9;border-radius:8px;padding:16px;font-size:0.9rem;color:#2e7d32;">
+      <strong>安全提示：</strong>本工具使用浏览器原生 Web Crypto API，所有加密/解密操作完全在本地完成，数据不会离开您的设备。支持断网使用。加密结果采用 Base64 编码，包含 Salt 和 IV 信息，可跨平台解密。
+    </div>
+  </div>
+
+  <!-- FAQ Section -->
+  <div style="max-width:960px;margin:32px auto 0;padding:0 20px;">
+    <div style="background:white;border-radius:12px;padding:24px;">
+      <h2 style="font-size:1.2rem;margin-bottom:16px;">常见问题</h2>
+      <div style="border-top:1px solid #eee;padding:16px 0;">
+        <h3 style="font-size:0.95rem;margin-bottom:8px;">AES加密安全吗？</h3>
+        <p style="font-size:0.9rem;color:#666;">AES（高级加密标准）是目前最广泛使用的对称加密算法之一，被美国政府、军方及全球企业采用。本工具使用AES-256（256位密钥），是最高安全级别的AES加密，配合PBKDF2密钥派生函数，能有效抵抗暴力破解攻击。</p>
+      </div>
+      <div style="border-top:1px solid #eee;padding:16px 0;">
+        <h3 style="font-size:0.95rem;margin-bottom:8px;">我的数据会被上传到服务器吗？</h3>
+        <p style="font-size:0.9rem;color:#666;">不会。本工具使用浏览器原生Web Crypto API进行加密解密运算，所有数据完全在您的设备本地处理，不会通过网络传输到任何服务器。您可以断开网络后仍能正常使用本工具。</p>
+      </div>
+      <div style="border-top:1px solid #eee;padding:16px 0;">
+        <h3 style="font-size:0.95rem;margin-bottom:8px;">AES-CBC和AES-GCM有什么区别？</h3>
+        <p style="font-size:0.9rem;color:#666;">AES-CBC（密码分组链接模式）是一种经典的加密模式，需要单独的初始化向量(IV)。AES-GCM（伽罗瓦/计数器模式）是认证加密模式，除了加密外还提供数据完整性验证，推荐优先使用GCM模式。</p>
+      </div>
+      <div style="border-top:1px solid #eee;padding:16px 0;">
+        <h3 style="font-size:0.95rem;margin-bottom:8px;">加密后的密文可以跨平台解密吗？</h3>
+        <p style="font-size:0.9rem;color:#666;">可以。本工具输出的加密结果使用Base64编码，包含完整的IV和Salt信息。只需知道密码，在任何支持AES-256的平台上均可正确解密。</p>
+      </div>
+      <div style="border-top:1px solid #eee;padding:16px 0;">
+        <h3 style="font-size:0.95rem;margin-bottom:8px;">什么是PBKDF2？</h3>
+        <p style="font-size:0.9rem;color:#666;">PBKDF2（基于密码的密钥派生函数2）是一种安全地将用户密码转换为加密密钥的算法。它通过多次迭代（本工具默认310,000次）对密码进行加盐处理，有效防止字典攻击和彩虹表攻击。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Related tools -->
+  <div style="max-width:960px;margin:24px auto 0;padding:0 20px;">
+    <div style="background:#f0f2f5;border-radius:12px;padding:20px;">
+      <h3 style="font-size:0.95rem;margin:0 0 12px;color:#333;">相关工具推荐</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        <a href="rot13-cipher.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">文本加密解密</a>
+        <a href="hash-generator.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">Hash计算器</a>
+        <a href="password-generator.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">密码生成器</a>
+        <a href="base64.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">Base64编解码</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+
+  <script>
+    (function() {
+      var MODE_ITERATIONS = 310000;
+      var SALT_LENGTH = 16;
+      var IV_LENGTH = 12;
+
+      function bufToBase64(buf) {
+        var bytes = new Uint8Array(buf);
+        var binary = '';
+        for (var i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+        return btoa(binary);
+      }
+
+      function base64ToBuf(b64) {
+        var binary = atob(b64);
+        var bytes = new Uint8Array(binary.length);
+        for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        return bytes.buffer;
+      }
+
+      function ab2str(buf) {
+        return new TextDecoder('utf-8').decode(new Uint8Array(buf));
+      }
+
+      function str2ab(str) {
+        return new TextEncoder().encode(str).buffer;
+      }
+
+      async function deriveKey(password, salt) {
+        var enc = new TextEncoder();
+        var keyMaterial = await crypto.subtle.importKey(
+          'raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']
+        );
+        return crypto.subtle.deriveKey(
+          { name: 'PBKDF2', salt: salt, iterations: MODE_ITERATIONS, hash: 'SHA-256' },
+          keyMaterial,
+          { name: document.getElementById('modeSelect').value, length: 256 },
+          false,
+          ['encrypt', 'decrypt']
+        );
+      }
+
+      async function doEncrypt() {
+        var password = document.getElementById('passwordInput').value;
+        var plaintext = document.getElementById('inputText').value;
+        var mode = document.getElementById('modeSelect').value;
+        var outputBox = document.getElementById('outputBox');
+
+        if (password.length < 6) { showToast('密码至少需要6位'); return; }
+        if (!plaintext.trim()) { showToast('请输入要加密的内容'); return; }
+
+        try {
+          var salt = crypto.getRandomValues(new Uint8Array(SALT_LENGTH));
+          var ivLength = mode === 'AES-GCM' ? 12 : 16;
+          var iv = crypto.getRandomValues(new Uint8Array(ivLength));
+          var key = await deriveKey(password, salt);
+
+          var algParams;
+          if (mode === 'AES-GCM') {
+            algParams = { name: 'AES-GCM', iv: iv };
+          } else {
+            algParams = { name: 'AES-CBC', iv: iv };
+          }
+
+          var encrypted = await crypto.subtle.encrypt(algParams, key, str2ab(plaintext));
+
+          // Pack: salt(16) + iv(12/16) + ciphertext
+          var packed = new Uint8Array(salt.length + iv.length + encrypted.byteLength);
+          packed.set(salt, 0);
+          packed.set(iv, salt.length);
+          packed.set(new Uint8Array(encrypted), salt.length + iv.length);
+
+          var result = mode + ':' + bufToBase64(packed.buffer);
+          outputBox.textContent = result;
+          outputBox.style.borderColor = '#4caf50';
+          showToast('加密成功');
+        } catch (e) {
+          outputBox.textContent = '加密失败: ' + e.message;
+          outputBox.style.borderColor = '#f44336';
+        }
+      }
+
+      async function doDecrypt() {
+        var password = document.getElementById('passwordInput').value;
+        var ciphertext = document.getElementById('inputText').value.trim();
+        var outputBox = document.getElementById('outputBox');
+
+        if (!password) { showToast('请输入解密密码'); return; }
+        if (!ciphertext) { showToast('请输入要解密的密文'); return; }
+
+        try {
+          var mode = document.getElementById('modeSelect').value;
+          var parts = ciphertext.split(':');
+          var detectedMode = parts[0];
+          var data = parts.slice(1).join(':');
+
+          if (detectedMode === 'AES-GCM' || detectedMode === 'AES-CBC') {
+            mode = detectedMode;
+            document.getElementById('modeSelect').value = mode;
+          } else {
+            data = ciphertext;
+          }
+
+          var packed = new Uint8Array(base64ToBuf(data));
+          var ivLength = mode === 'AES-GCM' ? 12 : 16;
+          var salt = packed.slice(0, SALT_LENGTH);
+          var iv = packed.slice(SALT_LENGTH, SALT_LENGTH + ivLength);
+          var encData = packed.slice(SALT_LENGTH + ivLength);
+
+          var key = await deriveKey(password, salt);
+
+          var algParams;
+          if (mode === 'AES-GCM') {
+            algParams = { name: 'AES-GCM', iv: iv };
+          } else {
+            algParams = { name: 'AES-CBC', iv: iv };
+          }
+
+          var decrypted = await crypto.subtle.decrypt(algParams, key, encData);
+          outputBox.textContent = ab2str(decrypted);
+          outputBox.style.borderColor = '#4caf50';
+          showToast('解密成功');
+        } catch (e) {
+          outputBox.textContent = '解密失败，请检查密码是否正确。\n错误: ' + e.message;
+          outputBox.style.borderColor = '#f44336';
+        }
+      }
+
+      window.doEncrypt = doEncrypt;
+      window.doDecrypt = doDecrypt;
+
+      window.togglePassword = function() {
+        var input = document.getElementById('passwordInput');
+        input.type = input.type === 'password' ? 'text' : 'password';
+      };
+
+      window.copyOutput = function() {
+        var text = document.getElementById('outputBox').textContent;
+        if (!text || text.startsWith('加密失败') || text.startsWith('解密失败')) {
+          showToast('没有可复制的结果');
+          return;
+        }
+        navigator.clipboard.writeText(text).then(function() {
+          showToast('已复制到剪贴板');
+        }).catch(function() {
+          showToast('复制失败，请手动选择复制');
+        });
+      };
+
+      window.clearAll = function() {
+        document.getElementById('inputText').value = '';
+        document.getElementById('outputBox').textContent = '';
+        document.getElementById('outputBox').style.borderColor = '#e0e0e0';
+        document.getElementById('passwordInput').value = '';
+      };
+
+      window.swapText = function() {
+        var input = document.getElementById('inputText');
+        var output = document.getElementById('outputBox');
+        var tmp = input.value;
+        input.value = output.textContent;
+        output.textContent = tmp;
+      };
+
+      function showToast(msg) {
+        var toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(function() { toast.classList.remove('show'); }, 2000);
+      }
+    })();
+  </script>
+</body>
+</html>

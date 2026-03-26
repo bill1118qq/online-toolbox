@@ -24,6 +24,9 @@
     "operatingSystem": "All"
   }
   </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"什么是Unix时间戳？","acceptedAnswer":{"@type":"Answer","text":"Unix时间戳（Unix Timestamp）是指从1970年1月1日00:00:00 UTC到当前时刻所经过的总秒数。它是计算机系统中常用的时间表示方式，广泛用于日志记录、API接口和数据库存储。"}},{"@type":"Question","name":"时间戳为什么会变成13位？","acceptedAnswer":{"@type":"Answer","text":"10位时间戳的单位是秒，13位时间戳的单位是毫秒。JavaScript中的Date.getTime()返回的就是毫秒级时间戳（13位）。将13位时间戳除以1000再取整即可得到10位秒级时间戳。"}},{"@type":"Question","name":"时间戳会溢出吗？","acceptedAnswer":{"@type":"Answer","text":"32位有符号整数的时间戳最大值为2147483647，对应北京时间2038年1月19日11:14:07，这就是著名的"2038年问题"。不过现代64位系统已经解决了这个问题。"}},{"@type":"Question","name":"时间戳转换工具安全吗？","acceptedAnswer":{"@type":"Answer","text":"本工具完全在浏览器端运行，不会将任何数据发送到服务器，所有转换计算在本地完成，使用非常安全。"}}]}
+  </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
   <script src="../../js/analytics.js"></script>
 </head>

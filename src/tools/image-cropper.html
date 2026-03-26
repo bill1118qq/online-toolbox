@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>在线图片裁剪 - 在线工具箱</title>
+  <meta name="description" content="免费在线图片裁剪工具，支持自由裁剪和1:1、4:3、16:9、3:2等预设比例，拖拽选择裁剪区域，纯本地处理，不上传服务器。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="stylesheet" href="../../css/style.css">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="在线图片裁剪 - 在线工具箱">
+  <meta property="og:description" content="免费在线图片裁剪工具，支持预设比例和自由裁剪，纯本地处理。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/image-cropper.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/image-cropper.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type": "Question", "name": "图片裁剪工具安全吗？会上传我的照片吗？", "acceptedAnswer": {"@type": "Answer", "text": "完全安全。本工具使用浏览器Canvas API在本地处理图片，您的图片不会上传到任何服务器，所有操作均在您的设备上完成。"}},
+      {"@type": "Question", "name": "支持哪些裁剪比例？", "acceptedAnswer": {"@type": "Answer", "text": "支持自由裁剪以及1:1（正方形）、4:3、16:9（宽屏）、3:2（照片）等常用预设比例，还可以输入自定义比例。选择比例后拖拽裁剪框会自动锁定比例。"}},
+      {"@type": "Question", "name": "裁剪后的图片质量会下降吗？", "acceptedAnswer": {"@type": "Answer", "text": "裁剪本身不会降低图片质量。本工具直接从原始图片数据中截取选区像素，不会进行重新压缩或缩放，输出PNG格式保持原始画质。"}},
+      {"@type": "Question", "name": "支持哪些图片格式？", "acceptedAnswer": {"@type": "Answer", "text": "支持JPG、PNG、WebP等常见图片格式。上传后自动在Canvas中渲染，裁剪结果输出为PNG格式。"}}
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "在线图片裁剪工具",
+    "url": "https://eitools.cn/src/tools/image-cropper.html",
+    "description": "免费在线图片裁剪，支持预设比例和自由裁剪，纯本地处理。",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any",
+    "offers": {"@type": "Offer", "price": "0", "priceCurrency": "CNY"}
+  }
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js"></script>
+  <style>
+    #cropContainer {
+      position:relative;
+      display:inline-block;
+      cursor:crosshair;
+      user-select:none;
+      -webkit-user-select:none;
+      touch-action:none;
+    }
+    #cropContainer img {
+      display:block;
+      max-width:100%;
+      max-height:500px;
+      pointer-events:none;
+    }
+    #cropOverlay {
+      position:absolute;
+      top:0;left:0;right:0;bottom:0;
+      pointer-events:none;
+    }
+    #cropBox {
+      position:absolute;
+      border:2px dashed #4361ee;
+      background:rgba(67,97,238,0.1);
+      pointer-events:all;
+      cursor:move;
+    }
+    #cropBox .handle {
+      position:absolute;
+      width:12px;height:12px;
+      background:#4361ee;
+      border:2px solid #fff;
+      border-radius:2px;
+      pointer-events:all;
+    }
+    #cropBox .handle.tl { top:-6px;left:-6px;cursor:nw-resize; }
+    #cropBox .handle.tr { top:-6px;right:-6px;cursor:ne-resize; }
+    #cropBox .handle.bl { bottom:-6px;left:-6px;cursor:sw-resize; }
+    #cropBox .handle.br { bottom:-6px;right:-6px;cursor:se-resize; }
+    #cropDimLabel {
+      position:absolute;
+      bottom:-24px;left:50%;transform:translateX(-50%);
+      background:rgba(0,0,0,0.7);color:#fff;
+      font-size:0.75rem;padding:2px 8px;border-radius:4px;
+      white-space:nowrap;
+    }
+    .dim-info {
+      display:flex;gap:16px;flex-wrap:wrap;
+      font-size:0.9rem;color:#666;margin-top:12px;
+    }
+    .dim-info span { font-weight:600; color:#333; }
+  </style>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>在线图片裁剪</h1>
+    </div>
+
+    <p style="color:#666;margin-bottom:20px;">上传图片后拖拽选择裁剪区域，支持预设比例和自由裁剪。所有处理均在本地完成。</p>
+
+    <!-- Upload -->
+    <div id="uploadArea">
+      <div id="dropZone" style="border:2px dashed #ccc;border-radius:12px;padding:48px;text-align:center;cursor:pointer;background:#fafafa;margin-bottom:24px;">
+        <p style="font-size:1.1rem;color:#666;">拖拽图片到此处，或点击选择文件</p>
+        <p style="font-size:0.85rem;color:#999;margin-top:8px;">支持 JPG、PNG、WebP 格式</p>
+        <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" style="display:none;">
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div id="toolbar" style="display:none;">
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap;">
+        <label style="font-weight:600;">裁剪比例：</label>
+        <button class="btn btn-secondary ratio-btn" data-ratio="free" onclick="setRatio('free',this)" style="padding:6px 14px;font-size:0.85rem;">自由</button>
+        <button class="btn btn-secondary ratio-btn" data-ratio="1:1" onclick="setRatio('1:1',this)" style="padding:6px 14px;font-size:0.85rem;">1:1</button>
+        <button class="btn btn-secondary ratio-btn" data-ratio="4:3" onclick="setRatio('4:3',this)" style="padding:6px 14px;font-size:0.85rem;">4:3</button>
+        <button class="btn btn-secondary ratio-btn" data-ratio="16:9" onclick="setRatio('16:9',this)" style="padding:6px 14px;font-size:0.85rem;">16:9</button>
+        <button class="btn btn-secondary ratio-btn" data-ratio="3:2" onclick="setRatio('3:2',this)" style="padding:6px 14px;font-size:0.85rem;">3:2</button>
+        <button class="btn btn-primary" onclick="doCrop()" style="padding:6px 14px;font-size:0.85rem;">裁剪并下载</button>
+        <button class="btn btn-secondary" onclick="resetAll()" style="padding:6px 14px;font-size:0.85rem;">重新选择</button>
+      </div>
+
+      <!-- Crop canvas -->
+      <div style="background:#f8f9fa;border:2px solid #e0e0e0;border-radius:8px;padding:12px;display:flex;justify-content:center;overflow:auto;">
+        <div id="cropContainer">
+          <canvas id="imageCanvas"></canvas>
+          <div id="cropOverlay">
+            <div id="cropBox" style="display:none;">
+              <div class="handle tl"></div>
+              <div class="handle tr"></div>
+              <div class="handle bl"></div>
+              <div class="handle br"></div>
+              <div id="cropDimLabel"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dim-info" id="dimInfo" style="display:none;">
+        <div>原始尺寸：<span id="origSize">-</span></div>
+        <div>裁剪区域：<span id="cropSize">-</span></div>
+        <div>裁剪比例：<span id="cropRatio">-</span></div>
+      </div>
+    </div>
+
+    <!-- Preview -->
+    <div id="previewSection" style="display:none;margin-top:24px;">
+      <h3 style="font-size:0.95rem;margin-bottom:8px;">裁剪预览</h3>
+      <div style="background:#f8f9fa;border:2px solid #4caf50;border-radius:8px;padding:12px;display:flex;justify-content:center;">
+        <canvas id="previewCanvas" style="max-width:100%;max-height:400px;border-radius:4px;"></canvas>
+      </div>
+      <div class="btn-group" style="margin-top:12px;">
+        <button class="btn btn-primary" onclick="downloadCropped()">下载裁剪图片</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ Section -->
+  <div style="max-width:960px;margin:32px auto 0;padding:0 20px;">
+    <div style="background:white;border-radius:12px;padding:24px;">
+      <h2 style="font-size:1.2rem;margin-bottom:16px;">常见问题</h2>
+      <div style="border-top:1px solid #eee;padding:16px 0;">
+        <h3 style="font-size:0.95rem;margin-bottom:8px;">图片裁剪工具安全吗？会上传我的照片吗？</h3>
+        <p style="font-size:0.9rem;color:#666;">完全安全。本工具使用浏览器Canvas API在本地处理图片，您的图片不会上传到任何服务器，所有操作均在您的设备上完成。</p>
+      </div>
+      <div style="border-top:1px solid #eee;padding:16px 0;">
+        <h3 style="font-size:0.95rem;margin-bottom:8px;">支持哪些裁剪比例？</h3>
+        <p style="font-size:0.9rem;color:#666;">支持自由裁剪以及1:1（正方形）、4:3、16:9（宽屏）、3:2（照片）等常用预设比例。选择比例后拖拽裁剪框会自动锁定比例。</p>
+      </div>
+      <div style="border-top:1px solid #eee;padding:16px 0;">
+        <h3 style="font-size:0.95rem;margin-bottom:8px;">裁剪后的图片质量会下降吗？</h3>
+        <p style="font-size:0.9rem;color:#666;">裁剪本身不会降低图片质量。本工具直接从原始图片数据中截取选区像素，输出PNG格式保持原始画质。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Related tools -->
+  <div style="max-width:960px;margin:24px auto 0;padding:0 20px;">
+    <div style="background:#f0f2f5;border-radius:12px;padding:20px;">
+      <h3 style="font-size:0.95rem;margin:0 0 12px;color:#333;">相关工具推荐</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        <a href="id-photo.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">证件照制作</a>
+        <a href="image-compressor.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">图片压缩</a>
+        <a href="image-converter.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">图片格式转换</a>
+        <a href="image-watermark.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">图片加水印</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+
+  <script>
+    (function() {
+      var imageCanvas = document.getElementById('imageCanvas');
+      var cropContainer = document.getElementById('cropContainer');
+      var cropBox = document.getElementById('cropBox');
+      var cropDimLabel = document.getElementById('cropDimLabel');
+      var previewCanvas = document.getElementById('previewCanvas');
+      var previewSection = document.getElementById('previewSection');
+
+      var originalImage = null;
+      var displayScale = 1;
+      var currentRatio = null; // null = free, [w, h] = locked
+      var cropRect = { x: 0, y: 0, w: 0, h: 0 }; // display coordinates
+      var dragging = false;
+      var dragType = ''; // 'move', 'tl', 'tr', 'bl', 'br'
+      var dragStartX = 0, dragStartY = 0;
+      var dragStartRect = {};
+
+      var dropZone = document.getElementById('dropZone');
+      var fileInput = document.getElementById('fileInput');
+
+      dropZone.addEventListener('click', function() { fileInput.click(); });
+      dropZone.addEventListener('dragover', function(e) { e.preventDefault(); dropZone.style.borderColor = '#4361ee'; });
+      dropZone.addEventListener('dragleave', function() { dropZone.style.borderColor = '#ccc'; });
+      dropZone.addEventListener('drop', function(e) {
+        e.preventDefault(); dropZone.style.borderColor = '#ccc';
+        if (e.dataTransfer.files.length > 0) loadImage(e.dataTransfer.files[0]);
+      });
+      fileInput.addEventListener('change', function() {
+        if (fileInput.files.length > 0) loadImage(fileInput.files[0]);
+      });
+
+      function loadImage(file) {
+        if (!file.type.match(/^image\//)) { showToast('请选择图片文件'); return; }
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var img = new Image();
+          img.onload = function() {
+            originalImage = img;
+            setupCanvas(img);
+            document.getElementById('uploadArea').style.display = 'none';
+            document.getElementById('toolbar').style.display = '';
+            document.getElementById('dimInfo').style.display = '';
+            document.getElementById('origSize').textContent = img.width + ' x ' + img.height + ' px';
+            previewSection.style.display = 'none';
+            showToast('图片已加载，请拖拽选择裁剪区域');
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function setupCanvas(img) {
+        var maxW = Math.min(900, window.innerWidth - 80);
+        var maxH = 500;
+        displayScale = Math.min(maxW / img.width, maxH / img.height, 1);
+        var cw = Math.round(img.width * displayScale);
+        var ch = Math.round(img.height * displayScale);
+        imageCanvas.width = cw;
+        imageCanvas.height = ch;
+        var ctx = imageCanvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, cw, ch);
+
+        // Init crop box to center 60%
+        var margin = 0.2;
+        cropRect = {
+          x: Math.round(cw * margin),
+          y: Math.round(ch * margin),
+          w: Math.round(cw * (1 - 2 * margin)),
+          h: Math.round(ch * (1 - 2 * margin))
+        };
+        if (currentRatio) enforceRatio();
+        updateCropBox();
+        cropBox.style.display = '';
+      }
+
+      function enforceRatio() {
+        if (!currentRatio) return;
+        var rw = currentRatio[0], rh = currentRatio[1];
+        var aspect = rw / rh;
+        var cw = cropRect.w, ch = cropRect.h;
+        if (cw / ch > aspect) {
+          cropRect.w = Math.round(ch * aspect);
+        } else {
+          cropRect.h = Math.round(cw / aspect);
+        }
+      }
+
+      function updateCropBox() {
+        cropBox.style.left = cropRect.x + 'px';
+        cropBox.style.top = cropRect.y + 'px';
+        cropBox.style.width = cropRect.w + 'px';
+        cropBox.style.height = cropRect.h + 'px';
+
+        // Dimension labels in original pixels
+        var realW = Math.round(cropRect.w / displayScale);
+        var realH = Math.round(cropRect.h / displayScale);
+        cropDimLabel.textContent = realW + ' x ' + realH + ' px';
+
+        document.getElementById('cropSize').textContent = realW + ' x ' + realH + ' px';
+        if (currentRatio) {
+          document.getElementById('cropRatio').textContent = currentRatio[0] + ':' + currentRatio[1];
+        } else {
+          var gcd = getGCD(realW, realH);
+          document.getElementById('cropRatio').textContent = (realW / gcd) + ':' + (realH / gcd);
+        }
+      }
+
+      function getGCD(a, b) { return b === 0 ? a : getGCD(b, a % b); }
+
+      // Mouse/touch events
+      cropBox.addEventListener('mousedown', startDrag);
+      cropBox.addEventListener('touchstart', startDrag, { passive: false });
+      document.addEventListener('mousemove', onDrag);
+      document.addEventListener('touchmove', onDrag, { passive: false });
+      document.addEventListener('mouseup', endDrag);
+      document.addEventListener('touchend', endDrag);
+
+      // Click on image to create new crop box
+      cropContainer.addEventListener('mousedown', function(e) {
+        if (e.target === imageCanvas) {
+          var rect = imageCanvas.getBoundingClientRect();
+          var x = e.clientX - rect.left;
+          var y = e.clientY - rect.top;
+          cropRect.x = Math.round(x);
+          cropRect.y = Math.round(y);
+          cropRect.w = 100;
+          cropRect.h = 100;
+          if (currentRatio) enforceRatio();
+          updateCropBox();
+          dragType = 'br';
+          dragging = true;
+          dragStartX = e.clientX;
+          dragStartY = e.clientY;
+          dragStartRect = { x: cropRect.x, y: cropRect.y, w: cropRect.w, h: cropRect.h };
+        }
+      });
+
+      function getEventPos(e) {
+        if (e.touches && e.touches.length > 0) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        return { x: e.clientX, y: e.clientY };
+      }
+
+      function startDrag(e) {
+        e.preventDefault();
+        dragging = true;
+        var pos = getEventPos(e);
+        dragStartX = pos.x;
+        dragStartY = pos.y;
+        dragStartRect = { x: cropRect.x, y: cropRect.y, w: cropRect.w, h: cropRect.h };
+
+        var target = e.target;
+        if (target.classList.contains('tl')) dragType = 'tl';
+        else if (target.classList.contains('tr')) dragType = 'tr';
+        else if (target.classList.contains('bl')) dragType = 'bl';
+        else if (target.classList.contains('br')) dragType = 'br';
+        else dragType = 'move';
+      }
+
+      function onDrag(e) {
+        if (!dragging) return;
+        e.preventDefault();
+        var pos = getEventPos(e);
+        var dx = pos.x - dragStartX;
+        var dy = pos.y - dragStartY;
+        var maxW = imageCanvas.width;
+        var maxH = imageCanvas.height;
+        var minSize = 20;
+
+        if (dragType === 'move') {
+          cropRect.x = Math.max(0, Math.min(maxW - cropRect.w, dragStartRect.x + dx));
+          cropRect.y = Math.max(0, Math.min(maxH - cropRect.h, dragStartRect.y + dy));
+        } else {
+          var newRect = { x: dragStartRect.x, y: dragStartRect.y, w: dragStartRect.w, h: dragStartRect.h };
+          if (dragType === 'br') {
+            newRect.w = Math.max(minSize, Math.min(maxW - newRect.x, dragStartRect.w + dx));
+            newRect.h = Math.max(minSize, Math.min(maxH - newRect.y, dragStartRect.h + dy));
+          } else if (dragType === 'bl') {
+            var newX = dragStartRect.x + dx;
+            newRect.x = Math.max(0, Math.min(dragStartRect.x + dragStartRect.w - minSize, newX));
+            newRect.w = dragStartRect.x + dragStartRect.w - newRect.x;
+            newRect.h = Math.max(minSize, Math.min(maxH - newRect.y, dragStartRect.h + dy));
+          } else if (dragType === 'tr') {
+            var newY = dragStartRect.y + dy;
+            newRect.y = Math.max(0, Math.min(dragStartRect.y + dragStartRect.h - minSize, newY));
+            newRect.h = dragStartRect.y + dragStartRect.h - newRect.y;
+            newRect.w = Math.max(minSize, Math.min(maxW - newRect.x, dragStartRect.w + dx));
+          } else if (dragType === 'tl') {
+            var newX2 = dragStartRect.x + dx;
+            var newY2 = dragStartRect.y + dy;
+            newRect.x = Math.max(0, Math.min(dragStartRect.x + dragStartRect.w - minSize, newX2));
+            newRect.y = Math.max(0, Math.min(dragStartRect.y + dragStartRect.h - minSize, newY2));
+            newRect.w = dragStartRect.x + dragStartRect.w - newRect.x;
+            newRect.h = dragStartRect.y + dragStartRect.h - newRect.y;
+          }
+
+          cropRect.x = newRect.x;
+          cropRect.y = newRect.y;
+          cropRect.w = newRect.w;
+          cropRect.h = newRect.h;
+
+          if (currentRatio) {
+            enforceRatio();
+            // Keep within bounds
+            cropRect.x = Math.max(0, cropRect.x);
+            cropRect.y = Math.max(0, cropRect.y);
+            cropRect.w = Math.min(maxW - cropRect.x, cropRect.w);
+            cropRect.h = Math.min(maxH - cropRect.y, cropRect.h);
+          }
+        }
+        updateCropBox();
+      }
+
+      function endDrag() { dragging = false; }
+
+      window.setRatio = function(ratio, btn) {
+        document.querySelectorAll('.ratio-btn').forEach(function(b) {
+          b.classList.remove('btn-primary');
+          b.classList.add('btn-secondary');
+        });
+        btn.classList.remove('btn-secondary');
+        btn.classList.add('btn-primary');
+
+        if (ratio === 'free') {
+          currentRatio = null;
+        } else {
+          var parts = ratio.split(':');
+          currentRatio = [parseInt(parts[0], 10), parseInt(parts[1], 10)];
+        }
+        if (currentRatio && originalImage) {
+          enforceRatio();
+          updateCropBox();
+        }
+      };
+
+      window.doCrop = function() {
+        if (!originalImage) { showToast('请先上传图片'); return; }
+        if (cropRect.w < 10 || cropRect.h < 10) { showToast('请选择有效的裁剪区域'); return; }
+
+        var sx = Math.round(cropRect.x / displayScale);
+        var sy = Math.round(cropRect.y / displayScale);
+        var sw = Math.round(cropRect.w / displayScale);
+        var sh = Math.round(cropRect.h / displayScale);
+
+        // Clamp to original image bounds
+        sx = Math.max(0, Math.min(originalImage.width - 1, sx));
+        sy = Math.max(0, Math.min(originalImage.height - 1, sy));
+        sw = Math.min(sw, originalImage.width - sx);
+        sh = Math.min(sh, originalImage.height - sy);
+
+        previewCanvas.width = sw;
+        previewCanvas.height = sh;
+        var ctx = previewCanvas.getContext('2d');
+        ctx.drawImage(originalImage, sx, sy, sw, sh, 0, 0, sw, sh);
+        previewSection.style.display = '';
+        showToast('裁剪完成: ' + sw + ' x ' + sh + ' px');
+      };
+
+      window.downloadCropped = function() {
+        if (previewCanvas.width < 10) { showToast('请先裁剪图片'); return; }
+        var link = document.createElement('a');
+        link.download = 'cropped-' + Date.now() + '.png';
+        link.href = previewCanvas.toDataURL('image/png');
+        link.click();
+        showToast('裁剪图片已下载');
+      };
+
+      window.resetAll = function() {
+        originalImage = null;
+        currentRatio = null;
+        document.getElementById('uploadArea').style.display = '';
+        document.getElementById('toolbar').style.display = 'none';
+        document.getElementById('dimInfo').style.display = 'none';
+        document.getElementById('previewSection').style.display = 'none';
+        fileInput.value = '';
+        document.querySelectorAll('.ratio-btn').forEach(function(b) {
+          b.classList.remove('btn-primary');
+          b.classList.add('btn-secondary');
+        });
+        // Highlight "free" button
+        var freeBtn = document.querySelector('[data-ratio="free"]');
+        if (freeBtn) {
+          freeBtn.classList.remove('btn-secondary');
+          freeBtn.classList.add('btn-primary');
+        }
+      };
+
+      function showToast(msg) {
+        var toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(function() { toast.classList.remove('show'); }, 2000);
+      }
+    })();
+  </script>
+</body>
+</html>
