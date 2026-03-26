@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SVG编辑器 - 在线SVG代码编辑与预览 - 在线工具箱</title>
+  <meta name="description" content="免费在线SVG编辑器，实时编辑SVG代码并预览效果。支持基本图形绘制、颜色编辑、代码格式化、导出PNG。纯浏览器端处理，无需安装。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <meta property="og:title" content="SVG编辑器 - 在线SVG代码编辑与预览">
+  <meta property="og:description" content="在线SVG编辑器，实时预览、导出PNG，纯浏览器端处理。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/svg-editor.html">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://eitools.cn/src/tools/svg-editor.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "SVG编辑器",
+    "description": "在线SVG代码编辑器，实时预览与导出",
+    "url": "https://eitools.cn/src/tools/svg-editor.html",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Any",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "CNY"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "SVG是什么？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "SVG（Scalable Vector Graphics）是一种基于XML的矢量图像格式。SVG图像可以无限缩放而不失真，文件体积小，非常适合用于网页图标、Logo、图表等场景。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "如何在线编辑SVG？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "在本工具中，您可以直接在左侧代码编辑器中修改SVG代码，右侧会实时显示预览效果。支持添加基本图形、修改颜色、调整大小，也可以导出为PNG格式。"
+        }
+      }
+    ]
+  }
+  </script>
+  <style>
+    .toolbar {
+      display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;
+      padding: 8px; background: #fff; border-radius: 8px;
+      border: 1px solid #e0e0e0; align-items: center;
+    }
+    .toolbar .sep {
+      width: 1px; height: 24px; background: #e0e0e0; margin: 0 4px;
+    }
+    .toolbar button {
+      padding: 6px 12px; border: 1px solid #ddd; border-radius: 6px;
+      background: #fff; cursor: pointer; font-size: 0.8rem; color: #555;
+      transition: all 0.15s;
+    }
+    .toolbar button:hover { background: #f0f2f5; border-color: #ccc; }
+    .toolbar button.active { background: #4361ee; color: #fff; border-color: #4361ee; }
+    .editor-layout {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+      border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;
+      min-height: 450px;
+    }
+    .code-panel {
+      position: relative; border-right: 1px solid #e0e0e0;
+    }
+    .code-panel textarea {
+      width: 100%; height: 100%; border: none; resize: none;
+      padding: 16px; font-family: 'Courier New', monospace;
+      font-size: 0.85rem; line-height: 1.6; outline: none;
+      box-sizing: border-box; background: #1e1e1e; color: #d4d4d4;
+    }
+    .code-panel .panel-label {
+      position: absolute; top: 8px; right: 12px;
+      font-size: 0.7rem; color: #888; pointer-events: none;
+      background: rgba(30,30,30,0.8); padding: 2px 8px; border-radius: 4px;
+    }
+    .preview-panel {
+      position: relative; background: #f5f5f5;
+      display: flex; align-items: center; justify-content: center;
+      overflow: auto;
+    }
+    .preview-panel .panel-label {
+      position: absolute; top: 8px; right: 12px;
+      font-size: 0.7rem; color: #888; pointer-events: none;
+      background: rgba(255,255,255,0.9); padding: 2px 8px; border-radius: 4px;
+    }
+    .preview-panel svg {
+      max-width: 100%; max-height: 100%;
+    }
+    .preview-bg-white { background: #fff !important; }
+    .preview-bg-dark { background: #1a1a1a !important; }
+    .preview-bg-checker {
+      background-image:
+        linear-gradient(45deg, #ccc 25%, transparent 25%),
+        linear-gradient(-45deg, #ccc 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #ccc 75%),
+        linear-gradient(-45deg, transparent 75%, #ccc 75%) !important;
+      background-size: 20px 20px !important;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0px !important;
+    }
+    .info-bar {
+      display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px;
+      padding: 8px 12px; background: #fff; border-radius: 8px;
+      border: 1px solid #e0e0e0; font-size: 0.8rem; color: #666;
+    }
+    .info-bar .info-item strong { color: #333; }
+    @media (max-width: 768px) {
+      .editor-layout { grid-template-columns: 1fr; }
+      .code-panel { border-right: none; border-bottom: 1px solid #e0e0e0; min-height: 250px; }
+      .preview-panel { min-height: 250px; }
+    }
+  </style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>SVG 编辑器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">在线编辑 SVG 代码，实时预览效果。支持添加图形、导出 PNG。</p>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <button onclick="addShape('rect')" title="添加矩形">矩形</button>
+      <button onclick="addShape('circle')" title="添加圆形">圆形</button>
+      <button onclick="addShape('ellipse')" title="添加椭圆">椭圆</button>
+      <button onclick="addShape('line')" title="添加线条">线条</button>
+      <button onclick="addShape('polygon')" title="添加多边形">多边形</button>
+      <button onclick="addShape('text')" title="添加文字">文字</button>
+      <div class="sep"></div>
+      <button onclick="addPath('star')" title="添加五角星">星形</button>
+      <button onclick="addPath('heart')" title="添加心形">心形</button>
+      <button onclick="addPath('arrow')" title="添加箭头">箭头</button>
+      <div class="sep"></div>
+      <button onclick="formatCode()" title="格式化代码">格式化</button>
+      <button onclick="copySvgCode()" title="复制SVG代码">复制代码</button>
+      <button onclick="downloadSvg()" title="下载SVG文件">下载SVG</button>
+      <button onclick="exportPng()" title="导出为PNG">导出PNG</button>
+      <div class="sep"></div>
+      <label style="font-size:0.8rem;color:#555;">预览背景:</label>
+      <button onclick="setBg('white')" class="active" id="bgWhite">白色</button>
+      <button onclick="setBg('checker')" id="bgChecker">透明</button>
+      <button onclick="setBg('dark')" id="bgDark">深色</button>
+    </div>
+
+    <!-- Editor Layout -->
+    <div class="editor-layout">
+      <div class="code-panel">
+        <span class="panel-label">SVG 代码</span>
+        <textarea id="svgCode" spellcheck="false" placeholder="在此输入 SVG 代码..."></textarea>
+      </div>
+      <div class="preview-panel preview-bg-white" id="previewPanel">
+        <span class="panel-label">预览</span>
+        <div id="previewContainer"></div>
+      </div>
+    </div>
+
+    <!-- Info Bar -->
+    <div class="info-bar">
+      <span class="info-item">文件大小: <strong id="fileSize">0 B</strong></span>
+      <span class="info-item">元素数量: <strong id="elementCount">0</strong></span>
+      <span class="info-item">画布尺寸: <strong id="svgSize">-</strong></span>
+      <span class="info-item" id="errorInfo" style="color:#e03131;display:none;">错误: <strong id="errorMsg"></strong></span>
+    </div>
+  </div>
+
+  <div id="share-bar"></div>
+
+  <script>
+    function showToast(msg) {
+      var t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(function() { t.remove(); }, 2000);
+    }
+
+    var defaultSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">\n  <!-- 背景 -->\n  <rect width="200" height="200" fill="#f0f4ff" rx="12"/>\n\n  <!-- 装饰圆 -->\n  <circle cx="100" cy="80" r="40" fill="#4361ee"/>\n  <circle cx="100" cy="80" r="30" fill="#fff"/>\n  <circle cx="100" cy="80" r="20" fill="#4361ee"/>\n\n  <!-- 文字 -->\n  <text x="100" y="150" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#333" font-weight="bold">SVG Editor</text>\n</svg>';
+
+    var textarea = document.getElementById('svgCode');
+    var preview = document.getElementById('previewContainer');
+    var errorInfo = document.getElementById('errorInfo');
+    var errorMsg = document.getElementById('errorMsg');
+
+    textarea.value = defaultSvg;
+
+    function updatePreview() {
+      var code = textarea.value.trim();
+      if (!code) {
+        preview.innerHTML = '<p style="color:#999;font-size:0.9rem;">预览区域</p>';
+        updateInfo('', 0);
+        errorInfo.style.display = 'none';
+        return;
+      }
+
+      try {
+        // Validate SVG
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(code, 'image/svg+xml');
+        var parseError = doc.querySelector('parsererror');
+
+        if (parseError) {
+          throw new Error('SVG 语法错误');
+        }
+
+        preview.innerHTML = code;
+        errorInfo.style.display = 'none';
+
+        // Count elements
+        var svgEl = doc.querySelector('svg');
+        var count = svgEl ? svgEl.querySelectorAll('*').length : 0;
+
+        // Get size
+        var w = svgEl ? (svgEl.getAttribute('width') || svgEl.getAttribute('viewBox')?.split(' ')[2] || '?') : '?';
+        var h = svgEl ? (svgEl.getAttribute('height') || svgEl.getAttribute('viewBox')?.split(' ')[3] || '?') : '?';
+
+        updateInfo(code, count, w, h);
+      } catch (e) {
+        errorInfo.style.display = 'inline';
+        errorMsg.textContent = e.message;
+        updateInfo(code, 0);
+      }
+    }
+
+    function updateInfo(code, count, w, h) {
+      var bytes = new Blob([code]).size;
+      document.getElementById('fileSize').textContent = bytes > 1024
+        ? (bytes / 1024).toFixed(1) + ' KB'
+        : bytes + ' B';
+      document.getElementById('elementCount').textContent = count;
+      document.getElementById('svgSize').textContent = w && h ? w + ' x ' + h : '-';
+    }
+
+    textarea.addEventListener('input', updatePreview);
+
+    function addShape(type) {
+      var svg = getSvgRoot();
+      if (!svg) return;
+
+      var newEl = '';
+      switch (type) {
+        case 'rect':
+          newEl = '  <rect x="20" y="20" width="60" height="60" fill="#4361ee" rx="4"/>';
+          break;
+        case 'circle':
+          newEl = '  <circle cx="50" cy="50" r="30" fill="#e03131"/>';
+          break;
+        case 'ellipse':
+          newEl = '  <ellipse cx="50" cy="50" rx="40" ry="25" fill="#2f9e44"/>';
+          break;
+        case 'line':
+          newEl = '  <line x1="10" y1="10" x2="90" y2="90" stroke="#333" stroke-width="2"/>';
+          break;
+        case 'polygon':
+          newEl = '  <polygon points="50,5 95,97 5,97" fill="#f59f00"/>';
+          break;
+        case 'text':
+          newEl = '  <text x="50" y="55" text-anchor="middle" font-family="Arial" font-size="14" fill="#333">Text</text>';
+          break;
+      }
+      insertBeforeClosing(svg, newEl);
+    }
+
+    function addPath(type) {
+      var svg = getSvgRoot();
+      if (!svg) return;
+
+      var newEl = '';
+      switch (type) {
+        case 'star':
+          newEl = '  <polygon points="50,5 63,38 98,38 70,59 80,95 50,74 20,95 30,59 2,38 37,38" fill="#f59f00" stroke="#e8590c" stroke-width="1"/>';
+          break;
+        case 'heart':
+          newEl = '  <path d="M50,88 C25,65 2,50 2,30 C2,14 14,2 30,2 C40,2 48,8 50,16 C52,8 60,2 70,2 C86,2 98,14 98,30 C98,50 75,65 50,88Z" fill="#e03131"/>';
+          break;
+        case 'arrow':
+          newEl = '  <path d="M10,50 L80,50 M60,25 L85,50 L60,75" stroke="#4361ee" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>';
+          break;
+      }
+      insertBeforeClosing(svg, newEl);
+    }
+
+    function getSvgRoot() {
+      var code = textarea.value.trim();
+      if (!code) {
+        textarea.value = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">\n</svg>';
+        return textarea.value;
+      }
+      return code;
+    }
+
+    function insertBeforeClosing(svg, element) {
+      var idx = svg.lastIndexOf('</svg>');
+      if (idx === -1) idx = svg.length;
+      var before = svg.substring(0, idx);
+      if (!before.endsWith('\n')) before += '\n';
+      textarea.value = before + element + '\n' + svg.substring(idx);
+      updatePreview();
+    }
+
+    function formatCode() {
+      try {
+        var code = textarea.value.trim();
+        if (!code) return;
+
+        // Simple SVG formatter
+        var result = '';
+        var indent = 0;
+        var lines = code.replace(/>\s*</g, '>\n<').split('\n');
+
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i].trim();
+          if (!line) continue;
+
+          if (line.startsWith('</')) {
+            indent = Math.max(0, indent - 1);
+          }
+
+          result += '  '.repeat(indent) + line + '\n';
+
+          if (line.startsWith('<') && !line.startsWith('</') &&
+              !line.startsWith('<!--') && !line.startsWith('<?') &&
+              !line.endsWith('/>') && !line.includes('</')) {
+            indent++;
+          }
+
+          if (line.startsWith('<') && !line.startsWith('</') &&
+              !line.startsWith('<!--') && !line.startsWith('<?') &&
+              line.includes('</') && !line.endsWith('/>')) {
+            // Self-contained element like <div>text</div> - no indent change
+            indent--;
+          }
+        }
+
+        textarea.value = result.trim();
+        updatePreview();
+        showToast('格式化完成');
+      } catch (e) {
+        showToast('格式化失败');
+      }
+    }
+
+    function copySvgCode() {
+      var code = textarea.value;
+      if (!code.trim()) {
+        showToast('没有代码可复制');
+        return;
+      }
+      navigator.clipboard.writeText(code).then(function() {
+        showToast('已复制 SVG 代码');
+      }).catch(function() {
+        showToast('复制失败');
+      });
+    }
+
+    function downloadSvg() {
+      var code = textarea.value.trim();
+      if (!code) {
+        showToast('没有可下载的内容');
+        return;
+      }
+      var blob = new Blob([code], { type: 'image/svg+xml' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'design.svg';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('SVG 文件已下载');
+    }
+
+    function exportPng() {
+      var code = textarea.value.trim();
+      if (!code) {
+        showToast('没有可导出的内容');
+        return;
+      }
+
+      try {
+        var svgBlob = new Blob([code], { type: 'image/svg+xml;charset=utf-8' });
+        var url = URL.createObjectURL(svgBlob);
+        var img = new Image();
+        img.onload = function() {
+          var scale = 2;
+          var canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth * scale;
+          canvas.height = img.naturalHeight * scale;
+          var ctx = canvas.getContext('2d');
+          ctx.scale(scale, scale);
+          ctx.drawImage(img, 0, 0);
+          URL.revokeObjectURL(url);
+
+          canvas.toBlob(function(blob) {
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'design.png';
+            a.click();
+            URL.revokeObjectURL(a.href);
+            showToast('PNG 已导出');
+          }, 'image/png');
+        };
+        img.onerror = function() {
+          URL.revokeObjectURL(url);
+          showToast('导出失败：SVG 中可能包含不支持的元素');
+        };
+        img.src = url;
+      } catch (e) {
+        showToast('导出失败: ' + e.message);
+      }
+    }
+
+    function setBg(type) {
+      var panel = document.getElementById('previewPanel');
+      panel.className = 'preview-panel';
+      if (type === 'white') {
+        panel.classList.add('preview-bg-white');
+      } else if (type === 'checker') {
+        panel.classList.add('preview-bg-checker');
+      } else if (type === 'dark') {
+        panel.classList.add('preview-bg-dark');
+      }
+
+      // Update button states
+      document.getElementById('bgWhite').classList.remove('active');
+      document.getElementById('bgChecker').classList.remove('active');
+      document.getElementById('bgDark').classList.remove('active');
+      document.getElementById('bg' + type.charAt(0).toUpperCase() + type.slice(1)).classList.add('active');
+    }
+
+    // Initialize
+    updatePreview();
+  </script>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

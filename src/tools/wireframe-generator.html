@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>线框图生成器 - 在线网页原型设计工具 - 在线工具箱</title>
+  <meta name="description" content="免费在线线框图生成器，快速创建网页原型和线框设计。支持拖拽布局、多种组件模板、导出HTML/CSS代码。适合产品经理和设计师快速原型制作。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <meta property="og:title" content="线框图生成器 - 在线网页原型设计工具">
+  <meta property="og:description" content="在线线框图生成器，拖拽创建网页原型，导出HTML代码。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/wireframe-generator.html">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://eitools.cn/src/tools/wireframe-generator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "线框图生成器",
+    "description": "在线网页线框图和原型设计工具",
+    "url": "https://eitools.cn/src/tools/wireframe-generator.html",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Any",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "CNY"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "什么是线框图？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "线框图（Wireframe）是网页或应用界面的简化视觉表示，用于在开发之前规划页面布局和功能结构。它使用简单的几何形状和占位符来表示各种UI元素，如导航栏、文本区域、按钮和图片位置。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "如何使用线框图生成器？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "从左侧组件面板选择所需的组件（如导航栏、Hero区域、卡片等），添加到画布中。可以调整布局类型（头部、侧栏、内容区、底部），然后点击生成代码导出HTML/CSS代码。"
+        }
+      }
+    ]
+  }
+  </script>
+  <style>
+    .wireframe-controls {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;
+      align-items: center;
+    }
+    .wireframe-controls label { font-size: 0.85rem; color: #555; }
+    .wireframe-controls select {
+      padding: 6px 10px; border: 1px solid #ddd; border-radius: 6px;
+      font-size: 0.85rem;
+    }
+    .component-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 8px; margin-bottom: 20px;
+    }
+    .component-btn {
+      padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px;
+      background: #fff; cursor: pointer; text-align: center;
+      transition: all 0.15s; font-size: 0.8rem; color: #555;
+    }
+    .component-btn:hover { border-color: #4361ee; background: #f0f4ff; }
+    .component-btn.active { border-color: #4361ee; background: #e8edff; }
+    .component-btn .icon { font-size: 1.5rem; margin-bottom: 4px; display: block; }
+    .preview-frame {
+      border: 2px solid #ddd; border-radius: 8px; overflow: hidden;
+      background: #fff; min-height: 400px;
+    }
+    .preview-frame-header {
+      background: #f5f5f5; padding: 8px 12px; border-bottom: 1px solid #e0e0e0;
+      display: flex; gap: 6px; align-items: center;
+    }
+    .preview-frame-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+    }
+    .preview-frame-url {
+      flex: 1; background: #fff; border: 1px solid #ddd; border-radius: 4px;
+      padding: 3px 8px; font-size: 0.75rem; color: #999; margin-left: 8px;
+    }
+    .preview-frame-body { padding: 0; }
+    .color-picker-row {
+      display: flex; gap: 12px; align-items: center; margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .color-picker-row label { font-size: 0.85rem; color: #555; }
+    .color-picker-row input[type="color"] {
+      width: 36px; height: 30px; padding: 2px; cursor: pointer;
+      border: 1px solid #ddd; border-radius: 4px;
+    }
+    .code-output {
+      background: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 8px;
+      font-family: 'Courier New', monospace; font-size: 0.8rem;
+      white-space: pre-wrap; word-break: break-all; line-height: 1.5;
+      max-height: 300px; overflow-y: auto; margin-top: 12px; display: none;
+    }
+    .section-label {
+      font-size: 0.9rem; font-weight: 600; color: #333;
+      margin: 16px 0 8px; padding-bottom: 4px;
+      border-bottom: 2px solid #4361ee; display: inline-block;
+    }
+  </style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>线框图生成器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">选择组件快速生成网页线框图，可导出 HTML/CSS 代码。</p>
+
+    <!-- Colors -->
+    <div class="color-picker-row">
+      <label>主色: <input type="color" id="primaryColor" value="#4361ee" onchange="generateWireframe();"></label>
+      <label>背景色: <input type="color" id="bgColor" value="#f0f2f5" onchange="generateWireframe();"></label>
+      <label>文字色: <input type="color" id="textColor" value="#333333" onchange="generateWireframe();"></label>
+      <label>线框色: <input type="color" id="wireColor" value="#4361ee" onchange="generateWireframe();"></label>
+      <label>画布宽度:
+        <select id="canvasWidth" onchange="generateWireframe();">
+          <option value="1200">1200px (桌面)</option>
+          <option value="768">768px (平板)</option>
+          <option value="375">375px (手机)</option>
+        </select>
+      </label>
+    </div>
+
+    <!-- Component Selection -->
+    <div class="section-label">选择组件</div>
+    <div class="component-grid">
+      <button class="component-btn active" data-component="header" onclick="toggleComponent(this)">
+        <span class="icon">&#9776;</span> 导航栏
+      </button>
+      <button class="component-btn active" data-component="hero" onclick="toggleComponent(this)">
+        <span class="icon">&#9650;</span> Hero 横幅
+      </button>
+      <button class="component-btn active" data-component="features" onclick="toggleComponent(this)">
+        <span class="icon">&#9638;</span> 特性介绍
+      </button>
+      <button class="component-btn" data-component="cards" onclick="toggleComponent(this)">
+        <span class="icon">&#9633;</span> 卡片网格
+      </button>
+      <button class="component-btn" data-component="pricing" onclick="toggleComponent(this)">
+        <span class="icon">&#9780;</span> 价格表
+      </button>
+      <button class="component-btn" data-component="testimonials" onclick="toggleComponent(this)">
+        <span class="icon">&#10077;</span> 用户评价
+      </button>
+      <button class="component-btn" data-component="cta" onclick="toggleComponent(this)">
+        <span class="icon">&#9654;</span> CTA 区域
+      </button>
+      <button class="component-btn active" data-component="footer" onclick="toggleComponent(this)">
+        <span class="icon">&#9608;</span> 页脚
+      </button>
+      <button class="component-btn" data-component="sidebar" onclick="toggleComponent(this)">
+        <span class="icon">&#9646;</span> 侧边栏
+      </button>
+      <button class="component-btn" data-component="form" onclick="toggleComponent(this)">
+        <span class="icon">&#9998;</span> 表单区域
+      </button>
+    </div>
+
+    <!-- Controls -->
+    <div class="wireframe-controls">
+      <button class="btn btn-primary" onclick="generateWireframe();">生成线框图</button>
+      <button class="btn" onclick="toggleCode();">查看/导出代码</button>
+      <button class="btn" onclick="resetComponents();">重置</button>
+    </div>
+
+    <!-- Preview -->
+    <div class="preview-frame">
+      <div class="preview-frame-header">
+        <div class="preview-frame-dot" style="background:#ff5f57;"></div>
+        <div class="preview-frame-dot" style="background:#febc2e;"></div>
+        <div class="preview-frame-dot" style="background:#28c840;"></div>
+        <div class="preview-frame-url" id="previewUrl">www.example.com</div>
+      </div>
+      <div class="preview-frame-body">
+        <div id="wireframeOutput" style="transform-origin: top left;"></div>
+      </div>
+    </div>
+
+    <!-- Code Output -->
+    <div class="code-output" id="codeOutput"></div>
+  </div>
+
+  <div id="share-bar"></div>
+
+  <script>
+    function showToast(msg) {
+      var t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(function() { t.remove(); }, 2000);
+    }
+
+    var selectedComponents = new Set(['header', 'hero', 'features', 'footer']);
+
+    function toggleComponent(btn) {
+      var comp = btn.getAttribute('data-component');
+      btn.classList.toggle('active');
+      if (selectedComponents.has(comp)) {
+        selectedComponents.delete(comp);
+      } else {
+        selectedComponents.add(comp);
+      }
+      generateWireframe();
+    }
+
+    function resetComponents() {
+      selectedComponents.clear();
+      selectedComponents.add('header');
+      selectedComponents.add('hero');
+      selectedComponents.add('features');
+      selectedComponents.add('footer');
+      var btns = document.querySelectorAll('.component-btn');
+      btns.forEach(function(btn) {
+        var comp = btn.getAttribute('data-component');
+        btn.classList.toggle('active', selectedComponents.has(comp));
+      });
+      generateWireframe();
+      showToast('已重置');
+    }
+
+    function generateWireframe() {
+      var primary = document.getElementById('primaryColor').value;
+      var bg = document.getElementById('bgColor').value;
+      var text = document.getElementById('textColor').value;
+      var wire = document.getElementById('wireColor').value;
+      var canvasW = parseInt(document.getElementById('canvasWidth').value) || 1200;
+
+      var components = Array.from(selectedComponents);
+      var htmlParts = [];
+      var codeParts = [];
+
+      // Scale preview
+      var frameBody = document.querySelector('.preview-frame-body');
+      var frameWidth = frameBody.clientWidth;
+      var scale = Math.min(1, (frameWidth - 4) / canvasW);
+      var output = document.getElementById('wireframeOutput');
+      output.style.transform = 'scale(' + scale + ')';
+      output.style.width = canvasW + 'px';
+
+      var s = 'border:2px solid ' + wire + ';background:' + bg + ';';
+      var sb = 'border:1px solid ' + wire + ';background:' + hexAlpha(wire, 0.08) + ';';
+      var st = 'background:' + hexAlpha(wire, 0.15) + ';color:transparent;';
+
+      components.forEach(function(comp) {
+        switch (comp) {
+          case 'header':
+            htmlParts.push(
+              '<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:2px solid ' + wire + ';background:#fff;">' +
+              '<div style="' + st + 'width:100px;height:16px;border-radius:3px;"></div>' +
+              '<div style="display:flex;gap:16px;">' +
+              '<div style="' + st + 'width:50px;height:10px;border-radius:2px;"></div>'.repeat(5) +
+              '</div>' +
+              '<div style="' + st + 'width:60px;height:28px;border-radius:4px;background:' + hexAlpha(primary, 0.8) + ';"></div>' +
+              '</div>'
+            );
+            codeParts.push('<!-- 导航栏 -->\n<header style="display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:2px solid #ccc;">\n  <div class="logo">Logo</div>\n  <nav style="display:flex;gap:16px;">\n    <a href="#">链接1</a>\n    <a href="#">链接2</a>\n    <a href="#">链接3</a>\n  </nav>\n  <button class="btn-primary">按钮</button>\n</header>');
+            break;
+
+          case 'hero':
+            htmlParts.push(
+              '<div style="text-align:center;padding:60px 24px;background:#fff;">' +
+              '<div style="' + st + 'width:500px;height:28px;border-radius:4px;margin:0 auto 16px;"></div>' +
+              '<div style="' + st + 'width:380px;height:14px;border-radius:3px;margin:0 auto 24px;"></div>' +
+              '<div style="' + st + 'width:280px;height:12px;border-radius:3px;margin:0 auto 32px;"></div>' +
+              '<div style="display:flex;gap:12px;justify-content:center;">' +
+              '<div style="' + st + 'width:120px;height:40px;border-radius:6px;background:' + hexAlpha(primary, 0.8) + ';"></div>' +
+              '<div style="' + st + 'width:120px;height:40px;border-radius:6px;"></div>' +
+              '</div>' +
+              '</div>'
+            );
+            codeParts.push('<!-- Hero 区域 -->\n<section style="text-align:center;padding:60px 24px;">\n  <h1>主标题</h1>\n  <p>副标题描述</p>\n  <p>补充说明</p>\n  <div style="display:flex;gap:12px;justify-content:center;">\n    <button class="btn-primary">主要按钮</button>\n    <button class="btn-secondary">次要按钮</button>\n  </div>\n</section>');
+            break;
+
+          case 'features':
+            htmlParts.push(
+              '<div style="padding:48px 24px;background:' + bg + ';">' +
+              '<div style="text-align:center;margin-bottom:32px;">' +
+              '<div style="' + st + 'width:180px;height:22px;border-radius:4px;margin:0 auto 8px;"></div>' +
+              '<div style="' + st + 'width:300px;height:12px;border-radius:3px;margin:0 auto;"></div>' +
+              '</div>' +
+              '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:900px;margin:0 auto;">' +
+              '<div style="' + sb + 'padding:24px;border-radius:8px;text-align:center;">' +
+              '<div style="' + st + 'width:48px;height:48px;border-radius:8px;margin:0 auto 12px;"></div>' +
+              '<div style="' + st + 'width:120px;height:14px;border-radius:3px;margin:0 auto 8px;"></div>' +
+              '<div style="' + st + 'width:180px;height:10px;border-radius:3px;margin:0 auto;"></div>'.repeat(3) +
+              '</div>' +
+              '</div>' +
+              '</div>'
+            );
+            codeParts.push('<!-- 特性介绍 -->\n<section style="padding:48px 24px;">\n  <h2 style="text-align:center;">核心特性</h2>\n  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:900px;margin:0 auto;">\n    <div class="feature-card">\n      <h3>特性一</h3>\n      <p>描述内容</p>\n    </div>\n    <div class="feature-card">\n      <h3>特性二</h3>\n      <p>描述内容</p>\n    </div>\n    <div class="feature-card">\n      <h3>特性三</h3>\n      <p>描述内容</p>\n    </div>\n  </div>\n</section>');
+            break;
+
+          case 'cards':
+            htmlParts.push(
+              '<div style="padding:48px 24px;background:#fff;">' +
+              '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:900px;margin:0 auto;">' +
+              Array(3).fill(
+                '<div style="' + sb + 'border-radius:8px;overflow:hidden;">' +
+                '<div style="' + st + 'height:140px;"></div>' +
+                '<div style="padding:16px;">' +
+                '<div style="' + st + 'width:100px;height:14px;border-radius:3px;margin-bottom:8px;"></div>' +
+                '<div style="' + st + 'width:100%;height:10px;border-radius:3px;margin-bottom:6px;"></div>'.repeat(2) +
+                '<div style="' + st + 'width:80px;height:10px;border-radius:3px;"></div>' +
+                '</div></div>'
+              ).join('') +
+              '</div></div>'
+            );
+            codeParts.push('<!-- 卡片网格 -->\n<section style="padding:48px 24px;">\n  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:900px;margin:0 auto;">\n    <div class="card">\n      <img src="placeholder.jpg" alt="图片">\n      <div class="card-body">\n        <h3>标题</h3>\n        <p>描述文字</p>\n      </div>\n    </div>\n  </div>\n</section>');
+            break;
+
+          case 'pricing':
+            htmlParts.push(
+              '<div style="padding:48px 24px;background:' + bg + ';">' +
+              '<div style="text-align:center;margin-bottom:32px;">' +
+              '<div style="' + st + 'width:120px;height:22px;border-radius:4px;margin:0 auto 8px;"></div>' +
+              '</div>' +
+              '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:900px;margin:0 auto;">' +
+              Array(3).fill(
+                '<div style="' + sb + 'border-radius:8px;padding:24px;text-align:center;">' +
+                '<div style="' + st + 'width:80px;height:14px;border-radius:3px;margin:0 auto 12px;"></div>' +
+                '<div style="' + st + 'width:60px;height:28px;border-radius:3px;margin:0 auto 16px;"></div>' +
+                '<div style="' + st + 'width:120px;height:10px;border-radius:3px;margin:0 auto 6px;"></div>'.repeat(4) +
+                '<div style="' + st + 'width:120px;height:34px;border-radius:6px;margin:12px auto 0;background:' + hexAlpha(primary, 0.8) + ';"></div>' +
+                '</div>'
+              ).join('') +
+              '</div></div>'
+            );
+            codeParts.push('<!-- 价格表 -->\n<section style="padding:48px 24px;">\n  <h2 style="text-align:center;">价格方案</h2>\n  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:900px;margin:0 auto;">\n    <div class="pricing-card">\n      <h3>基础版</h3>\n      <div class="price">¥99/月</div>\n      <ul><li>功能1</li><li>功能2</li></ul>\n      <button>选择方案</button>\n    </div>\n  </div>\n</section>');
+            break;
+
+          case 'testimonials':
+            htmlParts.push(
+              '<div style="padding:48px 24px;background:#fff;">' +
+              '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;max-width:800px;margin:0 auto;">' +
+              Array(2).fill(
+                '<div style="' + sb + 'border-radius:8px;padding:24px;">' +
+                '<div style="display:flex;gap:8px;margin-bottom:12px;">' +
+                '<div style="width:32px;height:32px;border-radius:50%;' + st + ';"></div>' +
+                '<div>' +
+                '<div style="' + st + 'width:80px;height:12px;border-radius:3px;margin-bottom:4px;"></div>' +
+                '<div style="' + st + 'width:100px;height:10px;border-radius:3px;"></div>' +
+                '</div></div>' +
+                '<div style="' + st + 'width:100%;height:10px;border-radius:3px;margin-bottom:6px;"></div>'.repeat(3) +
+                '</div>'
+              ).join('') +
+              '</div></div>'
+            );
+            codeParts.push('<!-- 用户评价 -->\n<section style="padding:48px 24px;">\n  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;max-width:800px;margin:0 auto;">\n    <div class="testimonial">\n      <div class="author">\n        <img src="avatar.jpg" alt="头像">\n        <div><strong>姓名</strong><span>职位</span></div>\n      </div>\n      <p>"评价内容..."</p>\n    </div>\n  </div>\n</section>');
+            break;
+
+          case 'cta':
+            htmlParts.push(
+              '<div style="padding:48px 24px;text-align:center;background:' + hexAlpha(primary, 0.9) + ';color:#fff;">' +
+              '<div style="' + st + 'width:300px;height:24px;border-radius:4px;margin:0 auto 12px;background:rgba(255,255,255,0.3);"></div>' +
+              '<div style="' + st + 'width:400px;height:12px;border-radius:3px;margin:0 auto 24px;background:rgba(255,255,255,0.2);"></div>' +
+              '<div style="' + st + 'width:140px;height:40px;border-radius:6px;margin:0 auto;background:#fff;"></div>' +
+              '</div>'
+            );
+            codeParts.push('<!-- CTA 区域 -->\n<section style="padding:48px 24px;text-align:center;background:' + primary + ';color:#fff;">\n  <h2>行动号召标题</h2>\n  <p>引导性描述文字</p>\n  <button class="btn-white">立即开始</button>\n</section>');
+            break;
+
+          case 'footer':
+            htmlParts.push(
+              '<div style="padding:32px 24px;border-top:2px solid ' + wire + ';background:#fff;">' +
+              '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;max-width:900px;margin:0 auto 24px;">' +
+              Array(4).fill(
+                '<div>' +
+                '<div style="' + st + 'width:60px;height:14px;border-radius:3px;margin-bottom:12px;"></div>' +
+                '<div style="' + st + 'width:100px;height:10px;border-radius:3px;margin-bottom:6px;"></div>'.repeat(3) +
+                '</div>'
+              ).join('') +
+              '</div>' +
+              '<div style="border-top:1px solid ' + wire + ';padding-top:16px;text-align:center;">' +
+              '<div style="' + st + 'width:200px;height:10px;border-radius:3px;margin:0 auto;"></div>' +
+              '</div>' +
+              '</div>'
+            );
+            codeParts.push('<!-- 页脚 -->\n<footer style="padding:32px 24px;border-top:1px solid #ccc;">\n  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;max-width:900px;margin:0 auto 24px;">\n    <div>\n      <h4>关于</h4>\n      <ul><li><a href="#">链接</a></li></ul>\n    </div>\n  </div>\n  <p style="text-align:center;">&copy; 2026 版权所有</p>\n</footer>');
+            break;
+
+          case 'sidebar':
+            htmlParts.push(
+              '<div style="display:flex;min-height:300px;">' +
+              '<div style="width:220px;border-right:2px solid ' + wire + ';padding:16px;background:#fff;">' +
+              '<div style="' + st + 'width:100px;height:16px;border-radius:3px;margin-bottom:20px;"></div>' +
+              Array(5).fill('<div style="' + st + 'width:140px;height:12px;border-radius:3px;margin-bottom:10px;"></div>').join('') +
+              '</div>' +
+              '<div style="flex:1;padding:16px;">' +
+              '<div style="' + st + 'width:200px;height:22px;border-radius:3px;margin-bottom:16px;"></div>' +
+              Array(3).fill('<div style="' + sb + 'height:80px;border-radius:6px;margin-bottom:12px;"></div>').join('') +
+              '</div></div>'
+            );
+            codeParts.push('<!-- 侧边栏布局 -->\n<div style="display:flex;">\n  <aside style="width:220px;padding:16px;">\n    <h3>菜单</h3>\n    <ul><li><a href="#">菜单项</a></li></ul>\n  </aside>\n  <main style="flex:1;padding:16px;">\n    <h1>内容标题</h1>\n  </main>\n</div>');
+            break;
+
+          case 'form':
+            htmlParts.push(
+              '<div style="padding:40px 24px;max-width:500px;margin:0 auto;background:#fff;' + sb + 'border-radius:8px;">' +
+              '<div style="' + st + 'width:140px;height:22px;border-radius:4px;margin:0 auto 24px;"></div>' +
+              Array(3).fill(
+                '<div style="margin-bottom:16px;">' +
+                '<div style="' + st + 'width:50px;height:12px;border-radius:3px;margin-bottom:6px;"></div>' +
+                '<div style="' + st + 'width:100%;height:36px;border-radius:4px;"></div>' +
+                '</div>'
+              ).join('') +
+              '<div style="margin-bottom:16px;">' +
+              '<div style="' + st + 'width:50px;height:12px;border-radius:3px;margin-bottom:6px;"></div>' +
+              '<div style="' + st + 'width:100%;height:80px;border-radius:4px;"></div>' +
+              '</div>' +
+              '<div style="' + st + 'width:100%;height:40px;border-radius:6px;background:' + hexAlpha(primary, 0.8) + ';"></div>' +
+              '</div>'
+            );
+            codeParts.push('<!-- 表单区域 -->\n<section style="max-width:500px;margin:0 auto;padding:40px;">\n  <h2 style="text-align:center;">表单标题</h2>\n  <form>\n    <label>字段1</label>\n    <input type="text" placeholder="请输入">\n    <label>字段2</label>\n    <input type="email" placeholder="请输入">\n    <label>详细描述</label>\n    <textarea rows="4" placeholder="请输入"></textarea>\n    <button type="submit" class="btn-primary">提交</button>\n  </form>\n</section>');
+            break;
+        }
+      });
+
+      output.innerHTML = htmlParts.join('\n');
+
+      // Update code
+      var fullCode = '<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>线框图页面</title>\n  <style>\n    * { margin: 0; padding: 0; box-sizing: border-box; }\n    body { font-family: -apple-system, sans-serif; color: #333; }\n    .btn-primary { padding: 10px 24px; background: ' + primary + '; color: #fff; border: none; border-radius: 6px; cursor: pointer; }\n    a { color: #4361ee; text-decoration: none; }\n  </style>\n<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js"></script>
+</head>\n<body>\n' + codeParts.join('\n\n') + '\n</body>\n</html>';
+
+      document.getElementById('codeOutput').textContent = fullCode;
+    }
+
+    function hexAlpha(hex, alpha) {
+      var r = parseInt(hex.slice(1, 3), 16);
+      var g = parseInt(hex.slice(3, 5), 16);
+      var b = parseInt(hex.slice(5, 7), 16);
+      return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+    }
+
+    function toggleCode() {
+      var el = document.getElementById('codeOutput');
+      el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    }
+
+    window.addEventListener('resize', generateWireframe);
+    generateWireframe();
+  </script>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>URL编码详解：UTF-8编码、encodeURIComponent和编码转换 - 在线工具箱</title>
+  <meta name="description" content="URL编码是什么？本文详解URL编码原理、UTF-8编码规则、JavaScript中encodeURIComponent和encodeURI的区别，以及常见URL编码问题与解决方案。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../manifest.json">
+  <meta property="og:title" content="URL编码详解：encodeURIComponent、UTF-8编码与编码转换">
+  <meta property="og:description" content="URL编码原理、encodeURIComponent与encodeURI区别、UTF-8编码规则、中文URL编码问题详解。">
+  <meta property="og:url" content="https://eitools.cn/guides/url-encoding-guide.html">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://eitools.cn/guides/url-encoding-guide.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "URL编码完全指南",
+    "description": "详解URL编码原理、encodeURIComponent与encodeURI区别、UTF-8编码规则及常见问题。",
+    "url": "https://eitools.cn/guides/url-encoding-guide.html"
+  }
+  </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>URL 编码完全指南</h1>
+    </div>
+
+    <article style="line-height: 1.8; color: #333;">
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">什么是 URL 编码？</h2>
+      <p>URL 编码（也叫百分号编码，Percent-encoding）是一种将 URL 中的非安全字符转换为特定格式的机制。它使用百分号 <code>%</code> 后跟两位十六进制数来表示一个字节，例如空格被编码为 <code>%20</code>，中文字符"中"被编码为 <code>%E4%B8%AD</code>。</p>
+      <p>URL 编码的目的是确保 URL 中的特殊字符不会与 URL 的语法结构产生冲突，同时保证数据能在网络中安全传输。</p>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">为什么需要 URL 编码？</h2>
+      <p>URL 的规范（RFC 3986）定义了 URL 中允许使用的字符集。URL 只允许包含以下字符：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>大写和小写英文字母：A-Z、a-z</li>
+        <li>数字：0-9</li>
+        <li>特殊字符：<code>-</code> <code>.</code> <code>_</code> <code>~</code></li>
+        <li>保留字符：<code>:</code> <code>/</code> <code>?</code> <code>#</code> <code>[</code> <code>]</code> <code>@</code> <code>!</code> <code>$</code> <code>&amp;</code> <code>'</code> <code>(</code> <code>)</code> <code>*</code> <code>+</code> <code>,</code> <code>;</code> <code>=</code></li>
+      </ul>
+      <p>所有不在上述列表中的字符（包括中文、日文、空格、引号等）都必须进行 URL 编码后才能在 URL 中安全使用。</p>
+      <p>常见的需要编码的场景包括：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>查询参数</strong>：URL 中 <code>?</code> 后面的参数值如果包含特殊字符（如空格、中文、&amp;符号）</li>
+        <li><strong>路径段</strong>：URL 路径中包含非 ASCII 字符</li>
+        <li><strong>表单提交</strong>：application/x-www-form-urlencoded 格式的表单数据</li>
+        <li><strong>API 请求</strong>：REST API 的 URL 参数中传递复杂字符串</li>
+      </ul>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">URL 编码的原理</h2>
+      <p>URL 编码的核心规则非常简单：</p>
+      <ol style="margin: 12px 0 12px 24px;">
+        <li>将字符按照指定的字符编码（通常是 UTF-8）转换为字节序列</li>
+        <li>每个字节用一个百分号 <code>%</code> 后跟两位大写十六进制数表示</li>
+      </ol>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">ASCII 字符的编码</h3>
+      <p>对于 ASCII 字符（码值 0-127），直接取其十六进制值：</p>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">空格    → %20
+!       → %21
+"       → %22
+#       → %23
+$       → %24
+%       → %25
+&amp;      → %26
+'       → %27
+(       → %28
+)       → %29
++       → %2B
+,       → %2C
+/       → %2F
+:       → %3A
+;       → %3B
+=       → %3D
+?       → %3F
+@       → %40</pre>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">中文字符的编码（UTF-8）</h3>
+      <p>中文字符在 UTF-8 编码下通常占用 3 个字节。例如：</p>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">中 → UTF-8 字节: E4 B8 AD → %E4%B8%AD
+文 → UTF-8 字节: E6 96 87 → %E6%96%87
+编 → UTF-8 字节: E7 BC 96 → %E7%BC%96
+码 → UTF-8 字节: E7 A0 81 → %E7%A0%81
+你 → UTF-8 字节: E4 BD A0 → %E4%BD%A0
+好 → UTF-8 字节: E5 A5 BD → %E5%A5%BD</pre>
+      <p>完整的"你好"编码后为 <code>%E4%BD%A0%E5%A5%BD</code>。</p>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">空格的两种编码方式</h3>
+      <p>空格可以编码为 <code>%20</code> 或 <code>+</code>。两者的使用场景不同：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>URL 路径中</strong>：使用 <code>%20</code>（application/x-www-form-urlencoded 之外）</li>
+        <li><strong>表单数据中</strong>（query string）：使用 <code>+</code> 或 <code>%20</code> 均可，但 <code>+</code> 更传统</li>
+      </ul>
+      <p>注意：<code>+</code> 在 URL 编码中代表空格，所以如果原始数据包含真实的 <code>+</code> 号，需要编码为 <code>%2B</code>。</p>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">JavaScript 中的 URL 编码函数</h2>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">encodeURIComponent()</h3>
+      <p>最常用的 URL 编码函数，对字符串进行完整编码。它会编码所有非字母数字字符以及 <code>- _ . ! ~ * ' ( )</code> 之外的字符。</p>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">encodeURIComponent("hello world")
+// "hello%20world"
+
+encodeURIComponent("你好世界")
+// "%E4%BD%A0%E5%A5%BD%E4%B8%96%E7%95%8C"
+
+encodeURIComponent("https://example.com")
+// "https%3A%2F%2Fexample.com"
+
+encodeURIComponent("name=张三&amp;age=28")
+// "name%3D%E5%BC%A0%E4%B8%89%26age%3D28"
+
+encodeURIComponent("a/b/c?d=e")
+// "a%2Fb%2Fc%3Fd%3De"</pre>
+      <p>使用场景：编码 URL 的查询参数值、POST 请求体中的数据。</p>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">encodeURI()</h3>
+      <p>与 <code>encodeURIComponent</code> 类似，但不编码 URL 中的保留字符（如 <code>://</code>、<code>?</code>、<code>=</code>、<code>&amp;</code>、<code>/</code> 等），因为这些字符是 URL 结构的一部分。</p>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">encodeURI("https://example.com/路径/查询")
+// "https://example.com/%E8%B7%AF%E5%BE%84/%E6%9F%A5%E8%AF%A2"
+
+encodeURI("https://example.com/search?q=你好")
+// "https://example.com/search?q=%E4%BD%A0%E5%A5%BD"</pre>
+      <p>使用场景：编码完整的 URL 地址。注意：<strong>不要用 encodeURI 编码查询参数值</strong>，因为 <code>=</code> 和 <code>&amp;</code> 不会被编码。</p>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">两者的关键区别</h3>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">// 编码斜杠 /
+encodeURIComponent("/foo/bar")  // "%2Ffoo%2Fbar"
+encodeURI("/foo/bar")           // "/foo/bar"（不编码）
+
+// 编码问号 ?
+encodeURIComponent("?q=test")   // "%3Fq%3Dtest"
+encodeURI("?q=test")            // "?q=test"（不编码）
+
+// 编码等号 =
+encodeURIComponent("key=value") // "key%3Dvalue"
+encodeURI("key=value")          // "key=value"（不编码）
+
+// 编码与号 &amp;
+encodeURIComponent("a&amp;b")       // "a%26b"
+encodeURI("a&amp;b")                // "a%26b"（&amp; 会被编码）</pre>
+      <p>简单记忆：<code>encodeURI</code> 用来编码整个 URL（保留 URL 结构字符），<code>encodeURIComponent</code> 用来编码 URL 的某个参数值（几乎全部编码）。</p>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">解码函数</h3>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">decodeURIComponent("%E4%BD%A0%E5%A5%BD")
+// "你好"
+
+decodeURIComponent("hello%20world")
+// "hello world"
+
+decodeURI("https://example.com/%E8%B7%AF%E5%BE%84")
+// "https://example.com/路径"</pre>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">其他语言中的 URL 编码</h2>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">Python</h3>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">from urllib.parse import quote, quote_plus, unquote
+
+quote("你好世界")
+# '%E4%BD%A0%E5%A5%BD%E4%B8%96%E7%95%8C'
+
+quote_plus("hello world")
+# 'hello+world'
+
+unquote('%E4%BD%A0%E5%A5%BD')
+# '你好'</pre>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">Java</h3>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">import java.net.URLEncoder;
+import java.net.URLDecoder;
+
+URLEncoder.encode("你好世界", "UTF-8")
+// "%E4%BD%A0%E5%A5%BD%E4%B8%96%E7%95%8C"
+
+URLDecoder.decode("%E4%BD%A0%E5%A5%BD", "UTF-8")
+// "你好"</pre>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">常见 URL 编码问题</h2>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">1. 中文参数乱码</h3>
+      <p>中文乱码通常由编码不一致引起。发送端使用 UTF-8 编码，但接收端使用 GBK/GB2312 解码，就会出现乱码。</p>
+      <p>解决方案：确保发送和接收双方使用相同的字符编码（推荐 UTF-8）。前端使用 <code>encodeURIComponent</code>，后端使用 UTF-8 解码。</p>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">2. 双重编码问题</h3>
+      <p>如果对已经编码过的字符串再次编码，会导致出现 <code>%25</code> 前缀（因为 <code>%</code> 本身被编码为 <code>%25</code>）：</p>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">// 第一次编码
+encodeURIComponent("你好")  // "%E4%BD%A0%E5%A5%BD"
+
+// 第二次编码（错误！）
+encodeURIComponent("%E4%BD%A0%E5%A5%BD")  // "%25E4%25BD%25A0%25E5%25A5%25BD"</pre>
+      <p>避免在框架已经自动编码的情况下手动再次编码。</p>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">3. + 号和空格混淆</h3>
+      <p>在查询字符串中，<code>+</code> 会被解码为空格。如果你的原始数据包含 <code>+</code> 号：</p>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">// 原始数据: "1+2=3"
+// 错误编码: encodeURIComponent("1+2=3") → "1%2B2%3D3"（正确）
+// 如果直接放到查询字符串中被替换为空格: "1 2=3"（错误）</pre>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">4. URL 长度限制</h3>
+      <p>URL 编码会使中文字符膨胀为 3 倍长度（1 个中文字符 -> 9 个字符的编码）。不同浏览器和服务器对 URL 长度有限制：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>IE 浏览器：2083 个字符</li>
+        <li>Chrome、Firefox：约 32000 个字符</li>
+        <li>Nginx 默认：4096 个字符（可通过 large_client_header_buffers 调整）</li>
+        <li>Apache 默认：8190 个字符</li>
+      </ul>
+      <p>如果 URL 可能超长，建议使用 POST 请求代替 GET 请求传递数据。</p>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">URL 编码速查表</h2>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">字符    编码       字符    编码       字符    编码
+空格    %20        &lt;       %3C        @       %40
+!       %21        =       %3D        [       %5B
+"       %22        &gt;       %3E        \       %5C
+#       %23        ?       %3F        ]       %5D
+$       %24        @       %40        ^       %5E
+%       %25        [       %5B        _       %5F（不编码）
+&amp;       %26        \       %5C        `       %60
+'       %27        ]       %5D        {       %7B
+(       %28        ^       %5E        |       %7C
+)       %29        _       %5F        }       %7D
+*       %2A（不编码）  `       %60        ~       %7E（不编码）
++       %2B        {       %7B
+,       %2C        |       %7C
+/       %2F        }       %7D
+:       %3A</pre>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">在线 URL 编码工具</h2>
+      <p>手动进行 URL 编码和解码容易出错，特别是处理中文和特殊字符时。使用我们的 <a href="../src/tools/url-encoder.html" style="color: #4361ee; font-weight: 600;">在线 URL 编码解码工具</a>，只需粘贴文本即可一键编码或解码，支持批量处理，所有计算在浏览器本地完成，数据不会上传到服务器。</p>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">总结</h2>
+      <p>URL 编码是 Web 开发中不可或缺的基础知识。理解 URL 编码的原理和 UTF-8 编码规则，可以帮助你避免中文乱码、双重编码、+号混淆等常见问题。在前端开发中，记住 <code>encodeURIComponent</code> 用于编码参数值，<code>encodeURI</code> 用于编码完整 URL。在后端开发中，确保解码时使用正确的字符编码。</p>
+      <p>更多前端开发工具，欢迎访问 <a href="../index.html" style="color: #4361ee; font-weight: 600;">EITools 在线工具箱</a>。</p>
+    </article>
+  </div>
+
+  <div id="share-bar"></div>
+  <script src="../js/share.js"></script>
+</body>
+</html>

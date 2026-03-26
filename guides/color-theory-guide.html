@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>色彩理论入门：RGB、HSL色彩模型与配色技巧 - 在线工具箱</title>
+  <meta name="description" content="色彩理论是什么？本文详解RGB和HSL色彩模型、色彩三要素（色相、饱和度、明度）、常用配色方案与网页配色技巧，附带在线颜色转换工具。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../manifest.json">
+  <meta property="og:title" content="色彩理论入门：RGB、HSL色彩模型与配色技巧">
+  <meta property="og:description" content="从零掌握色彩理论：RGB与HSL色彩模型、配色方案、网页设计配色实战技巧。">
+  <meta property="og:url" content="https://eitools.cn/guides/color-theory-guide.html">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://eitools.cn/guides/color-theory-guide.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "色彩理论入门指南",
+    "description": "详解RGB和HSL色彩模型、色彩三要素、配色方案与网页设计配色技巧。",
+    "url": "https://eitools.cn/guides/color-theory-guide.html"
+  }
+  </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>色彩理论入门指南</h1>
+    </div>
+
+    <article style="line-height: 1.8; color: #333;">
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">什么是色彩理论？</h2>
+      <p>色彩理论（Color Theory）是研究颜色如何组合、搭配和相互影响的一套规则体系。它起源于艺术领域，但在网页设计、UI 设计、品牌设计等数字领域同样至关重要。理解色彩理论可以帮助你做出更专业、更和谐的配色决策，而不是仅凭感觉"随便选个颜色"。</p>
+      <p>对于前端开发者和网页设计师来说，色彩理论是必备的基础知识。它直接影响用户体验（UX）、品牌传达、信息层级和视觉美感。</p>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">一、色彩三要素</h2>
+      <p>任何颜色都可以用三个基本属性来描述：</p>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">1. 色相（Hue）</h3>
+      <p>色相是颜色最直观的属性，也就是我们通常说的"红色""蓝色""绿色"。色相由光波的波长决定，在色轮上表现为不同的角度位置。红色约在 0 度，绿色约在 120 度，蓝色约在 240 度。</p>
+      <p>在 CSS 中，色相用 <code>hsl()</code> 函数的第一个参数表示，取值范围 0-360 度。</p>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">2. 饱和度（Saturation）</h3>
+      <p>饱和度决定颜色的鲜艳程度。高饱和度的颜色鲜艳、浓烈（如纯红、纯蓝）；低饱和度的颜色灰暗、平淡（接近灰色）。饱和度取值范围为 0% 到 100%，0% 表示完全无彩色（灰色），100% 表示最鲜艳的纯色。</p>
+      <p>在设计中，通常主色调使用较高饱和度（70-100%），辅助色和背景色使用较低饱和度（10-40%）以避免视觉疲劳。</p>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">3. 明度/亮度（Lightness / Brightness）</h3>
+      <p>明度表示颜色的明暗程度。在 HSL 模型中，0% 为纯黑色，50% 为正常亮度，100% 为纯白色。通过调整明度，可以从同一个色相生成从深到浅的完整色阶。</p>
+      <p>在设计中，大面积使用的背景色通常保持中等明度（40-60%），文字色需要与背景形成足够的明度对比以确保可读性。</p>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">二、RGB 色彩模型</h2>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">RGB 原理</h3>
+      <p>RGB（Red, Green, Blue）是一种加色模型，用于电子屏幕显示。它通过红、绿、蓝三种光的混合来产生各种颜色。这是屏幕和网页设计中最基础的颜色模型。</p>
+      <p>RGB 中每个通道的取值范围是 0-255：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><code>rgb(0, 0, 0)</code> — 纯黑色（所有通道关闭）</li>
+        <li><code>rgb(255, 255, 255)</code> — 纯白色（所有通道全亮）</li>
+        <li><code>rgb(255, 0, 0)</code> — 纯红色</li>
+        <li><code>rgb(0, 255, 0)</code> — 纯绿色</li>
+        <li><code>rgb(0, 0, 255)</code> — 纯蓝色</li>
+        <li><code>rgb(255, 255, 0)</code> — 黄色（红 + 绿）</li>
+        <li><code>rgb(255, 0, 255)</code> — 品红色（红 + 蓝）</li>
+        <li><code>rgb(0, 255, 255)</code> — 青色（绿 + 蓝）</li>
+      </ul>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">HEX 颜色码</h3>
+      <p>HEX（十六进制）是 RGB 的简写形式，在网页开发中最为常用。它将 RGB 的三个通道值转换为十六进制：</p>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">#FF0000 → rgb(255, 0, 0)   红色
+#00FF00 → rgb(0, 255, 0)   绿色
+#0000FF → rgb(0, 0, 255)   蓝色
+#4361EE → rgb(67, 97, 238) 蓝紫色
+#000000 → rgb(0, 0, 0)     黑色
+#FFFFFF → rgb(255, 255, 255) 白色</pre>
+      <p>当 HEX 码的每两位数字相同时，可以简写为 3 位：</p>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">#FFF → #FFFFFF（白色）
+#000 → #000000（黑色）
+#F00 → #FF0000（红色）
+#0F0 → #00FF00（绿色）</pre>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">RGBA 与透明度</h3>
+      <p>RGBA 在 RGB 的基础上增加了 Alpha 通道（透明度），取值 0（完全透明）到 1（完全不透明）：</p>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">rgba(67, 97, 238, 1)    /* 完全不透明 */
+rgba(67, 97, 238, 0.5)  /* 半透明 */
+rgba(67, 97, 238, 0)    /* 完全透明 */
+
+/* HEX 也可以表示透明度（8位HEX） */
+#4361EEFF  /* 完全不透明 */
+#4361EE80  /* 约50%透明 */</pre>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">三、HSL 色彩模型</h2>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">HSL 原理</h3>
+      <p>HSL（Hue, Saturation, Lightness）是一种更直观的颜色模型，它用人类更容易理解的方式来描述颜色：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>H（色相）</strong>：0-360 度，色轮上的角度</li>
+        <li><strong>S（饱和度）</strong>：0%-100%，颜色鲜艳程度</li>
+        <li><strong>L（明度）</strong>：0%-100%，颜色明暗程度</li>
+      </ul>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">/* 纯红色 */
+hsl(0, 100%, 50%)
+
+/* 纯蓝色 */
+hsl(240, 100%, 50%)
+
+/* 浅蓝色（降低饱和度，提高明度） */
+hsl(240, 60%, 75%)
+
+/* 深蓝色（保持饱和度，降低明度） */
+hsl(240, 80%, 25%)
+
+/* 灰色（饱和度为0） */
+hsl(0, 0%, 50%)</pre>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">HSL vs RGB：什么时候用哪个？</h3>
+      <p>两者的选择取决于使用场景：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>设计系统</strong>：使用 HSL 更方便，因为你可以固定色相和饱和度，通过调整明度生成色阶</li>
+        <li><strong>从设计稿取色</strong>：设计工具通常输出 HEX 或 RGB，直接使用即可</li>
+        <li><strong>动态生成颜色</strong>：HSL 更灵活，例如根据主题色自动生成深浅变体</li>
+        <li><strong>透明度需求</strong>：优先使用 HSLA 或 RGBA</li>
+      </ul>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">用 HSL 生成色阶的技巧</h3>
+      <p>HSL 最强大的特性是能够方便地从同一个色相生成完整的色阶：</p>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">/* 蓝色系色阶（固定色相220，饱和度80%，调整明度） */
+--blue-50:  hsl(220, 80%, 95%);  /* 非常浅的蓝 */
+--blue-100: hsl(220, 80%, 90%);
+--blue-200: hsl(220, 80%, 80%);
+--blue-300: hsl(220, 80%, 70%);
+--blue-400: hsl(220, 80%, 60%);
+--blue-500: hsl(220, 80%, 50%);  /* 基准色 */
+--blue-600: hsl(220, 80%, 40%);
+--blue-700: hsl(220, 80%, 30%);
+--blue-800: hsl(220, 80%, 20%);
+--blue-900: hsl(220, 80%, 10%);  /* 非常深的蓝 */</pre>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">四、常用配色方案</h2>
+      <p>色彩理论提供了多种经过验证的配色方案，帮助设计师创建和谐的色彩组合。</p>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">1. 单色配色（Monochromatic）</h3>
+      <p>使用同一个色相，只调整饱和度和明度。这是最简单也最不容易出错的配色方案。</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>优点：视觉统一、层次分明、专业感强</li>
+        <li>适合：企业网站、数据仪表盘、文档系统</li>
+        <li>方法：选择一个主色，生成 3-5 个明度梯度</li>
+      </ul>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">/* 蓝色单色方案 */
+background: hsl(220, 80%, 95%);   /* 浅色背景 */
+primary:   hsl(220, 80%, 50%);   /* 主色调 */
+text:      hsl(220, 20%, 20%);   /* 深色文字 */
+border:    hsl(220, 30%, 85%);   /* 边框色 */</pre>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">2. 互补色配色（Complementary）</h3>
+      <p>选择色轮上相对的两个颜色（相距 180 度）。互补色能产生强烈的视觉对比。</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>优点：对比强烈、引人注目</li>
+        <li>适合：CTA 按钮、促销页面、需要突出重点的界面</li>
+        <li>注意：避免 50:50 等面积使用，应该以一种颜色为主（约 70-80%），互补色为辅（20-30%）</li>
+      </ul>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">/* 蓝色 + 橙色互补色 */
+background: hsl(220, 80%, 95%);
+primary:   hsl(220, 80%, 50%);   /* 蓝色 - 主色 */
+accent:    hsl(40, 90%, 55%);    /* 橙色 - 强调色 */</pre>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">3. 类似色配色（Analogous）</h3>
+      <p>选择色轮上相邻的 2-3 个颜色（相距约 30 度）。类似色配色天然和谐。</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>优点：和谐、有层次感</li>
+        <li>适合：品牌设计、内容为主的网站</li>
+        <li>方法：选择色轮上一段约 60 度的区间内的 3 个颜色</li>
+      </ul>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">/* 蓝-紫类似色 */
+primary:   hsl(220, 80%, 50%);   /* 蓝色 */
+secondary: hsl(250, 70%, 55%);   /* 蓝紫色 */
+tertiary:  hsl(280, 60%, 50%);   /* 紫色 */</pre>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">4. 三色配色（Triadic）</h3>
+      <p>选择色轮上等距的三个颜色（相距 120 度）。三色配色丰富但需要谨慎使用。</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>优点：丰富、有趣、充满活力</li>
+        <li>适合：儿童网站、创意类设计、多彩品牌</li>
+        <li>注意：选一个为主色，其余两个降低饱和度或缩小使用面积</li>
+      </ul>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">/* 三色方案（0、120、240度） */
+primary:   hsl(0, 80%, 55%);     /* 红色 */
+secondary: hsl(120, 60%, 45%);   /* 绿色 */
+tertiary:  hsl(240, 70%, 55%);   /* 蓝色 */</pre>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">5. 分裂互补色（Split-Complementary）</h3>
+      <p>选择一个主色，再取其互补色两侧各 30 度的颜色。这是互补色的温和版本。</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>优点：比互补色方案更柔和，同时保持对比</li>
+        <li>适合：需要对比但又不想太强烈的场景</li>
+      </ul>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">/* 蓝色 + 黄橙色 + 黄绿色 */
+primary:   hsl(220, 80%, 50%);   /* 蓝色 */
+secondary: hsl(40, 80%, 50%);    /* 黄橙色 */
+tertiary:  hsl(160, 70%, 45%);   /* 黄绿色 */</pre>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">五、网页设计配色实战技巧</h2>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">60-30-10 法则</h3>
+      <p>这是室内设计和 UI 设计中广泛使用的配色比例法则：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>60%</strong>：主色调（通常用于背景）</li>
+        <li><strong>30%</strong>：辅助色（用于卡片、侧边栏、次要元素）</li>
+        <li><strong>10%</strong>：强调色（用于按钮、链接、重要元素）</li>
+      </ul>
+      <p>这个比例确保视觉平衡，避免页面色彩过于单调或过于杂乱。</p>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">深色模式配色</h3>
+      <p>深色模式的配色不能简单地把颜色反转。关键原则：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>背景不要使用纯黑（#000000），使用深灰色（如 #1a1a2e、#121212）减少眼睛疲劳</li>
+        <li>前景文字使用灰白色（如 #e0e0e0），而非纯白（#FFFFFF）</li>
+        <li>饱和度适当降低，高饱和度颜色在深色背景上过于刺眼</li>
+        <li>使用细微的背景色差（如 #1e1e30 和 #252540）区分层级</li>
+      </ul>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">/* 深色模式配色示例 */
+--bg-primary:   hsl(230, 30%, 12%);   /* 主背景 */
+--bg-secondary: hsl(230, 25%, 18%);   /* 卡片/面板背景 */
+--text-primary: hsl(0, 0%, 90%);      /* 主文字 */
+--text-secondary: hsl(0, 0%, 65%);    /* 次要文字 */
+--accent:       hsl(220, 75%, 55%);   /* 强调色（降低饱和度） */</pre>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">对比度与可读性</h3>
+      <p>WCAG 2.1 标准要求：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>正常文字</strong>：对比度至少 4.5:1</li>
+        <li><strong>大号文字</strong>（18px 以上或 14px 粗体以上）：对比度至少 3:1</li>
+        <li><strong>AAA 级</strong>（更高标准）：正常文字 7:1，大号文字 4.5:1</li>
+      </ul>
+      <p>在实际开发中，建议使用 <a href="../src/tools/color-contrast.html" style="color: #4361ee; font-weight: 600;">在线对比度检测工具</a> 来验证颜色组合是否满足无障碍标准。</p>
+
+      <h3 style="margin: 20px 0 8px; font-size: 1.1rem;">冷色与暖色</h3>
+      <p>色彩有心理暗示作用：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>暖色</strong>（红、橙、黄）：温暖、活力、紧迫感、食欲</li>
+        <li><strong>冷色</strong>（蓝、绿、紫）：冷静、专业、信任、科技感</li>
+        <li><strong>中性色</strong>（黑、白、灰、棕）：稳定、平衡、基础</li>
+      </ul>
+      <p>科技类网站多用蓝色系（信任、专业），电商平台多用红色系（促销、紧迫感），健康类网站多用绿色系（自然、安全）。</p>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">六、CSS 中的颜色表示方法</h2>
+      <p>CSS 支持多种颜色表示方式，现代 CSS 还新增了实用功能：</p>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">/* 命名颜色 */
+color: red;
+color: cornflowerblue;
+
+/* HEX */
+color: #4361ee;
+color: #4361ee80;  /* 带透明度 */
+
+/* RGB / RGBA */
+color: rgb(67, 97, 238);
+color: rgba(67, 97, 238, 0.5);
+
+/* HSL / HSLA */
+color: hsl(230, 80%, 60%);
+color: hsla(230, 80%, 60%, 0.5);
+
+/* 现代CSS: 相对颜色（需要最新浏览器） */
+color: oklch(0.5 0.15 260);  /* OKLCH色彩空间 */
+color: lch(50% 40 260);      /* LCH色彩空间 */
+
+/* CSS 颜色混合（color-mix） */
+color: color-mix(in srgb, #4361ee, #f72585);  /* 50%混合 */
+color: color-mix(in srgb, #4361ee 70%, white 30%);  /* 指定比例 */</pre>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">在线颜色工具</h2>
+      <p>理解和应用色彩理论需要反复实践。以下工具可以帮助你更高效地处理颜色：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><a href="../src/tools/color-converter.html" style="color: #4361ee; font-weight: 600;">颜色格式转换工具</a> — 在 RGB、HSL、HEX 之间互相转换</li>
+        <li><a href="../src/tools/color-picker.html" style="color: #4361ee; font-weight: 600;">在线取色器</a> — 从屏幕或色轮中选取颜色</li>
+        <li><a href="../src/tools/color-contrast.html" style="color: #4361ee; font-weight: 600;">对比度检测工具</a> — 检测颜色组合是否满足 WCAG 无障碍标准</li>
+        <li><a href="../src/tools/color-palette.html" style="color: #4361ee; font-weight: 600;">配色方案生成器</a> — 自动生成和谐的配色方案</li>
+      </ul>
+      <p>所有工具均在浏览器本地运行，无需安装，数据不上传服务器。</p>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">总结</h2>
+      <p>色彩理论是设计工作的基石。掌握 RGB 和 HSL 色彩模型的原理，了解单色、互补色、类似色等配色方案，再结合 60-30-10 法则和对比度标准，你就能创建出既美观又专业的网页配色方案。在实际项目中，HSL 模型特别适合构建设计系统的色阶体系，因为它能让你直观地控制颜色的明暗和鲜艳程度。</p>
+      <p>更多设计和开发工具，欢迎访问 <a href="../index.html" style="color: #4361ee; font-weight: 600;">EITools 在线工具箱</a>。</p>
+    </article>
+  </div>
+
+  <div id="share-bar"></div>
+  <script src="../js/share.js"></script>
+</body>
+</html>

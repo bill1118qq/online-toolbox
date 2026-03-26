@@ -6,6 +6,7 @@
   <title>文本去重工具 - 行去重排序 - 在线工具箱</title>
   <meta name="description" content="在线文本去重工具：去除重复行、排序、统计重复次数。支持忽略大小写去重、去除空行。一键处理大量文本数据。">
   <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
   <meta property="og:title" content="文本去重工具">
   <meta property="og:description" content="去除重复行、排序、统计重复次数。">
   <meta property="og:url" content="https://eitools.cn/src/tools/text-unique.html">
@@ -15,6 +16,8 @@
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"WebApplication","name":"文本去重工具","url":"https://eitools.cn/src/tools/text-unique.html","description":"在线文本去重、排序、统计重复次数","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}
   </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js"></script>
 </head>
 <body>
   <div class="tool-page">
@@ -55,6 +58,13 @@
   <div id="share-bar"></div>
   <script src="../../js/share.js"></script>
   <script>
+    function showToast(msg) {
+      let t = document.getElementById('toast');
+      if (!t) { t = document.createElement('div'); t.id = 'toast'; t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#1a1a2e;color:#fff;padding:12px 24px;border-radius:8px;z-index:99999;font-size:0.9rem;opacity:0;transition:opacity 0.3s;'; document.body.appendChild(t); }
+      t.textContent = msg; t.style.opacity = '1';
+      setTimeout(() => t.style.opacity = '0', 2000);
+    }
+
     const inputEl = document.getElementById('input');
     const outputEl = document.getElementById('output');
 

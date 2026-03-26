@@ -3,207 +3,88 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>在线计算器 - 支持括号运算和函数 - 在线工具箱</title>
-  <meta name="description" content="在线科学计算器：支持基础四则运算、括号嵌套、百分比计算、历史记录。界面简洁，完全免费，无需下载。">
+  <title>行计数器 - 在线文本行数统计工具 - 在线工具箱</title>
+  <meta name="description" content="在线行计数器：实时统计文本总行数、非空行数、空行数、字符数、字节数。粘贴或输入文本即可查看统计结果，完全免费。">
   <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
-  <meta property="og:title" content="在线科学计算器">
-  <meta property="og:description" content="支持四则运算、括号、百分比的在线计算器。">
+  <link rel="manifest" href="../../manifest.json">
+  <meta property="og:title" content="行计数器 - 在线文本行数统计">
+  <meta property="og:description" content="实时统计文本行数、字符数、字节数。粘贴即用，完全免费。">
   <meta property="og:url" content="https://eitools.cn/src/tools/line-counter.html">
   <link rel="canonical" href="https://eitools.cn/src/tools/line-counter.html">
   <link rel="stylesheet" href="../../css/style.css">
   <meta property="og:type" content="website">
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"WebApplication","name":"在线科学计算器","description":"支持四则运算括号百分比的在线计算器","url":"https://eitools.cn/src/tools/line-counter.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "行计数器",
+    "description": "在线文本行数统计工具，实时统计行数、字符数、字节数",
+    "url": "https://eitools.cn/src/tools/line-counter.html",
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "Any"
+  }
   </script>
-  <style>
-    .calc-display { background:#1a1a2e;color:#4ade80;font-family:monospace;padding:20px;border-radius:12px 12px 0 0;text-align:right;font-size:2rem;min-height:80px;display:flex;flex-direction:column;justify-content:center;overflow:hidden; }
-    .calc-expr { color:#888;font-size:0.9rem;margin-bottom:4px;min-height:20px; }
-    .calc-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#ddd;border-radius:0 0 12px 12px;overflow:hidden; }
-    .calc-btn { padding:18px;font-size:1.2rem;border:none;cursor:pointer;background:white;transition:background .15s; }
-    .calc-btn:hover { background:#e8e8e8; }
-    .calc-btn:active { background:#d0d0d0; }
-    .calc-btn.op { background:#e3f2fd;color:#1565c0; }
-    .calc-btn.op:hover { background:#bbdefb; }
-    .calc-btn.eq { background:#4361ee;color:white; }
-    .calc-btn.eq:hover { background:#3451d1; }
-    .calc-btn.fn { background:#f5f5f5;color:#666; }
-    .calc-btn.fn:hover { background:#eee; }
-    .calc-history { margin-top:16px;max-height:300px;overflow-y:auto; }
-    .calc-history div { padding:8px 12px;border-bottom:1px solid #f0f0f0;font-size:0.9rem;cursor:pointer; }
-    .calc-history div:hover { background:#f5f5f5; }
-  </style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js"></script>
 </head>
 <body>
   <div class="tool-page">
     <div class="tool-page-header">
       <a href="../../index.html" class="back-link">&larr; 返回首页</a>
-      <h1>在线科学计算器</h1>
+      <h1>行计数器</h1>
     </div>
-    <p style="color:#666;margin-bottom:20px;">支持四则运算、括号、百分比计算，带历史记录。</p>
-    <div style="max-width:400px;margin:0 auto;">
-      <div class="calc-display">
-        <div class="calc-expr" id="expr"></div>
-        <div id="display">0</div>
-      </div>
-      <div class="calc-grid">
-        <button class="calc-btn fn" onclick="clearAll()">AC</button>
-        <button class="calc-btn fn" onclick="backspace()">&larr;</button>
-        <button class="calc-btn fn" onclick="inputPercent()">%</button>
-        <button class="calc-btn op" onclick="inputOp('/')">÷</button>
-        <button class="calc-btn" onclick="inputNum('7')">7</button>
-        <button class="calc-btn" onclick="inputNum('8')">8</button>
-        <button class="calc-btn" onclick="inputNum('9')">9</button>
-        <button class="calc-btn op" onclick="inputOp('*')">×</button>
-        <button class="calc-btn" onclick="inputNum('4')">4</button>
-        <button class="calc-btn" onclick="inputNum('5')">5</button>
-        <button class="calc-btn" onclick="inputNum('6')">6</button>
-        <button class="calc-btn op" onclick="inputOp('-')">−</button>
-        <button class="calc-btn" onclick="inputNum('1')">1</button>
-        <button class="calc-btn" onclick="inputNum('2')">2</button>
-        <button class="calc-btn" onclick="inputNum('3')">3</button>
-        <button class="calc-btn op" onclick="inputOp('+')">+</button>
-        <button class="calc-btn fn" onclick="toggleSign()">±</button>
-        <button class="calc-btn" onclick="inputNum('0')">0</button>
-        <button class="calc-btn" onclick="inputDot()">.</button>
-        <button class="calc-btn eq" onclick="calculate()">=</button>
-        <button class="calc-btn fn" onclick="inputParen('(')">(</button>
-        <button class="calc-btn fn" onclick="inputParen(')')">)</button>
-        <button class="calc-btn fn" onclick="sqrt()">√</button>
-        <button class="calc-btn fn" onclick="squared()">x²</button>
-      </div>
-      <div class="calc-history" id="history"></div>
+    <p style="color:#666;margin-bottom:20px;">粘贴或输入文本，实时统计行数、字符数和字节数。</p>
+    <div style="max-width:700px;">
+      <textarea id="input" rows="14" oninput="analyze()" placeholder="在此输入或粘贴文本，支持多行...&#10;&#10;例如：&#10;第一行&#10;第二行&#10;&#10;第四行（上面有空行）" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:1rem;resize:vertical;font-family:inherit;line-height:1.6;"></textarea>
+      <div id="stats" style="margin-top:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;"></div>
     </div>
   </div>
   <div id="share-bar"></div>
   <script src="../../js/share.js"></script>
   <script>
-    var expression = '';
-    var display = '0';
-    var lastResult = null;
-    var history = [];
+    function analyze() {
+      var text = document.getElementById('input').value;
+      var statsEl = document.getElementById('stats');
 
-    function updateDisplay() {
-      document.getElementById('display').textContent = display;
-      document.getElementById('expr').textContent = expression;
-    }
-
-    function inputNum(n) {
-      if (display === '0' && n !== '0') display = n;
-      else if (display === '0' && n === '0') return;
-      else display += n;
-      updateDisplay();
-    }
-
-    function inputDot() {
-      if (display.indexOf('.') === -1) display += '.';
-      updateDisplay();
-    }
-
-    function inputOp(op) {
-      var opSymbol = { '/': ' ÷ ', '*': ' × ', '-': ' − ', '+': ' + ' }[op] || op;
-      expression += display + opSymbol;
-      display = '0';
-      updateDisplay();
-    }
-
-    function inputParen(p) {
-      expression += p;
-      updateDisplay();
-    }
-
-    function inputPercent() {
-      display = String(parseFloat(display) / 100);
-      updateDisplay();
-    }
-
-    function toggleSign() {
-      if (display !== '0') {
-        display = display.startsWith('-') ? display.slice(1) : '-' + display;
-        updateDisplay();
+      if (!text) {
+        statsEl.innerHTML = '';
+        return;
       }
-    }
 
-    function sqrt() {
-      var val = parseFloat(display);
-      if (val < 0) { display = '错误'; updateDisplay(); return; }
-      display = String(Math.sqrt(val));
-      updateDisplay();
-    }
-
-    function squared() {
-      display = String(Math.pow(parseFloat(display), 2));
-      updateDisplay();
-    }
-
-    function backspace() {
-      if (display.length > 1) display = display.slice(0, -1);
-      else display = '0';
-      updateDisplay();
-    }
-
-    function clearAll() {
-      expression = '';
-      display = '0';
-      updateDisplay();
-    }
-
-    function calculate() {
-      var fullExpr = expression + display;
-      try {
-        var sanitized = fullExpr.replace(/÷/g, '/').replace(/×/g, '*').replace(/−/g, '-');
-        var result = Function('"use strict"; return (' + sanitized + ')')();
-
-        if (isNaN(result) || !isFinite(result)) {
-          display = '错误';
+      var allLines = text.split('\n');
+      var totalLines = allLines.length;
+      var nonEmptyLines = allLines.filter(function(l) { return l.trim() !== ''; }).length;
+      var emptyLines = totalLines - nonEmptyLines;
+      var totalChars = text.length;
+      var charsNoSpace = text.replace(/\s/g, '').length;
+      var bytesUTF8 = new Blob([text]).size;
+      var bytesGBK = 0;
+      for (var i = 0; i < text.length; i++) {
+        var code = text.charCodeAt(i);
+        if (code >= 0x4E00 && code <= 0x9FFF) {
+          bytesGBK += 2;
         } else {
-          var rounded = parseFloat(result.toPrecision(12));
-          display = String(rounded);
-          history.unshift({ expr: fullExpr + ' =', result: display });
-          if (history.length > 20) history.pop();
-          renderHistory();
-          expression = '';
+          bytesGBK += 1;
         }
-      } catch (e) {
-        display = '错误';
       }
-      updateDisplay();
+
+      var items = [
+        { label: '总行数', value: totalLines, color: '#4361ee' },
+        { label: '非空行数', value: nonEmptyLines, color: '#2f9e44' },
+        { label: '空行数', value: emptyLines, color: '#e67700' },
+        { label: '总字符数', value: totalChars, color: '#333' },
+        { label: '不含空格字符', value: charsNoSpace, color: '#333' },
+        { label: 'UTF-8 字节数', value: bytesUTF8, color: '#333' },
+        { label: 'GBK 字节数', value: bytesGBK, color: '#333' }
+      ];
+
+      statsEl.innerHTML = items.map(function(s) {
+        return '<div style="padding:16px;background:white;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,0.06);text-align:center;">' +
+          '<div style="font-size:0.8rem;color:#888;">' + s.label + '</div>' +
+          '<div style="font-size:1.4rem;font-weight:800;color:' + s.color + ';">' + s.value.toLocaleString() + '</div>' +
+          '</div>';
+      }).join('');
     }
-
-    function renderHistory() {
-      var html = '';
-      for (var i = 0; i < history.length; i++) {
-        html += '<div onclick="loadHistory(' + i + ')">' + escapeHtml(history[i].expr) + ' <b>' + escapeHtml(history[i].result) + '</b></div>';
-      }
-      document.getElementById('history').innerHTML = html;
-    }
-
-    function loadHistory(index) {
-      display = history[index].result;
-      expression = '';
-      updateDisplay();
-    }
-
-    function escapeHtml(str) {
-      var div = document.createElement('div');
-      div.textContent = str;
-      return div.innerHTML;
-    }
-
-    document.addEventListener('keydown', function(e) {
-      if (e.key >= '0' && e.key <= '9') inputNum(e.key);
-      else if (e.key === '.') inputDot();
-      else if (e.key === '+') inputOp('+');
-      else if (e.key === '-') inputOp('-');
-      else if (e.key === '*') inputOp('*');
-      else if (e.key === '/') { e.preventDefault(); inputOp('/'); }
-      else if (e.key === 'Enter' || e.key === '=') calculate();
-      else if (e.key === 'Backspace') backspace();
-      else if (e.key === 'Escape') clearAll();
-      else if (e.key === '(') inputParen('(');
-      else if (e.key === ')') inputParen(')');
-    });
-
-    updateDisplay();
   </script>
 </body>
 </html>

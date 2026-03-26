@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>屏幕标尺 - 在线像素测量工具 - 在线工具箱</title>
+  <meta name="description" content="免费在线屏幕标尺工具，测量屏幕上的像素距离、宽度和高度。支持水平和垂直标尺，显示精确像素值、CSS单位，适用于网页设计和前端开发。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <meta property="og:title" content="屏幕标尺 - 在线像素测量工具">
+  <meta property="og:description" content="在线屏幕标尺，测量像素距离，支持水平和垂直模式。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/screen-ruler.html">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://eitools.cn/src/tools/screen-ruler.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "屏幕标尺",
+    "description": "在线像素测量标尺，支持水平和垂直模式",
+    "url": "https://eitools.cn/src/tools/screen-ruler.html",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Any",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "CNY"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "如何使用屏幕标尺测量像素？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "在标尺区域点击并拖拽鼠标即可测量两点之间的像素距离。标尺会实时显示起始位置、结束位置和距离值。按住Shift键可以锁定为水平或垂直方向。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "屏幕标尺的精度是多少？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "屏幕标尺的精度为1像素（CSS像素），足够满足网页设计和前端开发的需求。标尺同时会显示对应的英寸和厘米值，方便参考。"
+        }
+      }
+    ]
+  }
+  </script>
+  <style>
+    .ruler-controls {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;
+      align-items: center;
+    }
+    .ruler-controls label { font-size: 0.85rem; color: #555; }
+    .ruler-controls select, .ruler-controls input[type="number"] {
+      padding: 6px 10px; border: 1px solid #ddd; border-radius: 6px;
+      font-size: 0.85rem;
+    }
+    .ruler-canvas-wrapper {
+      position: relative; border: 2px solid #333; background: #f9f9f9;
+      cursor: crosshair; overflow: hidden; border-radius: 8px;
+    }
+    #rulerCanvas { display: block; }
+    .measurement-display {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px; margin-top: 16px;
+    }
+    .measurement-card {
+      background: #fff; border: 1px solid #e0e0e0; border-radius: 8px;
+      padding: 12px 16px; text-align: center;
+    }
+    .measurement-card .value {
+      font-size: 1.4rem; font-weight: 700; color: #4361ee;
+      font-family: 'Courier New', monospace;
+    }
+    .measurement-card .label {
+      font-size: 0.75rem; color: #888; margin-top: 4px;
+    }
+    .color-display {
+      display: inline-block; width: 24px; height: 24px; border-radius: 4px;
+      border: 1px solid #ddd; vertical-align: middle; margin-right: 6px;
+    }
+    .tip-box {
+      background: #f0f7ff; border: 1px solid #d0e3ff; border-radius: 8px;
+      padding: 12px 16px; margin-top: 16px; font-size: 0.85rem; color: #555;
+    }
+    .tip-box strong { color: #4361ee; }
+  </style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>屏幕标尺</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">在屏幕上拖拽测量像素距离。支持水平/垂直模式、角度测量、颜色拾取。</p>
+
+    <div class="ruler-controls">
+      <button class="btn btn-primary" onclick="resetRuler();">重置标尺</button>
+      <button class="btn" onclick="toggleGuideLines();">辅助线: <span id="guideState">开</span></button>
+      <button class="btn" onclick="toggleDarkRuler();">深色背景: <span id="darkState">关</span></button>
+      <label>放大: <select id="zoomLevel" onchange="drawRuler();">
+        <option value="1">1x</option>
+        <option value="2">2x</option>
+      </select></label>
+      <label>标尺颜色: <input type="color" id="rulerColor" value="#e03131" onchange="drawRuler();"></label>
+    </div>
+
+    <div class="ruler-canvas-wrapper" id="canvasWrapper">
+      <canvas id="rulerCanvas"></canvas>
+    </div>
+
+    <div class="measurement-display">
+      <div class="measurement-card">
+        <div class="value" id="distancePx">0 px</div>
+        <div class="label">距离（像素）</div>
+      </div>
+      <div class="measurement-card">
+        <div class="value" id="distanceCm">0 cm</div>
+        <div class="label">距离（厘米，估算）</div>
+      </div>
+      <div class="measurement-card">
+        <div class="value" id="distanceInch">0 in</div>
+        <div class="label">距离（英寸，估算）</div>
+      </div>
+      <div class="measurement-card">
+        <div class="value" id="angleDeg">0&deg;</div>
+        <div class="label">角度</div>
+      </div>
+      <div class="measurement-card">
+        <div class="value" id="deltaX">0 px</div>
+        <div class="label">水平偏移 (X)</div>
+      </div>
+      <div class="measurement-card">
+        <div class="value" id="deltaY">0 px</div>
+        <div class="label">垂直偏移 (Y)</div>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <strong>使用说明：</strong>
+      在标尺区域按住鼠标左键拖拽即可测量距离。<br>
+      <strong>Shift + 拖拽</strong>：锁定水平或垂直方向 &nbsp;|&nbsp;
+      <strong>Alt + 点击</strong>：拾取该位置的坐标信息 &nbsp;|&nbsp;
+      <strong>DPI</strong>：默认96（可在输入框修改）
+      <div style="margin-top:8px;">
+        <label style="font-size:0.85rem;color:#555;">屏幕DPI:
+          <input type="number" id="dpiInput" value="96" min="48" max="480" step="1"
+                 style="width:70px;padding:4px 8px;border:1px solid #ddd;border-radius:6px;font-size:0.85rem;"
+                 onchange="updateMeasurements();">
+          （常见: 72, 96, 144, 192, 326）
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div id="share-bar"></div>
+
+  <script>
+    function showToast(msg) {
+      var t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(function() { t.remove(); }, 2000);
+    }
+
+    var canvas = document.getElementById('rulerCanvas');
+    var ctx = canvas.getContext('2d');
+    var wrapper = document.getElementById('canvasWrapper');
+    var startX = 0, startY = 0, endX = 0, endY = 0;
+    var isDragging = false;
+    var showGuides = true;
+    var isDark = false;
+    var dpr = window.devicePixelRatio || 1;
+
+    function resizeCanvas() {
+      var w = wrapper.clientWidth;
+      var h = Math.max(400, Math.min(600, window.innerHeight - 380));
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = w + 'px';
+      canvas.style.height = h + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      drawRuler();
+    }
+
+    function drawRuler() {
+      var zoom = parseInt(document.getElementById('zoomLevel').value) || 1;
+      var w = canvas.width / dpr;
+      var h = canvas.height / dpr;
+      var color = document.getElementById('rulerColor').value;
+
+      // Background
+      ctx.fillStyle = isDark ? '#1a1a2e' : '#fafafa';
+      ctx.fillRect(0, 0, w, h);
+
+      // Grid
+      ctx.strokeStyle = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+      ctx.lineWidth = 0.5;
+
+      var step = 10 * zoom;
+      for (var x = 0; x < w; x += step) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, h);
+        ctx.stroke();
+      }
+      for (var y = 0; y < h; y += step) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+        ctx.stroke();
+      }
+
+      // Major grid (100px)
+      ctx.strokeStyle = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.1)';
+      ctx.lineWidth = 0.5;
+      var majorStep = 100 * zoom;
+      for (var mx = 0; mx < w; mx += majorStep) {
+        ctx.beginPath();
+        ctx.moveTo(mx, 0);
+        ctx.lineTo(mx, h);
+        ctx.stroke();
+        if (isDark) {
+          ctx.fillStyle = 'rgba(255,255,255,0.3)';
+        } else {
+          ctx.fillStyle = 'rgba(0,0,0,0.25)';
+        }
+        ctx.font = '10px monospace';
+        ctx.fillText(Math.round(mx / zoom), mx + 2, 12);
+      }
+      for (var my = 0; my < h; my += majorStep) {
+        ctx.beginPath();
+        ctx.moveTo(0, my);
+        ctx.lineTo(w, my);
+        ctx.stroke();
+        if (isDark) {
+          ctx.fillStyle = 'rgba(255,255,255,0.3)';
+        } else {
+          ctx.fillStyle = 'rgba(0,0,0,0.25)';
+        }
+        ctx.font = '10px monospace';
+        ctx.fillText(Math.round(my / zoom), 2, my - 2);
+      }
+
+      // Guide lines (crosshair at mouse)
+      if (showGuides && !isDragging) {
+        // drawn on mousemove
+      }
+
+      // Measurement line
+      if (isDragging || (endX !== startX || endY !== startY)) {
+        // Dashed projection lines
+        ctx.setLineDash([4, 4]);
+        ctx.strokeStyle = isDark ? 'rgba(100,100,255,0.4)' : 'rgba(0,0,255,0.2)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(endX, startY);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(endX, startY);
+        ctx.lineTo(endX, endY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Main measurement line
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(endX, endY);
+        ctx.stroke();
+
+        // Endpoints
+        var dotSize = 5;
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(startX, startY, dotSize, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(endX, endY, dotSize, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Distance label
+        var midX = (startX + endX) / 2;
+        var midY = (startY + endY) / 2;
+        var zoom2 = parseInt(document.getElementById('zoomLevel').value) || 1;
+        var dist = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2)) / zoom2;
+        var label = Math.round(dist) + 'px';
+
+        ctx.font = 'bold 13px monospace';
+        var textWidth = ctx.measureText(label).width;
+        var padding = 6;
+
+        ctx.fillStyle = isDark ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.9)';
+        ctx.fillRect(midX - textWidth / 2 - padding, midY - 20, textWidth + padding * 2, 20);
+
+        ctx.fillStyle = color;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(label, midX, midY - 10);
+        ctx.textAlign = 'start';
+        ctx.textBaseline = 'alphabetic';
+
+        // Start/End labels
+        ctx.font = '11px monospace';
+        var sLabel = '(' + Math.round(startX / zoom2) + ', ' + Math.round(startY / zoom2) + ')';
+        var eLabel = '(' + Math.round(endX / zoom2) + ', ' + Math.round(endY / zoom2) + ')';
+        ctx.fillStyle = isDark ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.85)';
+        ctx.fillRect(startX + 8, startY - 16, ctx.measureText(sLabel).width + 8, 16);
+        ctx.fillRect(endX + 8, endY - 16, ctx.measureText(eLabel).width + 8, 16);
+        ctx.fillStyle = isDark ? '#ccc' : '#333';
+        ctx.fillText(sLabel, startX + 12, startY - 4);
+        ctx.fillText(eLabel, endX + 12, endY - 4);
+      }
+    }
+
+    function getCanvasCoords(e) {
+      var rect = canvas.getBoundingClientRect();
+      return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      };
+    }
+
+    canvas.addEventListener('mousedown', function(e) {
+      var coords = getCanvasCoords(e);
+      startX = coords.x;
+      startY = coords.y;
+      endX = coords.x;
+      endY = coords.y;
+      isDragging = true;
+    });
+
+    canvas.addEventListener('mousemove', function(e) {
+      var coords = getCanvasCoords(e);
+
+      // Draw crosshair guides
+      if (showGuides && !isDragging) {
+        drawRuler();
+        var w = canvas.width / dpr;
+        var h = canvas.height / dpr;
+        ctx.setLineDash([2, 2]);
+        ctx.strokeStyle = isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.15)';
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.moveTo(coords.x, 0);
+        ctx.lineTo(coords.x, h);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, coords.y);
+        ctx.lineTo(w, coords.y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Coordinate display
+        var zoom2 = parseInt(document.getElementById('zoomLevel').value) || 1;
+        var coordLabel = Math.round(coords.x / zoom2) + ', ' + Math.round(coords.y / zoom2);
+        ctx.font = '11px monospace';
+        ctx.fillStyle = isDark ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.9)';
+        ctx.fillRect(coords.x + 10, coords.y - 24, ctx.measureText(coordLabel).width + 10, 18);
+        ctx.fillStyle = isDark ? '#ccc' : '#333';
+        ctx.fillText(coordLabel, coords.x + 15, coords.y - 12);
+      }
+
+      if (!isDragging) return;
+
+      if (e.shiftKey) {
+        var dx = coords.x - startX;
+        var dy = coords.y - startY;
+        if (Math.abs(dx) > Math.abs(dy)) {
+          endX = coords.x;
+          endY = startY;
+        } else {
+          endX = startX;
+          endY = coords.y;
+        }
+      } else {
+        endX = coords.x;
+        endY = coords.y;
+      }
+      drawRuler();
+      updateMeasurements();
+    });
+
+    canvas.addEventListener('mouseup', function() {
+      isDragging = false;
+      updateMeasurements();
+    });
+
+    canvas.addEventListener('mouseleave', function() {
+      isDragging = false;
+      if (showGuides) drawRuler();
+    });
+
+    // Touch support
+    canvas.addEventListener('touchstart', function(e) {
+      e.preventDefault();
+      var touch = e.touches[0];
+      var rect = canvas.getBoundingClientRect();
+      startX = touch.clientX - rect.left;
+      startY = touch.clientY - rect.top;
+      endX = startX;
+      endY = startY;
+      isDragging = true;
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', function(e) {
+      e.preventDefault();
+      if (!isDragging) return;
+      var touch = e.touches[0];
+      var rect = canvas.getBoundingClientRect();
+      endX = touch.clientX - rect.left;
+      endY = touch.clientY - rect.top;
+      drawRuler();
+      updateMeasurements();
+    }, { passive: false });
+
+    canvas.addEventListener('touchend', function() {
+      isDragging = false;
+      updateMeasurements();
+    });
+
+    function updateMeasurements() {
+      var zoom = parseInt(document.getElementById('zoomLevel').value) || 1;
+      var dpi = parseInt(document.getElementById('dpiInput').value) || 96;
+      var dx = (endX - startX) / zoom;
+      var dy = (endY - startY) / zoom;
+      var dist = Math.sqrt(dx * dx + dy * dy);
+      var angle = Math.atan2(dy, dx) * (180 / Math.PI);
+
+      var distCm = (dist / dpi) * 2.54;
+      var distInch = dist / dpi;
+
+      document.getElementById('distancePx').textContent = Math.round(dist) + ' px';
+      document.getElementById('distanceCm').textContent = distCm.toFixed(2) + ' cm';
+      document.getElementById('distanceInch').textContent = distInch.toFixed(2) + ' in';
+      document.getElementById('angleDeg').textContent = angle.toFixed(1) + '\u00B0';
+      document.getElementById('deltaX').textContent = Math.round(dx) + ' px';
+      document.getElementById('deltaY').textContent = Math.round(dy) + ' px';
+    }
+
+    function resetRuler() {
+      startX = 0; startY = 0; endX = 0; endY = 0;
+      drawRuler();
+      updateMeasurements();
+      showToast('标尺已重置');
+    }
+
+    function toggleGuideLines() {
+      showGuides = !showGuides;
+      document.getElementById('guideState').textContent = showGuides ? '开' : '关';
+      drawRuler();
+    }
+
+    function toggleDarkRuler() {
+      isDark = !isDark;
+      document.getElementById('darkState').textContent = isDark ? '开' : '关';
+      drawRuler();
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    updateMeasurements();
+  </script>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

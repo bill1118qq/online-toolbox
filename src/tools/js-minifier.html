@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JavaScript压缩工具 - JS代码在线压缩混淆 - 在线工具箱</title>
+  <meta name="description" content="免费在线JavaScript压缩工具，支持JS代码压缩、格式化美化、代码混淆。去除注释空格，压缩变量名，减小JS文件体积。纯浏览器端处理，安全快速。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <meta property="og:title" content="JavaScript压缩工具 - JS代码在线压缩混淆">
+  <meta property="og:description" content="在线JS代码压缩/格式化/混淆，减小文件体积，纯浏览器端处理。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/js-minifier.html">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://eitools.cn/src/tools/js-minifier.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "JavaScript压缩工具",
+    "description": "免费在线JavaScript代码压缩、格式化和混淆工具",
+    "url": "https://eitools.cn/src/tools/js-minifier.html",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Any",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "CNY"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "JavaScript压缩的原理是什么？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "JS压缩通过去除注释、多余空白符、缩短变量名等方式减小代码体积，同时保持功能不变。常见的压缩技术包括：删除换行和缩进、合并语句、替换变量名为短名称等。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "在线JS压缩工具安全吗？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "本工具完全在浏览器端运行，不会将您的代码上传到任何服务器，非常安全。所有压缩处理都在本地完成。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "压缩后的JS代码还能正常使用吗？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "可以。压缩只是去除了不必要的字符和缩短了变量名，不会改变代码的逻辑功能。但建议在压缩前备份原始代码，以便后续维护。"
+        }
+      }
+    ]
+  }
+  </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>JavaScript 压缩工具</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">在线压缩、格式化和混淆 JavaScript 代码。纯浏览器端处理，不上传服务器。</p>
+
+    <div class="options-bar" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+      <button class="btn btn-primary" onclick="minifyJS()">压缩代码</button>
+      <button class="btn" onclick="beautifyJS()">格式化</button>
+      <button class="btn" onclick="obfuscateJS()">简单混淆</button>
+      <button class="btn" onclick="copyOutput()">复制结果</button>
+      <button class="btn" onclick="clearAll()">清空</button>
+    </div>
+
+    <div class="split-view">
+      <div class="split-panel">
+        <div class="split-panel-header">输入代码</div>
+        <textarea id="jsInput" placeholder="在此粘贴 JavaScript 代码..." spellcheck="false" style="height:400px;">// 示例代码
+function calculateTotal(price, quantity, discount) {
+  // 计算总价
+  const subtotal = price * quantity;
+
+  // 应用折扣
+  const discountAmount = subtotal * (discount / 100);
+  const total = subtotal - discountAmount;
+
+  // 返回总价
+  return total;
+}
+
+// 调用函数
+const result = calculateTotal(100, 5, 10);
+console.log("总价为: " + result);</textarea>
+        <div style="margin-top:8px;font-size:0.85rem;color:#888;">
+          输入大小: <span id="inputSize">0</span> 字符
+        </div>
+      </div>
+      <div class="split-panel">
+        <div class="split-panel-header">输出结果</div>
+        <textarea id="jsOutput" readonly placeholder="结果将显示在这里..." spellcheck="false" style="height:400px;"></textarea>
+        <div style="margin-top:8px;font-size:0.85rem;color:#888;">
+          输出大小: <span id="outputSize">0</span> 字符 | 压缩率: <span id="compressionRate">-</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="share-bar"></div>
+
+  <script>
+    function showToast(msg) {
+      var t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(function() { t.remove(); }, 2000);
+    }
+
+    function updateStats() {
+      var input = document.getElementById('jsInput');
+      var output = document.getElementById('jsOutput');
+      var inputLen = input.value.length;
+      var outputLen = output.value.length;
+      document.getElementById('inputSize').textContent = inputLen;
+      document.getElementById('outputSize').textContent = outputLen;
+      if (inputLen > 0 && outputLen > 0) {
+        var rate = ((1 - outputLen / inputLen) * 100).toFixed(1);
+        document.getElementById('compressionRate').textContent = rate + '%';
+      } else {
+        document.getElementById('compressionRate').textContent = '-';
+      }
+    }
+
+    function minifyJS() {
+      try {
+        var code = document.getElementById('jsInput').value;
+        if (!code.trim()) {
+          showToast('请输入 JavaScript 代码');
+          return;
+        }
+        var result = '';
+        var i = 0;
+        var len = code.length;
+        var inString = false;
+        var stringChar = '';
+        var inLineComment = false;
+        var inBlockComment = false;
+        var inTemplateLiteral = false;
+        var lastNonSpace = '';
+
+        while (i < len) {
+          var ch = code[i];
+          var next = i + 1 < len ? code[i + 1] : '';
+
+          // Template literals
+          if (ch === '`' && !inString && !inLineComment && !inBlockComment) {
+            inTemplateLiteral = !inTemplateLiteral;
+            result += ch;
+            i++;
+            continue;
+          }
+
+          if (inTemplateLiteral) {
+            if (ch === '\\') {
+              result += ch + next;
+              i += 2;
+            } else {
+              result += ch;
+              i++;
+            }
+            continue;
+          }
+
+          // Block comments
+          if (inBlockComment) {
+            if (ch === '*' && next === '/') {
+              inBlockComment = false;
+              i += 2;
+              // Keep a space to separate tokens
+              if (result.length > 0 && result[result.length - 1] !== ' ' && result[result.length - 1] !== '\n') {
+                result += ' ';
+              }
+            } else {
+              i++;
+            }
+            continue;
+          }
+
+          // Line comments
+          if (inLineComment) {
+            if (ch === '\n') {
+              inLineComment = false;
+              result += '\n';
+            }
+            i++;
+            continue;
+          }
+
+          // Strings
+          if (inString) {
+            result += ch;
+            if (ch === '\\') {
+              i++;
+              if (i < len) result += code[i];
+            } else if (ch === stringChar) {
+              inString = false;
+            }
+            i++;
+            continue;
+          }
+
+          // Detect strings
+          if (ch === '"' || ch === "'" || ch === '`') {
+            inString = true;
+            stringChar = ch;
+            result += ch;
+            i++;
+            continue;
+          }
+
+          // Detect comments
+          if (ch === '/' && next === '/') {
+            inLineComment = true;
+            i += 2;
+            continue;
+          }
+          if (ch === '/' && next === '*') {
+            inBlockComment = true;
+            i += 2;
+            continue;
+          }
+
+          // Regular expression detection (simplified)
+          if (ch === '/' && next !== '/' && next !== '*') {
+            result += ch;
+            i++;
+            // Read until closing /, handle escape
+            while (i < len) {
+              if (code[i] === '\\') {
+                result += code[i] + code[i + 1];
+                i += 2;
+              } else if (code[i] === '/') {
+                result += code[i];
+                i++;
+                // flags
+                while (i < len && /[gimsuy]/.test(code[i])) {
+                  result += code[i];
+                  i++;
+                }
+                break;
+              } else {
+                result += code[i];
+                i++;
+              }
+            }
+            continue;
+          }
+
+          // Handle whitespace
+          if (/\s/.test(ch)) {
+            // Skip whitespace but keep space between identifiers/numbers
+            var prev = result.length > 0 ? result[result.length - 1] : '';
+            // Look ahead for next non-space
+            var j = i + 1;
+            while (j < len && /\s/.test(code[j])) j++;
+            var nextNonSpace = j < len ? code[j] : '';
+            var prevIsIdent = /[a-zA-Z0-9_$]/.test(prev);
+            var nextIsIdent = /[a-zA-Z0-9_$]/.test(nextNonSpace);
+            var prevIsOp = /[+\-*/%=<>!&|^~?:]/.test(prev);
+            var nextIsOp = /[+\-*/%=<>!&|^~?:]/.test(nextNonSpace);
+
+            if (ch === '\n' && prev !== ';') {
+              // Only add newline if it could separate statements
+              result += ch;
+            } else if ((prevIsIdent && nextIsIdent) ||
+                       (prevIsIdent && nextIsOp) ||
+                       (prevIsOp && nextIsIdent) ||
+                       (prev === '+' && next === '+') ||
+                       (prev === '-' && next === '-')) {
+              result += ' ';
+            }
+            i = j;
+            continue;
+          }
+
+          result += ch;
+          i++;
+        }
+
+        // Final cleanup: remove unnecessary semicolons after closing braces
+        result = result.replace(/}\s*;/g, '}');
+
+        document.getElementById('jsOutput').value = result.trim();
+        updateStats();
+        showToast('压缩完成');
+      } catch (e) {
+        document.getElementById('jsOutput').value = '错误: ' + e.message;
+        showToast('压缩失败: ' + e.message);
+      }
+    }
+
+    function beautifyJS() {
+      try {
+        var code = document.getElementById('jsInput').value;
+        if (!code.trim()) {
+          showToast('请输入 JavaScript 代码');
+          return;
+        }
+        var result = '';
+        var indent = 0;
+        var indentStr = '  ';
+        var i = 0;
+        var len = code.length;
+        var inString = false;
+        var stringChar = '';
+        var inLineComment = false;
+        var inBlockComment = false;
+
+        // First, normalize line endings
+        code = code.replace(/\r\n/g, '\n');
+
+        while (i < len) {
+          var ch = code[i];
+          var next = i + 1 < len ? code[i + 1] : '';
+
+          if (inLineComment) {
+            result += ch;
+            if (ch === '\n') inLineComment = false;
+            i++;
+            continue;
+          }
+
+          if (inBlockComment) {
+            result += ch;
+            if (ch === '*' && next === '/') {
+              result += next;
+              inBlockComment = false;
+              i += 2;
+            } else {
+              i++;
+            }
+            continue;
+          }
+
+          if (inString) {
+            result += ch;
+            if (ch === '\\') {
+              i++;
+              if (i < len) result += code[i];
+            } else if (ch === stringChar) {
+              inString = false;
+            }
+            i++;
+            continue;
+          }
+
+          if (ch === '"' || ch === "'") {
+            inString = true;
+            stringChar = ch;
+            result += ch;
+            i++;
+            continue;
+          }
+
+          if (ch === '/' && next === '/') {
+            inLineComment = true;
+            result += ch;
+            i++;
+            continue;
+          }
+
+          if (ch === '/' && next === '*') {
+            inBlockComment = true;
+            result += ch;
+            i++;
+            continue;
+          }
+
+          if (ch === '{') {
+            result += ' {\n';
+            indent++;
+            i++;
+            // Skip leading whitespace
+            while (i < len && code[i] === ' ') i++;
+            result += indentStr.repeat(indent);
+            continue;
+          }
+
+          if (ch === '}') {
+            indent = Math.max(0, indent - 1);
+            // Remove trailing space
+            result = result.replace(/\s+$/, '');
+            result += '\n' + indentStr.repeat(indent) + '}\n';
+            i++;
+            // Add newline and indent after }
+            while (i < len && code[i] === ' ') i++;
+            if (i < len && code[i] !== '\n' && code[i] !== ';' && code[i] !== ')' && code[i] !== ']' && code[i] !== ',') {
+              result += indentStr.repeat(indent);
+            }
+            continue;
+          }
+
+          if (ch === ';') {
+            result += ';\n';
+            i++;
+            // Skip whitespace and add indent
+            while (i < len && code[i] === ' ') i++;
+            if (i < len && code[i] !== '}' && code[i] !== '\n') {
+              result += indentStr.repeat(indent);
+            }
+            continue;
+          }
+
+          result += ch;
+          i++;
+        }
+
+        document.getElementById('jsOutput').value = result.trim();
+        updateStats();
+        showToast('格式化完成');
+      } catch (e) {
+        document.getElementById('jsOutput').value = '错误: ' + e.message;
+        showToast('格式化失败: ' + e.message);
+      }
+    }
+
+    function obfuscateJS() {
+      try {
+        var code = document.getElementById('jsInput').value;
+        if (!code.trim()) {
+          showToast('请输入 JavaScript 代码');
+          return;
+        }
+        // First minify
+        var oldOutput = document.getElementById('jsOutput').value;
+        minifyJS();
+        var minified = document.getElementById('jsOutput').value;
+
+        // Simple obfuscation: replace variable names with short names
+        var varNames = [];
+        var nameMap = {};
+        var counter = 0;
+
+        // Find var/let/const declarations
+        var varRegex = /\b(var|let|const)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\b/g;
+        var match;
+        while ((match = varRegex.exec(minified)) !== null) {
+          var vName = match[2];
+          if (!nameMap[vName] && !/^(var|let|const|function|return|if|else|for|while|do|switch|case|break|continue|new|this|true|false|null|undefined|typeof|instanceof|in|of|try|catch|finally|throw|class|extends|import|export|default|from|async|await|yield|delete|void|with|debugger|super|static|get|set|console|Math|JSON|Array|Object|String|Number|Boolean|Date|RegExp|Error|Map|Set|Promise|Symbol|parseInt|parseFloat|isNaN|isFinite|encodeURI|decodeURI|encodeURIComponent|decodeURIComponent|eval|window|document|navigator|location|alert|confirm|prompt|setTimeout|setInterval|clearTimeout|clearInterval|requestAnimationFrame|fetch|XMLHttpRequest|localStorage|sessionStorage|addEventListener|removeEventListener|getElementById|querySelector|querySelectorAll|createElement|appendChild|innerHTML|textContent|className|style|getAttribute|setAttribute|log|error|warn|info)$/.test(vName)) {
+            nameMap[vName] = '_0x' + counter.toString(16);
+            counter++;
+          }
+        }
+
+        var result = minified;
+        // Replace variable names (sort by length descending to avoid partial replacements)
+        var sortedNames = Object.keys(nameMap).sort(function(a, b) { return b.length - a.length; });
+        for (var idx = 0; idx < sortedNames.length; idx++) {
+          var origName = sortedNames[idx];
+          var obfName = nameMap[origName];
+          var escapedName = origName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          result = result.replace(new RegExp('\\b' + escapedName + '\\b', 'g'), obfName);
+        }
+
+        // Encode strings as hex
+        result = result.replace(/(["'])([^"']{2,})\1/g, function(match, quote, str) {
+          // Only encode ASCII strings to keep it simple
+          var hex = '';
+          var allAscii = true;
+          for (var k = 0; k < str.length; k++) {
+            var cc = str.charCodeAt(k);
+            if (cc > 127) { allAscii = false; break; }
+            hex += '\\x' + ('0' + cc.toString(16)).slice(-2);
+          }
+          if (allAscii && str.length > 2) {
+            return quote + hex + quote;
+          }
+          return match;
+        });
+
+        document.getElementById('jsOutput').value = result;
+        updateStats();
+        showToast('混淆完成');
+      } catch (e) {
+        document.getElementById('jsOutput').value = '错误: ' + e.message;
+        showToast('混淆失败: ' + e.message);
+      }
+    }
+
+    function copyOutput() {
+      var output = document.getElementById('jsOutput').value;
+      if (!output) {
+        showToast('没有可复制的内容');
+        return;
+      }
+      navigator.clipboard.writeText(output).then(function() {
+        showToast('已复制到剪贴板');
+      }).catch(function() {
+        showToast('复制失败');
+      });
+    }
+
+    function clearAll() {
+      document.getElementById('jsInput').value = '';
+      document.getElementById('jsOutput').value = '';
+      updateStats();
+    }
+
+    // Listen for input changes
+    document.getElementById('jsInput').addEventListener('input', updateStats);
+    document.getElementById('jsOutput').addEventListener('input', updateStats);
+
+    // Initial stats
+    updateStats();
+  </script>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

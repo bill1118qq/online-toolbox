@@ -6,6 +6,7 @@
   <title>文字时钟 - 时间文字显示 - 在线工具箱</title>
   <meta name="description" content="在线文字时钟，将当前时间以优美的文字形式显示。适合桌面装饰、PPT展示、创意设计。免费使用。">
   <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
   <meta property="og:title" content="文字时钟">
   <meta property="og:description" content="将当前时间以优美文字形式显示。">
   <meta property="og:url" content="https://eitools.cn/src/tools/text-clock.html">
@@ -15,6 +16,8 @@
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"WebApplication","name":"文字时钟","url":"https://eitools.cn/src/tools/text-clock.html","description":"当前时间以优美文字形式实时显示。","applicationCategory":"UtilityApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0"}}
   </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js"></script>
 </head>
 <body>
   <div class="tool-page">
@@ -157,5 +160,7 @@
     formatTime();
     setInterval(formatTime, 1000);
   </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
 </body>
 </html>

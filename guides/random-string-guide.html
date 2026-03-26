@@ -6,6 +6,7 @@
   <title>随机字符串生成教程 - 安全随机码规则 - 在线工具箱</title>
   <meta name="description" content="随机字符串生成教程：订单号命名规则、验证码生成标准、邀请码设计方案、安全随机数注意事项。附在线随机字符串生成器。">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../manifest.json">
   <meta property="og:title" content="随机字符串生成教程">
   <meta property="og:description" content="订单号/验证码/邀请码生成规则与最佳实践。">
   <meta property="og:url" content="https://eitools.cn/guides/random-string-guide.html">
@@ -15,6 +16,8 @@
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"订单号怎么生成？","acceptedAnswer":{"@type":"Answer","text":"常见订单号格式：日期(14位)+时间(6位)+随机数(4-6位)，如ORD20260322143025000001。需要保证唯一性，高并发场景可用雪花算法或UUID。"}},{"@type":"Question","name":"验证码多少位安全？","acceptedAnswer":{"@type":"Answer","text":"4位数字验证码有10000种可能（10^4），6位有100万种（10^6）。建议使用6位数字验证码，暴力破解需要平均50万次尝试。结合频率限制和过期时间更安全。"}}]}
   </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../js/analytics.js"></script>
 </head>
 <body>
   <div class="tool-page">

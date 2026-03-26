@@ -2,9 +2,7 @@ User-agent: *
 Allow: /
 Disallow: /tmp/
 Disallow: /_private/
+Disallow: /test/
+Disallow: /node_modules/
 
 Sitemap: https://eitools.cn/sitemap.xml
-
-# Crawl-delay for politeness
-User-agent: *
-Crawl-delay: 1

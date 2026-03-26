@@ -6,6 +6,7 @@
   <title>在线计数器 - 点击计数/倒计时/正计时 - 在线工具箱</title>
   <meta name="description" content="在线计数器工具，支持点击计数、加减计数、步数记录。界面简洁，大按钮操作方便。免费使用。">
   <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
   <meta property="og:title" content="在线计数器">
   <meta property="og:description" content="点击计数器，支持加减计数和自定义步长。">
   <meta property="og:url" content="https://eitools.cn/src/tools/counter.html">
@@ -15,6 +16,8 @@
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"WebApplication","name":"在线计数器","url":"https://eitools.cn/src/tools/counter.html","description":"点击计数器，支持加减计数。","applicationCategory":"UtilityApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0"}}
   </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js"></script>
 </head>
 <body>
   <div class="tool-page">
@@ -114,5 +117,7 @@
 
     renderHistory();
   </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
 </body>
 </html>

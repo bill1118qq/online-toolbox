@@ -6,6 +6,7 @@
   <title>烟花代码生成器 - 在线HTML烟花特效 - 在线工具箱</title>
   <meta name="description" content="在线烟花代码生成器，自定义颜色、大小、速度，一键复制HTML烟花特效代码。适用于表白、节日祝福网页。免费使用。">
   <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
   <meta property="og:title" content="烟花代码生成器">
   <meta property="og:description" content="自定义HTML烟花特效，一键复制代码，适用于表白和节日祝福。">
   <meta property="og:url" content="https://eitools.cn/src/tools/firework-generator.html">
@@ -24,6 +25,8 @@
     "offers": {"@type": "Offer", "price": "0"}
   }
   </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js"></script>
 </head>
 <body>
   <div class="tool-page">
@@ -211,6 +214,8 @@ body { overflow: hidden; background: ${bg}; }
 canvas { display: block; }
 ${showBless ? `.bless { position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font:bold 3em serif;text-shadow:0 0 20px rgba(255,255,255,0.5);z-index:10;pointer-events:none; }` : ''}
 </style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js"></script>
 </head>
 <body>
 ${showBless ? `<div class="bless">${bless}</div>` : ''}

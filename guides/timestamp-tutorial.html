@@ -6,6 +6,7 @@
   <title>时间戳教程 - Unix时间戳详解与转换 - 在线工具箱</title>
   <meta name="description" content="时间戳完全教程：什么是Unix时间戳、时间戳与日期互转方法、常用编程语言时间戳操作、时间戳在开发中的应用。附在线时间戳转换工具。">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../manifest.json">
   <meta property="og:title" content="Unix时间戳详解教程">
   <meta property="og:description" content="时间戳原理、日期转换、编程语言操作详解。">
   <meta property="og:url" content="https://eitools.cn/guides/timestamp-tutorial.html">
@@ -15,6 +16,8 @@
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"什么是Unix时间戳？","acceptedAnswer":{"@type":"Answer","text":"Unix时间戳是从1970年1月1日00:00:00 UTC到现在的总秒数。它是计算机系统中表示时间的一种方式，不受时区影响。例如1742454400代表2025年3月20日12:00:00 UTC。"}},{"@type":"Question","name":"时间戳为什么从1970年开始？","acceptedAnswer":{"@type":"Answer","text":"1970年是Unix系统诞生的年份（确切说是1970年1月1日UTC）。选择这个时间点是历史原因——Unix操作系统在这一年前后诞生，以此为起点计算秒数。"}},{"@type":"Question","name":"13位时间戳和10位有什么区别？","acceptedAnswer":{"@type":"Answer","text":"10位时间戳精确到秒，13位精确到毫秒。13位 = 10位 × 1000 + 毫秒数。JavaScript的Date.getTime()返回13位时间戳。转换时：10位→13位：×1000；13位→10位：÷1000（取整）。"}}]}
   </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../js/analytics.js"></script>
 </head>
 <body>
   <div class="tool-page">

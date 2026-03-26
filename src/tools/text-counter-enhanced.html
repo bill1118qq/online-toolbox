@@ -6,6 +6,7 @@
   <title>字符统计增强版 - 文本字符频率分析 - 在线工具箱</title>
   <meta name="description" content="增强版文本统计工具，统计字数、字符数、行数、段落数、句子数、阅读时间，支持中日韩字符准确统计。">
   <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
   <meta property="og:title" content="文本统计增强版 - 字数行数阅读时间">
   <meta property="og:description" content="增强版文本统计：字数、字符、行数、阅读时间。">
   <meta property="og:url" content="https://eitools.cn/src/tools/text-counter-enhanced.html">
@@ -15,6 +16,8 @@
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"WebApplication","name":"文本统计增强版","description":"全面的文本统计分析工具","url":"https://eitools.cn/src/tools/text-counter-enhanced.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
   </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js"></script>
 </head>
 <body>
   <div class="tool-page">
@@ -78,8 +81,8 @@
         <div style="background:#f0f2f5;padding:16px;border-radius:12px;font-size:0.85rem;color:#555;">
           <p><strong>不含空格：</strong>${charsNoSpace} 字符</p>
           <p><strong>最常见字：</strong>${getMostCommon(text)}</p>
-          <p><strong>最长行：</strong>${Math.max(...text.split('\n').map(l=>l.length))} 字符</p>
-          <p><strong>平均行长：</strong>${Math.round(charsNoSpace/nonEmptyLines)} 字符/行</p>
+          <p><strong>最长行：</strong>${Math.max(0, ...text.split('\n').map(l=>l.length))} 字符</p>
+          <p><strong>平均行长：</strong>${nonEmptyLines > 0 ? Math.round(charsNoSpace/nonEmptyLines) : 0} 字符/行</p>
         </div>`;
     }
 

@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meta标签生成器 - SEO Meta Tags在线生成工具 - 在线工具箱</title>
+  <meta name="description" content="免费在线Meta标签生成器，快速生成网页SEO所需的title、description、keywords、Open Graph、Twitter Card等meta标签。支持预览、一键复制，提升搜索引擎排名。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <meta property="og:title" content="Meta标签生成器 - SEO Meta Tags在线生成工具">
+  <meta property="og:description" content="在线生成网页SEO Meta标签，支持Open Graph和Twitter Card。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/meta-tag-generator.html">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://eitools.cn/src/tools/meta-tag-generator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Meta标签生成器",
+    "description": "在线生成网页SEO Meta标签，支持Open Graph和Twitter Card",
+    "url": "https://eitools.cn/src/tools/meta-tag-generator.html",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Any",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "CNY"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "什么是Meta标签？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Meta标签是HTML文档头部<meta>元素中的信息标签，用于向搜索引擎和社交媒体平台提供网页的元数据信息，如标题、描述、关键词、作者等。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Meta标签对SEO有什么影响？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Meta标签中的title和description直接影响搜索引擎对网页的理解和展示。良好的Meta标签可以提高点击率，间接提升搜索排名。Open Graph标签则影响在社交媒体上的分享展示效果。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Meta Description应该写多少个字？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Google通常显示150-160个字符的描述，百度显示约70-80个中文字符。建议将最重要的信息放在前面，确保核心内容能被完整展示。"
+        }
+      }
+    ]
+  }
+  </script>
+  <style>
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block; font-size: 0.85rem; color: #555;
+      margin-bottom: 4px; font-weight: 500;
+    }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%; padding: 10px 12px; border: 1px solid #ddd;
+      border-radius: 8px; font-size: 0.9rem; box-sizing: border-box;
+      font-family: inherit;
+    }
+    .form-group textarea { font-family: monospace; resize: vertical; }
+    .form-group input:focus, .form-group textarea:focus {
+      outline: none; border-color: #4361ee; box-shadow: 0 0 0 3px rgba(67,97,238,0.1);
+    }
+    .char-count { font-size: 0.75rem; color: #999; text-align: right; margin-top: 2px; }
+    .char-count.warning { color: #e03131; }
+    .section-title {
+      font-size: 1rem; font-weight: 600; color: #333;
+      border-bottom: 2px solid #4361ee; padding-bottom: 6px; margin: 24px 0 16px;
+    }
+    .checkbox-group { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 4px; }
+    .checkbox-group label {
+      display: flex; align-items: center; gap: 4px; font-size: 0.85rem;
+      color: #555; font-weight: 400; cursor: pointer;
+    }
+    .output-area {
+      background: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 8px;
+      font-family: 'Courier New', monospace; font-size: 0.85rem;
+      white-space: pre-wrap; word-break: break-all; line-height: 1.6;
+      max-height: 400px; overflow-y: auto;
+    }
+    .preview-box {
+      background: #fff; border: 1px solid #ddd; border-radius: 8px;
+      padding: 16px; margin-top: 12px;
+    }
+    .preview-url { color: #202124; font-size: 1rem; line-height: 1.3; }
+    .preview-title { color: #1a0dab; font-size: 1.2rem; line-height: 1.3; margin-top: 4px; }
+    .preview-desc { color: #4d5156; font-size: 0.875rem; line-height: 1.58; margin-top: 4px; }
+    @media (max-width: 768px) {
+      .form-group input, .form-group textarea, .form-group select { font-size: 16px; }
+    }
+  </style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>Meta 标签生成器</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">快速生成网页 SEO 所需的 Meta 标签，支持搜索引擎预览、Open Graph 和 Twitter Card。</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;" id="mainGrid">
+      <!-- Left: Form -->
+      <div>
+        <h3 class="section-title">基本信息</h3>
+
+        <div class="form-group">
+          <label for="pageTitle">页面标题 (Title)</label>
+          <input type="text" id="pageTitle" placeholder="例如：我的网站首页 - 品牌名称" maxlength="70" oninput="generateTags(); updatePreview();">
+          <div class="char-count"><span id="titleCount">0</span>/70 字符</div>
+        </div>
+
+        <div class="form-group">
+          <label for="pageDesc">页面描述 (Description)</label>
+          <textarea id="pageDesc" rows="3" placeholder="简明描述页面内容，建议包含核心关键词" maxlength="200" oninput="generateTags(); updatePreview();"></textarea>
+          <div class="char-count"><span id="descCount">0</span>/200 字符（百度建议80字以内）</div>
+        </div>
+
+        <div class="form-group">
+          <label for="pageKeywords">关键词 (Keywords)</label>
+          <input type="text" id="pageKeywords" placeholder="用英文逗号分隔，如：在线工具,JSON格式化,免费工具" oninput="generateTags();">
+        </div>
+
+        <div class="form-group">
+          <label for="pageUrl">页面URL</label>
+          <input type="url" id="pageUrl" placeholder="https://example.com/" oninput="generateTags(); updatePreview();">
+        </div>
+
+        <div class="form-group">
+          <label for="pageAuthor">作者</label>
+          <input type="text" id="pageAuthor" placeholder="网站名称或作者" oninput="generateTags();">
+        </div>
+
+        <h3 class="section-title">Open Graph (社交媒体分享)</h3>
+
+        <div class="form-group">
+          <label for="ogImage">分享图片URL</label>
+          <input type="url" id="ogImage" placeholder="https://example.com/og-image.jpg" oninput="generateTags();">
+        </div>
+
+        <div class="form-group">
+          <label for="ogType">内容类型</label>
+          <select id="ogType" onchange="generateTags();">
+            <option value="website">website (网站)</option>
+            <option value="article">article (文章)</option>
+            <option value="product">product (产品)</option>
+            <option value="profile">profile (个人主页)</option>
+            <option value="video.other">video (视频)</option>
+            <option value="music.song">music (音乐)</option>
+            <option value="book">book (书籍)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="ogSiteName">站点名称</label>
+          <input type="text" id="ogSiteName" placeholder="站点名称" oninput="generateTags();">
+        </div>
+
+        <div class="form-group">
+          <label for="ogLocale">语言区域</label>
+          <select id="ogLocale" onchange="generateTags();">
+            <option value="zh_CN">zh_CN (简体中文)</option>
+            <option value="zh_TW">zh_TW (繁体中文)</option>
+            <option value="en_US">en_US (英语)</option>
+            <option value="ja_JP">ja_JP (日语)</option>
+            <option value="ko_KR">ko_KR (韩语)</option>
+          </select>
+        </div>
+
+        <h3 class="section-title">Twitter Card</h3>
+
+        <div class="form-group">
+          <label for="twitterCard">卡片类型</label>
+          <select id="twitterCard" onchange="generateTags();">
+            <option value="summary_large_image">summary_large_image (大图)</option>
+            <option value="summary">summary (小图)</option>
+            <option value="app">app (应用)</option>
+            <option value="player">player (视频播放器)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="twitterSite">Twitter 账号</label>
+          <input type="text" id="twitterSite" placeholder="@your_account" oninput="generateTags();">
+        </div>
+
+        <h3 class="section-title">其他选项</h3>
+
+        <div class="checkbox-group">
+          <label><input type="checkbox" id="optCharset" checked onchange="generateTags();"> 字符编码</label>
+          <label><input type="checkbox" id="optViewport" checked onchange="generateTags();"> 视口设置</label>
+          <label><input type="checkbox" id="optRobots" checked onchange="generateTags();"> 爬虫指令</label>
+          <label><input type="checkbox" id="optCanonical" checked onchange="generateTags();"> 规范链接</label>
+          <label><input type="checkbox" id="optTheme" onchange="generateTags();"> 主题颜色</label>
+        </div>
+
+        <div class="form-group" id="robotsGroup">
+          <label for="robots">Robots 指令</label>
+          <select id="robots" onchange="generateTags();">
+            <option value="index, follow">index, follow (默认)</option>
+            <option value="noindex, follow">noindex, follow</option>
+            <option value="index, nofollow">index, nofollow</option>
+            <option value="noindex, nofollow">noindex, nofollow</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="themeGroup" style="display:none;">
+          <label for="themeColor">主题颜色</label>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="color" id="themeColor" value="#4361ee" oninput="generateTags();" style="width:50px;height:40px;padding:2px;cursor:pointer;">
+            <input type="text" id="themeColorText" value="#4361ee" oninput="document.getElementById('themeColor').value=this.value;generateTags();" style="flex:1;">
+          </div>
+        </div>
+
+        <div style="margin-top:20px;display:flex;gap:8px;">
+          <button class="btn btn-primary" onclick="generateTags();">生成标签</button>
+          <button class="btn" onclick="copyTags();">复制代码</button>
+          <button class="btn" onclick="resetForm();">重置</button>
+        </div>
+      </div>
+
+      <!-- Right: Output -->
+      <div>
+        <h3 class="section-title">搜索引擎预览</h3>
+        <div class="preview-box" id="serpPreview">
+          <div class="preview-url" id="previewUrl">https://example.com</div>
+          <div class="preview-title" id="previewTitle">页面标题</div>
+          <div class="preview-desc" id="previewDesc">页面描述内容将显示在这里，搜索引擎通常会显示大约160个字符。确保描述包含核心关键词以提高点击率。</div>
+        </div>
+
+        <h3 class="section-title">生成代码</h3>
+        <div class="output-area" id="codeOutput"><!-- 生成的代码将显示在这里 --></div>
+
+        <div style="margin-top:12px;display:flex;gap:8px;">
+          <button class="btn btn-primary" onclick="copyTags();">复制代码</button>
+          <button class="btn" onclick="copyHeadOnly();">仅复制 &lt;head&gt; 内容</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="share-bar"></div>
+
+  <script>
+    function showToast(msg) {
+      var t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(function() { t.remove(); }, 2000);
+    }
+
+    // Responsive layout
+    function checkLayout() {
+      var grid = document.getElementById('mainGrid');
+      if (window.innerWidth <= 768) {
+        grid.style.gridTemplateColumns = '1fr';
+      } else {
+        grid.style.gridTemplateColumns = '1fr 1fr';
+      }
+    }
+    window.addEventListener('resize', checkLayout);
+    checkLayout();
+
+    // Toggle theme color visibility
+    document.getElementById('optTheme').addEventListener('change', function() {
+      document.getElementById('themeGroup').style.display = this.checked ? 'block' : 'none';
+    });
+
+    // Update character counts
+    document.getElementById('pageTitle').addEventListener('input', function() {
+      var count = this.value.length;
+      var el = document.getElementById('titleCount');
+      el.textContent = count;
+      el.parentElement.className = 'char-count' + (count > 60 ? ' warning' : '');
+    });
+    document.getElementById('pageDesc').addEventListener('input', function() {
+      var count = this.value.length;
+      var el = document.getElementById('descCount');
+      el.textContent = count;
+      el.parentElement.className = 'char-count' + (count > 160 ? ' warning' : '');
+    });
+
+    function updatePreview() {
+      var title = document.getElementById('pageTitle').value || '页面标题';
+      var desc = document.getElementById('pageDesc').value || '页面描述内容将显示在这里，搜索引擎通常会显示大约160个字符。确保描述包含核心关键词以提高点击率。';
+      var url = document.getElementById('pageUrl').value || 'https://example.com';
+
+      document.getElementById('previewTitle').textContent = title;
+      document.getElementById('previewDesc').textContent = desc;
+      document.getElementById('previewUrl').textContent = url;
+    }
+
+    function generateTags() {
+      var lines = [];
+      var title = document.getElementById('pageTitle').value;
+      var desc = document.getElementById('pageDesc').value;
+      var keywords = document.getElementById('pageKeywords').value;
+      var url = document.getElementById('pageUrl').value;
+      var author = document.getElementById('pageAuthor').value;
+      var ogImage = document.getElementById('ogImage').value;
+      var ogType = document.getElementById('ogType').value;
+      var ogSite = document.getElementById('ogSiteName').value;
+      var ogLocale = document.getElementById('ogLocale').value;
+      var twCard = document.getElementById('twitterCard').value;
+      var twSite = document.getElementById('twitterSite').value;
+      var robots = document.getElementById('robots').value;
+      var themeColor = document.getElementById('themeColor').value;
+
+      // Basic meta
+      if (document.getElementById('optCharset').checked) {
+        lines.push('<meta charset="UTF-8">');
+      }
+      if (document.getElementById('optViewport').checked) {
+        lines.push('<meta name="viewport" content="width=device-width, initial-scale=1.0">');
+      }
+      if (title) {
+        lines.push('<title>' + escapeHtml(title) + '</title>');
+        lines.push('<meta name="title" content="' + escapeAttr(title) + '">');
+      }
+      if (desc) {
+        lines.push('<meta name="description" content="' + escapeAttr(desc) + '">');
+      }
+      if (keywords) {
+        lines.push('<meta name="keywords" content="' + escapeAttr(keywords) + '">');
+      }
+      if (author) {
+        lines.push('<meta name="author" content="' + escapeAttr(author) + '">');
+      }
+      if (document.getElementById('optRobots').checked) {
+        lines.push('<meta name="robots" content="' + robots + '">');
+      }
+
+      // Canonical
+      if (document.getElementById('optCanonical').checked && url) {
+        lines.push('<link rel="canonical" href="' + escapeAttr(url) + '">');
+      }
+
+      // Open Graph
+      if (title || desc || url || ogImage || ogSite) {
+        if (ogType) {
+          lines.push('<meta property="og:type" content="' + escapeAttr(ogType) + '">');
+        }
+        if (ogLocale) {
+          lines.push('<meta property="og:locale" content="' + escapeAttr(ogLocale) + '">');
+        }
+        if (title) {
+          lines.push('<meta property="og:title" content="' + escapeAttr(title) + '">');
+        }
+        if (desc) {
+          lines.push('<meta property="og:description" content="' + escapeAttr(desc) + '">');
+        }
+        if (url) {
+          lines.push('<meta property="og:url" content="' + escapeAttr(url) + '">');
+        }
+        if (ogSite) {
+          lines.push('<meta property="og:site_name" content="' + escapeAttr(ogSite) + '">');
+        }
+        if (ogImage) {
+          lines.push('<meta property="og:image" content="' + escapeAttr(ogImage) + '">');
+        }
+      }
+
+      // Twitter Card
+      if (twSite || ogImage) {
+        lines.push('<meta name="twitter:card" content="' + escapeAttr(twCard) + '">');
+        if (title) {
+          lines.push('<meta name="twitter:title" content="' + escapeAttr(title) + '">');
+        }
+        if (desc) {
+          lines.push('<meta name="twitter:description" content="' + escapeAttr(desc) + '">');
+        }
+        if (ogImage) {
+          lines.push('<meta name="twitter:image" content="' + escapeAttr(ogImage) + '">');
+        }
+        if (twSite) {
+          lines.push('<meta name="twitter:site" content="' + escapeAttr(twSite) + '">');
+        }
+      }
+
+      // Theme color
+      if (document.getElementById('optTheme').checked) {
+        lines.push('<meta name="theme-color" content="' + escapeAttr(themeColor) + '">');
+      }
+
+      var code = lines.join('\n');
+      document.getElementById('codeOutput').textContent = code;
+    }
+
+    function escapeHtml(str) {
+      var div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function escapeAttr(str) {
+      return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function copyTags() {
+      var code = document.getElementById('codeOutput').textContent;
+      if (!code || code.indexOf('<!--') === 0) {
+        showToast('请先生成标签');
+        return;
+      }
+      navigator.clipboard.writeText(code).then(function() {
+        showToast('已复制到剪贴板');
+      }).catch(function() {
+        showToast('复制失败');
+      });
+    }
+
+    function copyHeadOnly() {
+      var code = document.getElementById('codeOutput').textContent;
+      if (!code || code.indexOf('<!--') === 0) {
+        showToast('请先生成标签');
+        return;
+      }
+      var headContent = '<head>\n  ' + code.split('\n').join('\n  ') + '\n<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js"></script>
+</head>';
+      navigator.clipboard.writeText(headContent).then(function() {
+        showToast('已复制 &lt;head&gt; 内容到剪贴板');
+      }).catch(function() {
+        showToast('复制失败');
+      });
+    }
+
+    function resetForm() {
+      document.getElementById('pageTitle').value = '';
+      document.getElementById('pageDesc').value = '';
+      document.getElementById('pageKeywords').value = '';
+      document.getElementById('pageUrl').value = '';
+      document.getElementById('pageAuthor').value = '';
+      document.getElementById('ogImage').value = '';
+      document.getElementById('ogSiteName').value = '';
+      document.getElementById('twitterSite').value = '';
+      document.getElementById('titleCount').textContent = '0';
+      document.getElementById('descCount').textContent = '0';
+      document.getElementById('codeOutput').textContent = '';
+      document.getElementById('titleCount').parentElement.className = 'char-count';
+      document.getElementById('descCount').parentElement.className = 'char-count';
+      updatePreview();
+      showToast('已重置');
+    }
+
+    // Initialize
+    generateTags();
+  </script>
+  <script src="../../js/share.js"></script>
+</body>
+</html>
