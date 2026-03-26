@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loan Calculator - Free Online Loan Payment Calculator | EITools</title>
+  <meta name="description" content="Free online loan calculator. Compare fixed-rate and declining-balance repayment methods. Calculate monthly payments, total interest, and full amortization schedule.">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <meta property="og:title" content="Loan Calculator - Fixed & Declining Balance Payment Comparison">
+  <meta property="og:description" content="Calculate monthly payments, compare interest rates, and view detailed repayment schedules.">
+  <meta property="og:url" content="https://eitools.cn/en/src/tools/loan-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/en/src/tools/loan-calculator.html">
+  <link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/loan-calculator.html">
+  <link rel="alternate" hreflang="x-default" href="https://eitools.cn/en/src/tools/loan-calculator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <meta property="og:type" content="website">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"Loan Calculator","description":"Free online loan payment calculator and amortization schedule","url":"https://eitools.cn/en/src/tools/loan-calculator.html","applicationCategory":"FinanceApplication","operatingSystem":"Any"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the difference between fixed-rate and declining-balance loans?","acceptedAnswer":{"@type":"Answer","text":"In a fixed-rate (equal payment) loan, your monthly payment stays the same throughout the term, with a higher proportion of interest in the early payments. In a declining-balance (equal principal) loan, the principal portion is fixed each month, so the total payment decreases over time. The total interest paid is lower with declining-balance, but early payments are higher."}},{"@type":"Question","name":"How is the monthly loan payment calculated?","acceptedAnswer":{"@type":"Answer","text":"The fixed-rate monthly payment formula is: M = P x r x (1+r)^n / [(1+r)^n - 1], where P is the loan principal, r is the monthly interest rate, and n is the total number of payments. For example, a 1,000,000 loan at 3.45% annual rate for 30 years has a monthly payment of approximately 4,462."}},{"@type":"Question","name":"Is it worth making early loan repayments?","acceptedAnswer":{"@type":"Answer","text":"Whether early repayment is worthwhile depends on the remaining loan term and repayment method. For fixed-rate loans, interest is front-loaded, so if you have already paid more than half the term, the interest savings from early repayment may be limited. For declining-balance loans, the earlier you repay, the more you save. Consider your investment return rate versus the loan interest rate before deciding."}},{"@type":"Question","name":"What types of loans does this calculator support?","acceptedAnswer":{"@type":"Answer","text":"This calculator works for mortgages, auto loans, personal loans, and any other loan that uses fixed-rate or declining-balance repayment. Simply enter the loan amount, annual interest rate, and loan term to calculate."}}]}
+  </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+<script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; Home</a>
+      <a href="../../src/tools/loan-calculator.html" class="back-link" style="margin-left:12px;">中文</a>
+      <h1>Loan Calculator</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">Suitable for mortgages, auto loans, and personal loans. Compare two repayment methods side by side.</p>
+    <div style="max-width:900px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;">
+        <div>
+          <label style="font-size:0.85rem;color:#888;">Loan Amount (10k)</label>
+          <input type="number" id="amount" value="100" step="1" oninput="calc()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:1rem;margin-top:4px;">
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">Annual Interest Rate (%)</label>
+          <input type="number" id="rate" value="3.45" step="0.01" oninput="calc()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:1rem;margin-top:4px;">
+        </div>
+        <div>
+          <label style="font-size:0.85rem;color:#888;">Loan Term (Years)</label>
+          <input type="number" id="years" value="30" min="1" max="50" oninput="calc()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:1rem;margin-top:4px;">
+        </div>
+      </div>
+      <div id="result" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;"></div>
+      <details style="margin-bottom:20px;">
+        <summary style="cursor:pointer;color:#4361ee;font-weight:600;padding:12px;background:#f0f2f5;border-radius:8px;">View Repayment Schedule</summary>
+        <div id="detail" style="margin-top:12px;max-height:400px;overflow-y:auto;"></div>
+      </details>
+      <div style="display:flex;gap:8px;margin-bottom:20px;">
+        <label style="font-size:0.85rem;">Compare:</label>
+        <select id="compareMode" onchange="calc()" style="padding:6px 12px;border:1px solid #ddd;border-radius:6px;">
+          <option value="both">Fixed vs Declining Balance</option>
+          <option value="debx">Fixed Rate Only</option>
+          <option value="debj">Declining Balance Only</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <script>
+    function calc() {
+      const P = parseFloat(document.getElementById('amount').value) * 10000;
+      const annualRate = parseFloat(document.getElementById('rate').value) / 100;
+      const n = parseInt(document.getElementById('years').value) * 12;
+      const mode = document.getElementById('compareMode').value;
+      if (!P || !annualRate || !n) return;
+      const r = annualRate / 12;
+      let html = '';
+      const schedules = [];
+      if (mode === 'both' || mode === 'debx') {
+        const M = P * r * Math.pow(1+r, n) / (Math.pow(1+r, n) - 1);
+        const totalPay = M * n;
+        const totalInterest = totalPay - P;
+        schedules.push({name:'Fixed Rate', schedule:generateDEBX(P,r,n,M), totalPay, totalInterest, firstM: M, lastM: M});
+      }
+      if (mode === 'both' || mode === 'debj') {
+        const principal = P / n;
+        let totalPay = 0, firstM = 0, lastM = 0;
+        const schedule = [];
+        let remaining = P;
+        for (let i = 1; i <= n; i++) {
+          const interest = remaining * r;
+          const payment = principal + interest;
+          totalPay += payment;
+          remaining -= principal;
+          if (i === 1) firstM = payment;
+          if (i === n) lastM = payment;
+          schedule.push({month:i, payment, principal, interest, remaining: Math.max(0, remaining)});
+        }
+        schedules.push({name:'Declining Balance', schedule, totalPay, totalInterest: totalPay - P, firstM, lastM});
+      }
+      if (schedules.length === 2) {
+        const s1 = schedules[0], s2 = schedules[1];
+        const diff = s1.totalInterest - s2.totalInterest;
+        html += `
+          <div style="padding:20px;background:#e8f4fd;border-radius:12px;">
+            <h3 style="margin-bottom:12px;color:#4361ee;">${s1.name}</h3>
+            <div style="font-size:2rem;font-weight:700;color:#4361ee;">${s1.firstM.toFixed(2)}</div>
+            <div style="color:#888;font-size:0.85rem;">Monthly Payment (fixed)</div>
+            <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:0.85rem;">
+              <div>Total Repayment<br><strong>${(s1.totalPay/10000).toFixed(2)} (10k)</strong></div>
+              <div>Total Interest<br><strong>${(s1.totalInterest/10000).toFixed(2)} (10k)</strong></div>
+            </div>
+          </div>
+          <div style="padding:20px;background:#fff3cd;border-radius:12px;">
+            <h3 style="margin-bottom:12px;color:#e67700;">${s2.name}</h3>
+            <div style="font-size:2rem;font-weight:700;color:#e67700;">${s2.firstM.toFixed(2)}</div>
+            <div style="color:#888;font-size:0.85rem;">First Month &rarr; Last Month ${s2.lastM.toFixed(2)}</div>
+            <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:0.85rem;">
+              <div>Total Repayment<br><strong>${(s2.totalPay/10000).toFixed(2)} (10k)</strong></div>
+              <div>Total Interest<br><strong>${(s2.totalInterest/10000).toFixed(2)} (10k)</strong></div>
+            </div>
+            <div style="margin-top:12px;padding:8px;background:white;border-radius:8px;text-align:center;font-size:0.85rem;">
+              ${Math.abs(diff/10000).toFixed(2)} (10k) less interest than ${s1.name}
+            </div>
+          </div>`;
+      } else {
+        const s = schedules[0];
+        const color = s.name === 'Fixed Rate' ? '#4361ee' : '#e67700';
+        html += `<div style="padding:20px;background:#f0f2f5;border-radius:12px;grid-column:span 2;">
+          <h3 style="margin-bottom:12px;color:${color};">${s.name}</h3>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;text-align:center;">
+            <div><div style="font-size:1.5rem;font-weight:700;color:${color};">${s.firstM.toFixed(0)}</div><div style="font-size:0.85rem;color:#888;">Monthly</div></div>
+            <div><div style="font-size:1.5rem;font-weight:700;">${(s.totalPay/10000).toFixed(2)} (10k)</div><div style="font-size:0.85rem;color:#888;">Total Repayment</div></div>
+            <div><div style="font-size:1.5rem;font-weight:700;color:#c92a2a;">${(s.totalInterest/10000).toFixed(2)} (10k)</div><div style="font-size:0.85rem;color:#888;">Total Interest</div></div>
+            <div><div style="font-size:1.5rem;font-weight:700;">${(s.totalInterest/P*100).toFixed(1)}%</div><div style="font-size:0.85rem;color:#888;">Interest Ratio</div></div>
+          </div>
+        </div>`;
+      }
+      document.getElementById('result').innerHTML = html;
+      let detailHtml = '<table style="width:100%;border-collapse:collapse;font-size:0.8rem;"><tr style="background:#4361ee;color:white;"><th style="padding:8px;border:1px solid #eee;">Period</th><th style="padding:8px;border:1px solid #eee;">Payment</th><th style="padding:8px;border:1px solid #eee;">Principal</th><th style="padding:8px;border:1px solid #eee;">Interest</th><th style="padding:8px;border:1px solid #eee;">Remaining</th></tr>';
+      schedules.forEach(s => {
+        s.schedule.forEach(row => {
+          detailHtml += `<tr><td style="padding:6px 8px;border:1px solid #eee;">${row.month}</td><td style="padding:6px 8px;border:1px solid #eee;">${row.payment.toFixed(2)}</td><td style="padding:6px 8px;border:1px solid #eee;">${row.principal.toFixed(2)}</td><td style="padding:6px 8px;border:1px solid #eee;color:#c92a2a;">${row.interest.toFixed(2)}</td><td style="padding:6px 8px;border:1px solid #eee;">${row.remaining.toFixed(2)}</td></tr>`;
+        });
+      });
+      detailHtml += '</table>';
+      document.getElementById('detail').innerHTML = detailHtml;
+    }
+    function generateDEBX(P, r, n, M) {
+      const schedule = [];
+      let remaining = P;
+      for (let i = 1; i <= n; i++) {
+        const interest = remaining * r;
+        const principal = M - interest;
+        remaining -= principal;
+        schedule.push({month:i, payment:M, principal, interest, remaining: Math.max(0, remaining)});
+      }
+      return schedule;
+    }
+    calc();
+  </script>
+  <div class="related-tools" style="margin-top:30px;padding:20px;background:#f8f9fa;border-radius:8px;">
+  <h3>Related Tools</h3>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;">
+    <a href="mortgage-calculator.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">Mortgage Calculator</a>
+    <a href="compound-interest-calculator.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">Compound Interest Calculator</a>
+    <a href="percentage-calculator.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">Percentage Calculator</a>
+  </div>
+</div>
+<footer class="footer"><div class="container"><p>&copy; 2026 EITools - All tools run locally in your browser</p></div></footer>
+<div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

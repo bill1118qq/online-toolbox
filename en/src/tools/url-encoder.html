@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>URL Encoder/Decoder - Free Online URL Encoding Tool | EITools</title>
+  <meta name="description" content="Free online URL encoder/decoder. Encode and decode URLs with support for Unicode characters. Includes encodeURI and encodeURIComponent options.">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="stylesheet" href="../../css/style.css">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="URL Encoder/Decoder - Free Online URL Encoding Tool">
+  <meta property="og:description" content="Free online URL encoder/decoder with Unicode support and percent-encoding conversion.">
+  <meta property="og:url" content="https://eitools.cn/en/src/tools/url-encoder.html">
+  <link rel="canonical" href="https://eitools.cn/en/src/tools/url-encoder.html">
+  <link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/url-encoder.html">
+  <link rel="alternate" hreflang="x-default" href="https://eitools.cn/en/src/tools/url-encoder.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "URL Encoder/Decoder",
+    "url": "https://eitools.cn/en/src/tools/url-encoder.html",
+    "description": "Free online URL encoding and decoding tool with Unicode support",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "All"
+  }
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is URL encoding?","acceptedAnswer":{"@type":"Answer","text":"URL encoding (also called percent-encoding) converts unsafe characters in a URL into a % followed by two hexadecimal digits. For example, a space becomes %20 and the Chinese characters for 'hello' become %E4%BD%A0%E5%A5%BD. This ensures URLs only contain ASCII-safe characters."}},{"@type":"Question","name":"What is the difference between encodeURI and encodeURIComponent?","acceptedAnswer":{"@type":"Answer","text":"encodeURI encodes a full URL and does not encode reserved characters such as ://, ?, &, =. It is suitable for encoding an entire URL address. encodeURIComponent encodes all non-alphanumeric characters including reserved characters, making it suitable for encoding query parameter values."}},{"@type":"Question","name":"Why do Chinese characters need to be URL-encoded?","acceptedAnswer":{"@type":"Answer","text":"The URL standard only allows the ASCII character set (letters, numbers, and certain symbols). Chinese characters are Unicode and outside the ASCII range. Placing them directly in a URL may cause parsing errors or display issues. URL encoding converts them to ASCII-compatible %XX format."}},{"@type":"Question","name":"Is URL encoding safe for sensitive data?","acceptedAnswer":{"@type":"Answer","text":"This URL encoding tool runs entirely in your browser. No input data is sent to any server. All encoding and decoding operations are performed locally, ensuring no data leakage risk."}}]}
+  </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+<script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; Home</a>
+      <a href="../../src/tools/url-encoder.html" class="back-link" style="margin-left:12px;">中文</a>
+      <h1>URL Encoder/Decoder</h1>
+    </div>
+
+    <textarea id="input" placeholder="Enter text to encode or decode..."></textarea>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="encode()">Encode URI</button>
+      <button class="btn btn-primary" onclick="decode()">Decode URI</button>
+      <button class="btn btn-secondary" onclick="encodeComponent()">encodeURIComponent</button>
+      <button class="btn btn-secondary" onclick="decodeComponent()">decodeURIComponent</button>
+      <button class="btn btn-secondary" onclick="copyResult()">Copy Result</button>
+    </div>
+
+    <div id="result" class="result-box" style="min-height: 120px;"></div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    function encode() {
+      const text = document.getElementById('input').value;
+      if (!text) { showToast('Please enter some text'); return; }
+      document.getElementById('result').textContent = encodeURI(text);
+    }
+
+    function decode() {
+      const text = document.getElementById('input').value;
+      if (!text) { showToast('Please enter some text'); return; }
+      try {
+        document.getElementById('result').textContent = decodeURI(text);
+      } catch (e) {
+        document.getElementById('result').textContent = 'Decode failed: ' + e.message;
+      }
+    }
+
+    function encodeComponent() {
+      const text = document.getElementById('input').value;
+      if (!text) { showToast('Please enter some text'); return; }
+      document.getElementById('result').textContent = encodeURIComponent(text);
+    }
+
+    function decodeComponent() {
+      const text = document.getElementById('input').value;
+      if (!text) { showToast('Please enter some text'); return; }
+      try {
+        document.getElementById('result').textContent = decodeURIComponent(text);
+      } catch (e) {
+        document.getElementById('result').textContent = 'Decode failed: ' + e.message;
+      }
+    }
+
+    function copyResult() {
+      const text = document.getElementById('result').textContent;
+      if (!text) { showToast('Please generate a result first'); return; }
+      navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard'));
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+  </script>
+<div style="margin-top:32px;padding:20px;background:#f0f2f5;border-radius:12px;">
+  <h3 style="font-size:0.95rem;margin:0 0 12px;color:#333;">Related Tools</h3>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;">
+    <a href="base64.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">Base64 Encode/Decode</a>
+    <a href="hash-generator.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">Hash Generator</a>
+  </div>
+</div>
+<footer class="footer"><div class="container"><p>&copy; 2026 EITools - All tools run locally in your browser</p></div></footer>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+</body>
+</html>

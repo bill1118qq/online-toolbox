@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Code Generator - Free Online QR Code Maker | EITools</title>
+  <meta name="description" content="Free online QR code generator. Enter any text or URL to generate a QR code instantly. Download as PNG. Works entirely in your browser.">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="stylesheet" href="../../css/style.css">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="QR Code Generator - Free Online QR Code Maker">
+  <meta property="og:description" content="Free online QR code generator. Enter text or URL to create a QR code, supports download.">
+  <meta property="og:url" content="https://eitools.cn/en/src/tools/qrcode.html">
+  <link rel="canonical" href="https://eitools.cn/en/src/tools/qrcode.html">
+  <link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/qrcode.html">
+  <link rel="alternate" hreflang="x-default" href="https://eitools.cn/en/src/tools/qrcode.html">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type": "Question", "name": "How much data can a QR code hold?", "acceptedAnswer": {"@type": "Answer", "text": "A standard QR code can store up to approximately 4,296 alphanumeric characters or 7,089 numeric digits. The more data you store, the denser the QR code becomes, which can make it harder to scan."}},
+      {"@type": "Question", "name": "Is this QR code generator safe?", "acceptedAnswer": {"@type": "Answer", "text": "Completely safe. This tool generates QR codes locally in your browser. Your content is never sent to any server."}},
+      {"@type": "Question", "name": "Do QR codes expire?", "acceptedAnswer": {"@type": "Answer", "text": "QR codes themselves do not expire. However, if the URL or content the QR code points to changes or becomes unavailable, scanning it may no longer lead to the correct destination."}}
+    ]
+  }
+  </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+<script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; Home</a>
+      <a href="../../src/tools/qrcode.html" class="back-link" style="margin-left:12px;">中文</a>
+      <h1>QR Code Generator</h1>
+    </div>
+
+    <textarea id="qrInput" placeholder="Enter text or URL, e.g., https://example.com" style="min-height: 80px;"></textarea>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="generateQR()">Generate QR Code</button>
+      <button class="btn btn-secondary" onclick="downloadQR()">Download</button>
+      <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+    </div>
+
+    <div style="text-align: center; margin-top: 24px;">
+      <canvas id="qrCanvas" style="display: none; border: 1px solid #e0e0e0; border-radius: 8px;"></canvas>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const qrInput = document.getElementById('qrInput');
+    const qrCanvas = document.getElementById('qrCanvas');
+
+    function generateQR() {
+      const text = qrInput.value.trim();
+      if (!text) {
+        showToast('Please enter some content');
+        return;
+      }
+
+      try {
+        const qr = qrcode(0, 'M');
+        qr.addData(text);
+        qr.make();
+
+        const moduleCount = qr.getModuleCount();
+        const cellSize = Math.max(4, Math.floor(300 / moduleCount));
+        const size = moduleCount * cellSize;
+
+        qrCanvas.width = size;
+        qrCanvas.height = size;
+        qrCanvas.style.display = 'inline-block';
+
+        const ctx = qrCanvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, size, size);
+
+        ctx.fillStyle = '#1a1a2e';
+        for (let row = 0; row < moduleCount; row++) {
+          for (let col = 0; col < moduleCount; col++) {
+            if (qr.isDark(row, col)) {
+              ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
+            }
+          }
+        }
+
+        showToast('QR code generated successfully');
+      } catch (e) {
+        showToast('Generation failed: ' + e.message);
+      }
+    }
+
+    function downloadQR() {
+      if (qrCanvas.style.display === 'none') {
+        showToast('Please generate a QR code first');
+        return;
+      }
+      const link = document.createElement('a');
+      link.download = 'qrcode.png';
+      link.href = qrCanvas.toDataURL('image/png');
+      link.click();
+      showToast('Downloaded successfully');
+    }
+
+    function clearAll() {
+      qrInput.value = '';
+      qrCanvas.style.display = 'none';
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+  </script>
+<div class="related-tools" style="margin-top:30px;padding:20px;background:#f8f9fa;border-radius:8px;">
+  <h3>Related Tools</h3>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;">
+    <a href="base64.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">Base64 Encode/Decode</a>
+    <a href="url-encoder.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">URL Encoder/Decoder</a>
+  </div>
+</div>
+<footer class="footer"><div class="container"><p>&copy; 2026 EITools - All tools run locally in your browser</p></div></footer>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+</body>
+</html>

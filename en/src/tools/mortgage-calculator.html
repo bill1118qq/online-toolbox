@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mortgage Calculator - Free Online Home Loan Calculator | EITools</title>
+  <meta name="description" content="Free online mortgage calculator. Compare fixed-rate and declining-balance repayment methods. Instantly calculate monthly payments, total interest, and repayment totals.">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <meta property="og:title" content="Mortgage Calculator - Fixed Rate & Declining Balance Payment Calculator">
+  <meta property="og:description" content="Enter loan amount, interest rate, and term to calculate monthly payments and total interest.">
+  <meta property="og:url" content="https://eitools.cn/en/src/tools/mortgage-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/en/src/tools/mortgage-calculator.html">
+  <link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/mortgage-calculator.html">
+  <link rel="alternate" hreflang="x-default" href="https://eitools.cn/en/src/tools/mortgage-calculator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <meta property="og:type" content="website">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"Mortgage Calculator","description":"Free online mortgage payment, interest and total repayment calculator","url":"https://eitools.cn/en/src/tools/mortgage-calculator.html","applicationCategory":"FinanceApplication","operatingSystem":"Any"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Which is better: fixed-rate or declining-balance mortgage?","acceptedAnswer":{"@type":"Answer","text":"A fixed-rate mortgage has the same monthly payment throughout the term, making it easier to budget. A declining-balance mortgage starts with higher payments that decrease over time, and the total interest paid is lower. The best choice depends on your financial situation and preferences."}},{"@type":"Question","name":"What is the difference between commercial and government fund loan rates?","acceptedAnswer":{"@type":"Answer","text":"Government fund (housing provident fund) loan rates are typically lower than commercial loan rates. For example, a first-home government fund loan rate over 5 years is around 3.1%, while a commercial first-home rate is around 3.45% and second-home around 3.95%. The larger the loan and longer the term, the more interest you save with the lower rate."}},{"@type":"Question","name":"What percentage of income should go toward mortgage payments?","acceptedAnswer":{"@type":"Answer","text":"It is generally recommended that mortgage payments should not exceed 30-50% of your monthly household income. A higher percentage can affect your quality of life and ability to save. For first-time buyers, keeping it around one-third of income is ideal, while maintaining at least 6 months of payments as an emergency fund."}},{"@type":"Question","name":"How long should a mortgage term be?","acceptedAnswer":{"@type":"Answer","text":"A longer term means lower monthly payments but more total interest, while a shorter term means less interest but higher monthly payments. Common choices are 20-30 years. If you can afford higher payments and expect rates to rise, a shorter term may be more cost-effective."}}]}
+  </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+<script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; Home</a>
+      <a href="../../src/tools/mortgage-calculator.html" class="back-link" style="margin-left:12px;">中文</a>
+      <h1>Mortgage Calculator</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">Calculate monthly payments, interest, and total repayment for fixed-rate or declining-balance mortgages.</p>
+    <div style="max-width:500px;">
+      <div style="margin-bottom:16px;">
+        <label style="display:block;margin-bottom:6px;font-weight:600;">Loan Amount (10k)</label>
+        <input type="number" id="principal" placeholder="e.g., 100" min="1" max="100000" step="1" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:1rem;">
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="display:block;margin-bottom:6px;font-weight:600;">Annual Interest Rate (%)</label>
+        <input type="number" id="rate" placeholder="e.g., 3.45" min="0.01" max="30" step="0.01" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:1rem;">
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+          <button class="btn btn-secondary" onclick="document.getElementById('rate').value='3.10'" style="font-size:0.85rem;padding:6px 12px;">Fund 3.1%</button>
+          <button class="btn btn-secondary" onclick="document.getElementById('rate').value='3.45'" style="font-size:0.85rem;padding:6px 12px;">Commercial 1st 3.45%</button>
+          <button class="btn btn-secondary" onclick="document.getElementById('rate').value='3.95'" style="font-size:0.85rem;padding:6px 12px;">Commercial 2nd 3.95%</button>
+        </div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="display:block;margin-bottom:6px;font-weight:600;">Loan Term</label>
+        <select id="years" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:1rem;">
+          <option value="5">5 years (60 periods)</option>
+          <option value="10">10 years (120 periods)</option>
+          <option value="15">15 years (180 periods)</option>
+          <option value="20">20 years (240 periods)</option>
+          <option value="25" selected>25 years (300 periods)</option>
+          <option value="30">30 years (360 periods)</option>
+        </select>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="display:block;margin-bottom:6px;font-weight:600;">Repayment Method</label>
+        <div style="display:flex;gap:12px;">
+          <label style="cursor:pointer;"><input type="radio" name="type" value="equal" checked> Fixed Rate</label>
+          <label style="cursor:pointer;"><input type="radio" name="type" value="principal"> Declining Balance</label>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="calc()" style="width:100%;padding:12px;font-size:1.05rem;">Calculate</button>
+      <div id="result" style="margin-top:24px;"></div>
+    </div>
+  </div>
+  <script>
+    function calc() {
+      const P = parseFloat(document.getElementById('principal').value) * 10000;
+      const annualRate = parseFloat(document.getElementById('rate').value);
+      const n = parseInt(document.getElementById('years').value) * 12;
+      const type = document.querySelector('input[name="type"]:checked').value;
+      if (!P || !annualRate || P < 10000 || annualRate <= 0 || annualRate > 30) {
+        document.getElementById('result').innerHTML = '<p style="color:#e03131;">Please enter a valid loan amount and interest rate</p>';
+        return;
+      }
+      const r = annualRate / 100 / 12;
+      let html = '';
+      if (type === 'equal') {
+        const M = P * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1);
+        const totalPay = M * n;
+        const totalInterest = totalPay - P;
+        html = `<div style="padding:20px;background:#f0f2f5;border-radius:12px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div style="text-align:center;"><div style="font-size:0.85rem;color:#888;">Monthly Payment</div><div style="font-size:1.5rem;font-weight:800;color:#4361ee;">${M.toFixed(2)}</div></div>
+            <div style="text-align:center;"><div style="font-size:0.85rem;color:#888;">Total Repayment</div><div style="font-size:1.5rem;font-weight:800;">${(totalPay / 10000).toFixed(2)} (10k)</div></div>
+            <div style="text-align:center;"><div style="font-size:0.85rem;color:#888;">Total Interest</div><div style="font-size:1.5rem;font-weight:800;color:#e67700;">${(totalInterest / 10000).toFixed(2)} (10k)</div></div>
+            <div style="text-align:center;"><div style="font-size:0.85rem;color:#888;">Interest Ratio</div><div style="font-size:1.5rem;font-weight:800;">${(totalInterest / totalPay * 100).toFixed(1)}%</div></div>
+          </div>
+        </div>`;
+      } else {
+        const monthPrincipal = P / n;
+        let totalInterest = 0;
+        let firstM, lastM;
+        for (let i = 1; i <= n; i++) {
+          const interest = (P - monthPrincipal * (i - 1)) * r;
+          totalInterest += interest;
+          if (i === 1) firstM = monthPrincipal + interest;
+          if (i === n) lastM = monthPrincipal + interest;
+        }
+        const totalPay = P + totalInterest;
+        html = `<div style="padding:20px;background:#f0f2f5;border-radius:12px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div style="text-align:center;"><div style="font-size:0.85rem;color:#888;">First Month</div><div style="font-size:1.5rem;font-weight:800;color:#4361ee;">${firstM.toFixed(2)}</div></div>
+            <div style="text-align:center;"><div style="font-size:0.85rem;color:#888;">Last Month</div><div style="font-size:1.5rem;font-weight:800;">${lastM.toFixed(2)}</div></div>
+            <div style="text-align:center;"><div style="font-size:0.85rem;color:#888;">Monthly Decrease</div><div style="font-size:1.5rem;font-weight:800;">${(monthPrincipal * r).toFixed(2)}</div></div>
+            <div style="text-align:center;"><div style="font-size:0.85rem;color:#888;">Total Interest</div><div style="font-size:1.5rem;font-weight:800;color:#e67700;">${(totalInterest / 10000).toFixed(2)} (10k)</div></div>
+          </div>
+          <div style="text-align:center;margin-top:16px;"><div style="font-size:0.85rem;color:#888;">Total Repayment</div><div style="font-size:1.3rem;font-weight:700;">${(totalPay / 10000).toFixed(2)} (10k)</div></div>
+        </div>`;
+      }
+      document.getElementById('result').innerHTML = html;
+    }
+  </script>
+<div style="margin-top:32px;padding:20px;background:#f0f2f5;border-radius:12px;">
+  <h3 style="font-size:0.95rem;margin:0 0 12px;color:#333;">Related Tools</h3>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;">
+    <a href="loan-calculator.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">Loan Calculator</a>
+    <a href="compound-interest-calculator.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">Compound Interest Calculator</a>
+  </div>
+</div>
+<footer class="footer"><div class="container"><p>&copy; 2026 EITools - All tools run locally in your browser</p></div></footer>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+</body>
+</html>

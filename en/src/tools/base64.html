@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Base64 Encode/Decode - Free Online Base64 Converter | EITools</title>
+  <meta name="description" content="Free online Base64 encoder/decoder. Encode text to Base64, decode Base64 to text, convert images to Base64, and vice versa. Supports drag-and-drop file upload.">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="stylesheet" href="../../css/style.css">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Base64 Encode/Decode - Free Online Base64 Converter">
+  <meta property="og:description" content="Text/image Base64 encoding and decoding with file upload support.">
+  <meta property="og:url" content="https://eitools.cn/en/src/tools/base64.html">
+  <link rel="canonical" href="https://eitools.cn/en/src/tools/base64.html">
+  <link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/base64.html">
+  <link rel="alternate" hreflang="x-default" href="https://eitools.cn/en/src/tools/base64.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type": "Question", "name": "What is Base64 encoding?", "acceptedAnswer": {"@type": "Answer", "text": "Base64 is an encoding method that converts binary data into 64 printable ASCII characters. It is commonly used to transmit binary data over text-based protocols, such as email attachments and inline images in HTML/CSS."}},
+      {"@type": "Question", "name": "Does Base64 encoding increase data size?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Base64-encoded data is approximately 33% larger than the original. This is because every 3 bytes of input are encoded as 4 bytes of Base64 characters."}},
+      {"@type": "Question", "name": "Can Base64 encode Unicode text?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. This tool first converts text to UTF-8 encoding using encodeURIComponent, then applies Base64 encoding. This ensures that all Unicode characters, including Chinese, are correctly handled."}}
+    ]
+  }
+  </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+<script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; Home</a>
+      <a href="../../src/tools/base64.html" class="back-link" style="margin-left:12px;">中文</a>
+      <h1>Base64 Encode/Decode</h1>
+    </div>
+
+    <h3>Text Base64 Encode/Decode</h3>
+    <div class="split-view">
+      <div class="split-panel">
+        <h3>Input</h3>
+        <textarea id="inputArea" rows="8" placeholder="Enter text or a Base64-encoded string"></textarea>
+        <div style="margin-top:8px;font-size:0.85rem;color:#666;">Size: <span id="inputSize">0</span></div>
+      </div>
+      <div class="split-panel">
+        <h3>Output</h3>
+        <textarea id="resultArea" rows="8" readonly></textarea>
+        <div style="margin-top:8px;font-size:0.85rem;color:#666;">Size: <span id="outputSize">0</span></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin:12px 0;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="encodeBase64()">Text &rarr; Base64</button>
+      <button class="btn btn-primary" onclick="decodeBase64()">Base64 &rarr; Text</button>
+      <button class="btn btn-secondary" onclick="copyResult()">Copy Result</button>
+      <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+    </div>
+
+    <h3>Image to Base64 Converter</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:12px 0;">
+      <div>
+        <div id="dropZone" style="border:2px dashed #ddd;border-radius:12px;padding:40px;text-align:center;cursor:pointer;background:#fafafa;" onclick="document.getElementById('fileInput').click()" ondragover="event.preventDefault();this.style.borderColor='#4361ee'" ondragleave="this.style.borderColor='#ddd'" ondrop="handleDrop(event)">
+          <div style="font-size:2rem;">&#128193;</div>
+          <p>Click or drag an image here</p>
+          <p style="font-size:0.8rem;color:#999;">Supports PNG, JPG, GIF, SVG, WebP</p>
+        </div>
+        <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleFile(event)">
+      </div>
+      <div>
+        <h3>Preview</h3>
+        <div id="preview" style="border:1px solid #eee;border-radius:8px;min-height:200px;display:flex;align-items:center;justify-content:center;background:#fafafa;"></div>
+      </div>
+    </div>
+    <textarea id="base64Output" rows="4" readonly placeholder="Base64 encoding of the image will appear here" style="width:100%;padding:10px;border:2px solid #ddd;border-radius:8px;font-family:monospace;font-size:0.8rem;box-sizing:border-box;"></textarea>
+    <div style="margin-top:8px;display:flex;gap:8px;">
+      <button class="btn btn-secondary" onclick="copyBase64()">Copy Base64</button>
+      <button class="btn btn-secondary" onclick="copyDataUrl()">Copy Full Data URL</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    var inputEl = document.getElementById('inputArea');
+    var outputEl = document.getElementById('resultArea');
+
+    inputEl.addEventListener('input', function() {
+      document.getElementById('inputSize').textContent = new Blob([inputEl.value]).size + ' bytes';
+    });
+
+    function encodeBase64() {
+      try {
+        var encoded = btoa(unescape(encodeURIComponent(inputEl.value)));
+        outputEl.value = encoded;
+        document.getElementById('outputSize').textContent = new Blob([encoded]).size + ' bytes';
+        showToast('Encoded successfully');
+      } catch (e) { showToast('Encoding failed: ' + e.message); }
+    }
+
+    function decodeBase64() {
+      try {
+        var decoded = decodeURIComponent(escape(atob(inputEl.value.trim())));
+        outputEl.value = decoded;
+        document.getElementById('outputSize').textContent = new Blob([decoded]).size + ' bytes';
+        showToast('Decoded successfully');
+      } catch (e) { showToast('Decoding failed. Please enter a valid Base64 string'); }
+    }
+
+    function copyResult() {
+      if (!outputEl.value) { showToast('No result to copy'); return; }
+      navigator.clipboard.writeText(outputEl.value).then(function() { showToast('Copied'); });
+    }
+
+    var currentDataUrl = '';
+    function handleFile(e) {
+      var file = e.target.files[0];
+      if (file) processImage(file);
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      var file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) processImage(file);
+      document.getElementById('dropZone').style.borderColor = '#ddd';
+    }
+
+    function processImage(file) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        currentDataUrl = e.target.result;
+        var base64 = currentDataUrl.split(',')[1];
+        document.getElementById('preview').innerHTML = '<img src="' + currentDataUrl + '" style="max-width:100%;max-height:200px;border-radius:8px;">';
+        document.getElementById('base64Output').value = base64;
+        showToast('Image converted! File size: ' + (file.size / 1024).toFixed(1) + ' KB');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function copyBase64() {
+      var val = document.getElementById('base64Output').value;
+      if (!val) { showToast('No Base64 data'); return; }
+      navigator.clipboard.writeText(val).then(function() { showToast('Base64 copied'); });
+    }
+
+    function copyDataUrl() {
+      if (!currentDataUrl) { showToast('No Data URL'); return; }
+      navigator.clipboard.writeText(currentDataUrl).then(function() { showToast('Full Data URL copied'); });
+    }
+
+    function clearAll() {
+      inputEl.value = '';
+      outputEl.value = '';
+      document.getElementById('inputSize').textContent = '0';
+      document.getElementById('outputSize').textContent = '0';
+      document.getElementById('base64Output').value = '';
+      document.getElementById('preview').innerHTML = '';
+      currentDataUrl = '';
+    }
+
+    function showToast(msg) {
+      var toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(function() { toast.classList.remove('show'); }, 2000);
+    }
+  </script>
+<div class="related-tools" style="margin-top:30px;padding:20px;background:#f8f9fa;border-radius:8px;">
+  <h3>Related Tools</h3>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;">
+    <a href="url-encoder.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">URL Encoder/Decoder</a>
+    <a href="hash-generator.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">Hash Generator</a>
+  </div>
+</div>
+<footer class="footer"><div class="container"><p>&copy; 2026 EITools - All tools run locally in your browser</p></div></footer>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+</body>
+</html>

@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discount Calculator - Free Online Discount & Sale Price Calculator | EITools</title>
+  <meta name="description" content="Free online discount calculator. Enter the original price and discount to calculate the sale price and savings. Supports multi-item discounts, reverse calculation, and price comparison.">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <meta property="og:title" content="Discount Calculator - Free Online Discount & Sale Price Calculator">
+  <meta property="og:description" content="Calculate discount prices and savings. Supports multi-item discounts, reverse calculation, and multi-product comparison.">
+  <meta property="og:url" content="https://eitools.cn/en/src/tools/discount-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/en/src/tools/discount-calculator.html">
+  <link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/discount-calculator.html">
+  <link rel="alternate" hreflang="x-default" href="https://eitools.cn/en/src/tools/discount-calculator.html">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="../../css/style.css">
+  <style>
+    .dc-intro { color: #666; margin-bottom: 20px; }
+    .dc-section { margin-bottom: 32px; }
+    .dc-section h2 { font-size: 1.15rem; margin-bottom: 14px; color: #1a1a2e; }
+    .dc-tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 2px solid #e0e0e0; }
+    .dc-tab {
+      padding: 8px 18px; cursor: pointer; border: none; background: none;
+      font-size: 0.95rem; color: #666; font-weight: 500; border-bottom: 2px solid transparent;
+      margin-bottom: -2px; transition: all 0.2s; font-family: inherit;
+    }
+    .dc-tab.active { color: #4361ee; border-bottom-color: #4361ee; }
+    .dc-tab:hover { color: #4361ee; }
+    .dc-panel { display: none; }
+    .dc-panel.active { display: block; }
+    .dc-form { max-width: 600px; }
+    .dc-form .form-group { margin-bottom: 14px; }
+    .dc-form label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.95rem; }
+    .dc-form input[type="number"], .dc-form select {
+      width: 100%; padding: 10px 14px; border: 2px solid #e0e0e0;
+      border-radius: 8px; font-size: 1rem; font-family: inherit; transition: border-color 0.2s;
+    }
+    .dc-form input[type="number"]:focus, .dc-form select:focus {
+      outline: none; border-color: #4361ee;
+    }
+    .dc-form .input-row { display: flex; gap: 12px; }
+    .dc-form .input-row .form-group { flex: 1; }
+    .dc-btn {
+      padding: 10px 28px; font-size: 1rem; cursor: pointer;
+      border: none; border-radius: 8px; font-family: inherit; transition: all 0.2s;
+    }
+    .dc-btn-primary { background: #4361ee; color: white; }
+    .dc-btn-primary:hover { background: #3a56d4; }
+    .dc-btn-secondary { background: #e8eaed; color: #333; }
+    .dc-btn-secondary:hover { background: #d0d3d9; }
+    .dc-btn-row { display: flex; gap: 10px; margin-top: 6px; flex-wrap: wrap; }
+    .dc-result { margin-top: 20px; }
+    .dc-result-card {
+      background: white; border-radius: 12px; padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .dc-result-card.error { border: 2px solid #e03131; }
+    .dc-result-card.success { border: 2px solid #2f9e44; }
+    .dc-price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .dc-price-item { text-align: center; padding: 12px; background: #f8f9fa; border-radius: 8px; }
+    .dc-price-item .label { font-size: 0.85rem; color: #888; margin-bottom: 4px; }
+    .dc-price-item .value { font-size: 1.5rem; font-weight: 700; }
+    .dc-price-item .value.original { color: #999; text-decoration: line-through; }
+    .dc-price-item .value.discount { color: #2f9e44; }
+    .dc-price-item .value.saved { color: #e03131; }
+    .dc-compare-table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.9rem; }
+    .dc-compare-table th, .dc-compare-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #eee; }
+    .dc-compare-table thead { background: #f0f2f5; }
+    .dc-compare-table th { font-weight: 600; color: #333; }
+    .dc-compare-table .best { color: #2f9e44; font-weight: 600; }
+    .dc-item-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
+    .dc-item-row input { padding: 8px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 0.9rem; font-family: inherit; }
+    .dc-item-row input:focus { outline: none; border-color: #4361ee; }
+    .dc-item-row .name-input { width: 140px; }
+    .dc-item-row .price-input { width: 100px; }
+    .dc-item-row .disc-input { width: 80px; }
+    .dc-remove-btn {
+      background: none; border: none; color: #e03131; font-size: 1.2rem;
+      cursor: pointer; padding: 4px 8px; border-radius: 4px; line-height: 1;
+    }
+    .dc-remove-btn:hover { background: #ffe3e3; }
+    .dc-formula {
+      margin-top: 28px; padding: 20px; background: #f0f2f5; border-radius: 12px;
+    }
+    .dc-formula h3 { font-size: 1rem; margin-bottom: 10px; }
+    .dc-formula p { font-size: 0.9rem; color: #555; margin-bottom: 8px; }
+    .dc-related { margin-top: 32px; padding: 20px; background: #f0f2f5; border-radius: 12px; }
+    .dc-related h3 { font-size: 0.95rem; margin: 0 0 12px; color: #333; }
+    .dc-related .related-links { display: flex; flex-wrap: wrap; gap: 8px; }
+    .dc-related .related-link {
+      padding: 6px 14px; background: white; border: 1px solid #ddd;
+      border-radius: 16px; color: #4361ee; text-decoration: none; font-size: 0.85rem;
+    }
+    .dc-related .related-link:hover { background: #eef1ff; }
+    @media (max-width: 600px) {
+      .dc-price-grid { grid-template-columns: 1fr; }
+      .dc-form .input-row { flex-direction: column; gap: 0; }
+      .dc-item-row { flex-direction: column; align-items: stretch; }
+      .dc-item-row input { width: 100% !important; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"Discount Calculator","description":"Calculate discount prices and savings online","url":"https://eitools.cn/en/src/tools/discount-calculator.html","applicationCategory":"FinanceApplication","operatingSystem":"Any"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I calculate a discount?","acceptedAnswer":{"@type":"Answer","text":"Sale price = Original price x Discount rate. For example, if the original price is 100 and the discount is 20% off, the sale price = 100 x 0.8 = 80, saving 20."}},{"@type":"Question","name":"What is the difference between 80% and 20% off?","acceptedAnswer":{"@type":"Answer","text":"80% means the price is 80% of the original, which is a 20% reduction. 20% off also means a 20% reduction. They are two different ways of expressing the same thing."}},{"@type":"Question","name":"How do I calculate multi-item discounts?","acceptedAnswer":{"@type":"Answer","text":"For multi-item discounts, calculate the total price. For example, 'buy 2 get 1 half off' means the total for 3 items is 2.5 times the original price, so each item averages 83.3% of the original price. Use the multi-item comparison feature to quickly compare different discount plans."}},{"@type":"Question","name":"How do I reverse-calculate a discount?","acceptedAnswer":{"@type":"Answer","text":"Given the sale price and original price, the discount rate = Sale price / Original price. Savings percentage = (Original price - Sale price) / Original price x 100%. For example, an original price of 200 and sale price of 150 means a 75% rate (25% off)."}}]}
+  </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+<script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; Home</a>
+      <a href="../../src/tools/discount-calculator.html" class="back-link" style="margin-left:12px;">中文</a>
+      <h1>Discount Calculator</h1>
+    </div>
+    <p class="dc-intro">Quickly calculate discount prices, savings amounts, and compare deals. Supports multi-item discounts, reverse calculation, and multi-product comparison.</p>
+
+    <div class="dc-tabs">
+      <button class="dc-tab active" onclick="switchTab('basic')">Basic Discount</button>
+      <button class="dc-tab" onclick="switchTab('multi')">Multi-Item</button>
+      <button class="dc-tab" onclick="switchTab('reverse')">Reverse Calculate</button>
+      <button class="dc-tab" onclick="switchTab('compare')">Compare</button>
+    </div>
+
+    <!-- Basic Discount -->
+    <div id="panel-basic" class="dc-panel active">
+      <div class="dc-form">
+        <div class="form-group">
+          <label for="basic-price">Original Price</label>
+          <input type="number" id="basic-price" placeholder="e.g., 299" min="0" step="0.01">
+        </div>
+        <div class="form-group">
+          <label for="basic-disc">Discount</label>
+          <select id="basic-disc-type" style="width:auto;margin-bottom:8px;">
+            <option value="zhe">Percentage off (e.g., 20 for 20% off)</option>
+            <option value="percent">% off (e.g., 20 for 20% off)</option>
+          </select>
+          <input type="number" id="basic-disc" placeholder="e.g., 20" min="0" max="100" step="0.1">
+        </div>
+        <button class="dc-btn dc-btn-primary" onclick="calcBasic()">Calculate</button>
+        <div id="basic-result" class="dc-result"></div>
+      </div>
+    </div>
+
+    <!-- Multi-Item -->
+    <div id="panel-multi" class="dc-panel">
+      <div class="dc-form">
+        <div class="form-group">
+          <label for="multi-price">Unit Price</label>
+          <input type="number" id="multi-price" placeholder="e.g., 199" min="0" step="0.01">
+        </div>
+        <div class="input-row">
+          <div class="form-group">
+            <label for="multi-count">Quantity</label>
+            <input type="number" id="multi-count" placeholder="e.g., 3" min="1" step="1">
+          </div>
+          <div class="form-group">
+            <label for="multi-buy">Buy at least</label>
+            <input type="number" id="multi-buy" placeholder="e.g., 2" min="1" step="1">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="multi-off">Discount when threshold met (% off)</label>
+          <input type="number" id="multi-off" placeholder="e.g., 50 (for 50% off)" min="0" max="100" step="0.1">
+        </div>
+        <button class="dc-btn dc-btn-primary" onclick="calcMulti()">Calculate</button>
+        <div id="multi-result" class="dc-result"></div>
+      </div>
+    </div>
+
+    <!-- Reverse Calculate -->
+    <div id="panel-reverse" class="dc-panel">
+      <div class="dc-form">
+        <div class="form-group">
+          <label for="rev-original">Original Price</label>
+          <input type="number" id="rev-original" placeholder="e.g., 500" min="0" step="0.01">
+        </div>
+        <div class="form-group">
+          <label for="rev-sale">Sale Price</label>
+          <input type="number" id="rev-sale" placeholder="e.g., 350" min="0" step="0.01">
+        </div>
+        <button class="dc-btn dc-btn-primary" onclick="calcReverse()">Calculate Discount</button>
+        <div id="reverse-result" class="dc-result"></div>
+      </div>
+    </div>
+
+    <!-- Compare -->
+    <div id="panel-compare" class="dc-panel">
+      <div class="dc-form">
+        <div id="compare-items"></div>
+        <div class="dc-btn-row">
+          <button class="dc-btn dc-btn-secondary" onclick="addCompareItem()">+ Add Product</button>
+          <button class="dc-btn dc-btn-primary" onclick="calcCompare()">Compare</button>
+        </div>
+        <div id="compare-result" class="dc-result"></div>
+      </div>
+    </div>
+
+    <div class="dc-formula">
+      <h3>Discount Formulas</h3>
+      <p><strong>Sale Price</strong> = Original Price x (Discount / 10)</p>
+      <p><strong>Savings</strong> = Original Price - Sale Price</p>
+      <p><strong>Discount Rate</strong> = (Savings / Original Price) x 100%</p>
+      <p>Example: Original 200, 20% off -> Sale Price = 200 x 0.8 = 160, Savings = 40</p>
+    </div>
+
+    <div class="dc-related">
+      <h3>Related Tools</h3>
+      <div class="related-links">
+        <a href="percentage-calculator.html" class="related-link">Percentage Calculator</a>
+        <a href="compound-interest-calculator.html" class="related-link">Compound Interest Calculator</a>
+        <a href="loan-calculator.html" class="related-link">Loan Calculator</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showToast(msg) {
+      var existing = document.querySelector('.toast');
+      if (existing) existing.remove();
+      var t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(function () { t.remove(); }, 2000);
+    }
+
+    function switchTab(name) {
+      var tabs = document.querySelectorAll('.dc-tab');
+      var panels = document.querySelectorAll('.dc-panel');
+      tabs.forEach(function (tab, i) {
+        var names = ['basic', 'multi', 'reverse', 'compare'];
+        if (names[i] === name) {
+          tab.classList.add('active');
+        } else {
+          tab.classList.remove('active');
+        }
+      });
+      panels.forEach(function (p) {
+        if (p.id === 'panel-' + name) {
+          p.classList.add('active');
+        } else {
+          p.classList.remove('active');
+        }
+      });
+    }
+
+    function parseDiscount(val, type) {
+      var d = parseFloat(val);
+      if (isNaN(d) || d < 0) return NaN;
+      if (type === 'zhe') return d / 10;
+      return (100 - d) / 100;
+    }
+
+    function formatMoney(v) {
+      return parseFloat(v.toFixed(2)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function copyResult(text) {
+      navigator.clipboard.writeText(text).then(function () {
+        showToast('Copied to clipboard');
+      });
+    }
+
+    function calcBasic() {
+      var price = parseFloat(document.getElementById('basic-price').value);
+      var discVal = parseFloat(document.getElementById('basic-disc').value);
+      var discType = document.getElementById('basic-disc-type').value;
+      var resultEl = document.getElementById('basic-result');
+
+      if (isNaN(price) || price < 0) {
+        resultEl.innerHTML = '<div class="dc-result-card error"><p style="color:#e03131;">Please enter a valid original price</p></div>';
+        return;
+      }
+      var rate = parseDiscount(discVal, discType);
+      if (isNaN(rate) || rate < 0 || rate > 1) {
+        resultEl.innerHTML = '<div class="dc-result-card error"><p style="color:#e03131;">Please enter a valid discount value</p></div>';
+        return;
+      }
+
+      var discounted = price * rate;
+      var saved = price - discounted;
+      var zheVal = (rate * 10).toFixed(1);
+      var savePercent = ((saved / price) * 100).toFixed(1);
+
+      var copyText = 'Original: ' + formatMoney(price) + ' | ' + zheVal + ' (off ' + savePercent + '%) | Sale: ' + formatMoney(discounted) + ' | Saved: ' + formatMoney(saved);
+
+      resultEl.innerHTML =
+        '<div class="dc-result-card success">' +
+          '<div class="dc-price-grid">' +
+            '<div class="dc-price-item"><div class="label">Original Price</div><div class="value original">' + formatMoney(price) + '</div></div>' +
+            '<div class="dc-price-item"><div class="label">Discount</div><div class="value" style="color:#4361ee;">' + savePercent + '% off</div></div>' +
+            '<div class="dc-price-item"><div class="label">Sale Price</div><div class="value discount">' + formatMoney(discounted) + '</div></div>' +
+            '<div class="dc-price-item"><div class="label">You Save</div><div class="value saved">' + formatMoney(saved) + '</div></div>' +
+          '</div>' +
+          '<div style="margin-top:12px;text-align:right;"><button class="dc-btn dc-btn-secondary" onclick="copyResult(\'' + copyText.replace(/'/g, "\\'") + '\')">Copy Result</button></div>' +
+        '</div>';
+    }
+
+    function calcMulti() {
+      var unitPrice = parseFloat(document.getElementById('multi-price').value);
+      var total = parseInt(document.getElementById('multi-count').value);
+      var buyThreshold = parseInt(document.getElementById('multi-buy').value);
+      var discRate = parseFloat(document.getElementById('multi-off').value);
+      var resultEl = document.getElementById('multi-result');
+
+      if (isNaN(unitPrice) || unitPrice < 0 || isNaN(total) || total < 1 || isNaN(buyThreshold) || buyThreshold < 1 || isNaN(discRate) || discRate <= 0 || discRate > 100) {
+        resultEl.innerHTML = '<div class="dc-result-card error"><p style="color:#e03131;">Please enter valid values</p></div>';
+        return;
+      }
+
+      var discMultiplier = discRate / 10;
+      var discountedCount = total >= buyThreshold ? total : 0;
+      var originalTotal = unitPrice * total;
+      var savedAmount = discountedCount * unitPrice * (1 - discMultiplier);
+      var finalTotal = originalTotal - savedAmount;
+      var avgPrice = total > 0 ? finalTotal / total : 0;
+
+      var copyText = 'Unit Price: ' + formatMoney(unitPrice) + ' x ' + total + ' | Buy ' + buyThreshold + '+ get ' + discRate + '% off | Total: ' + formatMoney(finalTotal);
+
+      resultEl.innerHTML =
+        '<div class="dc-result-card success">' +
+          '<div class="dc-price-grid">' +
+            '<div class="dc-price-item"><div class="label">Original Total</div><div class="value original">' + formatMoney(originalTotal) + '</div></div>' +
+            '<div class="dc-price-item"><div class="label">Final Total</div><div class="value discount">' + formatMoney(finalTotal) + '</div></div>' +
+            '<div class="dc-price-item"><div class="label">Saved</div><div class="value saved">' + formatMoney(savedAmount) + '</div></div>' +
+            '<div class="dc-price-item"><div class="label">Avg. Unit Price</div><div class="value" style="color:#4361ee;">' + formatMoney(avgPrice) + '</div></div>' +
+          '</div>' +
+          '<div style="margin-top:12px;text-align:right;"><button class="dc-btn dc-btn-secondary" onclick="copyResult(\'' + copyText.replace(/'/g, "\\'") + '\')">Copy Result</button></div>' +
+        '</div>';
+    }
+
+    function calcReverse() {
+      var original = parseFloat(document.getElementById('rev-original').value);
+      var sale = parseFloat(document.getElementById('rev-sale').value);
+      var resultEl = document.getElementById('reverse-result');
+
+      if (isNaN(original) || original <= 0 || isNaN(sale) || sale < 0) {
+        resultEl.innerHTML = '<div class="dc-result-card error"><p style="color:#e03131;">Please enter valid prices</p></div>';
+        return;
+      }
+      if (sale > original) {
+        resultEl.innerHTML = '<div class="dc-result-card error"><p style="color:#e03131;">Sale price cannot exceed original price</p></div>';
+        return;
+      }
+
+      var rate = sale / original;
+      var zheVal = (rate * 10).toFixed(1);
+      var savePercent = ((1 - rate) * 100).toFixed(1);
+      var saved = original - sale;
+
+      var copyText = 'Original: ' + formatMoney(original) + ' -> Sale: ' + formatMoney(sale) + ' | ' + savePercent + '% off (Saved: ' + formatMoney(saved) + ')';
+
+      resultEl.innerHTML =
+        '<div class="dc-result-card success">' +
+          '<div class="dc-price-grid">' +
+            '<div class="dc-price-item"><div class="label">Original</div><div class="value original">' + formatMoney(original) + '</div></div>' +
+            '<div class="dc-price-item"><div class="label">Sale Price</div><div class="value discount">' + formatMoney(sale) + '</div></div>' +
+            '<div class="dc-price-item"><div class="label">Discount</div><div class="value" style="color:#4361ee;">' + savePercent + '% off</div></div>' +
+            '<div class="dc-price-item"><div class="label">Savings</div><div class="value saved">' + savePercent + '% (' + formatMoney(saved) + ')</div></div>' +
+          '</div>' +
+          '<div style="margin-top:12px;text-align:right;"><button class="dc-btn dc-btn-secondary" onclick="copyResult(\'' + copyText.replace(/'/g, "\\'") + '\')">Copy Result</button></div>' +
+        '</div>';
+    }
+
+    var compareItemCount = 0;
+
+    function addCompareItem() {
+      compareItemCount++;
+      var container = document.getElementById('compare-items');
+      var row = document.createElement('div');
+      row.className = 'dc-item-row';
+      row.id = 'compare-item-' + compareItemCount;
+      row.innerHTML =
+        '<input type="text" class="name-input" placeholder="Product name" value="Product ' + compareItemCount + '">' +
+        '<input type="number" class="price-input" placeholder="Original" min="0" step="0.01">' +
+        '<input type="number" class="disc-input" placeholder="% off" min="0" max="100" step="0.1">' +
+        '<button class="dc-remove-btn" onclick="removeCompareItem(' + compareItemCount + ')">x</button>';
+      container.appendChild(row);
+    }
+
+    function removeCompareItem(id) {
+      var el = document.getElementById('compare-item-' + id);
+      if (el) el.remove();
+    }
+
+    function calcCompare() {
+      var rows = document.querySelectorAll('#compare-items .dc-item-row');
+      var resultEl = document.getElementById('compare-result');
+
+      if (rows.length < 2) {
+        resultEl.innerHTML = '<div class="dc-result-card error"><p style="color:#e03131;">Please add at least 2 products to compare</p></div>';
+        return;
+      }
+
+      var items = [];
+      var hasError = false;
+      rows.forEach(function (row) {
+        var inputs = row.querySelectorAll('input');
+        var name = inputs[0].value.trim() || 'Unnamed';
+        var price = parseFloat(inputs[1].value);
+        var disc = parseFloat(inputs[2].value);
+        if (isNaN(price) || price < 0 || isNaN(disc) || disc <= 0 || disc > 100) {
+          hasError = true;
+          return;
+        }
+        var rate = disc / 10;
+        items.push({
+          name: name,
+          original: price,
+          disc: disc,
+          final: price * rate,
+          saved: price * (1 - rate),
+          saveRate: ((1 - rate) * 100).toFixed(1)
+        });
+      });
+
+      if (hasError || items.length < 2) {
+        resultEl.innerHTML = '<div class="dc-result-card error"><p style="color:#e03131;">Please ensure all products have valid prices and discounts</p></div>';
+        return;
+      }
+
+      var bestIdx = 0;
+      items.forEach(function (item, i) {
+        if (item.final < items[bestIdx].final) bestIdx = i;
+      });
+
+      var html = '<div class="dc-result-card success"><table class="dc-compare-table"><thead><tr>' +
+        '<th>Product</th><th>Original</th><th>Discount</th><th>Sale Price</th><th>Savings</th><th>Discount %</th></tr></thead><tbody>';
+
+      items.forEach(function (item, i) {
+        var bestClass = i === bestIdx ? ' class="best"' : '';
+        html += '<tr' + bestClass + '>' +
+          '<td>' + item.name + (i === bestIdx ? ' (Best)' : '') + '</td>' +
+          '<td>' + formatMoney(item.original) + '</td>' +
+          '<td>' + item.disc + '% off</td>' +
+          '<td>' + formatMoney(item.final) + '</td>' +
+          '<td>' + formatMoney(item.saved) + '</td>' +
+          '<td>' + item.saveRate + '%</td></tr>';
+      });
+
+      html += '</tbody></table></div>';
+      resultEl.innerHTML = html;
+    }
+
+    // Init compare with 2 items
+    addCompareItem();
+    addCompareItem();
+
+    // Enter key support
+    document.getElementById('basic-price').addEventListener('keydown', function (e) { if (e.key === 'Enter') calcBasic(); });
+    document.getElementById('basic-disc').addEventListener('keydown', function (e) { if (e.key === 'Enter') calcBasic(); });
+    document.getElementById('rev-original').addEventListener('keydown', function (e) { if (e.key === 'Enter') calcReverse(); });
+    document.getElementById('rev-sale').addEventListener('keydown', function (e) { if (e.key === 'Enter') calcReverse(); });
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

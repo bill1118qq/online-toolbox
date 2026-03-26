@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Date Difference Calculator - Free Online Day Counter | EITools</title>
+  <meta name="description" content="Free online date difference calculator. Enter two dates to calculate the difference in days, weeks, months, and workdays. Supports date addition/subtraction and countdown timer.">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <meta property="og:title" content="Date Difference Calculator - Free Online Day Counter">
+  <meta property="og:description" content="Calculate the number of days, weeks, months, and workdays between two dates with countdown support.">
+  <meta property="og:url" content="https://eitools.cn/en/src/tools/date-diff-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/en/src/tools/date-diff-calculator.html">
+  <link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/date-diff-calculator.html">
+  <link rel="alternate" hreflang="x-default" href="https://eitools.cn/en/src/tools/date-diff-calculator.html">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="../../css/style.css">
+  <style>
+    .dd-intro { color: #666; margin-bottom: 20px; }
+    .dd-section { margin-bottom: 32px; }
+    .dd-section h2 { font-size: 1.15rem; margin-bottom: 14px; color: #1a1a2e; }
+    .dd-tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 2px solid #e0e0e0; }
+    .dd-tab {
+      padding: 8px 18px; cursor: pointer; border: none; background: none;
+      font-size: 0.95rem; color: #666; font-weight: 500; border-bottom: 2px solid transparent;
+      margin-bottom: -2px; transition: all 0.2s; font-family: inherit;
+    }
+    .dd-tab.active { color: #4361ee; border-bottom-color: #4361ee; }
+    .dd-tab:hover { color: #4361ee; }
+    .dd-panel { display: none; }
+    .dd-panel.active { display: block; }
+    .dd-form { max-width: 600px; }
+    .dd-form .form-group { margin-bottom: 14px; }
+    .dd-form label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.95rem; }
+    .dd-form input[type="date"], .dd-form input[type="number"], .dd-form select {
+      width: 100%; padding: 10px 14px; border: 2px solid #e0e0e0;
+      border-radius: 8px; font-size: 1rem; font-family: inherit; transition: border-color 0.2s;
+    }
+    .dd-form input:focus, .dd-form select:focus { outline: none; border-color: #4361ee; }
+    .dd-form .input-row { display: flex; gap: 12px; }
+    .dd-form .input-row .form-group { flex: 1; }
+    .dd-form .or-text { display: flex; align-items: center; justify-content: center; padding: 8px 0; color: #999; font-size: 0.9rem; }
+    .dd-btn {
+      padding: 10px 28px; font-size: 1rem; cursor: pointer; border: none;
+      border-radius: 8px; font-family: inherit; transition: all 0.2s; background: #4361ee; color: white;
+    }
+    .dd-btn:hover { background: #3a56d4; }
+    .dd-btn-secondary { background: #e8eaed; color: #333; margin-left: 8px; }
+    .dd-btn-secondary:hover { background: #d0d3d9; }
+    .dd-btn-row { display: flex; gap: 10px; margin-top: 6px; flex-wrap: wrap; }
+    .dd-result { margin-top: 20px; }
+    .dd-result-card {
+      background: white; border-radius: 12px; padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 2px solid #2f9e44;
+    }
+    .dd-result-card.error { border-color: #e03131; }
+    .dd-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .dd-stat-item { text-align: center; padding: 14px 10px; background: #f8f9fa; border-radius: 8px; }
+    .dd-stat-item .label { font-size: 0.82rem; color: #888; margin-bottom: 4px; }
+    .dd-stat-item .value { font-size: 1.4rem; font-weight: 700; color: #4361ee; }
+    .dd-stat-item .value.highlight { color: #2f9e44; }
+    .dd-stat-item .value.warn { color: #e67700; }
+    .dd-detail-list { margin-top: 16px; }
+    .dd-detail-item {
+      display: flex; justify-content: space-between; padding: 8px 12px;
+      border-bottom: 1px solid #f0f0f0; font-size: 0.92rem;
+    }
+    .dd-detail-item:last-child { border-bottom: none; }
+    .dd-detail-item .dl { color: #666; }
+    .dd-detail-item .dv { font-weight: 600; color: #333; }
+    .dd-countdown-box {
+      text-align: center; padding: 24px; background: #f8f9fa; border-radius: 12px; margin-top: 12px;
+    }
+    .dd-countdown-box .cd-label { font-size: 0.9rem; color: #666; margin-bottom: 8px; }
+    .dd-countdown-box .cd-value { font-size: 2.2rem; font-weight: 800; color: #4361ee; }
+    .dd-countdown-box .cd-sub { font-size: 0.9rem; color: #888; margin-top: 6px; }
+    .dd-countdown-grid { display: flex; justify-content: center; gap: 20px; margin-top: 16px; }
+    .dd-countdown-unit { text-align: center; }
+    .dd-countdown-unit .num { font-size: 1.6rem; font-weight: 700; color: #333; display: block; }
+    .dd-countdown-unit .txt { font-size: 0.8rem; color: #888; }
+    .dd-holiday-info {
+      margin-top: 12px; padding: 12px 16px; background: #fff8e1; border-radius: 8px;
+      font-size: 0.9rem; color: #666;
+    }
+    .dd-formula {
+      margin-top: 28px; padding: 20px; background: #f0f2f5; border-radius: 12px;
+    }
+    .dd-formula h3 { font-size: 1rem; margin-bottom: 10px; }
+    .dd-formula p { font-size: 0.9rem; color: #555; margin-bottom: 8px; }
+    .dd-related { margin-top: 32px; padding: 20px; background: #f0f2f5; border-radius: 12px; }
+    .dd-related h3 { font-size: 0.95rem; margin: 0 0 12px; color: #333; }
+    .dd-related .related-links { display: flex; flex-wrap: wrap; gap: 8px; }
+    .dd-related .related-link {
+      padding: 6px 14px; background: white; border: 1px solid #ddd;
+      border-radius: 16px; color: #4361ee; text-decoration: none; font-size: 0.85rem;
+    }
+    .dd-related .related-link:hover { background: #eef1ff; }
+    @media (max-width: 600px) {
+      .dd-stats-grid { grid-template-columns: 1fr 1fr; }
+      .dd-form .input-row { flex-direction: column; gap: 0; }
+      .dd-countdown-grid { gap: 12px; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"Date Difference Calculator","description":"Calculate the number of days between two dates online","url":"https://eitools.cn/en/src/tools/date-diff-calculator.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I calculate the number of days between two dates?","acceptedAnswer":{"@type":"Answer","text":"Convert both dates to timestamps (milliseconds since Jan 1, 1970), subtract them, and divide by 86,400,000 (milliseconds per day). For example, January 1, 2024 to December 31, 2024 is 365 days apart."}},{"@type":"Question","name":"How are workdays calculated?","acceptedAnswer":{"@type":"Answer","text":"Workday calculation excludes Saturdays and Sundays. A typical year has approximately 250-252 workdays (excluding public holidays). This calculator automatically excludes weekends to count workdays between two dates."}},{"@type":"Question","name":"How do I add or subtract days from a date?","acceptedAnswer":{"@type":"Answer","text":"Simply add or subtract the desired number of days from the original date. JavaScript's Date object handles this automatically, including crossing month boundaries and leap years correctly."}},{"@type":"Question","name":"How do I determine if a year is a leap year?","acceptedAnswer":{"@type":"Answer","text":"A year is a leap year if it is divisible by 4 but not by 100, or if it is divisible by 400. For example, 2024 is a leap year (366 days), and 2023 is not (365 days). Leap years have 29 days in February instead of 28."}}]}
+  </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+<script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; Home</a>
+      <a href="../../src/tools/date-diff-calculator.html" class="back-link" style="margin-left:12px;">中文</a>
+      <h1>Date Difference Calculator</h1>
+    </div>
+    <p class="dd-intro">Calculate the days, workdays, weeks, and months between two dates. Supports date addition/subtraction and countdown timers.</p>
+
+    <div class="dd-tabs">
+      <button class="dd-tab active" onclick="switchTab('diff')">Date Difference</button>
+      <button class="dd-tab" onclick="switchTab('add')">Add/Subtract</button>
+      <button class="dd-tab" onclick="switchTab('countdown')">Countdown</button>
+    </div>
+
+    <!-- Date Difference -->
+    <div id="panel-diff" class="dd-panel active">
+      <div class="dd-form">
+        <div class="form-group">
+          <label for="diff-start">Start Date</label>
+          <input type="date" id="diff-start">
+        </div>
+        <div class="or-text">to</div>
+        <div class="form-group">
+          <label for="diff-end">End Date</label>
+          <input type="date" id="diff-end">
+        </div>
+        <div class="dd-btn-row">
+          <button class="dd-btn" onclick="calcDiff()">Calculate</button>
+          <button class="dd-btn dd-btn-secondary" onclick="setTodayDiff()">Set Today</button>
+        </div>
+        <div id="diff-result" class="dd-result"></div>
+      </div>
+    </div>
+
+    <!-- Add/Subtract -->
+    <div id="panel-add" class="dd-panel">
+      <div class="dd-form">
+        <div class="form-group">
+          <label for="add-base">Start Date</label>
+          <input type="date" id="add-base">
+        </div>
+        <div class="input-row">
+          <div class="form-group">
+            <label for="add-op">Operation</label>
+            <select id="add-op">
+              <option value="add">Add (+)</option>
+              <option value="sub">Subtract (-)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="add-val">Value</label>
+            <input type="number" id="add-val" placeholder="e.g., 30" min="0" step="1">
+          </div>
+          <div class="form-group">
+            <label for="add-unit">Unit</label>
+            <select id="add-unit">
+              <option value="day">Days</option>
+              <option value="week">Weeks</option>
+              <option value="month">Months</option>
+              <option value="year">Years</option>
+            </select>
+          </div>
+        </div>
+        <div class="dd-btn-row">
+          <button class="dd-btn" onclick="calcAdd()">Calculate</button>
+          <button class="dd-btn dd-btn-secondary" onclick="setTodayAdd()">Set Today</button>
+        </div>
+        <div id="add-result" class="dd-result"></div>
+      </div>
+    </div>
+
+    <!-- Countdown -->
+    <div id="panel-countdown" class="dd-panel">
+      <div class="dd-form">
+        <div class="form-group">
+          <label for="cd-target">Target Date</label>
+          <input type="date" id="cd-target">
+        </div>
+        <div class="form-group">
+          <label for="cd-name">Event Name (optional)</label>
+          <input type="text" id="cd-name" placeholder="e.g., New Year, Christmas, Exam" style="width:100%;padding:10px 14px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;font-family:inherit;">
+        </div>
+        <div class="dd-btn-row">
+          <button class="dd-btn" onclick="calcCountdown()">Start Countdown</button>
+          <button class="dd-btn dd-btn-secondary" onclick="stopCountdown()">Stop</button>
+        </div>
+        <div id="cd-result" class="dd-result"></div>
+      </div>
+    </div>
+
+    <div class="dd-formula">
+      <h3>Date Calculation Notes</h3>
+      <p><strong>Days calculation</strong>: Convert dates to millisecond timestamps, subtract, and divide by 86,400,000 (milliseconds per day)</p>
+      <p><strong>Workday calculation</strong>: Excludes Saturdays and Sundays (does not account for public holidays)</p>
+      <p><strong>Leap year rule</strong>: Divisible by 4 but not by 100, or divisible by 400</p>
+      <p><strong>Date addition</strong>: Automatically handles month boundaries, year transitions, and leap years</p>
+    </div>
+
+    <div class="dd-related">
+      <h3>Related Tools</h3>
+      <div class="related-links">
+        <a href="age-calculator.html" class="related-link">Age Calculator</a>
+        <a href="timestamp.html" class="related-link">Timestamp Converter</a>
+        <a href="percentage-calculator.html" class="related-link">Percentage Calculator</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showToast(msg) {
+      var existing = document.querySelector('.toast');
+      if (existing) existing.remove();
+      var t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(function () { t.remove(); }, 2000);
+    }
+
+    function switchTab(name) {
+      var tabs = document.querySelectorAll('.dd-tab');
+      var panels = document.querySelectorAll('.dd-panel');
+      var names = ['diff', 'add', 'countdown'];
+      tabs.forEach(function (tab, i) {
+        tab.classList.toggle('active', names[i] === name);
+      });
+      panels.forEach(function (p) {
+        p.classList.toggle('active', p.id === 'panel-' + name);
+      });
+    }
+
+    function formatDate(d) {
+      var y = d.getFullYear();
+      var m = String(d.getMonth() + 1).padStart(2, '0');
+      var day = String(d.getDate()).padStart(2, '0');
+      return y + '-' + m + '-' + day;
+    }
+
+    function formatDateEN(d) {
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+    }
+
+    function getWeekdayEN(d) {
+      return ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][d.getDay()];
+    }
+
+    function isLeapYear(y) {
+      return (y % 4 === 0 && y % 100 !== 0) || (y % 400 === 0);
+    }
+
+    function countWorkdays(start, end) {
+      var count = 0;
+      var d = new Date(start);
+      d.setHours(0, 0, 0, 0);
+      var endD = new Date(end);
+      endD.setHours(0, 0, 0, 0);
+      while (d < endD) {
+        var dow = d.getDay();
+        if (dow !== 0 && dow !== 6) count++;
+        d.setDate(d.getDate() + 1);
+      }
+      return count;
+    }
+
+    function countWeekendDays(start, end) {
+      var count = 0;
+      var d = new Date(start);
+      d.setHours(0, 0, 0, 0);
+      var endD = new Date(end);
+      endD.setHours(0, 0, 0, 0);
+      while (d < endD) {
+        var dow = d.getDay();
+        if (dow === 0 || dow === 6) count++;
+        d.setDate(d.getDate() + 1);
+      }
+      return count;
+    }
+
+    function daysInMonth(y, m) {
+      return new Date(y, m + 1, 0).getDate();
+    }
+
+    function diffMonths(start, end) {
+      var months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
+      if (end.getDate() < start.getDate()) months--;
+      return Math.max(0, months);
+    }
+
+    function copyResult(text) {
+      navigator.clipboard.writeText(text).then(function () {
+        showToast('Copied to clipboard');
+      });
+    }
+
+    // Date diff
+    function setTodayDiff() {
+      document.getElementById('diff-start').value = formatDate(new Date());
+    }
+
+    function calcDiff() {
+      var startStr = document.getElementById('diff-start').value;
+      var endStr = document.getElementById('diff-end').value;
+      var resultEl = document.getElementById('diff-result');
+
+      if (!startStr || !endStr) {
+        resultEl.innerHTML = '<div class="dd-result-card error"><p style="color:#e03131;">Please select start and end dates</p></div>';
+        return;
+      }
+
+      var start = new Date(startStr);
+      var end = new Date(endStr);
+      start.setHours(0, 0, 0, 0);
+      end.setHours(0, 0, 0, 0);
+
+      if (end < start) {
+        var temp = start;
+        start = end;
+        end = temp;
+      }
+
+      var diffMs = end - start;
+      var totalDays = Math.round(diffMs / 86400000);
+      var weeks = Math.floor(totalDays / 7);
+      var remainDays = totalDays % 7;
+      var months = diffMonths(start, end);
+      var workdays = countWorkdays(start, end);
+      var weekendDays = countWeekendDays(start, end);
+      var hours = totalDays * 24;
+      var minutes = hours * 60;
+
+      var copyText = formatDateEN(start) + ' to ' + formatDateEN(end) + ' | ' + totalDays + ' days (' + weeks + ' weeks ' + remainDays + ' days) | ' + workdays + ' workdays';
+
+      var html = '<div class="dd-result-card">' +
+        '<div class="dd-stats-grid">' +
+          '<div class="dd-stat-item"><div class="label">Total Days</div><div class="value highlight">' + totalDays + ' days</div></div>' +
+          '<div class="dd-stat-item"><div class="label">Workdays</div><div class="value warn">' + workdays + ' days</div></div>' +
+          '<div class="dd-stat-item"><div class="label">Weekend Days</div><div class="value" style="color:#888;">' + weekendDays + ' days</div></div>' +
+          '<div class="dd-stat-item"><div class="label">Weeks</div><div class="value">' + weeks + ' weeks ' + remainDays + ' days</div></div>' +
+        '</div>';
+
+      html += '<div class="dd-detail-list">' +
+        '<div class="dd-detail-item"><span class="dl">Start Date</span><span class="dv">' + formatDateEN(start) + ' ' + getWeekdayEN(start) + '</span></div>' +
+        '<div class="dd-detail-item"><span class="dl">End Date</span><span class="dv">' + formatDateEN(end) + ' ' + getWeekdayEN(end) + '</span></div>' +
+        '<div class="dd-detail-item"><span class="dl">Months</span><span class="dv">Approximately ' + months + '</span></div>' +
+        '<div class="dd-detail-item"><span class="dl">Hours</span><span class="dv">' + hours.toLocaleString() + '</span></div>' +
+        '<div class="dd-detail-item"><span class="dl">Minutes</span><span class="dv">' + minutes.toLocaleString() + '</span></div>' +
+        '</div>';
+
+      html += '<div style="margin-top:12px;text-align:right;"><button class="dd-btn dd-btn-secondary" onclick="copyResult(\'' + copyText.replace(/'/g, "\\'") + '\')">Copy Result</button></div>';
+      html += '</div>';
+
+      resultEl.innerHTML = html;
+    }
+
+    // Date add/sub
+    function setTodayAdd() {
+      document.getElementById('add-base').value = formatDate(new Date());
+    }
+
+    function calcAdd() {
+      var baseStr = document.getElementById('add-base').value;
+      var val = parseInt(document.getElementById('add-val').value);
+      var op = document.getElementById('add-op').value;
+      var unit = document.getElementById('add-unit').value;
+      var resultEl = document.getElementById('add-result');
+
+      if (!baseStr) {
+        resultEl.innerHTML = '<div class="dd-result-card error"><p style="color:#e03131;">Please select a start date</p></div>';
+        return;
+      }
+      if (isNaN(val) || val < 0) {
+        resultEl.innerHTML = '<div class="dd-result-card error"><p style="color:#e03131;">Please enter a valid number</p></div>';
+        return;
+      }
+
+      var base = new Date(baseStr);
+      base.setHours(0, 0, 0, 0);
+
+      var num = op === 'sub' ? -val : val;
+      var result = new Date(base);
+
+      switch (unit) {
+        case 'day':
+          result.setDate(result.getDate() + num);
+          break;
+        case 'week':
+          result.setDate(result.getDate() + num * 7);
+          break;
+        case 'month':
+          result.setMonth(result.getMonth() + num);
+          break;
+        case 'year':
+          result.setFullYear(result.getFullYear() + num);
+          break;
+      }
+
+      var diffDays = Math.round((result - base) / 86400000);
+      var label = (op === 'add' ? 'Add ' : 'Subtract ') + val + ' ' + { day: 'day(s)', week: 'week(s)', month: 'month(s)', year: 'year(s)' }[unit];
+
+      var copyText = formatDateEN(base) + ' ' + label + ' = ' + formatDateEN(result) + ' ' + getWeekdayEN(result);
+
+      resultEl.innerHTML =
+        '<div class="dd-result-card">' +
+          '<div style="text-align:center;padding:16px;">' +
+            '<div style="font-size:0.9rem;color:#666;margin-bottom:8px;">' + formatDateEN(base) + '</div>' +
+            '<div style="font-size:1rem;color:#4361ee;font-weight:600;margin-bottom:8px;">' + label + '</div>' +
+            '<div style="font-size:1.6rem;font-weight:800;color:#333;">' + formatDateEN(result) + '</div>' +
+            '<div style="font-size:1rem;color:#888;margin-top:4px;">' + getWeekdayEN(result) + '</div>' +
+            (isLeapYear(result.getFullYear()) ? '<div style="margin-top:8px;font-size:0.85rem;color:#e67700;">' + result.getFullYear() + ' is a leap year (366 days)</div>' : '') +
+          '</div>' +
+          '<div style="margin-top:12px;text-align:right;"><button class="dd-btn dd-btn-secondary" onclick="copyResult(\'' + copyText.replace(/'/g, "\\'") + '\')">Copy Result</button></div>' +
+        '</div>';
+    }
+
+    // Countdown
+    var countdownTimer = null;
+
+    function stopCountdown() {
+      if (countdownTimer) {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+      }
+    }
+
+    function calcCountdown() {
+      var targetStr = document.getElementById('cd-target').value;
+      var name = document.getElementById('cd-name').value.trim() || 'Target Date';
+      var resultEl = document.getElementById('cd-result');
+
+      if (!targetStr) {
+        resultEl.innerHTML = '<div class="dd-result-card error"><p style="color:#e03131;">Please select a target date</p></div>';
+        return;
+      }
+
+      stopCountdown();
+
+      var target = new Date(targetStr);
+      target.setHours(0, 0, 0, 0);
+
+      function update() {
+        var now = new Date();
+        var diffMs = target - now;
+        var resultEl2 = document.getElementById('cd-result');
+        if (!resultEl2) { stopCountdown(); return; }
+
+        if (diffMs <= 0) {
+          var pastDays = Math.abs(Math.round(diffMs / 86400000));
+          resultEl2.innerHTML =
+            '<div class="dd-result-card">' +
+              '<div class="dd-countdown-box">' +
+                '<div class="cd-label">' + name + '</div>' +
+                '<div class="cd-value" style="color:#e67700;">Already Passed</div>' +
+                '<div class="cd-sub">' + pastDays + ' days since ' + formatDateEN(target) + '</div>' +
+              '</div></div>';
+          stopCountdown();
+          return;
+        }
+
+        var totalDays = Math.ceil(diffMs / 86400000);
+        var days = Math.floor(diffMs / 86400000);
+        var hours = Math.floor((diffMs % 86400000) / 3600000);
+        var mins = Math.floor((diffMs % 3600000) / 60000);
+        var secs = Math.floor((diffMs % 60000) / 1000);
+        var weeks = Math.floor(totalDays / 7);
+
+        resultEl2.innerHTML =
+          '<div class="dd-result-card">' +
+            '<div class="dd-countdown-box">' +
+              '<div class="cd-label">' + name + '</div>' +
+              '<div class="cd-value">' + totalDays + ' days</div>' +
+              '<div class="cd-sub">' + formatDateEN(target) + ' ' + getWeekdayEN(target) + ' (approx ' + weeks + ' weeks)</div>' +
+              '<div class="dd-countdown-grid">' +
+                '<div class="dd-countdown-unit"><span class="num">' + days + '</span><span class="txt">days</span></div>' +
+                '<div class="dd-countdown-unit"><span class="num">' + String(hours).padStart(2, '0') + '</span><span class="txt">hrs</span></div>' +
+                '<div class="dd-countdown-unit"><span class="num">' + String(mins).padStart(2, '0') + '</span><span class="txt">min</span></div>' +
+                '<div class="dd-countdown-unit"><span class="num">' + String(secs).padStart(2, '0') + '</span><span class="txt">sec</span></div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="dd-holiday-info">Note: Workday count excludes weekends. Available workdays: approximately ' + countWorkdays(now, target) + ' (excluding public holidays)</div>' +
+          '</div>';
+      }
+
+      update();
+      countdownTimer = setInterval(update, 1000);
+    }
+
+    // Set default dates
+    document.getElementById('diff-start').value = formatDate(new Date());
+    var futureDate = new Date();
+    futureDate.setMonth(futureDate.getMonth() + 1);
+    document.getElementById('diff-end').value = formatDate(futureDate);
+    document.getElementById('add-base').value = formatDate(new Date());
+
+    // Enter key support
+    ['diff-start', 'diff-end'].forEach(function (id) {
+      document.getElementById(id).addEventListener('change', function () { calcDiff(); });
+    });
+    ['add-base', 'add-val'].forEach(function (id) {
+      document.getElementById(id).addEventListener('keydown', function (e) { if (e.key === 'Enter') calcAdd(); });
+    });
+    ['cd-target'].forEach(function (id) {
+      document.getElementById(id).addEventListener('change', function () { calcCountdown(); });
+    });
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

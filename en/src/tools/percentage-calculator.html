@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Percentage Calculator - Free Online Percentage Calculator | EITools</title>
+  <meta name="description" content="Free online percentage calculator. Calculate what percentage X is of Y, find X% of Y, calculate percentage change, and increase/decrease by a percentage.">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <meta property="og:title" content="Percentage Calculator - Free Online Percentage Calculator">
+  <meta property="og:description" content="Percentage calculation, increase/decrease, and conversion - all in one place.">
+  <meta property="og:url" content="https://eitools.cn/en/src/tools/percentage-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/en/src/tools/percentage-calculator.html">
+  <link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/percentage-calculator.html">
+  <link rel="alternate" hreflang="x-default" href="https://eitools.cn/en/src/tools/percentage-calculator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <meta property="og:type" content="website">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"Percentage Calculator","description":"Free online percentage calculation tool","url":"https://eitools.cn/en/src/tools/percentage-calculator.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+<script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; Home</a>
+      <a href="../../src/tools/percentage-calculator.html" class="back-link" style="margin-left:12px;">中文</a>
+      <h1>Percentage Calculator</h1>
+    </div>
+    <div style="max-width:600px;">
+      <!-- 1. X is what % of Y -->
+      <div style="background:#f0f2f5;padding:20px;border-radius:12px;margin-bottom:16px;">
+        <h3 style="margin:0 0 12px;font-size:1rem;">What percentage is X of Y?</h3>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <input type="number" id="p1x" placeholder="X" step="any" style="width:100px;padding:10px;border:1px solid #ddd;border-radius:8px;text-align:center;">
+          <span>is</span>
+          <input type="number" id="p1y" placeholder="Y" step="any" style="width:100px;padding:10px;border:1px solid #ddd;border-radius:8px;text-align:center;">
+          <span>% of</span>
+          <button class="btn btn-primary" onclick="calcP1()" style="padding:10px 20px;">Calculate</button>
+        </div>
+        <div id="r1" style="margin-top:12px;font-size:1.2rem;font-weight:700;"></div>
+      </div>
+
+      <!-- 2. X% of Y -->
+      <div style="background:#f0f2f5;padding:20px;border-radius:12px;margin-bottom:16px;">
+        <h3 style="margin:0 0 12px;font-size:1rem;">What is X% of Y?</h3>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <input type="number" id="p2x" placeholder="Value" step="any" style="width:100px;padding:10px;border:1px solid #ddd;border-radius:8px;text-align:center;">
+          <span>% of</span>
+          <input type="number" id="p2y" placeholder="Value" step="any" style="width:100px;padding:10px;border:1px solid #ddd;border-radius:8px;text-align:center;">
+          <span>=</span>
+          <button class="btn btn-primary" onclick="calcP2()" style="padding:10px 20px;">Calculate</button>
+        </div>
+        <div id="r2" style="margin-top:12px;font-size:1.2rem;font-weight:700;"></div>
+      </div>
+
+      <!-- 3. Percentage change -->
+      <div style="background:#f0f2f5;padding:20px;border-radius:12px;margin-bottom:16px;">
+        <h3 style="margin:0 0 12px;font-size:1rem;">Percentage change from X to Y</h3>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <span>From</span>
+          <input type="number" id="p3x" placeholder="Original" step="any" style="width:100px;padding:10px;border:1px solid #ddd;border-radius:8px;text-align:center;">
+          <span>to</span>
+          <input type="number" id="p3y" placeholder="New" step="any" style="width:100px;padding:10px;border:1px solid #ddd;border-radius:8px;text-align:center;">
+          <button class="btn btn-primary" onclick="calcP3()" style="padding:10px 20px;">Calculate</button>
+        </div>
+        <div id="r3" style="margin-top:12px;font-size:1.2rem;font-weight:700;"></div>
+      </div>
+
+      <!-- 4. Increase/Decrease -->
+      <div style="background:#f0f2f5;padding:20px;border-radius:12px;">
+        <h3 style="margin:0 0 12px;font-size:1rem;">Increase/decrease X by Y%</h3>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <input type="number" id="p4x" placeholder="Value" step="any" style="width:100px;padding:10px;border:1px solid #ddd;border-radius:8px;text-align:center;">
+          <select id="p4op" style="padding:10px;border:1px solid #ddd;border-radius:8px;">
+            <option value="add">Increase</option>
+            <option value="sub">Decrease</option>
+          </select>
+          <input type="number" id="p4y" placeholder="%" step="any" style="width:100px;padding:10px;border:1px solid #ddd;border-radius:8px;text-align:center;">
+          <span>%</span>
+          <button class="btn btn-primary" onclick="calcP4()" style="padding:10px 20px;">Calculate</button>
+        </div>
+        <div id="r4" style="margin-top:12px;font-size:1.2rem;font-weight:700;"></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function $(id){return parseFloat(document.getElementById(id).value)}
+    function calcP1(){const x=$('p1x'),y=$('p1y');if(!y||y===0){document.getElementById('r1').innerHTML='<span style="color:#e03131">Divisor cannot be zero</span>';return}document.getElementById('r1').innerHTML=`<span style="color:#4361ee">${(x/y*100).toFixed(2)}%</span>`}
+    function calcP2(){const x=$('p2x'),y=$('p2y');document.getElementById('r2').innerHTML=`<span style="color:#4361ee">${(x*y/100).toFixed(2)}</span>`}
+    function calcP3(){const x=$('p3x'),y=$('p3y');if(!x||x===0){document.getElementById('r3').innerHTML='<span style="color:#e03131">Original value cannot be zero</span>';return}const c=(y-x)/x*100;const d=c>=0?'Increase':'Decrease';document.getElementById('r3').innerHTML=`<span style="color:${c>=0?'#2f9e44':'#e03131'}">${Math.abs(c).toFixed(2)}% (${d})</span>`}
+    function calcP4(){const x=$('p4x'),y=$('p4y'),op=document.getElementById('p4op').value;const r=op==='add'?x*(1+y/100):x*(1-y/100);document.getElementById('r4').innerHTML=`<span style="color:#4361ee">${r.toFixed(2)}</span>`}
+  </script>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+</body>
+</html>

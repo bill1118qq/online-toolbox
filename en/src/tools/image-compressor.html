@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Compressor - Free Online Image Compression Tool | EITools</title>
+  <meta name="description" content="Free online image compressor. Reduce image file size by 50-80% while maintaining quality. Supports JPG, PNG, WebP. 100% local processing, no upload required.">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="stylesheet" href="../../css/style.css">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Image Compressor - Free Online Image Compression Tool">
+  <meta property="og:description" content="Free online image compression. No upload to server. Supports JPG/PNG/WebP.">
+  <meta property="og:url" content="https://eitools.cn/en/src/tools/image-compressor.html">
+  <link rel="canonical" href="https://eitools.cn/en/src/tools/image-compressor.html">
+  <link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/image-compressor.html">
+  <link rel="alternate" hreflang="x-default" href="https://eitools.cn/en/src/tools/image-compressor.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type": "Question", "name": "Does image compression reduce quality?", "acceptedAnswer": {"@type": "Answer", "text": "Moderate compression does not noticeably affect quality. This tool uses the browser's Canvas API for high-quality compression, typically reducing file size by 50-80% while maintaining visual clarity."}},
+      {"@type": "Question", "name": "Are compressed images uploaded to a server?", "acceptedAnswer": {"@type": "Answer", "text": "No. This tool processes images entirely in your browser locally. Your images are never uploaded to any server, ensuring privacy and security."}},
+      {"@type": "Question", "name": "What image formats are supported?", "acceptedAnswer": {"@type": "Answer", "text": "Supports JPG, PNG, WebP, and other common image formats. Compressed output is saved as JPG or PNG format."}}
+    ]
+  }
+  </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+<script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; Home</a>
+      <a href="../../src/tools/image-compressor.html" class="back-link" style="margin-left:12px;">中文</a>
+      <h1>Image Compressor</h1>
+    </div>
+
+    <div id="dropZone" style="border: 2px dashed #ccc; border-radius: 12px; padding: 48px; text-align: center; cursor: pointer; background: #fafafa; margin-bottom: 24px;">
+      <p style="font-size: 1.1rem; color: #666;">Drag images here, or click to select files</p>
+      <p style="font-size: 0.85rem; color: #999; margin-top: 8px;">Supports JPG, PNG, WebP. All processing is done locally</p>
+      <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" multiple style="display: none;">
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+      <label style="font-weight: 600;">Compression Quality:</label>
+      <input type="range" id="qualitySlider" min="10" max="100" value="80" style="flex: 1;">
+      <span id="qualityValue" style="font-weight: 600; min-width: 40px;">80%</span>
+    </div>
+
+    <div id="results" style="display: flex; flex-direction: column; gap: 16px;"></div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const qualitySlider = document.getElementById('qualitySlider');
+    const qualityValue = document.getElementById('qualityValue');
+    const resultsDiv = document.getElementById('results');
+
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.style.borderColor = '#4361ee'; });
+    dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = '#ccc'; });
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.style.borderColor = '#ccc';
+      handleFiles(e.dataTransfer.files);
+    });
+    fileInput.addEventListener('change', () => handleFiles(fileInput.files));
+
+    qualitySlider.addEventListener('input', () => {
+      qualityValue.textContent = qualitySlider.value + '%';
+    });
+
+    function handleFiles(files) {
+      Array.from(files).forEach(file => {
+        if (!file.type.match(/^image\/(jpeg|png|webp)$/)) {
+          showToast('Unsupported format: ' + file.name);
+          return;
+        }
+        compressImage(file);
+      });
+    }
+
+    function compressImage(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+
+          const quality = qualitySlider.value / 100;
+          const format = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+          const dataUrl = canvas.toDataURL(format, quality);
+
+          const originalSize = file.size;
+          const compressedBlob = dataURLtoBlob(dataUrl);
+          const compressedSize = compressedBlob.size;
+          const ratio = ((1 - compressedSize / originalSize) * 100).toFixed(1);
+
+          const resultItem = document.createElement('div');
+          resultItem.style.cssText = 'background: white; padding: 16px; border-radius: 8px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;';
+          resultItem.innerHTML = `
+            <img src="${dataUrl}" style="max-width: 80px; max-height: 80px; border-radius: 4px; object-fit: cover;">
+            <div style="flex: 1; min-width: 200px;">
+              <p style="font-weight: 600;">${file.name}</p>
+              <p style="font-size: 0.85rem; color: #666;">
+                Original: ${formatSize(originalSize)} &rarr; Compressed: ${formatSize(compressedSize)}
+                <span style="color: ${ratio > 0 ? '#4caf50' : '#f44336'}; font-weight: 600;">
+                  (${ratio > 0 ? '-' : '+'}${Math.abs(ratio)}%)
+                </span>
+              </p>
+            </div>
+            <a href="${dataUrl}" download="compressed_${file.name}" class="btn btn-primary" style="text-decoration: none;">Download</a>
+          `;
+          resultsDiv.prepend(resultItem);
+          showToast('Compressed: ' + file.name);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function dataURLtoBlob(dataURL) {
+      const parts = dataURL.split(',');
+      const mime = parts[0].match(/:(.*?);/)[1];
+      const bstr = atob(parts[1]);
+      const u8arr = new Uint8Array(bstr.length);
+      for (let i = 0; i < bstr.length; i++) u8arr[i] = bstr.charCodeAt(i);
+      return new Blob([u8arr], { type: mime });
+    }
+
+    function formatSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+  </script>
+<div class="related-tools" style="margin-top:30px;padding:20px;background:#f8f9fa;border-radius:8px;">
+  <h3>Related Tools</h3>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;">
+    <a href="base64.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">Base64 Encode/Decode</a>
+  </div>
+</div>
+<footer class="footer"><div class="container"><p>&copy; 2026 EITools - All tools run locally in your browser</p></div></footer>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+</body>
+</html>

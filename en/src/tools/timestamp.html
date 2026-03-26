@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unix Timestamp Converter - Free Online Epoch Converter | EITools</title>
+  <meta name="description" content="Free online Unix timestamp converter. Convert Unix timestamps to human-readable dates and vice versa. Supports both seconds and milliseconds.">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="stylesheet" href="../../css/style.css">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Unix Timestamp Converter - Free Online Epoch Time Tool">
+  <meta property="og:description" content="Free online Unix timestamp converter. Convert timestamps to dates and dates to timestamps.">
+  <meta property="og:url" content="https://eitools.cn/en/src/tools/timestamp.html">
+  <link rel="canonical" href="https://eitools.cn/en/src/tools/timestamp.html">
+  <link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/timestamp.html">
+  <link rel="alternate" hreflang="x-default" href="https://eitools.cn/en/src/tools/timestamp.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "name": "Timestamp Converter",
+    "url": "https://eitools.cn/en/src/tools/timestamp.html",
+    "description": "Free online Unix timestamp converter. Convert Unix timestamps to dates and vice versa.",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "All"
+  }
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a Unix timestamp?","acceptedAnswer":{"@type":"Answer","text":"A Unix timestamp (also known as Epoch time) is the number of seconds that have elapsed since January 1, 1970, 00:00:00 UTC. It is a widely used time representation in computing, commonly used in logging, APIs, and database storage."}},{"@type":"Question","name":"Why are some timestamps 13 digits long?","acceptedAnswer":{"@type":"Answer","text":"A 10-digit timestamp is in seconds, while a 13-digit timestamp is in milliseconds. JavaScript's Date.getTime() returns a millisecond-level timestamp (13 digits). Divide a 13-digit timestamp by 1000 and round down to get the 10-digit second-level timestamp."}},{"@type":"Question","name":"Will Unix timestamps overflow?","acceptedAnswer":{"@type":"Answer","text":"A 32-bit signed integer timestamp has a maximum value of 2,147,483,647, which corresponds to January 19, 2038, 11:14:07 UTC. This is known as the \"Year 2038 Problem.\" However, modern 64-bit systems have already resolved this issue."}},{"@type":"Question","name":"Is this timestamp converter safe to use?","acceptedAnswer":{"@type":"Answer","text":"Yes. This tool runs entirely in your browser. No data is sent to any server. All conversions are performed locally, ensuring your data remains private."}}]}
+  </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+<script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; Home</a>
+      <a href="../../src/tools/timestamp.html" class="back-link" style="margin-left:12px;">中文</a>
+      <h1>Unix Timestamp Converter</h1>
+    </div>
+
+    <div style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 24px; text-align: center;">
+      <p style="color: #666; margin-bottom: 4px;">Current Unix Timestamp (seconds)</p>
+      <p id="currentTs" style="font-size: 2rem; font-weight: 700; font-family: monospace; color: #4361ee;"></p>
+      <p id="currentTime" style="color: #999; margin-top: 4px;"></p>
+    </div>
+
+    <h3 style="margin-bottom: 12px;">Timestamp &rarr; Date</h3>
+    <div style="display: flex; gap: 10px; margin-bottom: 24px;">
+      <input type="number" id="tsInput" placeholder="Enter timestamp, e.g., 1700000000" style="flex: 1;">
+      <button class="btn btn-primary" onclick="tsToDate()">Convert</button>
+    </div>
+    <div id="tsResult" class="result-box" style="min-height: 40px;"></div>
+
+    <h3 style="margin: 24px 0 12px;">Date &rarr; Timestamp</h3>
+    <div style="display: flex; gap: 10px; margin-bottom: 24px;">
+      <input type="text" id="dateInput" placeholder="e.g., 2026-03-22 12:00:00" style="flex: 1;">
+      <button class="btn btn-primary" onclick="dateToTs()">Convert</button>
+    </div>
+    <div id="dateResult" class="result-box" style="min-height: 40px;"></div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    function updateCurrentTs() {
+      const now = Math.floor(Date.now() / 1000);
+      document.getElementById('currentTs').textContent = now;
+      document.getElementById('currentTime').textContent = new Date().toLocaleString('en-US');
+    }
+    updateCurrentTs();
+    setInterval(updateCurrentTs, 1000);
+
+    function tsToDate() {
+      const ts = document.getElementById('tsInput').value.trim();
+      if (!ts) { showToast('Please enter a timestamp'); return; }
+
+      let ms = Number(ts);
+      if (ms < 1e12) ms *= 1000;
+
+      const date = new Date(ms);
+      if (isNaN(date.getTime())) {
+        document.getElementById('tsResult').textContent = 'Invalid timestamp';
+        return;
+      }
+
+      document.getElementById('tsResult').innerHTML =
+        `Local Time: ${date.toLocaleString('en-US')}<br>` +
+        `UTC Time: ${date.toUTCString()}<br>` +
+        `ISO 8601: ${date.toISOString()}`;
+    }
+
+    function dateToTs() {
+      const dateStr = document.getElementById('dateInput').value.trim();
+      if (!dateStr) { showToast('Please enter a date and time'); return; }
+
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) {
+        document.getElementById('dateResult').textContent = 'Invalid date format. Please use: YYYY-MM-DD HH:mm:ss';
+        return;
+      }
+
+      document.getElementById('dateResult').innerHTML =
+        `Seconds: ${Math.floor(date.getTime() / 1000)}<br>` +
+        `Milliseconds: ${date.getTime()}`;
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+  </script>
+<div style="margin-top:32px;padding:20px;background:#f0f2f5;border-radius:12px;">
+  <h3 style="font-size:0.95rem;margin:0 0 12px;color:#333;">Related Tools</h3>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;">
+    <a href="date-diff-calculator.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">Date Difference Calculator</a>
+    <a href="age-calculator.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">Age Calculator</a>
+  </div>
+</div>
+<footer class="footer"><div class="container"><p>&copy; 2026 EITools - All tools run locally in your browser</p></div></footer>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UUID Generator - Free Online UUID v4 Generator | EITools</title>
+  <meta name="description" content="Free online UUID/GUID generator. Generate single or batch UUID v4 identifiers instantly. Supports uppercase and dash-free formats. One-click copy.">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="stylesheet" href="../../css/style.css">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="UUID Generator - Free Online UUID v4 Generator">
+  <meta property="og:description" content="Free online UUID/GUID generator. Batch generate UUID v4 with one-click copy.">
+  <meta property="og:url" content="https://eitools.cn/en/src/tools/uuid-generator.html">
+  <link rel="canonical" href="https://eitools.cn/en/src/tools/uuid-generator.html">
+  <link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/uuid-generator.html">
+  <link rel="alternate" hreflang="x-default" href="https://eitools.cn/en/src/tools/uuid-generator.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "UUID Generator",
+    "url": "https://eitools.cn/en/src/tools/uuid-generator.html",
+    "description": "Free online UUID/GUID v4 generator with batch support",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "All"
+  }
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a UUID?","acceptedAnswer":{"@type":"Answer","text":"A UUID (Universally Unique Identifier) is a 128-bit identifier, typically displayed as 32 hexadecimal characters separated by hyphens into 5 groups, e.g., 550e8400-e29b-41d4-a716-446655440000. UUIDs are globally unique with an extremely low probability of collision, making them ideal for database primary keys and distributed system identifiers."}},{"@type":"Question","name":"What is the difference between UUID v4 and other versions?","acceptedAnswer":{"@type":"Answer","text":"UUID has several versions: v1 is based on timestamp and MAC address, v3 uses MD5 hashing, v4 is randomly generated, and v5 uses SHA-1 hashing. UUID v4 is the most commonly used version as it is entirely random and requires no input parameters."}},{"@type":"Question","name":"Are UUIDs truly random? Can they repeat?","acceptedAnswer":{"@type":"Answer","text":"UUID v4 uses a cryptographically secure random number generator. Theoretically, there are 2^122 (approximately 5.3 x 10^36) possible values. The probability of two randomly generated UUIDs colliding is effectively zero."}},{"@type":"Question","name":"Can I remove the hyphens from a UUID?","acceptedAnswer":{"@type":"Answer","text":"Yes. A UUID without hyphens is simply 32 consecutive hexadecimal characters and represents the same value. Removing hyphens saves storage space and is commonly used for URL shortening and database optimization."}}]}
+  </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+<script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; Home</a>
+      <a href="../../src/tools/uuid-generator.html" class="back-link" style="margin-left:12px;">中文</a>
+      <h1>UUID Generator</h1>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="generate()">Generate UUID</button>
+      <button class="btn btn-secondary" onclick="generateBatch()">Batch Generate (10)</button>
+      <button class="btn btn-secondary" onclick="copyResult()">Copy</button>
+    </div>
+
+    <div style="margin-bottom: 16px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+      <label>
+        <input type="checkbox" id="upperCase" style="margin-right: 4px;"> Uppercase
+      </label>
+      <label>
+        <input type="checkbox" id="noDashes" style="margin-right: 4px;"> No dashes
+      </label>
+      <label>
+        Format: <select id="version" style="padding: 6px 10px; border-radius: 6px; border: 2px solid #e0e0e0;">
+          <option value="v4">UUID v4 (Random)</option>
+        </select>
+      </label>
+    </div>
+
+    <div id="result" class="result-box" style="min-height: 120px;">Click the button above to generate a UUID</div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
+    function formatUUID(uuid) {
+      if (document.getElementById('upperCase').checked) uuid = uuid.toUpperCase();
+      if (document.getElementById('noDashes').checked) uuid = uuid.replace(/-/g, '');
+      return uuid;
+    }
+
+    function generate() {
+      document.getElementById('result').textContent = formatUUID(generateUUID());
+    }
+
+    function generateBatch() {
+      const uuids = Array.from({ length: 10 }, () => formatUUID(generateUUID()));
+      document.getElementById('result').textContent = uuids.join('\n');
+    }
+
+    function copyResult() {
+      const text = document.getElementById('result').textContent;
+      if (!text || text === 'Click the button above to generate a UUID') { showToast('Please generate a UUID first'); return; }
+      navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard'));
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+  </script>
+<div style="margin-top:32px;padding:20px;background:#f0f2f5;border-radius:12px;">
+  <h3 style="font-size:0.95rem;margin:0 0 12px;color:#333;">Related Tools</h3>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;">
+    <a href="password-generator.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">Password Generator</a>
+    <a href="hash-generator.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">Hash Generator</a>
+  </div>
+</div>
+<footer class="footer"><div class="container"><p>&copy; 2026 EITools - All tools run locally in your browser</p></div></footer>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+</body>
+</html>

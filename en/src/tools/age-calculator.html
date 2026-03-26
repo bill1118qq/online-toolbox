@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Age Calculator - Calculate Exact Age in Years, Months, Days | EITools</title>
+  <meta name="description" content="Free online age calculator. Enter your date of birth to instantly calculate your exact age in years, months, days, total days lived, and birthday countdown.">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <meta property="og:title" content="Age Calculator - Calculate Exact Age and Birthday Countdown">
+  <meta property="og:description" content="Enter your birthday to calculate your exact age in years, months, days, and a birthday countdown.">
+  <meta property="og:url" content="https://eitools.cn/en/src/tools/age-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/en/src/tools/age-calculator.html">
+  <link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/age-calculator.html">
+  <link rel="alternate" hreflang="x-default" href="https://eitools.cn/en/src/tools/age-calculator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <meta property="og:type" content="website">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"Age Calculator","description":"Free online age calculator","url":"https://eitools.cn/en/src/tools/age-calculator.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How do I calculate my exact age?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Use this online age calculator by entering your date of birth. It will calculate your precise age in years, months, and days, plus the total number of days you have lived, total weeks, total hours, and how many days until your next birthday. The calculation accounts for leap years and varying month lengths."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How does the age calculator work?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The age calculator compares your birth date with the current date. It compares the year, month, and day components individually. If the current month is less than the birth month, or if the month is the same but the day is less, it subtracts one from the year and adds the appropriate number of months to give a precise age."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What other information does the age calculator show?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Besides your exact age, this tool displays: total days lived, total weeks, total hours, your zodiac sign, and a countdown of how many days until your next birthday."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is the online age calculator accurate?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. This tool uses a standard date difference algorithm that automatically handles leap years and varying month lengths, ensuring results are accurate to the day. All calculations run in your browser locally with no internet connection required."
+        }
+      }
+    ]
+  }
+  </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+<script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; Home</a>
+      <a href="../../src/tools/age-calculator.html" class="back-link" style="margin-left:12px;">中文</a>
+      <h1>Age Calculator</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">Enter your date of birth to calculate your exact age, days lived, and birthday countdown.</p>
+    <div style="max-width:500px;">
+      <div style="margin-bottom:16px;">
+        <label style="display:block;margin-bottom:6px;font-weight:600;">Date of Birth</label>
+        <input type="date" id="birthday" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:1rem;">
+      </div>
+      <button class="btn btn-primary" onclick="calcAge()" style="width:100%;padding:12px;font-size:1.05rem;">Calculate Age</button>
+      <div id="result" style="margin-top:24px;"></div>
+    </div>
+  </div>
+  <script>
+    function calcAge() {
+      const bd = document.getElementById('birthday').value;
+      if (!bd) { document.getElementById('result').innerHTML = '<p style="color:#e03131;">Please select a date of birth</p>'; return; }
+      const birth = new Date(bd);
+      const now = new Date();
+      if (birth > now) { document.getElementById('result').innerHTML = '<p style="color:#e03131;">Date of birth cannot be in the future</p>'; return; }
+      let years = now.getFullYear() - birth.getFullYear();
+      let months = now.getMonth() - birth.getMonth();
+      let days = now.getDate() - birth.getDate();
+      if (days < 0) { months--; const prev = new Date(now.getFullYear(), now.getMonth(), 0); days += prev.getDate(); }
+      if (months < 0) { years--; months += 12; }
+      const totalDays = Math.floor((now - birth) / 86400000);
+      const totalWeeks = Math.floor(totalDays / 7);
+      const totalHours = totalDays * 24;
+      const nextBirthday = new Date(now.getFullYear(), birth.getMonth(), birth.getDate());
+      if (nextBirthday <= now) nextBirthday.setFullYear(nextBirthday.getFullYear() + 1);
+      const countdown = Math.ceil((nextBirthday - now) / 86400000);
+      const zodiac = ['Capricorn','Aquarius','Pisces','Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn'];
+      const zIdx = birth.getMonth() === 0 ? (birth.getDate() <= 19 ? 0 : 1) : birth.getMonth() === 1 ? (birth.getDate() <= 18 ? 1 : 2) : birth.getMonth() === 2 ? (birth.getDate() <= 20 ? 2 : 3) : birth.getMonth() === 3 ? (birth.getDate() <= 19 ? 3 : 4) : birth.getMonth() === 4 ? (birth.getDate() <= 20 ? 4 : 5) : birth.getMonth() === 5 ? (birth.getDate() <= 21 ? 5 : 6) : birth.getMonth() === 6 ? (birth.getDate() <= 22 ? 6 : 7) : birth.getMonth() === 7 ? (birth.getDate() <= 22 ? 7 : 8) : birth.getMonth() === 8 ? (birth.getDate() <= 22 ? 8 : 9) : birth.getMonth() === 9 ? (birth.getDate() <= 23 ? 9 : 10) : birth.getMonth() === 10 ? (birth.getDate() <= 22 ? 10 : 11) : (birth.getDate() <= 21 ? 11 : 0);
+      document.getElementById('result').innerHTML = `
+        <div style="text-align:center;padding:24px;background:#f0f2f5;border-radius:12px;">
+          <div style="font-size:2rem;font-weight:800;color:#4361ee;">${years} years ${months} months ${days} days</div>
+          <p style="color:#888;margin-top:4px;">Zodiac: ${zodiac[zIdx]}</p>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;">
+          <div style="text-align:center;padding:16px;background:white;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,0.1);"><div style="font-size:0.8rem;color:#888;">Days Lived</div><div style="font-size:1.4rem;font-weight:700;">${totalDays.toLocaleString()}</div></div>
+          <div style="text-align:center;padding:16px;background:white;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,0.1);"><div style="font-size:0.8rem;color:#888;">Weeks Lived</div><div style="font-size:1.4rem;font-weight:700;">${totalWeeks.toLocaleString()}</div></div>
+          <div style="text-align:center;padding:16px;background:white;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,0.1);"><div style="font-size:0.8rem;color:#888;">Hours Lived</div><div style="font-size:1.4rem;font-weight:700;">${totalHours.toLocaleString()}</div></div>
+          <div style="text-align:center;padding:16px;background:white;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,0.1);"><div style="font-size:0.8rem;color:#888;">Until Birthday</div><div style="font-size:1.4rem;font-weight:700;color:#e67700;">${countdown} days</div></div>
+        </div>`;
+    }
+  </script>
+<div style="margin-top:32px;padding:20px;background:#f0f2f5;border-radius:12px;">
+  <h3 style="font-size:0.95rem;margin:0 0 12px;color:#333;">Related Tools</h3>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;">
+    <a href="date-diff-calculator.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">Date Difference Calculator</a>
+    <a href="timestamp.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">Timestamp Converter</a>
+    <a href="percentage-calculator.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">Percentage Calculator</a>
+  </div>
+</div>
+<footer class="footer"><div class="container"><p>&copy; 2026 EITools - All tools run locally in your browser</p></div></footer>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+</body>
+</html>

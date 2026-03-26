@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON Formatter - Free Online JSON Beautifier & Validator | EITools</title>
+  <meta name="description" content="Free online JSON formatter and beautifier. Format, minify, and validate JSON data instantly in your browser.">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="stylesheet" href="../../css/style.css">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="JSON Formatter - Free Online JSON Beautifier & Validator">
+  <meta property="og:description" content="Free online JSON formatter and beautifier. Format, minify, and validate JSON data instantly in your browser.">
+  <meta property="og:url" content="https://eitools.cn/en/src/tools/json-formatter.html">
+  <link rel="canonical" href="https://eitools.cn/en/src/tools/json-formatter.html">
+  <link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/json-formatter.html">
+  <link rel="alternate" hreflang="x-default" href="https://eitools.cn/en/src/tools/json-formatter.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type": "Question", "name": "What is JSON formatting?", "acceptedAnswer": {"@type": "Answer", "text": "JSON formatting (also known as JSON beautification or JSON Pretty Print) is the process of arranging minified JSON data with proper indentation and line breaks to make it easier to read and debug."}},
+      {"@type": "Question", "name": "What is the difference between JSON and XML?", "acceptedAnswer": {"@type": "Answer", "text": "JSON is lighter and faster to parse, using a key-value pair structure. XML uses tags and supports more data types but is more verbose. JSON has become the mainstream data exchange format in modern web development."}},
+      {"@type": "Question", "name": "Is online JSON formatting safe?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. This tool runs entirely in your browser locally. Your JSON data is never uploaded to any server, ensuring complete privacy and security."}}
+    ]
+  }
+  </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+<script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; Home</a>
+      <a href="../../src/tools/json-formatter.html" class="back-link" style="margin-left:12px;">中文</a>
+      <h1>JSON Formatter</h1>
+    </div>
+
+    <textarea id="jsonInput" placeholder='Paste your JSON data here, e.g.: {"name": "John", "age": 25}'></textarea>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="formatJSON()">Format (Beautify)</button>
+      <button class="btn btn-secondary" onclick="compressJSON()">Minify</button>
+      <button class="btn btn-secondary" onclick="validateJSON()">Validate</button>
+      <button class="btn btn-secondary" onclick="copyResult()">Copy Result</button>
+      <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+    </div>
+
+    <div id="resultBox" class="result-box"></div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const input = document.getElementById('jsonInput');
+    const resultBox = document.getElementById('resultBox');
+
+    function formatJSON() {
+      try {
+        const parsed = JSON.parse(input.value);
+        resultBox.textContent = JSON.stringify(parsed, null, 2);
+        resultBox.style.borderColor = '#4caf50';
+        showToast('Formatted successfully');
+      } catch (e) {
+        resultBox.textContent = 'Error: ' + e.message;
+        resultBox.style.borderColor = '#f44336';
+      }
+    }
+
+    function compressJSON() {
+      try {
+        const parsed = JSON.parse(input.value);
+        resultBox.textContent = JSON.stringify(parsed);
+        resultBox.style.borderColor = '#4caf50';
+        showToast('Minified successfully');
+      } catch (e) {
+        resultBox.textContent = 'Error: ' + e.message;
+        resultBox.style.borderColor = '#f44336';
+      }
+    }
+
+    function validateJSON() {
+      try {
+        JSON.parse(input.value);
+        resultBox.textContent = 'Valid JSON';
+        resultBox.style.borderColor = '#4caf50';
+        showToast('Validation passed');
+      } catch (e) {
+        resultBox.textContent = 'Invalid JSON: ' + e.message;
+        resultBox.style.borderColor = '#f44336';
+      }
+    }
+
+    function copyResult() {
+      if (!resultBox.textContent) {
+        showToast('No content to copy');
+        return;
+      }
+      navigator.clipboard.writeText(resultBox.textContent).then(() => {
+        showToast('Copied to clipboard');
+      });
+    }
+
+    function clearAll() {
+      input.value = '';
+      resultBox.textContent = '';
+      resultBox.style.borderColor = '#e0e0e0';
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+  </script>
+<div class="related-tools" style="margin-top:30px;padding:20px;background:#f8f9fa;border-radius:8px;">
+  <h3>Related Tools</h3>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;">
+    <a href="base64.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">Base64 Encode/Decode</a>
+    <a href="url-encoder.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">URL Encoder/Decoder</a>
+    <a href="hash-generator.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">Hash Generator</a>
+  </div>
+</div>
+<footer class="footer"><div class="container"><p>&copy; 2026 EITools - All tools run locally in your browser</p></div></footer>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+</body>
+</html>

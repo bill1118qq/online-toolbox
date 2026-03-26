@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BMI Calculator - Free Online Body Mass Index Calculator | EITools</title>
+  <meta name="description" content="Free online BMI calculator. Enter your height and weight to calculate your Body Mass Index with WHO and Asian standards.">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <meta property="og:title" content="BMI Calculator - Free Online Body Mass Index Calculator">
+  <meta property="og:description" content="Enter your height and weight to quickly calculate your BMI and understand your healthy weight range.">
+  <meta property="og:url" content="https://eitools.cn/en/src/tools/bmi-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/en/src/tools/bmi-calculator.html">
+  <link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/bmi-calculator.html">
+  <link rel="alternate" hreflang="x-default" href="https://eitools.cn/en/src/tools/bmi-calculator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <meta property="og:type" content="website">
+  <style>
+    .bmi-intro { color: #666; margin-bottom: 20px; }
+    .bmi-form { max-width: 500px; }
+    .bmi-form .form-group { margin-bottom: 16px; }
+    .bmi-form label { display: block; margin-bottom: 6px; font-weight: 600; }
+    .bmi-btn { width: 100%; padding: 12px; font-size: 1.05rem; }
+    .bmi-result { margin-top: 24px; }
+    .bmi-result .error { color: #e03131; }
+    .bmi-ref { margin-top: 40px; padding: 20px; background: #f0f2f5; border-radius: 12px; }
+    .bmi-ref h2 { font-size: 1.1rem; margin-bottom: 12px; }
+    .bmi-ref table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    .bmi-ref th, .bmi-ref td { padding: 8px; }
+    .bmi-ref th { text-align: left; }
+    .bmi-ref thead { background: #e8eaed; }
+    .bmi-ref tbody tr { border-bottom: 1px solid #eee; }
+    .bmi-ref .risk-low { color: green; }
+    .bmi-ref .risk-medium { color: #e67700; }
+    .bmi-ref .risk-high { color: #e03131; }
+    .bmi-ref .related-tools { margin-top: 32px; padding: 20px; background: #f0f2f5; border-radius: 12px; }
+    .bmi-ref .related-tools h3 { font-size: 0.95rem; margin: 0 0 12px; color: #333; }
+    .bmi-ref .related-links { display: flex; flex-wrap: wrap; gap: 8px; }
+    .bmi-ref .related-link { padding: 6px 14px; background: white; border: 1px solid #ddd; border-radius: 16px; color: #4361ee; text-decoration: none; font-size: 0.85rem; }
+    .bmi-ref .related-link:hover { background: #eef1ff; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"BMI Calculator","description":"Free online Body Mass Index calculator","url":"https://eitools.cn/en/src/tools/bmi-calculator.html","applicationCategory":"HealthApplication","operatingSystem":"Any"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a healthy BMI range?","acceptedAnswer":{"@type":"Answer","text":"Under the WHO standard, a BMI of 18.5-24.9 is considered normal weight. Below 18.5 is underweight, 25.0-29.9 is overweight, and 30.0 or above is obese. Under the Asian (Chinese) standard, a BMI of 18.5-23.9 is normal, 24.0-27.9 is overweight, and 28.0 or above is obese."}},{"@type":"Question","name":"How is BMI calculated?","acceptedAnswer":{"@type":"Answer","text":"BMI (Body Mass Index) is calculated using the formula: BMI = weight (kg) divided by height (m) squared. For example, a person who is 170 cm tall and weighs 65 kg has a BMI of 65 / (1.7 x 1.7) = approximately 22.5."}},{"@type":"Question","name":"Is BMI an accurate measure?","acceptedAnswer":{"@type":"Answer","text":"BMI is a simple weight assessment tool suitable for most adults. However, it cannot distinguish between muscle and fat mass. For athletes, pregnant women, and the elderly, BMI may not be accurate. It is recommended to combine it with other indicators such as body fat percentage for a more comprehensive assessment."}},{"@type":"Question","name":"What is the difference between WHO and Asian BMI standards?","acceptedAnswer":{"@type":"Answer","text":"The Asian standard has stricter definitions for overweight and obesity: a BMI of 24 or above is considered overweight and 28 or above is obese, whereas the WHO standard uses 25 for overweight and 30 for obese. This is because Asian populations tend to develop metabolic disease risks at lower BMI levels."}}]}
+  </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+<script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; Home</a>
+      <a href="../../src/tools/bmi-calculator.html" class="back-link" style="margin-left:12px;">中文</a>
+      <h1>BMI Calculator</h1>
+    </div>
+    <p class="bmi-intro">Enter your height and weight to calculate your Body Mass Index (BMI).</p>
+    <div class="bmi-form">
+      <div class="form-group">
+        <label for="height">Height (cm)</label>
+        <input type="number" id="height" placeholder="e.g., 170" min="50" max="250">
+      </div>
+      <div class="form-group">
+        <label for="weight">Weight (kg)</label>
+        <input type="number" id="weight" placeholder="e.g., 65" min="10" max="500" step="0.1">
+      </div>
+      <button class="btn btn-primary bmi-btn" onclick="calcBMI()">Calculate BMI</button>
+      <div id="result" class="bmi-result"></div>
+    </div>
+
+    <div class="bmi-ref">
+      <h2>BMI Reference (Asian Standard)</h2>
+      <table>
+        <thead>
+          <tr><th>BMI Range</th><th>Category</th><th>Health Risk</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>&lt; 18.5</td><td>Underweight</td><td>Nutritional risk</td></tr>
+          <tr><td>18.5 - 23.9</td><td>Normal</td><td class="risk-low">Low risk</td></tr>
+          <tr><td>24.0 - 27.9</td><td>Overweight</td><td class="risk-medium">Moderate risk</td></tr>
+          <tr><td>&ge; 28.0</td><td>Obese</td><td class="risk-high">High risk</td></tr>
+        </tbody>
+      </table>
+
+      <div class="related-tools">
+        <h3>Related Tools</h3>
+        <div class="related-links">
+          <a href="age-calculator.html" class="related-link">Age Calculator</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function calcBMI() {
+      const h = parseFloat(document.getElementById('height').value);
+      const w = parseFloat(document.getElementById('weight').value);
+      if (!h || !w || h < 50 || h > 250 || w < 10 || w > 500) {
+        document.getElementById('result').innerHTML = '<p class="error">Please enter a valid height (50-250 cm) and weight (10-500 kg)</p>';
+        return;
+      }
+      const bmi = w / ((h / 100) ** 2);
+      const bmiRound = bmi.toFixed(1);
+      let category, color, advice;
+      if (bmi < 18.5) { category = 'Underweight'; color = '#4361ee'; advice = 'Consider increasing your nutritional intake with a balanced diet.'; }
+      else if (bmi < 24) { category = 'Normal'; color = '#2f9e44'; advice = 'Your weight is within the healthy range. Keep it up!'; }
+      else if (bmi < 28) { category = 'Overweight'; color = '#e67700'; advice = 'Consider controlling your diet and exercising more to manage your weight.'; }
+      else { category = 'Obese'; color = '#e03131'; advice = 'It is recommended to consult a doctor and create a scientific weight loss plan.'; }
+      const idealMin = (18.5 * (h / 100) ** 2).toFixed(1);
+      const idealMax = (23.9 * (h / 100) ** 2).toFixed(1);
+      document.getElementById('result').innerHTML =
+        '<div style="text-align:center;padding:20px;background:' + color + '11;border:2px solid ' + color + ';border-radius:12px;">' +
+          '<div style="font-size:2.5rem;font-weight:800;color:' + color + ';">' + bmiRound + '</div>' +
+          '<div style="font-size:1.2rem;font-weight:600;color:' + color + ';margin:8px 0;">' + category + '</div>' +
+          '<p style="color:#555;">' + advice + '</p>' +
+          '<p style="color:#888;font-size:0.9rem;margin-top:12px;">Healthy weight range: ' + idealMin + ' - ' + idealMax + ' kg</p>' +
+        '</div>';
+    }
+    document.getElementById('height').addEventListener('keydown', e => { if (e.key === 'Enter') calcBMI(); });
+    document.getElementById('weight').addEventListener('keydown', e => { if (e.key === 'Enter') calcBMI(); });
+  </script>
+  <footer class="footer"><div class="container"><p>&copy; 2026 EITools - All tools run locally in your browser</p></div></footer>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

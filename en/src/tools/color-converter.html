@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Color Converter - RGB/HSL/HEX/CMYK Converter | EITools</title>
+  <meta name="description" content="Free online color converter. Convert between RGB, HSL, HEX, and CMYK color formats instantly. Enter any format to see all conversions in real time.">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <meta property="og:title" content="Color Converter - RGB/HSL/HEX/CMYK Converter">
+  <meta property="og:description" content="Real-time conversion between RGB, HSL, HEX, and CMYK color formats.">
+  <meta property="og:url" content="https://eitools.cn/en/src/tools/color-converter.html">
+  <link rel="canonical" href="https://eitools.cn/en/src/tools/color-converter.html">
+  <link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/color-converter.html">
+  <link rel="alternate" hreflang="x-default" href="https://eitools.cn/en/src/tools/color-converter.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <meta property="og:type" content="website">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"Color Converter","description":"RGB/HSL/HEX/CMYK color format converter","url":"https://eitools.cn/en/src/tools/color-converter.html","applicationCategory":"UtilityApplication","operatingSystem":"Any"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the difference between HEX and RGB colors?","acceptedAnswer":{"@type":"Answer","text":"HEX (hexadecimal) uses a # followed by 6 hexadecimal digits to represent a color, e.g., #FF0000 for red. RGB uses three 0-255 numbers for red, green, and blue channels, e.g., rgb(255,0,0). They are essentially the same color format expressed differently and can be converted between each other."}},{"@type":"Question","name":"What is the HSL color format?","acceptedAnswer":{"@type":"Answer","text":"HSL stands for Hue (0-360 degrees on the color wheel), Saturation (0-100%), and Lightness (0-100%). HSL is more intuitive than RGB because adjusting the lightness easily creates lighter or darker shades of the same color."}},{"@type":"Question","name":"Where is CMYK used?","acceptedAnswer":{"@type":"Answer","text":"CMYK stands for Cyan, Magenta, Yellow, and Key (Black). It is the color model used in the printing industry. Screens display in RGB mode, while printed materials use CMYK. When designing for print, convert RGB colors to CMYK to ensure accurate color reproduction."}},{"@type":"Question","name":"How can I ensure consistent colors across devices?","acceptedAnswer":{"@type":"Answer","text":"Different screens may display colors slightly differently. Use standardized color formats (HEX or RGB) and test on multiple devices. For brand colors, specify exact color values and test across different screens for consistency."}}]}
+  </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+<script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; Home</a>
+      <a href="../../src/tools/color-converter.html" class="back-link" style="margin-left:12px;">中文</a>
+      <h1>Color Converter</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">Enter any color format to instantly convert between RGB, HSL, HEX, and CMYK.</p>
+    <div style="max-width:500px;">
+      <div id="preview" style="width:100%;height:120px;border-radius:12px;background:#4361ee;margin-bottom:20px;border:2px solid #ddd;"></div>
+      <div style="display:grid;gap:12px;">
+        <div><label style="font-size:0.85rem;color:#888;">HEX</label><input type="text" id="hex" value="#4361ee" oninput="fromHex()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-family:monospace;"></div>
+        <div><label style="font-size:0.85rem;color:#888;">RGB</label><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+          <div><input type="number" id="r" value="67" min="0" max="255" oninput="fromRGB()" placeholder="R" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;"><label style="font-size:0.75rem;color:#888;display:block;">R</label></div>
+          <div><input type="number" id="g" value="97" min="0" max="255" oninput="fromRGB()" placeholder="G" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;"><label style="font-size:0.75rem;color:#888;display:block;">G</label></div>
+          <div><input type="number" id="b" value="238" min="0" max="255" oninput="fromRGB()" placeholder="B" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;"><label style="font-size:0.75rem;color:#888;display:block;">B</label></div>
+        </div></div>
+        <div><label style="font-size:0.85rem;color:#888;">HSL</label><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+          <div><input type="number" id="h" value="232" min="0" max="360" oninput="fromHSL()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;"><label style="font-size:0.75rem;color:#888;display:block;">H</label></div>
+          <div><input type="number" id="s" value="84" min="0" max="100" oninput="fromHSL()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;"><label style="font-size:0.75rem;color:#888;display:block;">S%</label></div>
+          <div><input type="number" id="l" value="60" min="0" max="100" oninput="fromHSL()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;"><label style="font-size:0.75rem;color:#888;display:block;">L%</label></div>
+        </div></div>
+      </div>
+      <div style="margin-top:16px;padding:16px;background:#f0f2f5;border-radius:12px;">
+        <label style="font-size:0.85rem;color:#888;">CSS Code</label>
+        <code id="css-code" style="display:block;margin-top:6px;padding:12px;background:#1a1a2e;color:#a8dadc;border-radius:8px;font-size:0.85rem;">color: #4361ee;</code>
+        <button class="btn btn-primary" onclick="navigator.clipboard.writeText(document.getElementById('css-code').textContent)" style="margin-top:8px;padding:8px 16px;font-size:0.85rem;">Copy CSS</button>
+      </div>
+      <div style="margin-top:16px;">
+        <label style="font-size:0.85rem;color:#888;">Color Name</label>
+        <div id="color-name" style="font-size:1.1rem;font-weight:600;margin-top:4px;"></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function hexToRgb(hex) {
+      hex = hex.replace('#','');
+      if (hex.length === 3) hex = hex.split('').map(c=>c+c).join('');
+      return [parseInt(hex.slice(0,2),16), parseInt(hex.slice(2,4),16), parseInt(hex.slice(4,6),16)];
+    }
+    function rgbToHex(r,g,b) { return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join(''); }
+    function rgbToHsl(r,g,b) {
+      r/=255;g/=255;b/=255;
+      const max=Math.max(r,g,b),min=Math.min(r,g,b),l=(max+min)/2;
+      let h=0,s=0;
+      if(max!==min){const d=max-min;s=l>0.5?d/(2-max-min):d/(max+min);
+        if(max===r)h=((g-b)/d+(g<b?6:0))/6;else if(max===g)h=((b-r)/d+2)/6;else h=((r-g)/d+4)/6;}
+      return [Math.round(h*360),Math.round(s*100),Math.round(l*100)];
+    }
+    function hslToRgb(h,s,l) {
+      h/=360;s/=100;l/=100;
+      let r,g,b;
+      if(s===0){r=g=b=l;}else{const hue2rgb=(p,q,t)=>{if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<1/2)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p;};
+        const q=l<0.5?l*(1+s):l+s-l*s;const p=2*l-q;r=hue2rgb(p,q,h+1/3);g=hue2rgb(p,q,h);b=hue2rgb(p,q,h-1/3);}
+      return [Math.round(r*255),Math.round(g*255),Math.round(b*255)];
+    }
+    function updateAll(r,g,b) {
+      const hex=rgbToHex(r,g,b),hsl=rgbToHsl(r,g,b);
+      const cmyk=rgbToCmyk(r,g,b);
+      document.getElementById('hex').value=hex;
+      document.getElementById('r').value=r;document.getElementById('g').value=g;document.getElementById('b').value=b;
+      document.getElementById('h').value=hsl[0];document.getElementById('s').value=hsl[1];document.getElementById('l').value=hsl[2];
+      document.getElementById('preview').style.background=hex;
+      document.getElementById('css-code').textContent=`color: ${hex};\nbackground-color: ${hex};`;
+      document.getElementById('color-name').textContent=getColorName(r,g,b);
+    }
+    function fromHex(){try{const[r,g,b]=hexToRgb(document.getElementById('hex').value);updateAll(r,g,b);}catch(e){}}
+    function fromRGB(){updateAll(+document.getElementById('r').value,+document.getElementById('g').value,+document.getElementById('b').value);}
+    function fromHSL(){const[r,g,b]=hslToRgb(+document.getElementById('h').value,+document.getElementById('s').value,+document.getElementById('l').value);updateAll(r,g,b);}
+    function rgbToCmyk(r,g,b){if(r===0&&g===0&&b===0)return[0,0,0,0];const c=1-Math.max(r,g,b)/255;return[Math.round((1-r/255-c)/(1-c)*100),Math.round((1-g/255-c)/(1-c)*100),Math.round((1-b/255-c)/(1-c)*100),Math.round(c*100)];}
+    function getColorName(r,g,b){
+      const names=[{name:'Black',rgb:[0,0,0]},{name:'White',rgb:[255,255,255]},{name:'Red',rgb:[255,0,0]},{name:'Green',rgb:[0,128,0]},{name:'Blue',rgb:[0,0,255]},{name:'Yellow',rgb:[255,255,0]},{name:'Cyan',rgb:[0,255,255]},{name:'Magenta',rgb:[255,0,255]},{name:'Orange',rgb:[255,165,0]},{name:'Purple',rgb:[128,0,128]},{name:'Gray',rgb:[128,128,128]},{name:'Dark Gray',rgb:[64,64,64]},{name:'Light Gray',rgb:[192,192,192]}];
+      let best='',minDist=Infinity;
+      for(const n of names){const d=Math.sqrt((r-n.rgb[0])**2+(g-n.rgb[1])**2+(b-n.rgb[2])**2);if(d<minDist){minDist=d;best=n.name;}}
+      return minDist<50?best:'Custom Color';
+    }
+  </script>
+<div style="margin-top:32px;padding:20px;background:#f0f2f5;border-radius:12px;">
+  <h3 style="font-size:0.95rem;margin:0 0 12px;color:#333;">Related Tools</h3>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;">
+    <a href="base64.html" style="padding:6px 14px;background:white;border:1px solid #ddd;border-radius:16px;color:#4361ee;text-decoration:none;font-size:0.85rem;">Base64 Encode/Decode</a>
+  </div>
+</div>
+<footer class="footer"><div class="container"><p>&copy; 2026 EITools - All tools run locally in your browser</p></div></footer>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+</body>
+</html>
