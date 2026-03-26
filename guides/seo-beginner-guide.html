@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEO入门指南：搜索引擎优化完全教程 - 在线工具箱</title>
+  <meta name="description" content="SEO入门完全教程：什么是SEO、搜索引擎工作原理、页面SEO优化（Title/Meta/H标签）、技术SEO（站点地图/robots.txt/页面速度）、站外SEO（外链/社交信号）、SEO工具推荐，从零开始学习搜索引擎优化。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../manifest.json">
+  <meta property="og:title" content="SEO入门指南：搜索引擎优化完全教程">
+  <meta property="og:description" content="从零开始学习SEO：搜索引擎原理、页面优化、技术SEO、站外SEO，附在线SEO检测工具。">
+  <meta property="og:url" content="https://eitools.cn/guides/seo-beginner-guide.html">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://eitools.cn/guides/seo-beginner-guide.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "如何进行搜索引擎优化（SEO）",
+    "description": "SEO入门完全教程，涵盖搜索引擎原理、页面优化、技术SEO、站外SEO和常用工具。",
+    "url": "https://eitools.cn/guides/seo-beginner-guide.html",
+    "step": [
+      {
+        "@type": "HowToStep",
+        "name": "了解搜索引擎原理",
+        "text": "学习搜索引擎如何抓取、索引和排名网页，理解SEO的基本原理。"
+      },
+      {
+        "@type": "HowToStep",
+        "name": "优化页面SEO",
+        "text": "优化Title标签、Meta描述、H标签、内容质量、图片Alt属性等页面要素。"
+      },
+      {
+        "@type": "HowToStep",
+        "name": "实施技术SEO",
+        "text": "创建站点地图、配置robots.txt、优化页面加载速度、确保移动端适配。"
+      },
+      {
+        "@type": "HowToStep",
+        "name": "建设站外SEO",
+        "text": "获取高质量外链、利用社交媒体信号、管理品牌口碑。"
+      },
+      {
+        "@type": "HowToStep",
+        "name": "监控和迭代",
+        "text": "使用SEO工具监控排名、流量和转化数据，持续优化SEO策略。"
+      }
+    ]
+  }
+  </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+<script src="../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>SEO入门指南：搜索引擎优化完全教程</h1>
+    </div>
+
+    <article style="line-height: 1.8; color: #333;">
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">一、什么是 SEO？</h2>
+      <p>SEO（Search Engine Optimization，搜索引擎优化）是指通过优化网站的内容、结构和技术实现，使网站在搜索引擎（如 Google、百度、Bing）的自然搜索结果中获得更高排名的过程。</p>
+      <p>为什么要做 SEO？</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>流量质量高</strong>：来自搜索的用户是主动寻找相关信息的，转化率远高于广告流量</li>
+        <li><strong>长期效果好</strong>：一旦获得好的排名，可以持续获得免费流量，不像付费广告一旦停止投放流量就消失</li>
+        <li><strong>性价比高</strong>：相比 SEM（搜索引擎营销）的付费广告，SEO 的长期获客成本更低</li>
+        <li><strong>建立信任</strong>：用户更信任自然排名靠前的网站，而非广告位</li>
+      </ul>
+      <p>SEO 分为三大支柱：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>页面 SEO（On-Page SEO）</strong>：优化网页自身的内容和 HTML 元素</li>
+        <li><strong>技术 SEO（Technical SEO）</strong>：优化网站的技术架构和性能</li>
+        <li><strong>站外 SEO（Off-Page SEO）</strong>：提升网站在外部的影响力（主要是外链）</li>
+      </ul>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">二、搜索引擎如何工作？</h2>
+      <p>理解 SEO 的前提是理解搜索引擎的工作原理。搜索引擎的工作流程分为三个核心步骤：</p>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">2.1 抓取（Crawling）</h3>
+      <p>搜索引擎使用称为"爬虫"（Spider/Crawler/Bot）的自动化程序来浏览互联网，沿着链接从一个页面跳转到另一个页面，发现和下载网页内容。</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>Google 的爬虫叫 Googlebot</li>
+        <li>百度的爬虫叫 Baiduspider</li>
+        <li>爬虫通过页面上的链接发现新页面</li>
+        <li>robots.txt 文件可以告诉爬虫哪些页面允许或禁止抓取</li>
+        <li>XML Sitemap 可以帮助爬虫发现网站的所有页面</li>
+      </ul>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">2.2 索引（Indexing）</h3>
+      <p>爬虫抓取网页后，搜索引擎会对页面内容进行分析、提取和处理，然后将信息存储在一个巨大的数据库中，这个数据库就是"索引"。</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>搜索引擎会分析页面的标题、内容、图片、链接等</li>
+        <li>不是所有被抓取的页面都会被索引——质量低或重复的页面可能被排除</li>
+        <li>你可以通过 site: 查询指令检查页面是否被索引（如 site:eitools.cn）</li>
+        <li>meta robots 标签（noindex）可以阻止页面被索引</li>
+      </ul>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">2.3 排名（Ranking）</h3>
+      <p>当用户在搜索引擎输入查询时，搜索引擎会在索引中查找相关页面，并根据数百个排名因素对结果进行排序。Google 使用的核心排名算法考虑的主要因素包括：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>相关性</strong>：页面内容是否与用户的搜索查询匹配</li>
+        <li><strong>权威性</strong>：网站和页面在相关领域的权威程度（主要看外链）</li>
+        <li><strong>用户体验</strong>：页面加载速度、移动端适配、安全连接（HTTPS）等</li>
+        <li><strong>内容质量</strong>：内容的原创性、深度、准确性和实用性</li>
+        <li><strong>搜索意图</strong>：页面是否满足用户的实际需求（信息型、交易型、导航型）</li>
+      </ul>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">三、页面 SEO（On-Page SEO）</h2>
+      <p>页面 SEO 是指优化单个网页的内容和 HTML 元素，使其更容易被搜索引擎理解和排名。</p>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">3.1 Title 标签</h3>
+      <p>Title 标签是页面 SEO 中最重要的单一因素。它告诉搜索引擎和用户页面的主题。</p>
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; background: white; border-radius: 12px; overflow: hidden; margin: 12px 0;">
+        <tr style="background: #4361ee; color: white;"><th style="padding: 12px;">要点</th><th style="padding: 12px;">说明</th></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">长度</td><td style="padding: 10px 12px;">30-60 个字符（中文约 15-30 个字），超出部分会被截断</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">关键词位置</td><td style="padding: 10px 12px;">核心关键词尽量放在标题开头</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">唯一性</td><td style="padding: 10px 12px;">每个页面使用不同的 Title</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">吸引力</td><td style="padding: 10px 12px;">标题应该有吸引力，提高点击率</td></tr>
+        <tr><td style="padding: 10px 12px;">格式</td><td style="padding: 10px 12px;">建议格式："核心关键词 - 品牌名" 或 "核心关键词 | 辅助关键词"</td></tr>
+      </table>
+      <p>示例：</p>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">&lt;title&gt;密码安全完全指南：如何设置强密码和防止泄露 - 在线工具箱&lt;/title&gt;</pre>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">3.2 Meta Description</h3>
+      <p>Meta Description 是页面的摘要描述，显示在搜索结果的标题下方。虽然它不是直接的排名因素，但直接影响点击率。</p>
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; background: white; border-radius: 12px; overflow: hidden; margin: 12px 0;">
+        <tr style="background: #4361ee; color: white;"><th style="padding: 12px;">要点</th><th style="padding: 12px;">说明</th></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">长度</td><td style="padding: 10px 12px;">120-160 个字符（中文约 60-80 个字）</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">内容</td><td style="padding: 10px 12px;">准确描述页面内容，包含关键词</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">行为引导</td><td style="padding: 10px 12px;">适当加入行动号召（"了解详情""立即试用"）</td></tr>
+        <tr><td style="padding: 10px 12px;">唯一性</td><td style="padding: 10px 12px;">每个页面使用不同的描述</td></tr>
+      </table>
+      <p>示例：</p>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">&lt;meta name="description" content="密码安全完全指南：强密码设置方法、常见密码攻击手段、密码管理器推荐、双因素认证2FA、Passkey新技术、密码泄露检测。"&gt;</pre>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">3.3 标题标签（H1-H6）</h3>
+      <p>标题标签用于定义内容的层次结构，帮助搜索引擎理解页面内容的组织方式：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>H1</strong>：每页仅一个，是页面主标题，应包含核心关键词</li>
+        <li><strong>H2</strong>：主要章节标题，包含相关的次级关键词</li>
+        <li><strong>H3-H6</strong>：子章节标题，用于更细粒度的内容划分</li>
+        <li>标题层次应逻辑清晰，不要跳级（如 H1 直接到 H3）</li>
+      </ul>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">3.4 内容优化</h3>
+      <p>"内容为王"是 SEO 领域永恒的真理。高质量的内容是获得好排名的基础：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>原创性</strong>：避免复制粘贴，搜索引擎会惩罚抄袭内容</li>
+        <li><strong>深度</strong>：覆盖主题的各个方面，提供全面的答案</li>
+        <li><strong>实用性</strong>：真正帮助用户解决问题，提供可操作的建议</li>
+        <li><strong>可读性</strong>：段落简短、使用列表和表格、添加小标题</li>
+        <li><strong>关键词自然使用</strong>：在标题、开头段落、小标题和正文中自然地融入目标关键词</li>
+        <li><strong>内容长度</strong>：根据主题的复杂程度，教程和指南通常需要 2000-5000 字</li>
+        <li><strong>多媒体</strong>：适当使用图片、视频、图表增强内容价值</li>
+      </ul>
+      <p>注意：不要为了 SEO 而堆砌关键词。关键词密度建议控制在 1-3%，保持自然通顺比堆砌关键词更重要。</p>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">3.5 图片优化</h3>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>Alt 属性</strong>：为每张图片添加描述性的 Alt 文本，帮助搜索引擎理解图片内容</li>
+        <li><strong>文件名</strong>：使用有意义的文件名（如 product-feature.png 而非 IMG_1234.jpg）</li>
+        <li><strong>图片格式</strong>：优先使用 WebP 格式，同质量下比 JPEG 小 25-35%</li>
+        <li><strong>图片压缩</strong>：在保证画质的前提下尽可能压缩图片大小</li>
+        <li><strong>尺寸属性</strong>：设置 width 和 height 属性，避免布局偏移（CLS）</li>
+        <li><strong>懒加载</strong>：使用 loading="lazy" 属性延迟加载非首屏图片</li>
+      </ul>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">3.6 URL 结构优化</h3>
+      <p>良好的 URL 结构有助于搜索引擎理解页面内容，也提升用户体验：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>使用简洁、包含关键词的 URL</li>
+        <li>用连字符（-）分隔单词，不要用下划线（_）</li>
+        <li>避免过深的目录层级（建议不超过 3 层）</li>
+        <li>避免使用特殊字符、中文和参数过多</li>
+      </ul>
+      <p>好的 URL 示例：<code>eitools.cn/guides/seo-beginner-guide.html</code></p>
+      <p>差的 URL 示例：<code>example.com/page?id=12345&amp;cat=6&amp;lang=zh</code></p>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">3.7 内链优化</h3>
+      <p>内链（同一网站内不同页面之间的链接）对于 SEO 至关重要：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>内链帮助搜索引擎发现和索引网站内的页面</li>
+        <li>内链传递"链接权重"（PageRank），帮助重要页面排名更好</li>
+        <li>使用描述性的锚文本（链接文字），避免"点击这里"之类的模糊文字</li>
+        <li>相关页面之间相互链接，形成逻辑清晰的内容网络</li>
+        <li>每页的内部链接数量建议不超过 100 个</li>
+      </ul>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">四、技术 SEO（Technical SEO）</h2>
+      <p>技术 SEO 是指优化网站的技术实现，使搜索引擎更有效地抓取、索引和理解网站内容。</p>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">4.1 站点地图（Sitemap）</h3>
+      <p>XML Sitemap 是一个告诉搜索引擎你网站上有哪些页面的文件：</p>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"&gt;
+  &lt;url&gt;
+    &lt;loc&gt;https://eitools.cn/&lt;/loc&gt;
+    &lt;priority&gt;1.0&lt;/priority&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+    &lt;loc&gt;https://eitools.cn/guides/seo-beginner-guide.html&lt;/loc&gt;
+    &lt;lastmod&gt;2026-03-26&lt;/lastmod&gt;
+    &lt;changefreq&gt;monthly&lt;/changefreq&gt;
+    &lt;priority&gt;0.7&lt;/priority&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;</pre>
+      <p>使用建议：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>将 sitemap.xml 放在网站根目录</li>
+        <li>在 robots.txt 中声明 Sitemap 位置：<code>Sitemap: https://eitools.cn/sitemap.xml</code></li>
+        <li>提交到 Google Search Console 和百度站长平台</li>
+        <li>保持 Sitemap 更新，特别是新增或删除页面后</li>
+      </ul>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">4.2 robots.txt</h3>
+      <p>robots.txt 文件告诉搜索引擎爬虫哪些页面可以抓取，哪些不可以：</p>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">User-agent: *
+Allow: /
+
+# 禁止抓取特定目录
+Disallow: /admin/
+Disallow: /private/
+
+# 声明 Sitemap
+Sitemap: https://eitools.cn/sitemap.xml</pre>
+      <p>注意事项：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>robots.txt 是建议性的，不是强制的——恶意爬虫可能不遵守</li>
+        <li>不要用 robots.txt 来阻止敏感页面被索引——使用 meta noindex 或密码保护</li>
+        <li>确保 robots.txt 没有意外阻止重要页面被抓取</li>
+      </ul>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">4.3 页面速度优化</h3>
+      <p>页面加载速度是 Google 的排名因素之一，也是核心用户体验指标。Google 使用 Core Web Vitals 来衡量页面体验：</p>
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; background: white; border-radius: 12px; overflow: hidden; margin: 12px 0;">
+        <tr style="background: #4361ee; color: white;"><th style="padding: 12px;">指标</th><th style="padding: 12px;">名称</th><th style="padding: 12px;">含义</th><th style="padding: 12px;">优秀标准</th></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">LCP</td><td style="padding: 10px 12px;">最大内容渲染</td><td style="padding: 10px 12px;">页面主要内容加载完成时间</td><td style="padding: 10px 12px;">&lt; 2.5 秒</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">FID/INP</td><td style="padding: 10px 12px;">首次输入延迟/交互到下一次绘制</td><td style="padding: 10px 12px;">页面响应用户交互的速度</td><td style="padding: 10px 12px;">&lt; 200ms</td></tr>
+        <tr><td style="padding: 10px 12px;">CLS</td><td style="padding: 10px 12px;">累积布局偏移</td><td style="padding: 10px 12px;">页面元素意外移动的程度</td><td style="padding: 10px 12px;">&lt; 0.1</td></tr>
+      </table>
+      <p>提升页面速度的常用方法：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>压缩 HTML、CSS、JavaScript 文件</li>
+        <li>使用 CDN（内容分发网络）加速资源加载</li>
+        <li>优化图片（WebP 格式、懒加载、设置尺寸属性）</li>
+        <li>减少 HTTP 请求数量</li>
+        <li>使用浏览器缓存策略</li>
+        <li>延迟加载非关键 JavaScript</li>
+        <li>使用字体子集化，减少字体文件大小</li>
+      </ul>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">4.4 移动端适配</h3>
+      <p>Google 从 2018 年开始使用"移动优先索引"——这意味着 Google 主要使用移动版页面的内容来确定排名，即使桌面版可能更丰富。</p>
+      <p>移动端优化的关键：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>使用响应式设计或独立的移动端页面</li>
+        <li>确保文字在移动设备上可读（建议正文 16px 以上）</li>
+        <li>按钮和链接的点击区域足够大（建议 48x48px 以上）</li>
+        <li>避免使用 Flash 和其他移动端不支持的插件</li>
+        <li>避免弹窗遮挡主要内容（特别是移动端插页广告）</li>
+        <li>使用 viewport meta 标签：<code>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</code></li>
+      </ul>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">4.5 HTTPS 安全连接</h3>
+      <p>HTTPS 是 Google 的排名信号。所有网站都应该使用 HTTPS：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>获取 SSL/TLS 证书（Let's Encrypt 提供免费证书）</li>
+        <li>确保所有页面都通过 HTTPS 访问</li>
+        <li>设置 HTTP 到 HTTPS 的 301 重定向</li>
+        <li>在 Google Search Console 中添加 HTTPS 版本</li>
+        <li>更新 sitemap.xml 和内部链接为 HTTPS</li>
+      </ul>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">4.6 结构化数据（Schema.org）</h3>
+      <p>结构化数据（Structured Data）是添加在 HTML 中的标记，帮助搜索引擎更好地理解页面内容，并在搜索结果中展示富文本（Rich Results）：</p>
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; background: white; border-radius: 12px; overflow: hidden; margin: 12px 0;">
+        <tr style="background: #4361ee; color: white;"><th style="padding: 12px;">类型</th><th style="padding: 12px;">适用页面</th><th style="padding: 12px;">搜索结果增强效果</th></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">FAQPage</td><td style="padding: 10px 12px;">问答/教程页面</td><td style="padding: 10px 12px;">显示常见问题和折叠答案</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">HowTo</td><td style="padding: 10px 12px;">教程/指南页面</td><td style="padding: 10px 12px;">显示步骤列表</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">WebApplication</td><td style="padding: 10px 12px;">在线工具页面</td><td style="padding: 10px 12px;">显示评分、平台信息</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">Article</td><td style="padding: 10px 12px;">文章/博客页面</td><td style="padding: 10px 12px;">显示作者、发布日期</td></tr>
+        <tr><td style="padding: 10px 12px;">BreadcrumbList</td><td style="padding: 10px 12px;">所有页面</td><td style="padding: 10px 12px;">显示面包屑导航路径</td></tr>
+      </table>
+      <p>结构化数据使用 JSON-LD 格式添加到 HTML 的 head 中：</p>
+      <pre style="background: #f0f2f5; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;">&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [{
+    "@type": "Question",
+    "name": "什么是SEO？",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "SEO是搜索引擎优化的缩写..."
+    }
+  }]
+}
+&lt;/script&gt;</pre>
+      <p>使用 Google 的 <a href="https://search.google.com/test/rich-results" target="_blank" rel="noopener" style="color: #4361ee;">富文本结果测试工具</a>验证结构化数据是否正确。</p>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">五、站外 SEO（Off-Page SEO）</h2>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">5.1 外链（Backlinks）</h3>
+      <p>外链是指其他网站链接到你的网站的链接，是 SEO 最重要的排名因素之一。外链相当于互联网上的"投票"——来自权威网站的高质量外链越多，你的网站在搜索引擎眼中的权威性越高。</p>
+      <p>外链质量评估：</p>
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; background: white; border-radius: 12px; overflow: hidden; margin: 12px 0;">
+        <tr style="background: #4361ee; color: white;"><th style="padding: 12px;">高质量外链</th><th style="padding: 12px;">低质量外链</th></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">来自权威、高流量网站</td><td style="padding: 10px 12px;">来自垃圾网站或内容农场</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">来自与你主题相关的网站</td><td style="padding: 10px 12px;">来自完全不相关的网站</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">在正文内容中自然提及</td><td style="padding: 10px 12px;">出现在评论区、论坛签名</td></tr>
+        <tr><td style="padding: 10px 12px;">使用描述性锚文本</td><td style="padding: 10px 12px;">使用"点击这里"或裸 URL</td></tr>
+      </table>
+      <p>获取高质量外链的方法：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>创建优质内容</strong>：最好的外链策略是创建值得被引用的内容</li>
+        <li><strong>客座博客</strong>：在行业相关博客上发布文章，获取作者简介中的链接</li>
+        <li><strong>资源页面链接</strong>：找到与你主题相关的资源汇总页面，请求加入你的链接</li>
+        <li><strong>社交媒体分享</strong>：虽然社交链接不直接传递权重，但可以增加曝光</li>
+        <li><strong>行业目录</strong>：在相关的行业目录和黄页网站注册</li>
+        <li><strong>数据和研究</strong>：发布原创数据、调查报告或工具，容易被其他网站引用</li>
+      </ul>
+      <p>需要避免的做法：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>购买外链（Google 可能惩罚参与买卖外链的网站）</li>
+        <li>使用外链农场或自动化工具批量创建外链</li>
+        <li>在无关的博客或论坛大量发垃圾评论带链接</li>
+        <li>参与链接交换方案</li>
+      </ul>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">5.2 社交信号</h3>
+      <p>虽然 Google 官方表示社交信号（点赞、分享、关注）不是直接的排名因素，但社交媒体对 SEO 有间接但重要的影响：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>社交媒体分享可以增加页面曝光，吸引更多自然外链</li>
+        <li>活跃的社交媒体存在提升品牌知名度和信任度</li>
+        <li>社交媒体个人资料通常出现在品牌搜索结果中</li>
+        <li>微信、微博、知乎等平台的内容可能出现在搜索引擎结果中</li>
+      </ul>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">六、关键词研究</h2>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">6.1 什么是关键词研究？</h3>
+      <p>关键词研究是 SEO 的基础工作，目的是找到用户在搜索引擎中搜索的词语和短语，了解搜索量、竞争程度和用户意图，然后据此优化内容。</p>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">6.2 关键词类型</h3>
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; background: white; border-radius: 12px; overflow: hidden; margin: 12px 0;">
+        <tr style="background: #4361ee; color: white;"><th style="padding: 12px;">类型</th><th style="padding: 12px;">搜索意图</th><th style="padding: 12px;">关键词示例</th><th style="padding: 12px;">内容形式</th></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">信息型</td><td style="padding: 10px 12px;">寻找答案或信息</td><td style="padding: 10px 12px;">"什么是SEO""二维码怎么用"</td><td style="padding: 10px 12px;">教程、指南、FAQ</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">导航型</td><td style="padding: 10px 12px;">寻找特定网站</td><td style="padding: 10px 12px;">"eitools""GitHub登录"</td><td style="padding: 10px 12px;">首页、品牌页</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;">交易型</td><td style="padding: 10px 12px;">准备购买或使用</td><td style="padding: 10px 12px;">"在线密码生成器""免费图片压缩"</td><td style="padding: 10px 12px;">工具页、产品页</td></tr>
+        <tr><td style="padding: 10px 12px;">比较型</td><td style="padding: 10px 12px;">比较不同选项</td><td style="padding: 10px 12px;">"Bitwarden和1Password哪个好"</td><td style="padding: 10px 12px;">对比文章、评测</td></tr>
+      </table>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">6.3 关键词研究方法</h3>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>搜索引擎建议</strong>：在 Google/百度搜索框中输入关键词，查看自动补全建议</li>
+        <li><strong>相关搜索</strong>：查看搜索结果底部的"相关搜索"</li>
+        <li><strong>People Also Ask</strong>：Google 搜索结果中的"人们还问了"板块</li>
+        <li><strong>百度指数</strong>（index.baidu.com）：查看中文关键词的搜索趋势</li>
+        <li><strong>Google Trends</strong>：查看关键词的全球搜索趋势和对比</li>
+        <li><strong>关键词工具</strong>：Google Keyword Planner、Ahrefs、SEMrush 等专业工具</li>
+      </ul>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">6.4 长尾关键词策略</h3>
+      <p>长尾关键词（Long-tail Keywords）是指搜索量较低但更具体、竞争较小的关键词短语。对于新站和小型网站来说，长尾关键词策略尤为有效：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li>"SEO"——竞争极高，几乎不可能排到首页</li>
+        <li>"SEO 教程"——竞争较高，有一定难度</li>
+        <li>"SEO 入门指南 搜索引擎优化"——长尾词，竞争较低，转化率更高</li>
+        <li>"中文网站 SEO 优化怎么做"——更长的长尾词，竞争极低</li>
+      </ul>
+      <p>建议策略：先从长尾关键词开始，建立内容和权威性，逐步挑战更热门的关键词。</p>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">七、SEO 工具推荐</h2>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">7.1 免费工具</h3>
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; background: white; border-radius: 12px; overflow: hidden; margin: 12px 0;">
+        <tr style="background: #4361ee; color: white;"><th style="padding: 12px;">工具</th><th style="padding: 12px;">功能</th><th style="padding: 12px;">网址</th></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;"><strong>Google Search Console</strong></td><td style="padding: 10px 12px;">监控索引状态、搜索表现、提交 Sitemap</td><td style="padding: 10px 12px;">search.google.com/search-console</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;"><strong>百度搜索资源平台</strong></td><td style="padding: 10px 12px;">百度站长的索引管理、搜索诊断工具</td><td style="padding: 10px 12px;">ziyuan.baidu.com</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;"><strong>PageSpeed Insights</strong></td><td style="padding: 10px 12px;">检测页面加载速度和 Core Web Vitals</td><td style="padding: 10px 12px;">pagespeed.web.dev</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px 12px;"><strong>Google Trends</strong></td><td style="padding: 10px 12px;">关键词搜索趋势分析</td><td style="padding: 10px 12px;">trends.google.com</td></tr>
+        <tr><td style="padding: 10px 12px;"><strong>Rich Results Test</strong></td><td style="padding: 10px 12px;">测试结构化数据是否正确</td><td style="padding: 10px 12px;">search.google.com/test/rich-results</td></tr>
+      </table>
+
+      <h3 style="font-size: 1.1rem; color: #4361ee;">7.2 付费工具（高级功能）</h3>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>Ahrefs</strong>：外链分析、关键词研究、竞争对手分析</li>
+        <li><strong>SEMrush</strong>：全功能 SEO 套件，关键词追踪、站内审计</li>
+        <li><strong>Moz Pro</strong>：关键词研究、链接分析、站内审计</li>
+        <li><strong>Screaming Frog</strong>：技术 SEO 爬虫工具，用于站内审计</li>
+      </ul>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">八、SEO 常见误区</h2>
+
+      <h3 style="font-size: 1.05rem;">误区一：SEO 是一次性的工作</h3>
+      <p>SEO 是一个持续的过程。搜索引擎的算法在不断更新，竞争对手也在优化。你需要持续监控排名、分析数据、优化内容、建设外链。</p>
+
+      <h3 style="font-size: 1.05rem;">误区二：SEO 能快速见效</h3>
+      <p>SEO 通常需要 3-12 个月才能看到显著效果。新站可能需要更长时间。任何承诺"7天到首页"的 SEO 服务都不可信，甚至可能使用黑帽手段导致你的网站被惩罚。</p>
+
+      <h3 style="font-size: 1.05rem;">误区三：关键词密度越高越好</h3>
+      <p>Google 已经能够理解自然语言和同义词，不需要反复堆砌关键词。过度堆砌反而会被视为"关键词填充"（Keyword Stuffing），是一种被惩罚的作弊行为。</p>
+
+      <h3 style="font-size: 1.05rem;">误区四：只要外链多就能排好</h3>
+      <p>外链质量远比数量重要。100 个来自垃圾网站的垃圾外链，不如 1 个来自行业权威网站的高质量外链。Google 会惩罚使用黑帽手段大量创建低质量外链的网站。</p>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">九、SEO 实施路线图</h2>
+      <p>如果你是刚开始做 SEO，建议按照以下优先级逐步实施：</p>
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; background: white; border-radius: 12px; overflow: hidden; margin: 12px 0;">
+        <tr style="background: #f0f2f5;"><th style="padding: 10px; text-align: left;">阶段</th><th style="padding: 10px;">任务</th><th style="padding: 10px;">优先级</th></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 8px 10px;">第一阶段</td><td style="padding: 8px 10px;">确保 HTTPS、移动端适配、基本页面 SEO（Title/Meta/H标签）</td><td style="padding: 8px 10px; color: #e74c3c;">立即</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 8px 10px;">第一阶段</td><td style="padding: 8px 10px;">创建 robots.txt 和 sitemap.xml，提交到搜索引擎</td><td style="padding: 8px 10px; color: #e74c3c;">立即</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 8px 10px;">第二阶段</td><td style="padding: 8px 10px;">进行关键词研究，优化现有页面的内容</td><td style="padding: 8px 10px; color: #e67e22;">1-2周</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 8px 10px;">第二阶段</td><td style="padding: 8px 10px;">添加结构化数据（Schema.org）</td><td style="padding: 8px 10px; color: #e67e22;">1-2周</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 8px 10px;">第三阶段</td><td style="padding: 8px 10px;">优化页面速度、图片、内链结构</td><td style="padding: 8px 10px; color: #f1c40f;">2-4周</td></tr>
+        <tr style="border-bottom: 1px solid #eee;"><td style="padding: 8px 10px;">第三阶段</td><td style="padding: 8px 10px;">注册 Google Search Console 和百度搜索资源平台</td><td style="padding: 8px 10px; color: #f1c40f;">2-4周</td></tr>
+        <tr><td style="padding: 8px 10px;">持续进行</td><td style="padding: 8px 10px;">创建优质内容、建设外链、监控排名和数据</td><td style="padding: 8px 10px; color: #2ecc71;">长期</td></tr>
+      </table>
+
+      <h2 style="margin: 24px 0 12px; font-size: 1.3rem;">十、SEO 与 AI 内容</h2>
+      <p>随着 AI（如 ChatGPT）的普及，搜索引擎也在快速演变。Google 持续改进算法以应对 AI 生成内容，其核心原则是：</p>
+      <ul style="margin: 12px 0 12px 24px;">
+        <li><strong>E-E-A-T</strong>（Experience 经验、Expertise 专业性、Authoritativeness 权威性、Trustworthiness 可信度）是 Google 评估内容质量的核心框架</li>
+        <li>AI 辅助生成的内容本身不会受到惩罚，但低质量、不准确或没有实际价值的内容会被惩罚</li>
+        <li>搜索引擎越来越注重内容是否满足用户意图、是否提供独特价值、是否准确可靠</li>
+        <li>AI Overviews（Google 在搜索结果中直接显示 AI 生成的回答）正在改变搜索生态，SEO 策略也需要相应调整</li>
+      </ul>
+
+      <div style="margin-top: 24px; padding: 20px; background: #f0f4ff; border-radius: 12px; border: 1px solid #4361ee;">
+        <h3 style="color: #4361ee; margin-top: 0;">在线 SEO 检测工具</h3>
+        <p>使用我们的 <a href="../src/tools/seo-checker.html" style="color: #4361ee; font-weight: 600;">网页 SEO 检测工具</a>，粘贴 HTML 源码即可自动检测 Title、Meta Description、H 标签、Open Graph、Schema.org 等 SEO 要素，给出评分和优化建议。</p>
+      </div>
+
+      <div style="background: #eef1ff; padding: 20px; border-radius: 12px; margin: 20px 0;">
+        <h3 style="margin-bottom: 8px;">相关文章与工具</h3>
+        <ul style="margin-left: 20px;">
+          <li><a href="../src/tools/seo-checker.html" style="color: #4361ee;">网页 SEO 检测工具</a></li>
+          <li><a href="seo-checklist-guide.html" style="color: #4361ee;">网页 SEO 优化清单</a></li>
+          <li><a href="../src/tools/meta-tag-generator.html" style="color: #4361ee;">Meta 标签生成器</a></li>
+        </ul>
+      </div>
+    </article>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../js/share.js"></script>
+</body>
+</html>
