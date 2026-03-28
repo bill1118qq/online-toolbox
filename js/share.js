@@ -27,9 +27,39 @@
         <button onclick="shareQQ()" style="display:inline-flex;align-items:center;gap:4px;padding:6px 14px;background:#12b7f5;color:white;border:none;border-radius:6px;cursor:pointer;font-size:0.85rem;font-weight:500;">QQ</button>
         <button onclick="shareWeChat()" style="display:inline-flex;align-items:center;gap:4px;padding:6px 14px;background:#07c160;color:white;border:none;border-radius:6px;cursor:pointer;font-size:0.85rem;font-weight:500;">微信</button>
         <button onclick="shareTwitter()" style="display:inline-flex;align-items:center;gap:4px;padding:6px 14px;background:#1a1a2e;color:white;border:none;border-radius:6px;cursor:pointer;font-size:0.85rem;">X</button>
+        <button onclick="shareFacebook()" style="display:inline-flex;align-items:center;gap:4px;padding:6px 14px;background:#1877f2;color:white;border:none;border-radius:6px;cursor:pointer;font-size:0.85rem;">Facebook</button>
         <button onclick="copyLink()" style="display:inline-flex;align-items:center;gap:4px;padding:6px 14px;background:#f0f2f5;color:#333;border:none;border-radius:6px;cursor:pointer;font-size:0.85rem;font-weight:500;">复制链接</button>
       </div>`;
+
+    // Add share result button to result boxes
+    document.querySelectorAll('.result-box').forEach(function(box) {
+      if (!box.querySelector('.share-result-btn')) {
+        var btn = document.createElement('button');
+        btn.className = 'share-result-btn';
+        btn.textContent = '📤 分享结果';
+        btn.style.cssText = 'margin-top:8px;padding:6px 16px;background:#4361ee;color:white;border:none;border-radius:6px;cursor:pointer;font-size:0.85rem;float:right;';
+        btn.onclick = function() { shareResult(box.textContent || box.innerText); };
+        box.style.position = 'relative';
+        box.appendChild(btn);
+      }
+    });
   }
+
+  // Share tool result content (not just URL)
+  window.shareResult = function(resultText) {
+    var shareText = resultText.substring(0, 200) + (resultText.length > 200 ? '...' : '');
+    var shareUrl = encodeURIComponent(window.location.href);
+    var shareTitle = encodeURIComponent(document.title + ' - 结果: ' + shareText);
+    if (navigator.share) {
+      navigator.share({
+        title: document.title,
+        text: shareTitle,
+        url: window.location.href
+      });
+    } else {
+      copyLink();
+    }
+  };
 
   window.shareWeibo = function() {
     window.open(`https://service.weibo.com/share/share.php?url=${url}&title=${title}`, '_blank');
@@ -55,6 +85,9 @@
   };
   window.shareTwitter = function() {
     window.open(`https://twitter.com/intent/tweet?url=${url}&text=${title}`, '_blank');
+  };
+  window.shareFacebook = function() {
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
   };
   window.copyLink = function() {
     navigator.clipboard.writeText(window.location.href).then(() => {
@@ -93,6 +126,7 @@
         <a href="${prefix}contact.html" style="color:#999;text-decoration:none;">联系我们</a>
         <a href="${prefix}privacy.html" style="color:#999;text-decoration:none;">隐私政策</a>
         <a href="${prefix}terms.html" style="color:#999;text-decoration:none;">服务条款</a>
+        <a href="${prefix}shareable-content/calculator-widget.html" style="color:#999;text-decoration:none;">嵌入工具</a>
       </div>
       <p>&copy; 2026 EITools 在线工具箱 - 所有工具均在浏览器本地运行</p>
     </div>`;
