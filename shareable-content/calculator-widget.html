@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>免费计算器小组件 - BMI / 年龄 / 百分比 | EITools.cn</title>
+  <meta name="description" content="免费可嵌入的计算器小组件，包含 BMI 计算器、年龄计算器、百分比计算器。支持 iframe 嵌入到任何网站。">
+  <meta property="og:title" content="免费计算器小组件 - BMI / 年龄 / 百分比">
+  <meta property="og:description" content="免费可嵌入的计算器小组件，包含 BMI、年龄、百分比计算器。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://eitools.cn/shareable-content/calculator-widget.html">
+  <link rel="canonical" href="https://eitools.cn/shareable-content/calculator-widget.html">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.6;
+      color: #1a1a2e;
+      background: #f0f2f5;
+    }
+    .widget-container {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+    .brand-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 0 12px;
+      font-size: 0.85rem;
+      color: #888;
+    }
+    .brand-bar a {
+      color: #4361ee;
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .brand-bar a:hover {
+      text-decoration: underline;
+    }
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid #e0e0e0;
+      margin-bottom: 20px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 10px 8px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #999;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .tab-btn:hover {
+      color: #4361ee;
+    }
+    .tab-btn.active {
+      color: #4361ee;
+      border-bottom-color: #4361ee;
+    }
+    .tab-panel {
+      display: none;
+    }
+    .tab-panel.active {
+      display: block;
+    }
+    .form-group {
+      margin-bottom: 14px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #333;
+    }
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #4361ee;
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.12);
+    }
+    .calc-btn {
+      width: 100%;
+      padding: 11px;
+      border: none;
+      border-radius: 8px;
+      background: #4361ee;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .calc-btn:hover {
+      background: #3a56d4;
+    }
+    .calc-btn:active {
+      background: #2d4abf;
+    }
+    .result-area {
+      margin-top: 16px;
+      min-height: 20px;
+    }
+    .result-box {
+      text-align: center;
+      padding: 18px;
+      border-radius: 12px;
+      border: 2px solid;
+    }
+    .result-box.success {
+      border-color: #2f9e44;
+      background: #f0fdf0;
+    }
+    .result-box.warning {
+      border-color: #e67700;
+      background: #fffdf0;
+    }
+    .result-box.danger {
+      border-color: #e03131;
+      background: #fff5f5;
+    }
+    .result-box.info {
+      border-color: #4361ee;
+      background: #f0f4ff;
+    }
+    .error-msg {
+      color: #e03131;
+      font-size: 0.9rem;
+      text-align: center;
+      padding: 12px;
+      background: #fff5f5;
+      border-radius: 8px;
+      border: 1px solid #fecaca;
+    }
+    .bmi-value {
+      font-size: 2.2rem;
+      font-weight: 800;
+    }
+    .bmi-category {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 6px 0;
+    }
+    .bmi-advice {
+      color: #555;
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
+    .bmi-range {
+      color: #888;
+      font-size: 0.82rem;
+      margin-top: 10px;
+    }
+    .age-big {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #4361ee;
+    }
+    .age-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .age-card {
+      text-align: center;
+      padding: 12px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .age-card-label {
+      font-size: 0.78rem;
+      color: #888;
+    }
+    .age-card-value {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+    .pct-result {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #4361ee;
+    }
+    .pct-section {
+      background: #f0f2f5;
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 14px;
+    }
+    .pct-section h4 {
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    .pct-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .pct-row input {
+      width: 90px;
+      padding: 8px 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+    .pct-row span {
+      color: #555;
+      font-size: 0.9rem;
+    }
+    .pct-calc-btn {
+      padding: 8px 18px;
+      border: none;
+      border-radius: 8px;
+      background: #4361ee;
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .pct-calc-btn:hover {
+      background: #3a56d4;
+    }
+    .pct-result-line {
+      margin-top: 10px;
+      min-height: 24px;
+    }
+    .footer-link {
+      text-align: center;
+      padding: 16px 0 8px;
+      font-size: 0.82rem;
+      color: #aaa;
+    }
+    .footer-link a {
+      color: #4361ee;
+      text-decoration: none;
+    }
+    .footer-link a:hover {
+      text-decoration: underline;
+    }
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1a1a2e;
+      color: #fff;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      opacity: 0;
+      transition: transform 0.3s, opacity 0.3s;
+      z-index: 9999;
+      pointer-events: none;
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    @media (max-width: 480px) {
+      .widget-container { padding: 10px; }
+      .bmi-value { font-size: 1.8rem; }
+      .age-big { font-size: 1.4rem; }
+      .pct-row input { width: 72px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="widget-container">
+    <!-- Brand Bar -->
+    <div class="brand-bar">
+      Powered by <a href="https://eitools.cn" target="_blank" rel="noopener">EITools.cn</a> - 100+ 免费在线工具
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="bmi">BMI 计算器</button>
+      <button class="tab-btn" data-tab="age">年龄计算器</button>
+      <button class="tab-btn" data-tab="pct">百分比计算器</button>
+    </div>
+
+    <!-- BMI Calculator Tab -->
+    <div id="tab-bmi" class="tab-panel active">
+      <div class="form-group">
+        <label for="bmi-height">身高（厘米）</label>
+        <input type="number" id="bmi-height" placeholder="例如：170" min="50" max="250">
+      </div>
+      <div class="form-group">
+        <label for="bmi-weight">体重（公斤）</label>
+        <input type="number" id="bmi-weight" placeholder="例如：65" min="10" max="500" step="0.1">
+      </div>
+      <button class="calc-btn" id="bmi-calc-btn">计算 BMI</button>
+      <div id="bmi-result" class="result-area"></div>
+    </div>
+
+    <!-- Age Calculator Tab -->
+    <div id="tab-age" class="tab-panel">
+      <div class="form-group">
+        <label for="age-birthday">出生日期</label>
+        <input type="date" id="age-birthday">
+      </div>
+      <button class="calc-btn" id="age-calc-btn">计算年龄</button>
+      <div id="age-result" class="result-area"></div>
+    </div>
+
+    <!-- Percentage Calculator Tab -->
+    <div id="tab-pct" class="tab-panel">
+      <div class="pct-section">
+        <h4>X 是 Y 的百分之几？</h4>
+        <div class="pct-row">
+          <input type="number" id="p1x" placeholder="X" step="any">
+          <span>是</span>
+          <input type="number" id="p1y" placeholder="Y" step="any">
+          <span>的</span>
+          <button class="pct-calc-btn" id="p1-btn">计算</button>
+        </div>
+        <div id="p1r" class="pct-result-line"></div>
+      </div>
+
+      <div class="pct-section">
+        <h4>X 的 Y% 是多少？</h4>
+        <div class="pct-row">
+          <input type="number" id="p2x" placeholder="数值" step="any">
+          <span>的</span>
+          <input type="number" id="p2y" placeholder="%" step="any">
+          <span>%</span>
+          <button class="pct-calc-btn" id="p2-btn">计算</button>
+        </div>
+        <div id="p2r" class="pct-result-line"></div>
+      </div>
+
+      <div class="pct-section">
+        <h4>从 X 到 Y 变化了百分之几？</h4>
+        <div class="pct-row">
+          <span>从</span>
+          <input type="number" id="p3x" placeholder="原值" step="any">
+          <span>到</span>
+          <input type="number" id="p3y" placeholder="新值" step="any">
+          <button class="pct-calc-btn" id="p3-btn">计算</button>
+        </div>
+        <div id="p3r" class="pct-result-line"></div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer-link">
+      <a href="https://eitools.cn" target="_blank" rel="noopener">探索 100+ 免费在线工具 &rarr;</a>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // === Toast ===
+      function showToast(msg) {
+        var toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(function () {
+          toast.classList.remove('show');
+        }, 2000);
+      }
+
+      // === Tab Switching ===
+      var tabBtns = document.querySelectorAll('.tab-btn');
+      var tabPanels = document.querySelectorAll('.tab-panel');
+
+      tabBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var target = btn.getAttribute('data-tab');
+          tabBtns.forEach(function (b) { b.classList.remove('active'); });
+          tabPanels.forEach(function (p) { p.classList.remove('active'); });
+          btn.classList.add('active');
+          document.getElementById('tab-' + target).classList.add('active');
+        });
+      });
+
+      // === BMI Calculator ===
+      function calcBMI() {
+        var h = parseFloat(document.getElementById('bmi-height').value);
+        var w = parseFloat(document.getElementById('bmi-weight').value);
+        var resultEl = document.getElementById('bmi-result');
+
+        if (!h || !w || h < 50 || h > 250 || w < 10 || w > 500) {
+          resultEl.innerHTML = '<div class="error-msg">请输入有效的身高（50-250cm）和体重（10-500kg）</div>';
+          return;
+        }
+
+        var bmi = w / Math.pow(h / 100, 2);
+        var bmiRound = bmi.toFixed(1);
+        var category, color, boxClass, advice;
+
+        if (bmi < 18.5) {
+          category = '偏瘦';
+          color = '#4361ee';
+          boxClass = 'info';
+          advice = '建议适当增加营养摄入，均衡饮食。';
+        } else if (bmi < 24) {
+          category = '正常';
+          color = '#2f9e44';
+          boxClass = 'success';
+          advice = '您的体重在健康范围内，请继续保持！';
+        } else if (bmi < 28) {
+          category = '偏胖';
+          color = '#e67700';
+          boxClass = 'warning';
+          advice = '建议控制饮食、增加运动，注意体重管理。';
+        } else {
+          category = '肥胖';
+          color = '#e03131';
+          boxClass = 'danger';
+          advice = '建议咨询医生，制定科学的减重计划。';
+        }
+
+        var idealMin = (18.5 * Math.pow(h / 100, 2)).toFixed(1);
+        var idealMax = (23.9 * Math.pow(h / 100, 2)).toFixed(1);
+
+        resultEl.innerHTML =
+          '<div class="result-box ' + boxClass + '">' +
+            '<div class="bmi-value" style="color:' + color + ';">' + bmiRound + '</div>' +
+            '<div class="bmi-category" style="color:' + color + ';">' + category + '</div>' +
+            '<div class="bmi-advice">' + advice + '</div>' +
+            '<div class="bmi-range">健康体重范围：' + idealMin + ' - ' + idealMax + ' kg（中国标准）</div>' +
+          '</div>';
+
+        showToast('BMI 计算完成');
+      }
+
+      document.getElementById('bmi-calc-btn').addEventListener('click', calcBMI);
+      document.getElementById('bmi-height').addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') calcBMI();
+      });
+      document.getElementById('bmi-weight').addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') calcBMI();
+      });
+
+      // === Age Calculator ===
+      function calcAge() {
+        var bd = document.getElementById('age-birthday').value;
+        var resultEl = document.getElementById('age-result');
+
+        if (!bd) {
+          resultEl.innerHTML = '<div class="error-msg">请选择出生日期</div>';
+          return;
+        }
+
+        var birth = new Date(bd);
+        var now = new Date();
+
+        if (birth > now) {
+          resultEl.innerHTML = '<div class="error-msg">出生日期不能是未来日期</div>';
+          return;
+        }
+
+        var years = now.getFullYear() - birth.getFullYear();
+        var months = now.getMonth() - birth.getMonth();
+        var days = now.getDate() - birth.getDate();
+
+        if (days < 0) {
+          months--;
+          var prev = new Date(now.getFullYear(), now.getMonth(), 0);
+          days += prev.getDate();
+        }
+        if (months < 0) {
+          years--;
+          months += 12;
+        }
+
+        var totalDays = Math.floor((now - birth) / 86400000);
+        var totalWeeks = Math.floor(totalDays / 7);
+        var totalHours = totalDays * 24;
+
+        var nextBirthday = new Date(now.getFullYear(), birth.getMonth(), birth.getDate());
+        if (nextBirthday <= now) {
+          nextBirthday.setFullYear(nextBirthday.getFullYear() + 1);
+        }
+        var countdown = Math.ceil((nextBirthday - now) / 86400000);
+
+        var zodiacArr = ['摩羯座', '水瓶座', '双鱼座', '白羊座', '金牛座', '双子座', '巨蟹座', '狮子座', '处女座', '天秤座', '天蝎座', '射手座', '摩羯座'];
+        var m = birth.getMonth();
+        var d = birth.getDate();
+        var zIdx = m === 0 ? (d <= 19 ? 0 : 1) : m === 1 ? (d <= 18 ? 1 : 2) : m === 2 ? (d <= 20 ? 2 : 3) : m === 3 ? (d <= 19 ? 3 : 4) : m === 4 ? (d <= 20 ? 4 : 5) : m === 5 ? (d <= 21 ? 5 : 6) : m === 6 ? (d <= 22 ? 6 : 7) : m === 7 ? (d <= 22 ? 7 : 8) : m === 8 ? (d <= 22 ? 8 : 9) : m === 9 ? (d <= 23 ? 9 : 10) : m === 10 ? (d <= 22 ? 10 : 11) : (d <= 21 ? 11 : 0);
+
+        resultEl.innerHTML =
+          '<div class="result-box info">' +
+            '<div class="age-big">' + years + ' 岁 ' + months + ' 个月 ' + days + ' 天</div>' +
+            '<div style="color:#888;font-size:0.88rem;">星座：' + zodiacArr[zIdx] + '</div>' +
+          '</div>' +
+          '<div class="age-grid">' +
+            '<div class="age-card"><div class="age-card-label">已过天数</div><div class="age-card-value">' + totalDays.toLocaleString() + '</div></div>' +
+            '<div class="age-card"><div class="age-card-label">已过周数</div><div class="age-card-value">' + totalWeeks.toLocaleString() + '</div></div>' +
+            '<div class="age-card"><div class="age-card-label">已过小时</div><div class="age-card-value">' + totalHours.toLocaleString() + '</div></div>' +
+            '<div class="age-card"><div class="age-card-label">距离生日</div><div class="age-card-value" style="color:#e67700;">' + countdown + ' 天</div></div>' +
+          '</div>';
+
+        showToast('年龄计算完成');
+      }
+
+      document.getElementById('age-calc-btn').addEventListener('click', calcAge);
+
+      // === Percentage Calculator ===
+      function getVal(id) {
+        return parseFloat(document.getElementById(id).value);
+      }
+
+      function calcP1() {
+        var x = getVal('p1x');
+        var y = getVal('p1y');
+        var el = document.getElementById('p1r');
+        if (!y || y === 0) {
+          el.innerHTML = '<span style="color:#e03131;">除数不能为 0</span>';
+          return;
+        }
+        var result = (x / y * 100).toFixed(2);
+        el.innerHTML = '<span class="pct-result">' + result + '%</span>';
+      }
+
+      function calcP2() {
+        var x = getVal('p2x');
+        var y = getVal('p2y');
+        var el = document.getElementById('p2r');
+        var result = (x * y / 100).toFixed(2);
+        el.innerHTML = '<span class="pct-result">' + result + '</span>';
+      }
+
+      function calcP3() {
+        var x = getVal('p3x');
+        var y = getVal('p3y');
+        var el = document.getElementById('p3r');
+        if (!x || x === 0) {
+          el.innerHTML = '<span style="color:#e03131;">原值不能为 0</span>';
+          return;
+        }
+        var change = (y - x) / x * 100;
+        var direction = change >= 0 ? '增长' : '减少';
+        var c = change >= 0 ? '#2f9e44' : '#e03131';
+        el.innerHTML = '<span class="pct-result" style="color:' + c + ';">' + Math.abs(change).toFixed(2) + '% (' + direction + ')</span>';
+      }
+
+      document.getElementById('p1-btn').addEventListener('click', calcP1);
+      document.getElementById('p2-btn').addEventListener('click', calcP2);
+      document.getElementById('p3-btn').addEventListener('click', calcP3);
+    })();
+  </script>
+</body>
+</html>

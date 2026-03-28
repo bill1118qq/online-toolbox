@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>免费 SEO 检测工具 - 快速分析网页 SEO | EITools.cn</title>
+  <meta name="description" content="免费 SEO 检测工具，输入 URL 快速分析标题标签、Meta 描述、图片 Alt、Open Graph 等 SEO 关键指标。">
+  <meta property="og:title" content="免费 SEO 检测工具 - 快速分析网页 SEO">
+  <meta property="og:description" content="输入 URL，快速检测网页 SEO 关键指标，免费在线使用。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://eitools.cn/shareable-content/seo-report-widget.html">
+  <link rel="canonical" href="https://eitools.cn/shareable-content/seo-report-widget.html">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.6;
+      color: #1a1a2e;
+      background: #f0f2f5;
+    }
+    .widget-container {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+    .brand-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 0 12px;
+      font-size: 0.85rem;
+      color: #888;
+    }
+    .brand-bar a {
+      color: #4361ee;
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .brand-bar a:hover {
+      text-decoration: underline;
+    }
+    .hero-text {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .hero-text h1 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #1a1a2e;
+      margin-bottom: 6px;
+    }
+    .hero-text p {
+      font-size: 0.88rem;
+      color: #888;
+    }
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .input-group input {
+      flex: 1;
+      padding: 12px 14px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .input-group input:focus {
+      outline: none;
+      border-color: #4361ee;
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.12);
+    }
+    .analyze-btn {
+      padding: 12px 22px;
+      border: none;
+      border-radius: 10px;
+      background: #4361ee;
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+    .analyze-btn:hover {
+      background: #3a56d4;
+    }
+    .analyze-btn:disabled {
+      background: #aab;
+      cursor: not-allowed;
+    }
+    .input-hint {
+      font-size: 0.78rem;
+      color: #aaa;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .loading {
+      text-align: center;
+      padding: 30px;
+      color: #888;
+      font-size: 0.9rem;
+    }
+    .spinner {
+      display: inline-block;
+      width: 28px;
+      height: 28px;
+      border: 3px solid #e0e0e0;
+      border-top-color: #4361ee;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 10px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .report {
+      display: none;
+    }
+    .report.visible {
+      display: block;
+    }
+    .score-section {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .score-circle {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .score-good { background: linear-gradient(135deg, #2f9e44, #51cf66); }
+    .score-medium { background: linear-gradient(135deg, #e67700, #fcc419); }
+    .score-bad { background: linear-gradient(135deg, #e03131, #ff6b6b); }
+    .score-label {
+      font-size: 0.88rem;
+      color: #555;
+    }
+    .check-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .check-item {
+      background: #fff;
+      border-radius: 10px;
+      padding: 14px 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .check-icon {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #fff;
+      margin-top: 1px;
+    }
+    .icon-pass { background: #2f9e44; }
+    .icon-warn { background: #e67700; }
+    .icon-fail { background: #e03131; }
+    .check-body {
+      flex: 1;
+      min-width: 0;
+    }
+    .check-title {
+      font-weight: 600;
+      font-size: 0.92rem;
+      color: #1a1a2e;
+    }
+    .check-detail {
+      font-size: 0.82rem;
+      color: #888;
+      margin-top: 3px;
+      word-break: break-all;
+    }
+    .check-detail strong {
+      color: #555;
+    }
+    .upsell-banner {
+      display: block;
+      margin-top: 20px;
+      padding: 18px;
+      background: linear-gradient(135deg, #f0f4ff 0%, #e8eaed 100%);
+      border: 2px dashed #4361ee;
+      border-radius: 12px;
+      text-align: center;
+      text-decoration: none;
+      color: #1a1a2e;
+      transition: border-color 0.2s;
+    }
+    .upsell-banner:hover {
+      border-color: #3a56d4;
+    }
+    .upsell-banner h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #4361ee;
+      margin-bottom: 4px;
+    }
+    .upsell-banner p {
+      font-size: 0.82rem;
+      color: #666;
+    }
+    .upsell-arrow {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 6px 20px;
+      background: #4361ee;
+      color: #fff;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .error-box {
+      background: #fff5f5;
+      border: 1px solid #fecaca;
+      border-radius: 10px;
+      padding: 18px;
+      text-align: center;
+      color: #e03131;
+      font-size: 0.9rem;
+    }
+    .footer-link {
+      text-align: center;
+      padding: 16px 0 8px;
+      font-size: 0.82rem;
+      color: #aaa;
+    }
+    .footer-link a {
+      color: #4361ee;
+      text-decoration: none;
+    }
+    .footer-link a:hover {
+      text-decoration: underline;
+    }
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1a1a2e;
+      color: #fff;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      opacity: 0;
+      transition: transform 0.3s, opacity 0.3s;
+      z-index: 9999;
+      pointer-events: none;
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    @media (max-width: 480px) {
+      .widget-container { padding: 10px; }
+      .input-group { flex-direction: column; }
+      .analyze-btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="widget-container">
+    <!-- Brand Bar -->
+    <div class="brand-bar">
+      Powered by <a href="https://eitools.cn" target="_blank" rel="noopener">EITools.cn</a> - 100+ 免费在线工具
+    </div>
+
+    <!-- Hero -->
+    <div class="hero-text">
+      <h1>免费 SEO 快速检测</h1>
+      <p>输入网址，快速检查页面 SEO 关键指标</p>
+    </div>
+
+    <!-- Input -->
+    <div class="input-group">
+      <input type="url" id="url-input" placeholder="输入网址，例如 https://example.com">
+      <button class="analyze-btn" id="analyze-btn">开始检测</button>
+    </div>
+    <div class="input-hint">支持输入任意公开网页 URL（部分网站可能因 CORS 限制无法访问）</div>
+
+    <!-- Loading -->
+    <div id="loading" class="loading" style="display:none;">
+      <div class="spinner"></div>
+      <div>正在分析页面...</div>
+    </div>
+
+    <!-- Error -->
+    <div id="error-box" class="error-box" style="display:none;"></div>
+
+    <!-- Report -->
+    <div id="report" class="report">
+      <div class="score-section">
+        <div id="score-circle" class="score-circle score-good">--</div>
+        <div id="score-label" class="score-label">SEO 评分</div>
+      </div>
+      <div id="check-list" class="check-list"></div>
+      <a href="https://eitools.cn/src/tools/seo-checker.html" target="_blank" rel="noopener" class="upsell-banner">
+        <h3>完整 SEO 检测</h3>
+        <p>使用完整版 SEO 检测工具，获取更详细的分析报告</p>
+        <div class="upsell-arrow">前往 EITools.cn &rarr;</div>
+      </a>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer-link">
+      <a href="https://eitools.cn" target="_blank" rel="noopener">探索 100+ 免费在线工具 &rarr;</a>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      function showToast(msg) {
+        var toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(function () {
+          toast.classList.remove('show');
+        }, 2000);
+      }
+
+      function $(id) {
+        return document.getElementById(id);
+      }
+
+      function showLoading(show) {
+        $('loading').style.display = show ? 'block' : 'none';
+        $('analyze-btn').disabled = show;
+      }
+
+      function showError(msg) {
+        $('error-box').textContent = msg;
+        $('error-box').style.display = 'block';
+        $('report').classList.remove('visible');
+      }
+
+      function hideError() {
+        $('error-box').style.display = 'none';
+      }
+
+      // Use a CORS proxy to fetch the page
+      function fetchPage(url) {
+        // Try fetching via a public CORS proxy
+        var proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+        return fetch(proxyUrl)
+          .then(function (res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.text();
+          })
+          .catch(function () {
+            // Fallback: try another proxy
+            var proxyUrl2 = 'https://corsproxy.io/?' + encodeURIComponent(url);
+            return fetch(proxyUrl2)
+              .then(function (res) {
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                return res.text();
+              });
+          });
+      }
+
+      function parseHTML(html) {
+        var parser = new DOMParser();
+        return parser.parseFromString(html, 'text/html');
+      }
+
+      function analyzeSEO(doc) {
+        var checks = [];
+
+        // 1. Title Tag Check
+        var titleEl = doc.querySelector('title');
+        if (titleEl && titleEl.textContent.trim()) {
+          var titleLen = titleEl.textContent.trim().length;
+          if (titleLen >= 10 && titleLen <= 60) {
+            checks.push({
+              status: 'pass',
+              title: '标题标签 (Title)',
+              detail: '<strong>' + escapeHtml(titleEl.textContent.trim()) + '</strong>（' + titleLen + ' 个字符，建议 10-60 个字符）'
+            });
+          } else {
+            checks.push({
+              status: 'warn',
+              title: '标题标签 (Title)',
+              detail: '<strong>' + escapeHtml(titleEl.textContent.trim()) + '</strong>（' + titleLen + ' 个字符，建议 10-60 个字符）'
+            });
+          }
+        } else {
+          checks.push({
+            status: 'fail',
+            title: '标题标签 (Title)',
+            detail: '未检测到标题标签，搜索引擎无法识别页面主题'
+          });
+        }
+
+        // 2. Meta Description Check
+        var descEl = doc.querySelector('meta[name="description"]');
+        if (descEl && descEl.getAttribute('content')) {
+          var descLen = descEl.getAttribute('content').trim().length;
+          if (descLen >= 50 && descLen <= 160) {
+            checks.push({
+              status: 'pass',
+              title: 'Meta Description',
+              detail: '<strong>' + escapeHtml(descEl.getAttribute('content').trim()) + '</strong>（' + descLen + ' 个字符，建议 50-160 个字符）'
+            });
+          } else {
+            checks.push({
+              status: 'warn',
+              title: 'Meta Description',
+              detail: '<strong>' + escapeHtml(descEl.getAttribute('content').trim()) + '</strong>（' + descLen + ' 个字符，建议 50-160 个字符）'
+            });
+          }
+        } else {
+          checks.push({
+            status: 'fail',
+            title: 'Meta Description',
+            detail: '未检测到 Meta Description，建议添加以提升搜索结果展示效果'
+          });
+        }
+
+        // 3. Image Alt Tags Check
+        var images = doc.querySelectorAll('img');
+        var imagesTotal = images.length;
+        var imagesWithAlt = 0;
+        var imagesWithoutAlt = 0;
+        images.forEach(function (img) {
+          if (img.getAttribute('alt') && img.getAttribute('alt').trim()) {
+            imagesWithAlt++;
+          } else {
+            imagesWithoutAlt++;
+          }
+        });
+        if (imagesTotal === 0) {
+          checks.push({
+            status: 'pass',
+            title: '图片 Alt 标签',
+            detail: '页面中没有图片，无需检查 Alt 标签'
+          });
+        } else if (imagesWithoutAlt === 0) {
+          checks.push({
+            status: 'pass',
+            title: '图片 Alt 标签',
+            detail: '全部 ' + imagesTotal + ' 张图片都有 Alt 标签'
+          });
+        } else {
+          checks.push({
+            status: imagesWithoutAlt > imagesWithAlt ? 'fail' : 'warn',
+            title: '图片 Alt 标签',
+            detail: imagesWithAlt + '/' + imagesTotal + ' 张图片有 Alt 标签，' + imagesWithoutAlt + ' 张缺失'
+          });
+        }
+
+        // 4. Viewport / Mobile Friendly Check
+        var viewport = doc.querySelector('meta[name="viewport"]');
+        if (viewport) {
+          checks.push({
+            status: 'pass',
+            title: '移动端适配 (Viewport)',
+            detail: '已设置 Viewport Meta 标签，页面支持移动端显示'
+          });
+        } else {
+          checks.push({
+            status: 'fail',
+            title: '移动端适配 (Viewport)',
+            detail: '未检测到 Viewport Meta 标签，页面可能无法正确适配移动设备'
+          });
+        }
+
+        // 5. Open Graph Tags Check
+        var ogTitle = doc.querySelector('meta[property="og:title"]');
+        var ogDesc = doc.querySelector('meta[property="og:description"]');
+        var ogImage = doc.querySelector('meta[property="og:image"]');
+        var ogCount = 0;
+        if (ogTitle) ogCount++;
+        if (ogDesc) ogCount++;
+        if (ogImage) ogCount++;
+        if (ogCount === 3) {
+          checks.push({
+            status: 'pass',
+            title: 'Open Graph 标签',
+            detail: '已检测到 og:title、og:description、og:image，社交媒体分享效果良好'
+          });
+        } else if (ogCount > 0) {
+          var missing = [];
+          if (!ogTitle) missing.push('og:title');
+          if (!ogDesc) missing.push('og:description');
+          if (!ogImage) missing.push('og:image');
+          checks.push({
+            status: 'warn',
+            title: 'Open Graph 标签',
+            detail: '已检测到部分 OG 标签，缺少：' + missing.join('、')
+          });
+        } else {
+          checks.push({
+            status: 'fail',
+            title: 'Open Graph 标签',
+            detail: '未检测到 Open Graph 标签，社交媒体分享时无法显示预览信息'
+          });
+        }
+
+        // 6. Canonical URL Check
+        var canonical = doc.querySelector('link[rel="canonical"]');
+        if (canonical && canonical.getAttribute('href')) {
+          checks.push({
+            status: 'pass',
+            title: 'Canonical 链接',
+            detail: '已设置 Canonical URL：<strong>' + escapeHtml(canonical.getAttribute('href')) + '</strong>'
+          });
+        } else {
+          checks.push({
+            status: 'warn',
+            title: 'Canonical 链接',
+            detail: '未检测到 Canonical 链接，可能存在重复内容问题'
+          });
+        }
+
+        // 7. Heading Structure
+        var h1s = doc.querySelectorAll('h1');
+        if (h1s.length === 1) {
+          checks.push({
+            status: 'pass',
+            title: 'H1 标题结构',
+            detail: '页面有 1 个 H1 标签，结构正确'
+          });
+        } else if (h1s.length === 0) {
+          checks.push({
+            status: 'warn',
+            title: 'H1 标题结构',
+            detail: '页面缺少 H1 标签，建议添加以明确页面主标题'
+          });
+        } else {
+          checks.push({
+            status: 'warn',
+            title: 'H1 标题结构',
+            detail: '页面有 ' + h1s.length + ' 个 H1 标签，建议只保留 1 个'
+          });
+        }
+
+        return checks;
+      }
+
+      function escapeHtml(text) {
+        if (!text) return '';
+        var div = document.createElement('div');
+        div.appendChild(document.createTextNode(text));
+        return div.innerHTML;
+      }
+
+      function calcScore(checks) {
+        var passCount = 0;
+        var total = checks.length;
+        checks.forEach(function (c) {
+          if (c.status === 'pass') passCount++;
+        });
+        return Math.round((passCount / total) * 100);
+      }
+
+      function renderReport(checks) {
+        var score = calcScore(checks);
+        var circle = $('score-circle');
+        circle.textContent = score;
+        circle.className = 'score-circle ' + (score >= 70 ? 'score-good' : score >= 40 ? 'score-medium' : 'score-bad');
+        $('score-label').textContent = score >= 70 ? 'SEO 表现良好' : score >= 40 ? 'SEO 有待改善' : 'SEO 需要优化';
+
+        var listEl = $('check-list');
+        var html = '';
+        checks.forEach(function (item) {
+          var iconClass = item.status === 'pass' ? 'icon-pass' : item.status === 'warn' ? 'icon-warn' : 'icon-fail';
+          var iconText = item.status === 'pass' ? '✓' : item.status === 'warn' ? '!' : '✕';
+          html +=
+            '<div class="check-item">' +
+              '<div class="check-icon ' + iconClass + '">' + iconText + '</div>' +
+              '<div class="check-body">' +
+                '<div class="check-title">' + item.title + '</div>' +
+                '<div class="check-detail">' + item.detail + '</div>' +
+              '</div>' +
+            '</div>';
+        });
+        listEl.innerHTML = html;
+
+        $('report').classList.add('visible');
+        hideError();
+      }
+
+      function doAnalyze() {
+        var url = $('url-input').value.trim();
+        if (!url) {
+          showToast('请输入网址');
+          return;
+        }
+
+        // Auto-prepend https:// if no protocol
+        if (!/^https?:\/\//i.test(url)) {
+          url = 'https://' + url;
+          $('url-input').value = url;
+        }
+
+        // Validate URL format
+        try {
+          new URL(url);
+        } catch (e) {
+          showToast('请输入有效的网址');
+          return;
+        }
+
+        hideError();
+        $('report').classList.remove('visible');
+        showLoading(true);
+
+        fetchPage(url)
+          .then(function (html) {
+            if (!html || html.length < 50) {
+              throw new Error('获取到的页面内容为空或过短');
+            }
+            var doc = parseHTML(html);
+            var checks = analyzeSEO(doc);
+            renderReport(checks);
+            showLoading(false);
+            showToast('SEO 检测完成');
+          })
+          .catch(function (err) {
+            showLoading(false);
+            showError('无法分析该页面：' + (err.message || '请检查网址是否正确，或目标网站是否允许访问。') + ' 如遇跨域限制，请前往 EITools.cn 使用完整版 SEO 检测工具。');
+          });
+      }
+
+      $('analyze-btn').addEventListener('click', doAnalyze);
+      $('url-input').addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') doAnalyze();
+      });
+    })();
+  </script>
+</body>
+</html>
