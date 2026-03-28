@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>起名助手 - 在线中文名字生成器 | 五行八字起名</title>
+  <meta name="description" content="免费在线中文起名助手，支持按性别、风格、五行偏好智能生成寓意美好的中文名字，提供拼音、释义和性格特质分析。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="stylesheet" href="../../css/style.css">
+  <link rel="alternate" hreflang="en" href="https://eitools.cn/src/tools/chinese-name-generator.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="起名助手 - 在线中文名字生成器">
+  <meta property="og:description" content="免费在线中文起名助手，支持按性别、风格、五行偏好智能生成寓意美好的中文名字，提供拼音、释义和性格特质分析。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/chinese-name-generator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/chinese-name-generator.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "起名助手是如何生成中文名字的？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "起名助手内置了200多个常用且寓意美好的汉字数据库，根据您选择的姓氏、性别、命名风格（文雅、大气、可爱、古风）和五行偏好，智能组合生成1-2个字的名字，并附带拼音、释义和性格特质分析。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "五行起名的原理是什么？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "五行（金、木、水、火、土）是中国传统哲学的重要组成部分。在起名中，根据出生日期推算八字五行，选择相应五行属性的汉字来弥补或平衡，以达到吉祥如意的效果。本工具通过出生日期估算日主五行，并推荐对应属性的名字用字。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "起名助手的汉字数据来源是什么？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "起名助手的汉字数据库收录了200多个在中国传统文化中寓意美好、适合用于人名的汉字，每个字都标注了拼音、释义、五行属性和适用风格。数据参考了《康熙字典》《说文解字》等权威典籍中的常用释义。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "男生和女生的名字有什么不同？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "男生名字通常选用刚健有力、志向远大的字，如'浩、宇、杰、轩'等；女生名字则偏向温婉柔美、灵秀聪慧的字，如'婷、雅、诗、瑶'等。但本工具也支持自由选择风格，您可以生成文雅、大气、可爱或古风风格的名字，不受传统性别限制。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "使用起名助手免费吗？需要注册吗？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "完全免费，无需注册。起名助手是一个纯浏览器端工具，所有数据和处理均在您的设备上完成，不会上传任何个人信息到服务器，充分保护您的隐私。"
+        }
+      }
+    ]
+  }
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js"></script>
+  <style>
+    .name-gen-card {
+      background: linear-gradient(135deg, #fdf6ec 0%, #fef9f2 50%, #fdf2e9 100%);
+      border: 1px solid #f0dcc8;
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+    .name-gen-card h2 {
+      font-size: 1.15rem;
+      color: #8b5e3c;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #f0dcc8;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .form-group {
+      margin-bottom: 0;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #5a3e28;
+      font-size: 0.92rem;
+    }
+    .form-group input[type="text"],
+    .form-group input[type="date"],
+    .form-group select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 2px solid #e8d5c0;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      background: #fffdf9;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      color: #3d2b1f;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #c78c50;
+      box-shadow: 0 0 0 3px rgba(199, 140, 80, 0.15);
+      background: #fff;
+    }
+    .surname-hints {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .surname-hint {
+      padding: 3px 10px;
+      border: 1px solid #e0c9af;
+      border-radius: 14px;
+      background: #fff8f0;
+      color: #8b5e3c;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .surname-hint:hover {
+      background: #c78c50;
+      color: #fff;
+      border-color: #c78c50;
+    }
+    .radio-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+    .radio-btn {
+      flex: 1;
+      min-width: 70px;
+      text-align: center;
+      padding: 8px 4px;
+      border: 2px solid #e8d5c0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: #5a3e28;
+      background: #fffdf9;
+      transition: all 0.2s;
+      user-select: none;
+    }
+    .radio-btn:hover {
+      border-color: #c78c50;
+    }
+    .radio-btn.active {
+      background: #c78c50;
+      color: #fff;
+      border-color: #c78c50;
+    }
+    .radio-btn input {
+      display: none;
+    }
+    .wuxing-info {
+      font-size: 0.82rem;
+      color: #9a7b5f;
+      margin-top: 6px;
+    }
+    .gen-btn-wrap {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .gen-btn {
+      display: inline-block;
+      padding: 14px 48px;
+      background: linear-gradient(135deg, #c78c50 0%, #a06830 100%);
+      color: #fff;
+      border: none;
+      border-radius: 28px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 12px rgba(160, 104, 48, 0.3);
+      font-family: inherit;
+    }
+    .gen-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(160, 104, 48, 0.4);
+    }
+    .gen-btn:active {
+      transform: translateY(0);
+    }
+    .results-section {
+      margin-top: 24px;
+    }
+    .results-section h2 {
+      font-size: 1.15rem;
+      color: #8b5e3c;
+      margin-bottom: 16px;
+    }
+    .name-card {
+      background: #fff;
+      border: 1px solid #f0dcc8;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 14px;
+      position: relative;
+      transition: box-shadow 0.2s, transform 0.15s;
+    }
+    .name-card:hover {
+      box-shadow: 0 4px 16px rgba(139, 94, 60, 0.12);
+      transform: translateY(-2px);
+    }
+    .name-card-header {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .name-card-name {
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: #3d2b1f;
+      letter-spacing: 4px;
+    }
+    .name-card-pinyin {
+      font-size: 0.88rem;
+      color: #9a7b5f;
+    }
+    .name-card-copy {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: 1px solid #e0c9af;
+      border-radius: 6px;
+      padding: 4px 10px;
+      color: #9a7b5f;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .name-card-copy:hover {
+      background: #c78c50;
+      color: #fff;
+      border-color: #c78c50;
+    }
+    .name-card-meaning {
+      font-size: 0.92rem;
+      color: #5a3e28;
+      margin-bottom: 8px;
+      line-height: 1.7;
+    }
+    .name-card-traits {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .trait-tag {
+      padding: 3px 10px;
+      background: #fdf2e9;
+      color: #a06830;
+      border-radius: 12px;
+      font-size: 0.78rem;
+      font-weight: 500;
+    }
+    .char-detail {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      margin-right: 16px;
+      padding: 8px 4px;
+    }
+    .char-detail .char {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #3d2b1f;
+    }
+    .char-detail .py {
+      font-size: 0.78rem;
+      color: #9a7b5f;
+      margin-top: 2px;
+    }
+    .char-detail .meaning {
+      font-size: 0.72rem;
+      color: #b8977a;
+      margin-top: 2px;
+      max-width: 80px;
+      text-align: center;
+    }
+    .char-breakdown {
+      display: flex;
+      align-items: flex-start;
+      padding: 10px 0;
+      border-top: 1px solid #f5ebe0;
+      margin-bottom: 8px;
+    }
+    .no-result-hint {
+      text-align: center;
+      padding: 40px 20px;
+      color: #b8977a;
+      font-size: 0.95rem;
+    }
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      .name-gen-card {
+        padding: 20px;
+      }
+      .name-card {
+        padding: 16px;
+      }
+      .name-card-name {
+        font-size: 1.4rem;
+      }
+      .gen-btn {
+        padding: 12px 36px;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>起名助手</h1>
+    </div>
+
+    <div class="name-gen-card">
+      <h2>选择起名条件</h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="surname">姓氏</label>
+          <input type="text" id="surname" placeholder="请输入姓氏，如：李" maxlength="2" value="">
+          <div class="surname-hints" id="surname-hints"></div>
+        </div>
+        <div class="form-group">
+          <label>性别</label>
+          <div class="radio-group" id="gender-group">
+            <label class="radio-btn active" data-value="male">
+              <input type="radio" name="gender" value="male" checked>男孩
+            </label>
+            <label class="radio-btn" data-value="female">
+              <input type="radio" name="gender" value="female">女孩
+            </label>
+            <label class="radio-btn" data-value="neutral">
+              <input type="radio" name="gender" value="neutral">中性
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>命名风格</label>
+          <div class="radio-group" id="style-group">
+            <label class="radio-btn active" data-value="elegant"><input type="radio" name="style" value="elegant" checked>文雅</label>
+            <label class="radio-btn" data-value="grand"><input type="radio" name="style" value="grand">大气</label>
+            <label class="radio-btn" data-value="cute"><input type="radio" name="style" value="cute">可爱</label>
+            <label class="radio-btn" data-value="classical"><input type="radio" name="style" value="classical">古风</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="birthdate">出生日期（选填，用于五行参考）</label>
+          <input type="date" id="birthdate">
+          <div class="wuxing-info" id="wuxing-info">选择出生日期后将自动推算日主五行</div>
+        </div>
+      </div>
+      <div class="gen-btn-wrap">
+        <button class="gen-btn" onclick="generateNames()">生成名字</button>
+      </div>
+    </div>
+
+    <div class="results-section" id="results-section">
+      <h2>名字推荐</h2>
+      <div id="results-list">
+        <div class="no-result-hint">请输入姓氏并点击"生成名字"</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    // ========== Character Database ==========
+    // Format: { char, pinyin, meaning, wx (wuxing), styles: [], gender: [] }
+    // gender: "m" = male, "f" = female, "n" = neutral
+    // wx: "metal" | "wood" | "water" | "fire" | "earth"
+    var CHAR_DB = [
+      // --- Male-oriented characters ---
+      { char: "浩", pinyin: "hao", meaning: "广大、盛大", wx: "water", styles: ["elegant","grand"], gender: ["m","n"] },
+      { char: "宇", pinyin: "yu", meaning: "宇宙、天地", wx: "earth", styles: ["elegant","grand"], gender: ["m","n"] },
+      { char: "杰", pinyin: "jie", meaning: "杰出、卓越", wx: "wood", styles: ["grand","elegant"], gender: ["m","n"] },
+      { char: "轩", pinyin: "xuan", meaning: "高远、气宇轩昂", wx: "earth", styles: ["elegant","classical"], gender: ["m","n"] },
+      { char: "泽", pinyin: "ze", meaning: "恩泽、润泽", wx: "water", styles: ["elegant","grand"], gender: ["m","n"] },
+      { char: "博", pinyin: "bo", meaning: "博学、广博", wx: "water", styles: ["elegant","grand"], gender: ["m","n"] },
+      { char: "晨", pinyin: "chen", meaning: "早晨、朝气", wx: "fire", styles: ["cute","elegant"], gender: ["m","n","f"] },
+      { char: "睿", pinyin: "rui", meaning: "明智、通达", wx: "metal", styles: ["elegant","grand"], gender: ["m","n"] },
+      { char: "翔", pinyin: "xiang", meaning: "飞翔、翱翔", wx: "earth", styles: ["grand","classical"], gender: ["m","n"] },
+      { char: "鹏", pinyin: "peng", meaning: "大鹏展翅", wx: "water", styles: ["grand"], gender: ["m"] },
+      { char: "锋", pinyin: "feng", meaning: "锐利、锋芒", wx: "metal", styles: ["grand"], gender: ["m","n"] },
+      { char: "强", pinyin: "qiang", meaning: "坚强、强壮", wx: "wood", styles: ["grand"], gender: ["m"] },
+      { char: "磊", pinyin: "lei", meaning: "光明磊落", wx: "earth", styles: ["grand"], gender: ["m","n"] },
+      { char: "明", pinyin: "ming", meaning: "光明、明亮", wx: "fire", styles: ["elegant","grand"], gender: ["m","n"] },
+      { char: "志", pinyin: "zhi", meaning: "志向、意志", wx: "fire", styles: ["grand","classical"], gender: ["m","n"] },
+      { char: "文", pinyin: "wen", meaning: "文采、儒雅", wx: "water", styles: ["elegant","classical"], gender: ["m","n","f"] },
+      { char: "武", pinyin: "wu", meaning: "勇武、威武", wx: "water", styles: ["grand","classical"], gender: ["m"] },
+      { char: "天", pinyin: "tian", meaning: "天空、天然", wx: "fire", styles: ["grand"], gender: ["m","n"] },
+      { char: "龙", pinyin: "long", meaning: "龙、尊贵", wx: "fire", styles: ["grand"], gender: ["m"] },
+      { char: "飞", pinyin: "fei", meaning: "飞翔、腾飞", wx: "water", styles: ["grand","cute"], gender: ["m","n"] },
+      { char: "峻", pinyin: "jun", meaning: "高峻、严谨", wx: "earth", styles: ["grand","classical"], gender: ["m","n"] },
+      { char: "柏", pinyin: "bai", meaning: "松柏、常青", wx: "wood", styles: ["elegant","classical"], gender: ["m","n"] },
+      { char: "楠", pinyin: "nan", meaning: "楠木、珍贵", wx: "wood", styles: ["elegant"], gender: ["m","n","f"] },
+      { char: "霖", pinyin: "lin", meaning: "甘霖、恩泽", wx: "water", styles: ["elegant","grand"], gender: ["m","n"] },
+      { char: "源", pinyin: "yuan", meaning: "源头、本源", wx: "water", styles: ["elegant","grand"], gender: ["m","n"] },
+      { char: "恒", pinyin: "heng", meaning: "永恒、恒心", wx: "water", styles: ["grand","elegant"], gender: ["m","n"] },
+      { char: "烨", pinyin: "ye", meaning: "火光、光辉", wx: "fire", styles: ["grand"], gender: ["m","n"] },
+      { char: "煊", pinyin: "xuan", meaning: "温暖、盛大", wx: "fire", styles: ["grand","elegant"], gender: ["m","n"] },
+      { char: "昊", pinyin: "hao", meaning: "广阔的天空", wx: "fire", styles: ["grand"], gender: ["m","n"] },
+      { char: "皓", pinyin: "hao", meaning: "洁白、明亮", wx: "water", styles: ["elegant","classical"], gender: ["m","n"] },
+      { char: "辰", pinyin: "chen", meaning: "星辰、良辰", wx: "earth", styles: ["elegant","classical","cute"], gender: ["m","n"] },
+      { char: "墨", pinyin: "mo", meaning: "墨香、文采", wx: "water", styles: ["classical","elegant"], gender: ["m","n"] },
+      { char: "澜", pinyin: "lan", meaning: "波澜、壮阔", wx: "water", styles: ["grand","classical"], gender: ["m","n","f"] },
+      { char: "钧", pinyin: "jun", meaning: "千钧、重要", wx: "metal", styles: ["grand"], gender: ["m","n"] },
+      { char: "铭", pinyin: "ming", meaning: "铭记、铭刻", wx: "metal", styles: ["elegant","grand"], gender: ["m","n"] },
+      { char: "铠", pinyin: "kai", meaning: "铠甲、坚毅", wx: "metal", styles: ["grand","classical"], gender: ["m"] },
+      { char: "承", pinyin: "cheng", meaning: "承担、传承", wx: "metal", styles: ["grand","elegant"], gender: ["m","n"] },
+      { char: "远", pinyin: "yuan", meaning: "远大、深远", wx: "earth", styles: ["grand","classical"], gender: ["m","n"] },
+      { char: "森", pinyin: "sen", meaning: "繁盛、茂密", wx: "wood", styles: ["grand"], gender: ["m"] },
+      { char: "毅", pinyin: "yi", meaning: "坚毅、果敢", wx: "wood", styles: ["grand"], gender: ["m","n"] },
+      { char: "锋", pinyin: "feng", meaning: "先锋、锋芒", wx: "metal", styles: ["grand"], gender: ["m"] },
+      { char: "尧", pinyin: "yao", meaning: "圣王、高远", wx: "wood", styles: ["classical","grand"], gender: ["m","n"] },
+      { char: "瑞", pinyin: "rui", meaning: "祥瑞、吉祥", wx: "metal", styles: ["elegant","cute"], gender: ["m","n","f"] },
+      { char: "骏", pinyin: "jun", meaning: "骏马、卓越", wx: "metal", styles: ["grand"], gender: ["m"] },
+      { char: "凯", pinyin: "kai", meaning: "凯旋、胜利", wx: "wood", styles: ["grand"], gender: ["m","n"] },
+      { char: "彦", pinyin: "yan", meaning: "才学、俊彦", wx: "wood", styles: ["elegant","classical"], gender: ["m","n"] },
+      { char: "俊", pinyin: "jun", meaning: "英俊、才俊", wx: "fire", styles: ["elegant"], gender: ["m","n"] },
+      { char: "熙", pinyin: "xi", meaning: "光明、和乐", wx: "water", styles: ["elegant","classical"], gender: ["m","n","f"] },
+      { char: "煜", pinyin: "yu", meaning: "照耀、光辉", wx: "fire", styles: ["grand","elegant"], gender: ["m","n"] },
+      { char: "枫", pinyin: "feng", meaning: "枫树、秋意", wx: "wood", styles: ["elegant","classical"], gender: ["m","n"] },
+      { char: "澈", pinyin: "che", meaning: "清澈、明澈", wx: "water", styles: ["elegant","classical"], gender: ["m","n","f"] },
+      { char: "逸", pinyin: "yi", meaning: "飘逸、超逸", wx: "earth", styles: ["classical","elegant"], gender: ["m","n"] },
+      { char: "弘", pinyin: "hong", meaning: "弘大、远大", wx: "water", styles: ["grand"], gender: ["m"] },
+      { char: "铮", pinyin: "zheng", meaning: "铁骨铮铮", wx: "metal", styles: ["grand"], gender: ["m"] },
+
+      // --- Female-oriented characters ---
+      { char: "婷", pinyin: "ting", meaning: "美好、亭亭玉立", wx: "fire", styles: ["elegant","cute"], gender: ["f","n"] },
+      { char: "雅", pinyin: "ya", meaning: "文雅、高雅", wx: "wood", styles: ["elegant","classical"], gender: ["f","n","m"] },
+      { char: "诗", pinyin: "shi", meaning: "诗意、才情", wx: "metal", styles: ["elegant","classical"], gender: ["f","n"] },
+      { char: "瑶", pinyin: "yao", meaning: "美玉、珍贵", wx: "fire", styles: ["elegant","classical","cute"], gender: ["f","n"] },
+      { char: "萱", pinyin: "xuan", meaning: "忘忧草、快乐", wx: "wood", styles: ["elegant","cute"], gender: ["f","n"] },
+      { char: "涵", pinyin: "han", meaning: "涵养、包容", wx: "water", styles: ["elegant"], gender: ["f","n","m"] },
+      { char: "欣", pinyin: "xin", meaning: "欣喜、欢欣", wx: "wood", styles: ["cute","elegant"], gender: ["f","n"] },
+      { char: "悦", pinyin: "yue", meaning: "喜悦、愉快", wx: "metal", styles: ["cute","elegant"], gender: ["f","n"] },
+      { char: "琳", pinyin: "lin", meaning: "美玉、光彩", wx: "wood", styles: ["elegant","cute"], gender: ["f","n"] },
+      { char: "颖", pinyin: "ying", meaning: "聪颖、出众", wx: "wood", styles: ["elegant","cute"], gender: ["f","n"] },
+      { char: "萱", pinyin: "xuan", meaning: "萱草、快乐", wx: "wood", styles: ["cute","elegant"], gender: ["f","n"] },
+      { char: "梦", pinyin: "meng", meaning: "梦想、梦幻", wx: "wood", styles: ["elegant","cute","classical"], gender: ["f","n"] },
+      { char: "琪", pinyin: "qi", meaning: "美玉、珍异", wx: "wood", styles: ["elegant","cute"], gender: ["f","n"] },
+      { char: "雪", pinyin: "xue", meaning: "洁白、纯洁", wx: "water", styles: ["elegant","classical"], gender: ["f","n"] },
+      { char: "慧", pinyin: "hui", meaning: "智慧、聪慧", wx: "water", styles: ["elegant"], gender: ["f","n"] },
+      { char: "馨", pinyin: "xin", meaning: "温馨、芳香", wx: "metal", styles: ["elegant","cute"], gender: ["f","n"] },
+      { char: "静", pinyin: "jing", meaning: "安静、宁静", wx: "metal", styles: ["elegant","classical"], gender: ["f","n"] },
+      { char: "蕊", pinyin: "rui", meaning: "花蕊、娇嫩", wx: "wood", styles: ["cute","elegant"], gender: ["f"] },
+      { char: "莹", pinyin: "ying", meaning: "晶莹、光洁", wx: "wood", styles: ["elegant","cute"], gender: ["f","n"] },
+      { char: "妍", pinyin: "yan", meaning: "美丽、巧慧", wx: "water", styles: ["elegant","cute"], gender: ["f","n"] },
+      { char: "佳", pinyin: "jia", meaning: "美好、优秀", wx: "wood", styles: ["elegant","cute"], gender: ["f","n"] },
+      { char: "彤", pinyin: "tong", meaning: "红色、温暖", wx: "fire", styles: ["elegant","cute"], gender: ["f","n"] },
+      { char: "薇", pinyin: "wei", meaning: "蔷薇、芬芳", wx: "wood", styles: ["elegant","classical"], gender: ["f","n"] },
+      { char: "妮", pinyin: "ni", meaning: "少女、可爱", wx: "fire", styles: ["cute"], gender: ["f"] },
+      { char: "妙", pinyin: "miao", meaning: "美妙、奇妙", wx: "water", styles: ["cute","classical"], gender: ["f","n"] },
+      { char: "澜", pinyin: "lan", meaning: "波澜、壮美", wx: "water", styles: ["elegant","grand","classical"], gender: ["f","n","m"] },
+      { char: "瑶", pinyin: "yao", meaning: "美玉、仙子", wx: "fire", styles: ["classical","elegant"], gender: ["f","n"] },
+      { char: "芷", pinyin: "zhi", meaning: "香草、清雅", wx: "wood", styles: ["classical","elegant"], gender: ["f","n"] },
+      { char: "蓉", pinyin: "rong", meaning: "芙蓉、柔美", wx: "wood", styles: ["elegant","cute"], gender: ["f"] },
+      { char: "璐", pinyin: "lu", meaning: "美玉、珍贵", wx: "fire", styles: ["elegant","cute"], gender: ["f","n"] },
+      { char: "璇", pinyin: "xuan", meaning: "美玉、星璇", wx: "fire", styles: ["classical","elegant"], gender: ["f","n"] },
+      { char: "岚", pinyin: "lan", meaning: "山间雾气", wx: "earth", styles: ["classical","elegant"], gender: ["f","n"] },
+      { char: "萱", pinyin: "xuan", meaning: "萱草、忘忧", wx: "wood", styles: ["elegant","cute"], gender: ["f","n"] },
+      { char: "菲", pinyin: "fei", meaning: "芬芳、美丽", wx: "wood", styles: ["elegant","cute"], gender: ["f","n"] },
+      { char: "颖", pinyin: "ying", meaning: "聪颖、脱俗", wx: "wood", styles: ["elegant"], gender: ["f","n"] },
+      { char: "歆", pinyin: "xin", meaning: "欣喜、羡慕", wx: "metal", styles: ["elegant","cute"], gender: ["f","n"] },
+      { char: "瑾", pinyin: "jin", meaning: "美玉、美德", wx: "fire", styles: ["classical","elegant"], gender: ["f","n"] },
+
+      // --- Neutral / Classical characters ---
+      { char: "安", pinyin: "an", meaning: "平安、安定", wx: "earth", styles: ["elegant","grand","classical"], gender: ["m","f","n"] },
+      { char: "宁", pinyin: "ning", meaning: "安宁、宁静", wx: "fire", styles: ["elegant","classical"], gender: ["m","f","n"] },
+      { char: "思", pinyin: "si", meaning: "思考、思念", wx: "metal", styles: ["elegant","classical"], gender: ["m","f","n"] },
+      { char: "乐", pinyin: "le", meaning: "快乐、音乐", wx: "fire", styles: ["cute","elegant"], gender: ["m","f","n"] },
+      { char: "然", pinyin: "ran", meaning: "自然、怡然", wx: "metal", styles: ["elegant","classical"], gender: ["m","f","n"] },
+      { char: "清", pinyin: "qing", meaning: "清澈、清雅", wx: "water", styles: ["elegant","classical"], gender: ["m","f","n"] },
+      { char: "云", pinyin: "yun", meaning: "云朵、高远", wx: "water", styles: ["classical","cute","elegant"], gender: ["m","f","n"] },
+      { char: "风", pinyin: "feng", meaning: "风、风度", wx: "wood", styles: ["classical","grand"], gender: ["m","f","n"] },
+      { char: "月", pinyin: "yue", meaning: "月亮、清辉", wx: "wood", styles: ["classical","elegant"], gender: ["f","n"] },
+      { char: "星", pinyin: "xing", meaning: "星辰、明亮", wx: "fire", styles: ["elegant","cute","grand"], gender: ["m","f","n"] },
+      { char: "林", pinyin: "lin", meaning: "树林、生机", wx: "wood", styles: ["elegant","classical"], gender: ["m","f","n"] },
+      { char: "玉", pinyin: "yu", meaning: "美玉、高洁", wx: "earth", styles: ["classical","elegant"], gender: ["f","n"] },
+      { char: "言", pinyin: "yan", meaning: "言语、信言", wx: "wood", styles: ["elegant","classical"], gender: ["m","n","f"] },
+      { char: "尘", pinyin: "chen", meaning: "尘世、超然", wx: "earth", styles: ["classical"], gender: ["m","n","f"] },
+      { char: "若", pinyin: "ruo", meaning: "如、若水", wx: "wood", styles: ["classical","elegant"], gender: ["m","f","n"] },
+      { char: "知", pinyin: "zhi", meaning: "智慧、知行", wx: "fire", styles: ["classical","elegant"], gender: ["m","f","n"] },
+      { char: "易", pinyin: "yi", meaning: "平易、变化", wx: "fire", styles: ["classical","elegant"], gender: ["m","n"] },
+      { char: "墨", pinyin: "mo", meaning: "笔墨、书卷", wx: "water", styles: ["classical","elegant"], gender: ["m","f","n"] },
+      { char: "白", pinyin: "bai", meaning: "洁白、纯粹", wx: "water", styles: ["classical","elegant"], gender: ["m","f","n"] },
+      { char: "之", pinyin: "zhi", meaning: "助词、典雅", wx: "fire", styles: ["classical","elegant"], gender: ["m","f","n"] },
+      { char: "亦", pinyin: "yi", meaning: "也、文雅助词", wx: "earth", styles: ["classical","elegant"], gender: ["m","f","n"] },
+      { char: "羽", pinyin: "yu", meaning: "羽翼、轻盈", wx: "earth", styles: ["classical","cute","elegant"], gender: ["m","f","n"] },
+      { char: "书", pinyin: "shu", meaning: "书籍、博学", wx: "metal", styles: ["classical","elegant"], gender: ["m","n","f"] },
+      { char: "意", pinyin: "yi", meaning: "心意、意境", wx: "earth", styles: ["elegant","classical"], gender: ["m","f","n"] },
+      { char: "简", pinyin: "jian", meaning: "简朴、简洁", wx: "wood", styles: ["classical","elegant"], gender: ["m","f","n"] },
+      { char: "初", pinyin: "chu", meaning: "初始、初心", wx: "metal", styles: ["classical","elegant"], gender: ["m","f","n"] },
+      { char: "怀", pinyin: "huai", meaning: "胸怀、情怀", wx: "water", styles: ["classical","grand"], gender: ["m","n"] },
+      { char: "青", pinyin: "qing", meaning: "青色、青春", wx: "wood", styles: ["classical","elegant"], gender: ["m","f","n"] },
+      { char: "川", pinyin: "chuan", meaning: "河流、广阔", wx: "water", styles: ["grand","classical"], gender: ["m","n"] },
+      { char: "卿", pinyin: "qing", meaning: "卿相、古雅", wx: "wood", styles: ["classical"], gender: ["f","n"] },
+      { char: "晚", pinyin: "wan", meaning: "晚霞、诗意", wx: "fire", styles: ["classical","elegant"], gender: ["f","n"] },
+      { char: "溪", pinyin: "xi", meaning: "溪流、清澈", wx: "water", styles: ["elegant","classical","cute"], gender: ["f","n","m"] },
+      { char: "颜", pinyin: "yan", meaning: "颜色、容貌", wx: "wood", styles: ["classical","elegant"], gender: ["f","n"] },
+      { char: "鹿", pinyin: "lu", meaning: "灵鹿、祥瑞", wx: "water", styles: ["classical","cute"], gender: ["f","n"] },
+      { char: "鹤", pinyin: "he", meaning: "仙鹤、高洁", wx: "water", styles: ["classical","elegant"], gender: ["m","n"] },
+      { char: "棠", pinyin: "tang", meaning: "海棠、高雅", wx: "wood", styles: ["classical","elegant"], gender: ["f","n"] },
+      { char: "南", pinyin: "nan", meaning: "南方、温暖", wx: "fire", styles: ["classical","elegant"], gender: ["m","f","n"] },
+      { char: "予", pinyin: "yu", meaning: "给予、赐予", wx: "earth", styles: ["classical","elegant"], gender: ["m","f","n"] },
+      { char: "弦", pinyin: "xian", meaning: "琴弦、韵律", wx: "water", styles: ["classical","elegant"], gender: ["m","f","n"] },
+      { char: "笙", pinyin: "sheng", meaning: "乐器、雅韵", wx: "wood", styles: ["classical","elegant"], gender: ["m","f","n"] },
+      { char: "桐", pinyin: "tong", meaning: "梧桐、高贵", wx: "wood", styles: ["classical","elegant"], gender: ["m","f","n"] },
+      { char: "弈", pinyin: "yi", meaning: "对弈、智慧", wx: "wood", styles: ["classical","elegant"], gender: ["m","n"] },
+
+      // --- Additional cute characters ---
+      { char: "萌", pinyin: "meng", meaning: "萌发、可爱", wx: "wood", styles: ["cute"], gender: ["f","n"] },
+      { char: "嘟", pinyin: "du", meaning: "嘟嘴、娇俏", wx: "fire", styles: ["cute"], gender: ["f","n"] },
+      { char: "朵", pinyin: "duo", meaning: "花朵、云朵", wx: "wood", styles: ["cute"], gender: ["f","n"] },
+      { char: "糖", pinyin: "tang", meaning: "甜蜜、糖果", wx: "earth", styles: ["cute"], gender: ["f","n"] },
+      { char: "喵", pinyin: "miao", meaning: "猫咪、俏皮", wx: "water", styles: ["cute"], gender: ["f","n"] },
+      { char: "贝", pinyin: "bei", meaning: "宝贝、珍贵", wx: "water", styles: ["cute"], gender: ["f","n"] },
+      { char: "噜", pinyin: "lu", meaning: "可爱语气词", wx: "fire", styles: ["cute"], gender: ["f","n"] },
+      { char: "小", pinyin: "xiao", meaning: "小巧、精致", wx: "metal", styles: ["cute"], gender: ["f","n"] },
+      { char: "蜜", pinyin: "mi", meaning: "甜蜜、美好", wx: "water", styles: ["cute"], gender: ["f","n"] },
+      { char: "桃", pinyin: "tao", meaning: "桃花、美好", wx: "wood", styles: ["cute","classical"], gender: ["f","n"] },
+      { char: "果", pinyin: "guo", meaning: "果实、成果", wx: "wood", styles: ["cute"], gender: ["f","n"] },
+      { char: "米", pinyin: "mi", meaning: "小米、可爱", wx: "water", styles: ["cute"], gender: ["f","n"] },
+      { char: "暖", pinyin: "nuan", meaning: "温暖、温馨", wx: "fire", styles: ["cute","elegant"], gender: ["f","n"] },
+
+      // --- Additional grand characters ---
+      { char: "坤", pinyin: "kun", meaning: "大地、乾坤", wx: "earth", styles: ["grand"], gender: ["m","n"] },
+      { char: "乾", pinyin: "qian", meaning: "天、刚健", wx: "metal", styles: ["grand","classical"], gender: ["m","n"] },
+      { char: "泰", pinyin: "tai", meaning: "平安、宏大", wx: "water", styles: ["grand"], gender: ["m","n"] },
+      { char: "威", pinyin: "wei", meaning: "威严、威武", wx: "earth", styles: ["grand"], gender: ["m"] },
+      { char: "震", pinyin: "zhen", meaning: "威震、振兴", wx: "water", styles: ["grand"], gender: ["m","n"] },
+      { char: "旭", pinyin: "xu", meaning: "旭日、朝气", wx: "wood", styles: ["grand","elegant"], gender: ["m","n"] },
+      { char: "盛", pinyin: "sheng", meaning: "繁盛、盛大", wx: "metal", styles: ["grand"], gender: ["m","n"] },
+      { char: "达", pinyin: "da", meaning: "通达、达观", wx: "fire", styles: ["grand"], gender: ["m","n"] },
+      { char: "伟", pinyin: "wei", meaning: "伟大、卓越", wx: "earth", styles: ["grand"], gender: ["m"] },
+      { char: "豪", pinyin: "hao", meaning: "豪迈、豪气", wx: "water", styles: ["grand"], gender: ["m"] },
+      { char: "腾", pinyin: "teng", meaning: "腾飞、上升", wx: "fire", styles: ["grand"], gender: ["m"] },
+      { char: "兆", pinyin: "zhao", meaning: "预兆、宏大", wx: "fire", styles: ["grand"], gender: ["m","n"] },
+      { char: "锦", pinyin: "jin", meaning: "锦绣、美好", wx: "metal", styles: ["grand","elegant"], gender: ["m","f","n"] },
+      { char: "璟", pinyin: "jing", meaning: "玉的光彩", wx: "fire", styles: ["elegant","grand"], gender: ["m","f","n"] },
+      { char: "曜", pinyin: "yao", meaning: "日月星辰", wx: "fire", styles: ["grand","classical"], gender: ["m","n"] },
+      { char: "峰", pinyin: "feng", meaning: "山峰、巅峰", wx: "earth", styles: ["grand"], gender: ["m","n"] },
+
+      // --- Additional elegant characters ---
+      { char: "婉", pinyin: "wan", meaning: "温婉、柔美", wx: "earth", styles: ["elegant","classical"], gender: ["f","n"] },
+      { char: "绮", pinyin: "qi", meaning: "华丽、精美", wx: "wood", styles: ["elegant","classical"], gender: ["f","n"] },
+      { char: "湘", pinyin: "xiang", meaning: "湘水、灵秀", wx: "water", styles: ["elegant","classical"], gender: ["f","n"] },
+      { char: "凝", pinyin: "ning", meaning: "凝重、端庄", wx: "water", styles: ["elegant","classical"], gender: ["f","n"] },
+      { char: "韵", pinyin: "yun", meaning: "韵味、风韵", wx: "earth", styles: ["elegant","classical"], gender: ["f","n"] },
+      { char: "舒", pinyin: "shu", meaning: "舒畅、从容", wx: "metal", styles: ["elegant"], gender: ["m","f","n"] },
+      { char: "致", pinyin: "zhi", meaning: "精致、情致", wx: "fire", styles: ["elegant","classical"], gender: ["m","n"] },
+      { char: "瑜", pinyin: "yu", meaning: "美玉、品德", wx: "metal", styles: ["elegant","classical"], gender: ["m","f","n"] },
+      { char: "灵", pinyin: "ling", meaning: "灵动、聪灵", wx: "fire", styles: ["elegant","cute","classical"], gender: ["f","n"] },
+      { char: "可", pinyin: "ke", meaning: "可爱、许可", wx: "wood", styles: ["cute","elegant"], gender: ["f","n"] },
+      { char: "心", pinyin: "xin", meaning: "心灵、心意", wx: "metal", styles: ["elegant","cute"], gender: ["f","n"] },
+      { char: "奕", pinyin: "yi", meaning: "光明、盛大", wx: "wood", styles: ["elegant","grand"], gender: ["m","f","n"] },
+      { char: "苏", pinyin: "su", meaning: "复苏、温馨", wx: "wood", styles: ["elegant","classical"], gender: ["f","n"] },
+      { char: "默", pinyin: "mo", meaning: "沉默、深邃", wx: "water", styles: ["classical","elegant"], gender: ["m","n"] },
+      { char: "澜", pinyin: "lan", meaning: "大波浪", wx: "water", styles: ["grand","elegant","classical"], gender: ["m","f","n"] },
+      { char: "昕", pinyin: "xin", meaning: "黎明、希望", wx: "fire", styles: ["elegant","cute"], gender: ["m","f","n"] },
+      { char: "铭", pinyin: "ming", meaning: "铭记、铭心", wx: "metal", styles: ["elegant","grand"], gender: ["m","n"] },
+      { char: "璟", pinyin: "jing", meaning: "光彩夺目", wx: "fire", styles: ["elegant","grand"], gender: ["m","f","n"] },
+      { char: "钰", pinyin: "yu", meaning: "珍宝、坚金", wx: "metal", styles: ["elegant"], gender: ["m","f","n"] },
+      { char: "桐", pinyin: "tong", meaning: "梧桐、凤栖", wx: "wood", styles: ["elegant","classical"], gender: ["m","f","n"] },
+      { char: "斐", pinyin: "fei", meaning: "文采斐然", wx: "water", styles: ["elegant","classical"], gender: ["m","f","n"] },
+      { char: "冉", pinyin: "ran", meaning: "缓缓、柔和", wx: "fire", styles: ["elegant","classical"], gender: ["m","f","n"] },
+      { char: "煜", pinyin: "yu", meaning: "光辉灿烂", wx: "fire", styles: ["grand","elegant"], gender: ["m","f","n"] },
+      { char: "棋", pinyin: "qi", meaning: "棋艺、智慧", wx: "wood", styles: ["classical","elegant"], gender: ["m","n","f"] },
+      { char: "筠", pinyin: "jun", meaning: "竹皮、雅致", wx: "wood", styles: ["classical","elegant"], gender: ["f","n"] },
+      { char: "薇", pinyin: "wei", meaning: "蔷薇花", wx: "wood", styles: ["classical","elegant"], gender: ["f","n"] },
+      { char: "黎", pinyin: "li", meaning: "黎明、希望", wx: "fire", styles: ["elegant","classical","grand"], gender: ["m","n","f"] },
+      { char: "堃", pinyin: "kun", meaning: "同坤、大地", wx: "earth", styles: ["grand"], gender: ["m","n"] },
+      { char: "昀", pinyin: "yun", meaning: "日光、明朗", wx: "fire", styles: ["elegant","cute"], gender: ["m","f","n"] },
+      { char: "辰", pinyin: "chen", meaning: "星辰时光", wx: "earth", styles: ["elegant","grand","classical"], gender: ["m","f","n"] },
+      { char: "尧", pinyin: "yao", meaning: "上古圣王", wx: "wood", styles: ["grand","classical"], gender: ["m","n"] },
+      { char: "舜", pinyin: "shun", meaning: "虞舜、圣明", wx: "metal", styles: ["grand","classical"], gender: ["m"] },
+      { char: "禹", pinyin: "yu", meaning: "大禹、治水", wx: "earth", styles: ["grand","classical"], gender: ["m"] },
+      { char: "融", pinyin: "rong", meaning: "融合、融通", wx: "earth", styles: ["grand","elegant"], gender: ["m","n"] },
+      { char: "晟", pinyin: "sheng", meaning: "光明、兴盛", wx: "fire", styles: ["grand","elegant"], gender: ["m","n"] },
+      { char: "荃", pinyin: "quan", meaning: "香草、忠诚", wx: "wood", styles: ["classical","elegant"], gender: ["m","n","f"] },
+      { char: "恩", pinyin: "en", meaning: "恩惠、感恩", wx: "earth", styles: ["elegant","grand"], gender: ["m","f","n"] },
+      { char: "晖", pinyin: "hui", meaning: "阳光、光辉", wx: "water", styles: ["grand","elegant"], gender: ["m","n"] },
+      { char: "绮", pinyin: "qi", meaning: "华美、绮丽", wx: "wood", styles: ["elegant","classical"], gender: ["f","n"] },
+      { char: "萱", pinyin: "xuan", meaning: "忘忧草", wx: "wood", styles: ["elegant","cute"], gender: ["f","n"] },
+      { char: "彦", pinyin: "yan", meaning: "才学之士", wx: "wood", styles: ["elegant","classical"], gender: ["m","n"] },
+      { char: "昭", pinyin: "zhao", meaning: "光明、昭示", wx: "fire", styles: ["grand","classical"], gender: ["m","n"] },
+      { char: "谦", pinyin: "qian", meaning: "谦逊、虚心", wx: "wood", styles: ["elegant","classical"], gender: ["m","n"] },
+      { char: "慕", pinyin: "mu", meaning: "仰慕、思慕", wx: "water", styles: ["classical","elegant"], gender: ["m","f","n"] },
+      { char: "绮", pinyin: "qi", meaning: "丝织品、华美", wx: "wood", styles: ["classical","elegant"], gender: ["f","n"] },
+      { char: "熙", pinyin: "xi", meaning: "光明、兴盛", wx: "water", styles: ["elegant","grand","classical"], gender: ["m","f","n"] },
+      { char: "蓁", pinyin: "zhen", meaning: "草木茂盛", wx: "wood", styles: ["classical","elegant"], gender: ["f","n"] },
+      { char: "晗", pinyin: "han", meaning: "天将明", wx: "fire", styles: ["elegant","cute"], gender: ["m","f","n"] },
+      { char: "珩", pinyin: "heng", meaning: "玉佩横玉", wx: "water", styles: ["classical","elegant"], gender: ["m","n"] },
+      { char: "策", pinyin: "ce", meaning: "谋策、鞭策", wx: "wood", styles: ["classical","grand"], gender: ["m","n"] },
+      { char: "裕", pinyin: "yu", meaning: "富裕、从容", wx: "earth", styles: ["grand","elegant"], gender: ["m","n"] },
+      { char: "君", pinyin: "jun", meaning: "君子、尊贵", wx: "wood", styles: ["elegant","classical"], gender: ["m","f","n"] },
+      { char: "诚", pinyin: "cheng", meaning: "诚实、真诚", wx: "metal", styles: ["elegant","grand"], gender: ["m","n"] },
+      { char: "勃", pinyin: "bo", meaning: "蓬勃、旺盛", wx: "water", styles: ["grand"], gender: ["m","n"] },
+      { char: "尧", pinyin: "yao", meaning: "高远、圣明", wx: "wood", styles: ["grand","classical"], gender: ["m","n"] },
+      { char: "弈", pinyin: "yi", meaning: "围棋、智慧", wx: "wood", styles: ["classical","elegant"], gender: ["m","n"] },
+      { char: "砚", pinyin: "yan", meaning: "砚台、文雅", wx: "earth", styles: ["classical","elegant"], gender: ["m","n"] },
+      { char: "疏", pinyin: "shu", meaning: "疏朗、超脱", wx: "metal", styles: ["classical"], gender: ["m","f","n"] },
+      { char: "凛", pinyin: "lin", meaning: "凛然、威严", wx: "water", styles: ["grand","classical"], gender: ["m","n"] },
+      { char: "霄", pinyin: "xiao", meaning: "云霄、凌霄", wx: "water", styles: ["grand","classical"], gender: ["m","n"] },
+      { char: "澈", pinyin: "che", meaning: "清澈见底", wx: "water", styles: ["elegant","classical"], gender: ["m","f","n"] },
+      { char: "灿", pinyin: "can", meaning: "灿烂、光彩", wx: "fire", styles: ["grand","cute"], gender: ["m","f","n"] },
+      { char: "颖", pinyin: "ying", meaning: "聪慧出众", wx: "wood", styles: ["elegant","cute"], gender: ["f","n"] },
+      { char: "桢", pinyin: "zhen", meaning: "坚硬的木头", wx: "wood", styles: ["elegant","grand"], gender: ["m","n"] },
+      { char: "淳", pinyin: "chun", meaning: "淳朴、淳厚", wx: "water", styles: ["elegant"], gender: ["m","n"] },
+      { char: "洵", pinyin: "xun", meaning: "确实、诚实", wx: "water", styles: ["classical","elegant"], gender: ["m","f","n"] },
+      { char: "筝", pinyin: "zheng", meaning: "古筝、雅韵", wx: "wood", styles: ["classical","elegant"], gender: ["f","n"] },
+      { char: "臻", pinyin: "zhen", meaning: "达到完美", wx: "fire", styles: ["elegant","grand"], gender: ["m","f","n"] },
+      { char: "颂", pinyin: "song", meaning: "赞颂、雅颂", wx: "wood", styles: ["elegant","classical"], gender: ["m","f","n"] },
+      { char: "霁", pinyin: "ji", meaning: "雨后初晴", wx: "water", styles: ["classical","elegant"], gender: ["m","f","n"] },
+      { char: "舸", pinyin: "ge", meaning: "大船、远航", wx: "wood", styles: ["grand","classical"], gender: ["m","n"] },
+      { char: "麟", pinyin: "lin", meaning: "麒麟、祥瑞", wx: "fire", styles: ["grand","classical"], gender: ["m","n"] },
+      { char: "栩", pinyin: "xu", meaning: "栩栩如生", wx: "wood", styles: ["elegant","classical"], gender: ["m","f","n"] },
+      { char: "漫", pinyin: "man", meaning: "漫天、自由", wx: "water", styles: ["classical","cute"], gender: ["f","n"] },
+      { char: "窈", pinyin: "yao", meaning: "窈窕淑女", wx: "fire", styles: ["classical"], gender: ["f","n"] },
+      { char: "瞳", pinyin: "tong", meaning: "眼瞳、清澈", wx: "fire", styles: ["elegant","cute"], gender: ["f","n"] },
+      { char: "宥", pinyin: "you", meaning: "宽容、宽宏", wx: "earth", styles: ["elegant","classical"], gender: ["m","n"] },
+      { char: "允", pinyin: "yun", meaning: "公允、真诚", wx: "earth", styles: ["elegant","classical"], gender: ["m","n"] },
+      { char: "妤", pinyin: "yu", meaning: "聪慧美丽", wx: "water", styles: ["elegant","classical"], gender: ["f","n"] },
+      { char: "洛", pinyin: "luo", meaning: "洛水、灵秀", wx: "water", styles: ["elegant","classical"], gender: ["f","n"] }
+    ];
+
+    // Deduplicate by char
+    var seen = {};
+    CHAR_DB = CHAR_DB.filter(function(c) {
+      if (seen[c.char]) return false;
+      seen[c.char] = true;
+      return true;
+    });
+
+    // Common surnames
+    var COMMON_SURNAMES = [
+      "赵","钱","孙","李","周","吴","郑","王","冯","陈",
+      "褚","卫","蒋","沈","韩","杨","朱","秦","尤","许",
+      "何","吕","施","张","孔","曹","严","华","金","魏",
+      "陶","姜","戚","谢","邹","喻","柏","水","窦","章",
+      "云","苏","潘","葛","奚","范","彭","郎","鲁","韦",
+      "昌","马","苗","凤","花","方","俞","任","袁","柳",
+      "酆","鲍","史","唐","费","廉","岑","薛","雷","贺",
+      "倪","汤","滕","殷","罗","毕","郝","邬","安","常",
+      "乐","于","时","傅","皮","卞","齐","康","伍","余",
+      "元","卜","顾","孟","平","黄","和","穆","萧","尹",
+      "姚","邵","湛","汪","祁","毛","禹","狄","米","贝",
+      "明","臧","计","伏","成","戴","谈","宋","茅","庞",
+      "熊","纪","舒","屈","项","祝","董","梁","杜","阮",
+      "蓝","闵","席","季","麻","强","贾","路","娄","危"
+    ];
+
+    // Wuxing mapping from birth date (simplified: based on year stem)
+    var WUXING_NAMES = {
+      metal: "金", wood: "木", water: "水", fire: "火", earth: "土"
+    };
+    var WUXING_COLORS = {
+      metal: "#c9a54e", wood: "#4a8c5c", water: "#4a7fb5", fire: "#c75c3a", earth: "#a07850"
+    };
+
+    // ========== Initialization ==========
+    (function init() {
+      renderSurnameHints();
+      setupRadioGroups();
+    })();
+
+    function renderSurnameHints() {
+      var container = document.getElementById("surname-hints");
+      var hints = COMMON_SURNAMES.slice(0, 24);
+      container.innerHTML = hints.map(function(s) {
+        return '<span class="surname-hint" onclick="selectSurname(this)">' + s + '</span>';
+      }).join("");
+    }
+
+    function selectSurname(el) {
+      document.getElementById("surname").value = el.textContent;
+    }
+
+    function setupRadioGroups() {
+      document.querySelectorAll(".radio-group").forEach(function(group) {
+        group.querySelectorAll(".radio-btn").forEach(function(btn) {
+          btn.addEventListener("click", function() {
+            group.querySelectorAll(".radio-btn").forEach(function(b) {
+              b.classList.remove("active");
+              b.querySelector("input").checked = false;
+            });
+            btn.classList.add("active");
+            btn.querySelector("input").checked = true;
+          });
+        });
+      });
+    }
+
+    // ========== Wuxing from Birth Date ==========
+    function getWuxingFromDate(dateStr) {
+      if (!dateStr) return null;
+      var parts = dateStr.split("-");
+      var year = parseInt(parts[0]);
+      // Simplified: heavenly stem cycle, index by (year - 4) % 10
+      var stemIndex = (year - 4) % 10;
+      var stemWuxing = ["wood","wood","fire","fire","earth","earth","metal","metal","water","water"];
+      return stemWuxing[stemIndex];
+    }
+
+    function getWuxingSuggestion(wuxing) {
+      if (!wuxing) return "";
+      // Generative cycle: wood->fire->earth->metal->water->wood
+      var generates = { metal: "water", water: "wood", wood: "fire", fire: "earth", earth: "metal" };
+      var suggested = generates[wuxing];
+      return "日主五行属【" + WUXING_NAMES[wuxing] + "】，建议补充【" + WUXING_NAMES[suggested] + "】属性的字";
+    }
+
+    document.getElementById("birthdate").addEventListener("change", function() {
+      var wx = getWuxingFromDate(this.value);
+      var info = document.getElementById("wuxing-info");
+      if (wx) {
+        info.textContent = getWuxingSuggestion(wx);
+        info.style.color = WUXING_COLORS[wx] || "#9a7b5f";
+      } else {
+        info.textContent = "选择出生日期后将自动推算日主五行";
+        info.style.color = "#9a7b5f";
+      }
+    });
+
+    // ========== Name Generation ==========
+    function generateNames() {
+      var surname = document.getElementById("surname").value.trim();
+      if (!surname) {
+        showToast("请输入姓氏");
+        return;
+      }
+      if (surname.length > 2) {
+        showToast("姓氏最多两个字");
+        return;
+      }
+
+      var gender = document.querySelector('input[name="gender"]:checked').value;
+      var style = document.querySelector('input[name="style"]:checked').value;
+      var birthdate = document.getElementById("birthdate").value;
+      var preferredWx = getWuxingFromDate(birthdate);
+
+      var genderFilter = gender === "neutral" ? ["m","f","n"] : (gender === "male" ? ["m","n"] : ["f","n"]);
+      var pool = CHAR_DB.filter(function(c) {
+        return c.gender.some(function(g) { return genderFilter.indexOf(g) >= 0; })
+          && c.styles.indexOf(style) >= 0;
+      });
+
+      // If wuxing preference, sort: preferred wuxing chars first
+      if (preferredWx) {
+        var generates = { metal: "water", water: "wood", wood: "fire", fire: "earth", earth: "metal" };
+        var suggestedWx = generates[preferredWx];
+        pool = pool.slice().sort(function(a, b) {
+          var aMatch = a.wx === suggestedWx ? 0 : (a.wx === preferredWx ? 1 : 2);
+          var bMatch = b.wx === suggestedWx ? 0 : (b.wx === preferredWx ? 1 : 2);
+          return aMatch - bMatch;
+        });
+      }
+
+      if (pool.length < 2) {
+        showToast("可用汉字不足，请调整条件");
+        return;
+      }
+
+      var results = [];
+      var usedNames = {};
+      var maxAttempts = 200;
+      var attempts = 0;
+
+      while (results.length < 8 && attempts < maxAttempts) {
+        attempts++;
+        var nameLen = Math.random() < 0.45 ? 1 : 2;
+        var chars = [];
+
+        if (nameLen === 1) {
+          var idx = Math.floor(Math.random() * pool.length);
+          chars.push(pool[idx]);
+        } else {
+          var i1 = Math.floor(Math.random() * pool.length);
+          var i2 = Math.floor(Math.random() * pool.length);
+          if (i1 === i2) continue;
+          chars.push(pool[i1], pool[i2]);
+        }
+
+        var fullName = surname + chars.map(function(c) { return c.char; }).join("");
+        if (usedNames[fullName]) continue;
+        usedNames[fullName] = true;
+
+        var pinyin = chars.map(function(c) { return c.pinyin; }).join(" ");
+        var meaning = chars.map(function(c) { return c.char + "（" + c.meaning + "）"; }).join("，");
+
+        var traits = generateTraits(chars, style);
+        var wuxingDesc = chars.map(function(c) { return c.char + "属" + WUXING_NAMES[c.wx]; }).join("、");
+
+        results.push({
+          fullName: fullName,
+          surname: surname,
+          chars: chars,
+          pinyin: pinyin,
+          meaning: meaning,
+          traits: traits,
+          wuxingDesc: wuxingDesc,
+          isWuxingRecommended: preferredWx ? chars.some(function(c) {
+            var generates = { metal: "water", water: "wood", wood: "fire", fire: "earth", earth: "metal" };
+            return c.wx === preferredWx || c.wx === generates[preferredWx];
+          }) : false
+        });
+      }
+
+      if (results.length === 0) {
+        showToast("生成失败，请调整条件后重试");
+        return;
+      }
+
+      renderResults(results, preferredWx);
+    }
+
+    function generateTraits(chars, style) {
+      var traitMap = {
+        elegant: {
+          "清": ["文雅","清高","内涵"],
+          "雅": ["高贵","优雅","品味"],
+          "诗": ["才情","诗意","浪漫"],
+          "涵": ["涵养","知性","温柔"],
+          "静": ["沉稳","安静","内敛"],
+          "舒": ["从容","舒朗","优雅"],
+          "书": ["博学","儒雅","知性"],
+          "默": ["深邃","内敛","沉稳"],
+          default: ["文雅","有内涵","气质出众"]
+        },
+        grand: {
+          "浩": ["胸怀广阔","志向高远"],
+          "鹏": ["志向远大","气魄非凡"],
+          "坤": ["厚德载物","稳重可靠"],
+          "泰": ["泰然自若","胸怀天下"],
+          "震": ["振兴家业","气势磅礴"],
+          default: ["志向远大","气度不凡","光明磊落"]
+        },
+        cute: {
+          "萌": ["可爱活泼","萌趣十足"],
+          "朵": ["甜美纯真","活泼可爱"],
+          "桃": ["青春活力","甜美可人"],
+          "暖": ["温暖贴心","善解人意"],
+          default: ["活泼可爱","纯真善良","讨人喜欢"]
+        },
+        classical: {
+          "之": ["典雅古朴","书卷气"],
+          "若": ["淡然超脱","诗意"],
+          "墨": ["满腹经纶","书卷气"],
+          "卿": ["温婉端庄","古韵悠长"],
+          default: ["古韵悠长","气质非凡","才情出众"]
+        }
+      };
+
+      var allTraits = [];
+      chars.forEach(function(c) {
+        var styleTraits = traitMap[style] || traitMap.elegant;
+        var t = styleTraits[c.char] || styleTraits.default;
+        if (t && t.length) {
+          allTraits = allTraits.concat(t);
+        }
+      });
+
+      // Deduplicate and limit
+      var unique = [];
+      allTraits.forEach(function(t) {
+        if (unique.indexOf(t) < 0) unique.push(t);
+      });
+      return unique.slice(0, 4);
+    }
+
+    function renderResults(results, preferredWx) {
+      var container = document.getElementById("results-list");
+      var html = "";
+
+      results.forEach(function(r) {
+        var wuxingBadge = "";
+        if (r.isWuxingRecommended) {
+          wuxingBadge = ' <span style="display:inline-block;padding:2px 8px;background:linear-gradient(135deg,#fdf2e9,#fce8d0);color:#a06830;border-radius:10px;font-size:0.72rem;font-weight:600;margin-left:6px;vertical-align:middle;">五行推荐</span>';
+        }
+
+        var charHtml = '<div class="char-breakdown">';
+        // Show surname
+        charHtml += '<div class="char-detail"><span class="char">' + r.surname + '</span><span class="py">姓</span></div>';
+        r.chars.forEach(function(c) {
+          charHtml += '<div class="char-detail"><span class="char">' + c.char + '</span><span class="py">' + c.pinyin + '</span><span class="meaning">' + c.meaning + '</span></div>';
+        });
+        charHtml += '</div>';
+
+        var traitHtml = r.traits.map(function(t) {
+          return '<span class="trait-tag">' + t + '</span>';
+        }).join("");
+
+        html += '<div class="name-card">' +
+          '<button class="name-card-copy" onclick="copyName(\'' + r.fullName + '\')">复制</button>' +
+          '<div class="name-card-header">' +
+            '<span class="name-card-name">' + r.fullName + '</span>' +
+            wuxingBadge +
+            '<span class="name-card-pinyin">' + r.pinyin + '</span>' +
+          '</div>' +
+          charHtml +
+          '<div class="name-card-meaning">释义：' + r.meaning + '。五行：' + r.wuxingDesc + '。</div>' +
+          '<div class="name-card-traits">性格特质：' + traitHtml + '</div>' +
+        '</div>';
+      });
+
+      container.innerHTML = html || '<div class="no-result-hint">未能生成名字，请调整条件后重试</div>';
+    }
+
+    function copyName(name) {
+      navigator.clipboard.writeText(name).then(function() {
+        showToast("已复制：" + name);
+      }).catch(function() {
+        showToast("复制失败");
+      });
+    }
+
+    function showToast(msg) {
+      var toast = document.getElementById("toast");
+      toast.textContent = msg;
+      toast.classList.add("show");
+      setTimeout(function() { toast.classList.remove("show"); }, 2000);
+    }
+  </script>
+
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>

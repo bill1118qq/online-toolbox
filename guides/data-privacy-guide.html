@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>个人数据隐私保护指南 - 网络安全实用技巧 - 在线工具箱</title>
+  <meta name="description" content="个人数据隐私保护指南：浏览器隐私设置、VPN使用技巧、数据加密方法、安全通信工具，全面保护你的在线隐私。">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../manifest.json">
+  <meta property="og:title" content="个人数据隐私保护指南 - 网络安全实用技巧">
+  <meta property="og:description" content="个人数据隐私保护指南：浏览器隐私、VPN、数据加密、安全通信，全面保护在线隐私。">
+  <meta property="og:url" content="https://eitools.cn/guides/data-privacy-guide.html">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://eitools.cn/guides/data-privacy-guide.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"什么是个人数据隐私？","acceptedAnswer":{"@type":"Answer","text":"个人数据隐私是指个人对其数据（如姓名、身份证号、位置信息、浏览记录、通讯录等）的控制权。它涵盖了个人信息的收集、存储、使用和共享的规则，确保个人数据不被未经授权的第三方获取或滥用。"}},{"@type":"Question","name":"如何保护浏览器隐私？","acceptedAnswer":{"@type":"Answer","text":"保护浏览器隐私的方法包括：使用隐私浏览器（如Firefox、Brave），禁用第三方Cookie，使用隐私搜索引擎（如DuckDuckGo），安装隐私扩展（如uBlock Origin），定期清除浏览数据，启用HTTPS Only模式，以及使用无痕/隐私模式浏览敏感网站。"}},{"@type":"Question","name":"VPN能保护隐私吗？","acceptedAnswer":{"@type":"Answer","text":"VPN通过加密隧道传输数据，可以隐藏你的真实IP地址和网络活动。选择VPN时应关注：无日志政策、协议类型（WireGuard/OpenVPN）、 jurisdiction（注册地）、是否开源。免费VPN通常会通过出售用户数据盈利，反而会降低隐私。推荐使用付费的、经过第三方审计的VPN服务。"}},{"@type":"Question","name":"端到端加密是什么意思？","acceptedAnswer":{"@type":"Answer","text":"端到端加密（E2EE）是指数据在发送端加密，只有接收端才能解密，中间的任何节点（包括服务器运营商）都无法读取明文内容。常见的端到端加密应用包括Signal、WhatsApp等通讯工具。即使服务器被攻破，攻击者也无法获取通讯内容。"}},{"@type":"Question","name":"手机应用如何收集我的数据？","acceptedAnswer":{"@type":"Answer","text":"手机应用通过多种方式收集数据：获取设备权限（位置、相机、麦克风、通讯录），读取设备标识符（IMEI、广告ID），追踪应用使用行为，收集剪贴板内容，扫描本地文件。可以通过检查应用权限设置、使用隐私检测工具、阅读隐私政策来了解和控制数据收集行为。"}},{"@type":"Question","name":"社交媒体如何影响个人隐私？","acceptedAnswer":{"@type":"Answer","text":"社交媒体平台收集大量个人数据：个人资料、社交关系、浏览习惯、点赞记录、位置信息、上传的图片和视频的元数据等。这些数据用于精准广告投放、用户画像分析。保护方法包括：限制个人资料可见性、检查和收紧隐私设置、减少不必要的个人信息分享、定期审查已授权的第三方应用。"}},{"@type":"Question","name":"什么是数据加密，常见的加密方式有哪些？","acceptedAnswer":{"@type":"Answer","text":"数据加密是将明文数据通过算法转换为密文的过程，只有拥有正确密钥的人才能解密还原。常见加密方式包括：对称加密（AES，速度快，适合加密文件）、非对称加密（RSA，安全性高，适合密钥交换）、哈希函数（SHA-256，不可逆，适合密码存储和完整性校验）。日常可以使用在线加密工具对敏感数据进行加密。"}},{"@type":"Question","name":"公共Wi-Fi安全吗？","acceptedAnswer":{"@type":"Answer","text":"公共Wi-Fi存在多种安全风险：中间人攻击（攻击者截获网络流量）、伪造热点（创建同名假热点）、恶意软件传播、流量嗅探。使用公共Wi-Fi时应：避免访问银行和支付网站，使用VPN加密网络流量，确认连接的是官方热点，关闭自动连接Wi-Fi功能，使用HTTPS网站。"}},{"@type":"Question","name":"如何防止个人信息泄露？","acceptedAnswer":{"@type":"Answer","text":"防止个人信息泄露的措施包括：最小化在线分享的个人信息、使用不同邮箱注册不同服务、启用双因素认证、定期检查数据泄露数据库、注意钓鱼邮件和诈骗短信、使用强密码和密码管理器、保持软件和系统更新、谨慎授权应用权限、使用加密工具保护敏感数据。"}}]}
+  </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+<script src="../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>个人数据隐私保护指南</h1>
+    </div>
+    <article style="max-width:700px;line-height:1.8;color:#333;">
+      <p>在数字化时代，个人数据已经成为最宝贵的资源之一。从购物记录到地理位置，从社交关系到生物特征，我们的每一次在线行为都在产生数据。据统计，全球每天产生超过 2.5 百亿亿字节的数据，其中很大一部分是个人数据。本指南将帮助你了解数据隐私的核心概念，掌握实用的隐私保护技巧。</p>
+
+      <h2 style="margin-top:32px;color:#4361ee;">目录</h2>
+      <div style="padding:16px;background:#f0f2f5;border-radius:12px;">
+        <ol>
+          <li><a href="#what-is-privacy" style="color:#4361ee;">什么是个人数据隐私</a></li>
+          <li><a href="#browser-privacy" style="color:#4361ee;">浏览器隐私保护</a></li>
+          <li><a href="#vpn" style="color:#4361ee;">VPN的选择与正确使用</a></li>
+          <li><a href="#encryption" style="color:#4361ee;">数据加密入门与实践</a></li>
+          <li><a href="#communication" style="color:#4361ee;">安全通信工具推荐</a></li>
+          <li><a href="#mobile-privacy" style="color:#4361ee;">手机隐私安全设置</a></li>
+          <li><a href="#social-media" style="color:#4361ee;">社交媒体隐私管理</a></li>
+          <li><a href="#public-wifi" style="color:#4361ee;">公共Wi-Fi安全指南</a></li>
+          <li><a href="#data-breach" style="color:#4361ee;">数据泄露应对策略</a></li>
+          <li><a href="#tools" style="color:#4361ee;">隐私保护相关工具</a></li>
+        </ol>
+      </div>
+
+      <h2 id="what-is-privacy" style="margin-top:32px;color:#4361ee;">一、什么是个人数据隐私</h2>
+
+      <p>个人数据隐私是指个人对其数据的控制权，包括数据的收集、存储、使用和共享方式。个人数据涵盖范围很广：</p>
+      <table style="width:100%;border-collapse:collapse;margin:16px 0;">
+        <tr style="background:#4361ee;color:white;"><th style="padding:10px;border:1px solid #ddd;">数据类别</th><th style="padding:10px;border:1px solid #ddd;">包含内容</th><th style="padding:10px;border:1px solid #ddd;">风险等级</th></tr>
+        <tr style="background:#ffebee;"><td style="padding:8px;border:1px solid #eee;font-weight:600;">身份信息</td><td style="padding:8px;border:1px solid #eee;">姓名、身份证号、护照号</td><td style="padding:8px;border:1px solid #eee;">极高</td></tr>
+        <tr style="background:#fff3e0;"><td style="padding:8px;border:1px solid #eee;font-weight:600;">财务数据</td><td style="padding:8px;border:1px solid #eee;">银行卡号、支付密码、交易记录</td><td style="padding:8px;border:1px solid #eee;">极高</td></tr>
+        <tr style="background:#ffebee;"><td style="padding:8px;border:1px solid #eee;font-weight:600;">生物特征</td><td style="padding:8px;border:1px solid #eee;">指纹、面部、虹膜、声纹</td><td style="padding:8px;border:1px solid #eee;">高（不可更改）</td></tr>
+        <tr><td style="padding:8px;border:1px solid #eee;font-weight:600;">行为数据</td><td style="padding:8px;border:1px solid #eee;">浏览记录、搜索历史、购买行为</td><td style="padding:8px;border:1px solid #eee;">中</td></tr>
+        <tr><td style="padding:8px;border:1px solid #eee;font-weight:600;">位置数据</td><td style="padding:8px;border:1px solid #eee;">GPS定位、常去地点、出行轨迹</td><td style="padding:8px;border:1px solid #eee;">中高</td></tr>
+        <tr><td style="padding:8px;border:1px solid #eee;font-weight:600;">社交关系</td><td style="padding:8px;border:1px solid #eee;">通讯录、好友列表、聊天记录</td><td style="padding:8px;border:1px solid #eee;">中</td></tr>
+      </table>
+
+      <p>生物特征数据的特殊性在于它是不可更改的——一旦泄露，你无法像修改密码一样"重置"你的指纹或面部数据。因此，对于涉及生物特征的应用和服务，需要格外谨慎。</p>
+
+      <h2 id="browser-privacy" style="margin-top:32px;color:#4361ee;">二、浏览器隐私保护</h2>
+
+      <p>浏览器是我们访问互联网的主要入口，也是数据收集的重要来源。通过浏览器，网站可以获取你的IP地址、浏览器类型、屏幕分辨率、安装的字体、语言偏好等信息，甚至可以通过"浏览器指纹"唯一识别你。</p>
+
+      <h3 style="margin-top:24px;color:#333;">隐私浏览器推荐</h3>
+      <table style="width:100%;border-collapse:collapse;margin:16px 0;">
+        <tr style="background:#4361ee;color:white;"><th style="padding:10px;border:1px solid #ddd;">浏览器</th><th style="padding:10px;border:1px solid #ddd;">隐私特点</th><th style="padding:10px;border:1px solid #ddd;">推荐度</th></tr>
+        <tr><td style="padding:8px;border:1px solid #eee;">Firefox</td><td style="padding:8px;border:1px solid #eee;">增强型追踪保护、开源、可高度自定义</td><td style="padding:8px;border:1px solid #eee;">强烈推荐</td></tr>
+        <tr><td style="padding:8px;border:1px solid #eee;">Brave</td><td style="padding:8px;border:1px solid #eee;">内置广告拦截、默认隐私设置严格</td><td style="padding:8px;border:1px solid #eee;">强烈推荐</td></tr>
+        <tr><td style="padding:8px;border:1px solid #eee;">Safari</td><td style="padding:8px;border:1px solid #eee;">智能防追踪、ITP隐私保护</td><td style="padding:8px;border:1px solid #eee;">推荐</td></tr>
+        <tr><td style="padding:8px;border:1px solid #eee;">Tor Browser</td><td style="padding:8px;border:1px solid #eee;">多层加密、匿名访问、最隐私</td><td style="padding:8px;border:1px solid #eee;">高隐私需求时使用</td></tr>
+      </table>
+
+      <h3 style="margin-top:24px;color:#333;">浏览器隐私设置清单</h3>
+      <ul>
+        <li><strong>禁用第三方Cookie：</strong>防止广告商跨网站追踪你的浏览行为</li>
+        <li><strong>启用"Do Not Track"：</strong>向网站发送不追踪请求（部分网站会尊重此设置）</li>
+        <li><strong>使用隐私搜索引擎：</strong>DuckDuckGo 不记录搜索历史，不根据个人数据定制结果</li>
+        <li><strong>安装隐私扩展：</strong>uBlock Origin（广告拦截）、Privacy Badger（反追踪）、HTTPS Everywhere</li>
+        <li><strong>定期清除浏览数据：</strong>Cookie、缓存、历史记录、自动填充数据</li>
+        <li><strong>启用HTTPS Only模式：</strong>确保所有网站连接都经过加密</li>
+      </ul>
+
+      <h2 id="vpn" style="margin-top:32px;color:#4361ee;">三、VPN的选择与正确使用</h2>
+
+      <p>VPN（Virtual Private Network，虚拟专用网络）通过在你和VPN服务器之间建立加密隧道，隐藏你的真实IP地址和网络活动。VPN的主要作用是保护网络流量不被窃听和追踪。</p>
+
+      <h3 style="margin-top:24px;color:#333;">选择VPN的关键指标</h3>
+      <ul>
+        <li><strong>无日志政策：</strong>服务商不记录你的连接日志和流量日志，最好经过独立第三方审计</li>
+        <li><strong>加密协议：</strong>优先选择 WireGuard（速度快、安全性高）或 OpenVPN（成熟、经过充分验证）</li>
+        <li><strong> jurisdiction：</strong>注册地不在"五眼联盟"国家（美国、英国、加拿大、澳大利亚、新西兰）的服务商更可信</li>
+        <li><strong>开源程度：</strong>客户端开源意味着代码可以被公开审计，发现安全漏洞的概率更高</li>
+        <li><strong>终止开关（Kill Switch）：</strong>当VPN连接意外断开时自动中断网络，防止流量泄露</li>
+      </ul>
+
+      <h3 style="margin-top:24px;color:#333;">免费VPN的风险</h3>
+      <p>免费的VPN服务通常通过以下方式盈利：出售用户浏览数据给广告商、注入广告、将你的带宽出售给第三方网络、甚至植入恶意软件。使用免费VPN可能比你不用VPN更加危险。如果预算有限，建议使用开源免费的解决方案如 ProtonVPN 免费版。</p>
+
+      <h2 id="encryption" style="margin-top:32px;color:#4361ee;">四、数据加密入门与实践</h2>
+
+      <p>数据加密是保护个人隐私的核心技术。加密将明文数据转换为密文，只有拥有正确密钥的人才能解密还原。了解基本的加密概念，可以帮助你更好地保护敏感数据。</p>
+
+      <h3 style="margin-top:24px;color:#333;">常见加密方式对比</h3>
+      <table style="width:100%;border-collapse:collapse;margin:16px 0;">
+        <tr style="background:#4361ee;color:white;"><th style="padding:10px;border:1px solid #ddd;">加密类型</th><th style="padding:10px;border:1px solid #ddd;">代表算法</th><th style="padding:10px;border:1px solid #ddd;">特点</th><th style="padding:10px;border:1px solid #ddd;">适用场景</th></tr>
+        <tr><td style="padding:8px;border:1px solid #eee;">对称加密</td><td style="padding:8px;border:1px solid #eee;">AES-256</td><td style="padding:8px;border:1px solid #eee;">加密解密用同一密钥，速度快</td><td style="padding:8px;border:1px solid #eee;">文件加密、数据库加密</td></tr>
+        <tr><td style="padding:8px;border:1px solid #eee;">非对称加密</td><td style="padding:8px;border:1px solid #eee;">RSA、ECC</td><td style="padding:8px;border:1px solid #eee;">公钥加密私钥解密，安全性高</td><td style="padding:8px;border:1px solid #eee;">HTTPS、数字签名</td></tr>
+        <tr><td style="padding:8px;border:1px solid #eee;">哈希函数</td><td style="padding:8px;border:1px solid #eee;">SHA-256、bcrypt</td><td style="padding:8px;border:1px solid #eee;">单向不可逆，固定长度输出</td><td style="padding:8px;border:1px solid #eee;">密码存储、数据完整性校验</td></tr>
+        <tr><td style="padding:8px;border:1px solid #eee;">编码</td><td style="padding:8px;border:1px solid #eee;">Base64、URL编码</td><td style="padding:8px;border:1px solid #eee;">可逆转换，非加密</td><td style="padding:8px;border:1px solid #eee;">数据传输格式转换</td></tr>
+      </table>
+
+      <h3 style="margin-top:24px;color:#333;">日常加密实用场景</h3>
+      <ul>
+        <li><strong>加密聊天记录：</strong>使用Signal等端到端加密通讯工具</li>
+        <li><strong>加密敏感文件：</strong>使用AES-256加密工具保护重要文档。你可以使用我们的 <a href="../src/tools/aes-encrypt.html" style="color:#4361ee;">AES加密工具</a> 快速加密文本数据</li>
+        <li><strong>加密存储设备：</strong>为U盘和移动硬盘启用BitLocker（Windows）或FileVault（macOS）全盘加密</li>
+        <li><strong>生成密码哈希：</strong>开发者在存储用户密码时应使用bcrypt或Argon2等安全哈希算法。可使用我们的 <a href="../src/tools/hash-generator.html" style="color:#4361ee;">哈希生成器</a> 计算各种哈希值</li>
+        <li><strong>安全编码传输：</strong>Base64常用于将二进制数据编码为文本格式传输。可使用我们的 <a href="../src/tools/base64.html" style="color:#4361ee;">Base64编解码工具</a> 进行编码转换</li>
+      </ul>
+
+      <h2 id="communication" style="margin-top:32px;color:#4361ee;">五、安全通信工具推荐</h2>
+
+      <p>日常通讯中的隐私保护同样重要。以下是目前主流的安全通信工具：</p>
+
+      <table style="width:100%;border-collapse:collapse;margin:16px 0;">
+        <tr style="background:#4361ee;color:white;"><th style="padding:10px;border:1px solid #ddd;">工具</th><th style="padding:10px;border:1px solid #ddd;">端到端加密</th><th style="padding:10px;border:1px solid #ddd;">开源</th><th style="padding:10px;border:1px solid #ddd;">特点</th></tr>
+        <tr><td style="padding:8px;border:1px solid #eee;">Signal</td><td style="padding:8px;border:1px solid #eee;">全部</td><td style="padding:8px;border:1px solid #eee;">是</td><td style="padding:8px;border:1px solid #eee;">最安全、默认全部加密</td></tr>
+        <tr><td style="padding:8px;border:1px solid #eee;">WhatsApp</td><td style="padding:8px;border:1px solid #eee;">全部</td><td style="padding:8px;border:1px solid #eee;">否</td><td style="padding:8px;border:1px solid #eee;">用户基数大、与Facebook关联</td></tr>
+        <tr><td style="padding:8px;border:1px solid #eee;">微信</td><td style="padding:8px;border:1px solid #eee;">否</td><td style="padding:8px;border:1px solid #eee;">否</td><td style="padding:8px;border:1px solid #eee;">中国主流、内容可被审查</td></tr>
+        <tr><td style="padding:8px;border:1px solid #eee;">Telegram</td><td style="padding:8px;border:1px solid #eee;">秘密聊天</td><td style="padding:8px;border:1px solid #eee;">是</td><td style="padding:8px;border:1px solid #eee;">默认非E2EE、需手动开启</td></tr>
+        <tr><td style="padding:8px;border:1px solid #eee;">ProtonMail</td><td style="padding:8px;border:1px solid #eee;">是</td><td style="padding:8px;border:1px solid #eee;">是</td><td style="padding:8px;border:1px solid #eee;">加密邮箱服务</td></tr>
+      </table>
+
+      <p>需要注意的是，端到端加密虽然能保护消息内容不被第三方读取，但元数据（通信时间、通信双方、消息长度等）仍然可以被服务商获取。如果需要更高级别的隐私保护，可以考虑使用Tor网络。</p>
+
+      <h2 id="mobile-privacy" style="margin-top:32px;color:#4361ee;">六、手机隐私安全设置</h2>
+
+      <h3 style="margin-top:24px;color:#333;">应用权限管理</h3>
+      <p>手机应用经常索取过多权限。建议按以下原则管理：</p>
+      <ul>
+        <li><strong>位置权限：</strong>仅在使用时授予，而非始终允许。考虑使用"精确位置"与"近似位置"的区分</li>
+        <li><strong>相机和麦克风：</strong>仅在使用时授权，退出应用后应自动撤销</li>
+        <li><strong>通讯录：</strong>只有真正需要联系人的应用（如通讯工具）才应授权</li>
+        <li><strong>相册：</strong>限制为"选中的照片"而非"所有照片"</li>
+        <li><strong>后台刷新：</strong>关闭不必要的应用后台刷新，减少数据收集机会</li>
+      </ul>
+
+      <h3 style="margin-top:24px;color:#333;">手机系统隐私设置</h3>
+      <ul>
+        <li>开启"限制广告追踪"（iOS）或"删除广告ID"（Android）</li>
+        <li>定期检查并卸载不再使用的应用</li>
+        <li>保持系统更新至最新版本</li>
+        <li>启用设备锁定（密码/指纹/面部）</li>
+        <li>关闭Wi-Fi和蓝牙的自动连接功能</li>
+        <li>检查应用是否有读取剪贴板的权限</li>
+      </ul>
+
+      <h2 id="social-media" style="margin-top:32px;color:#4361ee;">七、社交媒体隐私管理</h2>
+
+      <p>社交媒体是个人数据泄露的重灾区。平台通过你的点赞、评论、分享、搜索、停留时间等行为构建详细的用户画像。以下是保护社交媒体隐私的建议：</p>
+
+      <ol>
+        <li><strong>审查个人资料设置：</strong>将个人主页设为仅好友可见，限制生日、手机号、邮箱等敏感信息的展示</li>
+        <li><strong>检查位置共享：</strong>关闭照片和动态的自动定位功能</li>
+        <li><strong>清理标签和提及：</strong>定期检查别人对你照片的标签，移除不当标记</li>
+        <li><strong>管理第三方授权：</strong>检查并撤销不再使用的第三方应用对社交账号的授权</li>
+        <li><strong>谨慎分享个人信息：</strong>避免在公开动态中透露家庭住址、工作单位、日常行程等</li>
+        <li><strong>注意照片元数据：</strong>照片可能包含GPS位置、拍摄时间等信息，分享前建议清除元数据</li>
+      </ol>
+
+      <h2 id="public-wifi" style="margin-top:32px;color:#4361ee;">八、公共Wi-Fi安全指南</h2>
+
+      <p>咖啡厅、机场、酒店等公共场所的Wi-Fi网络通常安全性较低，存在多种风险：</p>
+
+      <ul>
+        <li><strong>中间人攻击（MITM）：</strong>攻击者可以截获你和服务器之间的通信数据</li>
+        <li><strong>伪造热点：</strong>创建与你所连接热点同名的假热点，诱导你连接</li>
+        <li><strong>流量嗅探：</strong>同一网络中的其他设备可以监听你的网络流量（未加密部分）</li>
+        <li><strong>恶意软件传播：</strong>通过伪造的登录页面分发恶意软件</li>
+      </ul>
+
+      <p><strong>使用公共Wi-Fi时的安全建议：</strong></p>
+      <ol>
+        <li>避免访问银行、支付、邮箱等敏感网站</li>
+        <li>使用VPN加密所有网络流量</li>
+        <li>确认连接的是官方提供的Wi-Fi（向工作人员确认SSID和密码）</li>
+        <li>关闭"自动连接Wi-Fi"功能</li>
+        <li>确认访问的网站使用HTTPS（地址栏有锁图标）</li>
+        <li>使用完毕后忘记该网络</li>
+      </ol>
+
+      <h2 id="data-breach" style="margin-top:32px;color:#4361ee;">九、数据泄露应对策略</h2>
+
+      <p>即使你做了充分的安全防护，数据泄露仍可能通过第三方服务商的漏洞发生。当数据泄露发生时，应采取以下步骤：</p>
+
+      <ol>
+        <li><strong>立即更改密码：</strong>为受影响的账户设置新的强密码</li>
+        <li><strong>启用双因素认证：</strong>防止攻击者利用泄露的密码登录</li>
+        <li><strong>检查关联账户：</strong>如果使用了相同的密码，全部更改</li>
+        <li><strong>监控账户活动：</strong>查看是否有异常登录或可疑交易</li>
+        <li><strong>冻结信用报告：</strong>如果涉及身份证号等敏感信息，联系征信机构冻结信用报告</li>
+        <li><strong>保留证据：</strong>截图保存泄露通知和相关通信记录</li>
+        <li><strong>向有关部门举报：</strong>严重的个人信息泄露可以向网信部门举报</li>
+      </ol>
+
+      <h2 id="tools" style="margin-top:32px;color:#4361ee;">十、隐私保护相关工具</h2>
+
+      <p>以下在线工具可以帮助你提升数据隐私保护水平：</p>
+
+      <div style="margin-top:16px;padding:20px;background:#f0f2f5;border-radius:12px;">
+        <p style="font-weight:600;margin-bottom:8px;">相关工具</p>
+        <a href="../src/tools/aes-encrypt.html" style="color:#4361ee;font-weight:500;display:block;">→ AES加密工具 - 使用AES-256算法加密敏感文本</a>
+        <a href="../src/tools/hash-generator.html" style="color:#4361ee;font-weight:500;display:block;">→ 哈希生成器 - 生成SHA-256等安全哈希值</a>
+        <a href="../src/tools/base64.html" style="color:#4361ee;font-weight:500;display:block;">→ Base64编解码 - 安全编码传输数据</a>
+        <a href="../src/tools/url-encoder.html" style="color:#4361ee;font-weight:500;display:block;">→ URL编码解码 - 安全编码URL中的特殊字符</a>
+        <a href="../src/tools/password-generator.html" style="color:#4361ee;font-weight:500;display:block;">→ 密码生成器 - 生成高强度安全密码</a>
+      </div>
+
+      <h2 style="margin-top:32px;color:#4361ee;">常见问题解答</h2>
+
+      <h3 style="margin-top:24px;color:#333;">什么是个人数据隐私？</h3>
+      <p>个人数据隐私是指个人对其数据（如姓名、身份证号、位置信息、浏览记录、通讯录等）的控制权。它涵盖了个人信息的收集、存储、使用和共享的规则，确保个人数据不被未经授权的第三方获取或滥用。</p>
+
+      <h3 style="margin-top:24px;color:#333;">如何保护浏览器隐私？</h3>
+      <p>保护浏览器隐私的方法包括：使用隐私浏览器（如Firefox、Brave），禁用第三方Cookie，使用隐私搜索引擎（如DuckDuckGo），安装隐私扩展（如uBlock Origin），定期清除浏览数据，启用HTTPS Only模式，以及使用无痕/隐私模式浏览敏感网站。</p>
+
+      <h3 style="margin-top:24px;color:#333;">VPN能保护隐私吗？</h3>
+      <p>VPN通过加密隧道传输数据，可以隐藏你的真实IP地址和网络活动。选择VPN时应关注：无日志政策、协议类型（WireGuard/OpenVPN）、jurisdiction（注册地）、是否开源。免费VPN通常会通过出售用户数据盈利，反而会降低隐私。推荐使用付费的、经过第三方审计的VPN服务。</p>
+
+      <h3 style="margin-top:24px;color:#333;">端到端加密是什么意思？</h3>
+      <p>端到端加密（E2EE）是指数据在发送端加密，只有接收端才能解密，中间的任何节点（包括服务器运营商）都无法读取明文内容。常见的端到端加密应用包括Signal、WhatsApp等通讯工具。即使服务器被攻破，攻击者也无法获取通讯内容。</p>
+
+      <h3 style="margin-top:24px;color:#333;">手机应用如何收集我的数据？</h3>
+      <p>手机应用通过多种方式收集数据：获取设备权限（位置、相机、麦克风、通讯录），读取设备标识符（IMEI、广告ID），追踪应用使用行为，收集剪贴板内容，扫描本地文件。可以通过检查应用权限设置、使用隐私检测工具、阅读隐私政策来了解和控制数据收集行为。</p>
+
+      <h3 style="margin-top:24px;color:#333;">社交媒体如何影响个人隐私？</h3>
+      <p>社交媒体平台收集大量个人数据：个人资料、社交关系、浏览习惯、点赞记录、位置信息、上传的图片和视频的元数据等。这些数据用于精准广告投放、用户画像分析。保护方法包括：限制个人资料可见性、检查和收紧隐私设置、减少不必要的个人信息分享、定期审查已授权的第三方应用。</p>
+
+      <h3 style="margin-top:24px;color:#333;">什么是数据加密，常见的加密方式有哪些？</h3>
+      <p>数据加密是将明文数据通过算法转换为密文的过程，只有拥有正确密钥的人才能解密还原。常见加密方式包括：对称加密（AES，速度快，适合加密文件）、非对称加密（RSA，安全性高，适合密钥交换）、哈希函数（SHA-256，不可逆，适合密码存储和完整性校验）。日常可以使用在线加密工具对敏感数据进行加密。</p>
+
+      <h3 style="margin-top:24px;color:#333;">公共Wi-Fi安全吗？</h3>
+      <p>公共Wi-Fi存在多种安全风险：中间人攻击（攻击者截获网络流量）、伪造热点（创建同名假热点）、恶意软件传播、流量嗅探。使用公共Wi-Fi时应：避免访问银行和支付网站，使用VPN加密网络流量，确认连接的是官方热点，关闭自动连接Wi-Fi功能，使用HTTPS网站。</p>
+    </article>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../js/share.js"></script>
+</body>
+</html>

@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>节日倒计时 - 2026年中外节日放假安排 - 在线工具箱</title>
+  <meta name="description" content="节日倒计时工具：实时显示距离春节、国庆、中秋、圣诞节、情人节等中外节日的精确倒计时，支持自定义节日。包含2026年所有法定节假日放假安排。">
+  <meta property="og:title" content="节日倒计时 - 中外节日放假安排">
+  <meta property="og:description" content="实时显示距离春节、国庆、中秋、圣诞节等节日的精确倒计时，支持自定义节日。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/holiday-countdown.html">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://eitools.cn/src/tools/holiday-countdown.html">
+  <link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/holiday-countdown.html">
+  <link rel="alternate" hreflang="en" href="https://eitools.cn/src/tools/holiday-countdown.html">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "2026年春节是哪一天？放假几天？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "2026年春节是2月17日（农历正月初一）。根据国务院办公厅通知，2026年春节假期为2月15日至2月21日，共7天。2月14日（星期六）、2月22日（星期日）上班。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "2026年中国法定节假日有哪些？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "2026年中国法定节假日包括：元旦（1月1日，1天）、春节（2月17日，7天）、清明节（4月5日，3天）、劳动节（5月1日，5天）、端午节（5月31日，3天）、中秋节（10月4日，3天）、国庆节（10月1日，7天）。全年共11天法定假日。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "中秋节和春节的日期每年都不同吗？为什么？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "是的，春节、元宵节、清明节、端午节、中秋节等中国传统节日每年对应的公历日期都不同。这是因为它们是根据中国农历（阴历）来确定的，而农历与公历之间存在约11天的偏差，因此每年对应的公历日期会变动。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "如何添加自定义节日倒计时？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "在本工具底部的「添加自定义节日」区域，输入节日名称、选择日期并挑选一个表情图标，点击「添加」按钮即可。自定义节日数据保存在浏览器本地存储中，刷新页面后仍然保留。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "圣诞节和情人节是中国的法定假日吗？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "圣诞节和情人节不是中国的法定假日。中国的法定节假日由国务院颁布，目前共7个：元旦、春节、清明节、劳动节、端午节、中秋节和国庆节。圣诞节（12月25日）和情人节（2月14日）虽然在年轻人中很受欢迎，但不是官方假日。"
+        }
+      }
+    ]
+  }
+  </script>
+  <style>
+    .holiday-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .holiday-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .holiday-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    }
+    .holiday-card .accent-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+    }
+    .holiday-card .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .holiday-card .card-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .holiday-card .card-emoji {
+      font-size: 2rem;
+      line-height: 1;
+    }
+    .holiday-card .card-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #1a1a2e;
+    }
+    .holiday-card .card-date {
+      font-size: 0.8rem;
+      color: #888;
+      margin-top: 2px;
+    }
+    .holiday-card .card-tag {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    .holiday-card .countdown-display {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      text-align: center;
+    }
+    .holiday-card .countdown-unit {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 8px 4px;
+    }
+    .holiday-card .countdown-number {
+      font-size: 1.5rem;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+    .holiday-card .countdown-label {
+      font-size: 0.7rem;
+      color: #999;
+      margin-top: 2px;
+    }
+    .holiday-card .past-info {
+      text-align: center;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #888;
+    }
+    .holiday-card .today-info {
+      text-align: center;
+      padding: 10px;
+      background: #e8f5e9;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #2e7d32;
+    }
+    .holiday-card .btn-remove {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.04);
+      border: none;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      font-size: 14px;
+      cursor: pointer;
+      color: #bbb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, color 0.2s;
+      line-height: 1;
+    }
+    .holiday-card .btn-remove:hover {
+      background: #fee;
+      color: #c00;
+    }
+    /* Add custom holiday form */
+    .add-form {
+      background: #fff;
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 24px;
+    }
+    .add-form h2 {
+      font-size: 1.1rem;
+      margin-bottom: 16px;
+      color: #1a1a2e;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr auto;
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 16px;
+    }
+    .emoji-picker {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .emoji-option {
+      width: 36px;
+      height: 36px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      background: #fff;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.2s, transform 0.15s;
+    }
+    .emoji-option:hover {
+      border-color: #4361ee;
+      transform: scale(1.1);
+    }
+    .emoji-option.selected {
+      border-color: #4361ee;
+      background: #eef1ff;
+    }
+    .color-picker {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      align-items: center;
+    }
+    .color-picker label {
+      font-size: 0.85rem;
+      color: #666;
+      font-weight: 600;
+    }
+    .color-option {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    .color-option:hover {
+      transform: scale(1.15);
+    }
+    .color-option.selected {
+      border-color: #1a1a2e;
+    }
+    /* Section header */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1a1a2e;
+    }
+    .section-badge {
+      font-size: 0.8rem;
+      background: #eef1ff;
+      color: #4361ee;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+    /* Filter tabs */
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .filter-tab {
+      padding: 6px 16px;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 20px;
+      background: #fff;
+      color: #555;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-tab:hover {
+      border-color: #4361ee;
+      color: #4361ee;
+    }
+    .filter-tab.active {
+      background: #4361ee;
+      border-color: #4361ee;
+      color: #fff;
+    }
+    @media (max-width: 768px) {
+      .holiday-grid {
+        grid-template-columns: 1fr;
+      }
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>节日倒计时</h1>
+    </div>
+    <p style="color:#666;margin-bottom:20px;">实时显示中外重要节日倒计时，数据每秒更新。支持添加自定义节日。</p>
+
+    <!-- Filter tabs -->
+    <div class="filter-tabs" id="filterTabs">
+      <button class="filter-tab active" data-filter="all">全部</button>
+      <button class="filter-tab" data-filter="upcoming">即将到来</button>
+      <button class="filter-tab" data-filter="past">已过去</button>
+      <button class="filter-tab" data-filter="chinese">中国传统</button>
+      <button class="filter-tab" data-filter="international">国际节日</button>
+      <button class="filter-tab" data-filter="custom">自定义</button>
+    </div>
+
+    <!-- Holiday grid -->
+    <div class="section-header">
+      <span class="section-title" id="sectionTitle">2026 年节日倒计时</span>
+      <span class="section-badge" id="sectionBadge"></span>
+    </div>
+    <div class="holiday-grid" id="holidayGrid"></div>
+
+    <!-- Add custom holiday -->
+    <div class="add-form">
+      <h2>添加自定义节日</h2>
+      <div class="form-row">
+        <div>
+          <label style="font-size:0.8rem;color:#888;display:block;margin-bottom:4px;">节日名称</label>
+          <input type="text" id="customName" placeholder="例：公司年会" maxlength="20">
+        </div>
+        <div>
+          <label style="font-size:0.8rem;color:#888;display:block;margin-bottom:4px;">日期</label>
+          <input type="date" id="customDate">
+        </div>
+        <button class="btn btn-primary" onclick="addCustomHoliday()" style="padding:10px 20px;">添加</button>
+      </div>
+      <label style="font-size:0.8rem;color:#888;display:block;margin-bottom:6px;">选择图标</label>
+      <div class="emoji-picker" id="emojiPicker"></div>
+      <div class="color-picker">
+        <label>颜色：</label>
+        <div class="color-option selected" data-color="#4361ee" style="background:#4361ee;"></div>
+        <div class="color-option" data-color="#e53935" style="background:#e53935;"></div>
+        <div class="color-option" data-color="#43a047" style="background:#43a047;"></div>
+        <div class="color-option" data-color="#fb8c00" style="background:#fb8c00;"></div>
+        <div class="color-option" data-color="#8e24aa" style="background:#8e24aa;"></div>
+        <div class="color-option" data-color="#00acc1" style="background:#00acc1;"></div>
+        <div class="color-option" data-color="#d81b60" style="background:#d81b60;"></div>
+      </div>
+    </div>
+  </div>
+  <div class="related-tools" style="margin-top:32px;padding:20px;background:#f8f9fa;border-radius:12px;">
+    <h3 style="margin-bottom:12px;font-size:1rem;color:#333;">相关工具推荐</h3>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;">
+      <a href="countdown-day.html" style="padding:6px 14px;background:white;border:1px solid #e0e0e0;border-radius:20px;text-decoration:none;color:#4361ee;font-size:0.85rem;">倒数日计算</a>
+      <a href="countdown-timer.html" style="padding:6px 14px;background:white;border:1px solid #e0e0e0;border-radius:20px;text-decoration:none;color:#4361ee;font-size:0.85rem;">倒计时器</a>
+      <a href="date-diff-calculator.html" style="padding:6px 14px;background:white;border:1px solid #e0e0e0;border-radius:20px;text-decoration:none;color:#4361ee;font-size:0.85rem;">日期差计算</a>
+      <a href="lunar-calendar.html" style="padding:6px 14px;background:white;border:1px solid #e0e0e0;border-radius:20px;text-decoration:none;color:#4361ee;font-size:0.85rem;">农历日历</a>
+    </div>
+  </div>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+  <script>
+    (function() {
+      'use strict';
+
+      /* ======== Constants ======== */
+      var EMOJI_OPTIONS = [
+        '\uD83C\uDF89', '\uD83C\uDF8A', '\uD83C\uDF82', '\uD83C\uDF81',
+        '\uD83C\uDF1F', '\u2764\uFE0F', '\uD83D\uDC95', '\uD83C\uDF88',
+        '\uD83C\uDF86', '\uD83C\uDF83', '\uD83C\uDF84', '\uD83C\uDF85',
+        '\uD83D\uDC4F', '\uD83C\uDF1E', '\uD83C\uDF0A', '\uD83C\uDF3B',
+        '\uD83D\uDE80', '\uD83C\uDFC6', '\uD83D\uDCE6', '\uD83D\uDCCC'
+      ];
+
+      var STORAGE_KEY = 'holiday_countdown_custom';
+
+      var currentFilter = 'all';
+      var selectedEmoji = EMOJI_OPTIONS[0];
+      var selectedColor = '#4361ee';
+
+      /* ======== Built-in Holidays for 2026 ======== */
+      function buildHolidays2026() {
+        return [
+          { name: '元旦', date: '2026-01-01', emoji: '\uD83C\uDF89', color: '#4361ee', category: 'chinese' },
+          { name: '腊八节', date: '2026-01-26', emoji: '\uD83C\uDF05', color: '#fb8c00', category: 'chinese' },
+          { name: '小年', date: '2026-02-08', emoji: '\uD83D\uDD25', color: '#e53935', category: 'chinese' },
+          { name: '除夕', date: '2026-02-16', emoji: '\uD83C\uDF86', color: '#d81b60', category: 'chinese' },
+          { name: '春节', date: '2026-02-17', emoji: '\uD83C\uDF8A', color: '#e53935', category: 'chinese' },
+          { name: '元宵节', date: '2026-03-03', emoji: '\uD83C\uDFEE', color: '#fb8c00', category: 'chinese' },
+          { name: '情人节', date: '2026-02-14', emoji: '\u2764\uFE0F', color: '#d81b60', category: 'international' },
+          { name: '妇女节', date: '2026-03-08', emoji: '\uD83C\uDF45', color: '#8e24aa', category: 'international' },
+          { name: '植树节', date: '2026-03-12', emoji: '\uD83C\uDF3F', color: '#43a047', category: 'chinese' },
+          { name: '消费者权益日', date: '2026-03-15', emoji: '\uD83D\uDEE1\uFE0F', color: '#4361ee', category: 'chinese' },
+          { name: '愚人节', date: '2026-04-01', emoji: '\uD83E\uDD21', color: '#fb8c00', category: 'international' },
+          { name: '清明节', date: '2026-04-05', emoji: '\uD83C\uDF3B', color: '#43a047', category: 'chinese' },
+          { name: '劳动节', date: '2026-05-01', emoji: '\uD83D\uDCAA', color: '#4361ee', category: 'chinese' },
+          { name: '青年节', date: '2026-05-04', emoji: '\uD83C\uDF1F', color: '#4361ee', category: 'chinese' },
+          { name: '母亲节', date: '2026-05-10', emoji: '\uD83C\uDF39', color: '#d81b60', category: 'international' },
+          { name: '儿童节', date: '2026-06-01', emoji: '\uD83C\uDF88', color: '#fb8c00', category: 'chinese' },
+          { name: '端午节', date: '2026-05-31', emoji: '\uD83C\uDF86', color: '#43a047', category: 'chinese' },
+          { name: '父亲节', date: '2026-06-21', emoji: '\uD83D\uDC68', color: '#4361ee', category: 'international' },
+          { name: '建党节', date: '2026-07-01', emoji: '\uD83C\uDFAF', color: '#e53935', category: 'chinese' },
+          { name: '建军节', date: '2026-08-01', emoji: '\uD83C\uDFAF', color: '#e53935', category: 'chinese' },
+          { name: '七夕节', date: '2026-08-25', emoji: '\uD83C\uDF38', color: '#d81b60', category: 'chinese' },
+          { name: '教师节', date: '2026-09-10', emoji: '\uD83D\uDCDA', color: '#8e24aa', category: 'chinese' },
+          { name: '中秋节', date: '2026-10-04', emoji: '\uD83C\uDF19', color: '#fb8c00', category: 'chinese' },
+          { name: '国庆节', date: '2026-10-01', emoji: '\uD83C\uDF8A', color: '#e53935', category: 'chinese' },
+          { name: '重阳节', date: '2026-10-25', emoji: '\uD83C\uDF3F', color: '#43a047', category: 'chinese' },
+          { name: '万圣节', date: '2026-10-31', emoji: '\uD83C\uDF83', color: '#fb8c00', category: 'international' },
+          { name: '感恩节', date: '2026-11-26', emoji: '\uD83C\uDF83', color: '#e53935', category: 'international' },
+          { name: '圣诞节', date: '2026-12-25', emoji: '\uD83C\uDF84', color: '#43a047', category: 'international' },
+          { name: '平安夜', date: '2026-12-24', emoji: '\uD83C\uDF84', color: '#d81b60', category: 'international' },
+          { name: '跨年夜', date: '2026-12-31', emoji: '\uD83C\uDF88', color: '#4361ee', category: 'international' }
+        ];
+      }
+
+      /* ======== State ======== */
+      var builtinHolidays = buildHolidays2026();
+      var customHolidays = loadCustomHolidays();
+      var allHolidays = builtinHolidays.concat(customHolidays);
+
+      /* ======== Custom holiday persistence ======== */
+      function loadCustomHolidays() {
+        try {
+          var raw = localStorage.getItem(STORAGE_KEY);
+          return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+          return [];
+        }
+      }
+
+      function saveCustomHolidays() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(customHolidays));
+        } catch (e) {
+          // storage full or unavailable
+        }
+      }
+
+      /* ======== Time calculations ======== */
+      function getTimeDiff(targetDateStr) {
+        var now = new Date();
+        var target = new Date(targetDateStr + 'T00:00:00');
+        var diff = target.getTime() - now.getTime();
+        var isToday = false;
+
+        if (diff < 0 && diff > -86400000) {
+          isToday = true;
+        }
+
+        var absDiff = Math.abs(diff);
+        var days = Math.floor(absDiff / 86400000);
+        var hours = Math.floor((absDiff % 86400000) / 3600000);
+        var minutes = Math.floor((absDiff % 3600000) / 60000);
+        var seconds = Math.floor((absDiff % 60000) / 1000);
+
+        return {
+          isFuture: diff > 0,
+          isToday: isToday,
+          days: days,
+          hours: hours,
+          minutes: minutes,
+          seconds: seconds,
+          pastDays: diff < 0 ? Math.ceil(Math.abs(diff) / 86400000) : 0
+        };
+      }
+
+      function formatDate(dateStr) {
+        var d = new Date(dateStr + 'T00:00:00');
+        var weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+        var m = d.getMonth() + 1;
+        var day = d.getDate();
+        var w = weekdays[d.getDay()];
+        return d.getFullYear() + '年' + m + '月' + day + '日 周' + w;
+      }
+
+      /* ======== Sorting ======== */
+      function sortHolidays(holidays) {
+        return holidays.slice().sort(function(a, b) {
+          var diffA = getTimeDiff(a.date);
+          var diffB = getTimeDiff(b.date);
+          // Future first (by proximity), then today, then past (most recent first)
+          if (diffA.isFuture && diffB.isFuture) return a.date.localeCompare(b.date);
+          if (diffA.isFuture && !diffB.isFuture) return -1;
+          if (!diffA.isFuture && diffB.isFuture) return 1;
+          if (diffA.isToday) return -1;
+          if (diffB.isToday) return 1;
+          return b.date.localeCompare(a.date);
+        });
+      }
+
+      /* ======== Filtering ======== */
+      function filterHolidays(holidays, filter) {
+        if (filter === 'all') return holidays;
+        if (filter === 'upcoming') return holidays.filter(function(h) { return getTimeDiff(h.date).isFuture; });
+        if (filter === 'past') return holidays.filter(function(h) { return !getTimeDiff(h.date).isFuture && !getTimeDiff(h.date).isToday; });
+        if (filter === 'chinese') return holidays.filter(function(h) { return h.category === 'chinese'; });
+        if (filter === 'international') return holidays.filter(function(h) { return h.category === 'international'; });
+        if (filter === 'custom') return holidays.filter(function(h) { return h.category === 'custom'; });
+        return holidays;
+      }
+
+      /* ======== Rendering ======== */
+      function escapeHtml(str) {
+        var div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+      }
+
+      function renderCard(holiday, idx) {
+        var td = getTimeDiff(holiday.date);
+        var isCustom = holiday.category === 'custom';
+        var tagText = holiday.category === 'chinese' ? '传统' :
+                      holiday.category === 'international' ? '国际' : '自定义';
+        var tagBg = holiday.category === 'chinese' ? '#fff3e0' :
+                    holiday.category === 'international' ? '#e3f2fd' : '#f3e5f5';
+        var tagColor = holiday.category === 'chinese' ? '#e65100' :
+                       holiday.category === 'international' ? '#1565c0' : '#7b1fa2';
+
+        var html = '<div class="holiday-card" data-idx="' + idx + '">';
+        html += '<div class="accent-bar" style="background:' + escapeHtml(holiday.color) + ';"></div>';
+
+        if (isCustom) {
+          html += '<button class="btn-remove" onclick="removeCustom(' + idx + ')" title="删除">\u00D7</button>';
+        }
+
+        html += '<div class="card-top">';
+        html += '<div class="card-left">';
+        html += '<span class="card-emoji">' + escapeHtml(holiday.emoji) + '</span>';
+        html += '<div><div class="card-name">' + escapeHtml(holiday.name) + '</div>';
+        html += '<div class="card-date">' + formatDate(holiday.date) + '</div></div>';
+        html += '</div>';
+        html += '<span class="card-tag" style="background:' + tagBg + ';color:' + tagColor + ';">' + tagText + '</span>';
+        html += '</div>';
+
+        if (td.isToday) {
+          html += '<div class="today-info">\uD83C\uDF89 就是今天！</div>';
+        } else if (td.isFuture) {
+          html += '<div class="countdown-display">';
+          html += renderUnit(td.days, '天', holiday.color);
+          html += renderUnit(td.hours, '时', holiday.color);
+          html += renderUnit(td.minutes, '分', holiday.color);
+          html += renderUnit(td.seconds, '秒', holiday.color);
+          html += '</div>';
+        } else {
+          html += '<div class="past-info">已过去 ' + td.pastDays + ' 天</div>';
+        }
+
+        html += '</div>';
+        return html;
+      }
+
+      function renderUnit(value, label, color) {
+        return '<div class="countdown-unit">' +
+          '<div class="countdown-number" style="color:' + color + ';">' + pad(value) + '</div>' +
+          '<div class="countdown-label">' + label + '</div>' +
+          '</div>';
+      }
+
+      function pad(n) {
+        return n < 10 ? '0' + n : '' + n;
+      }
+
+      function render() {
+        var sorted = sortHolidays(allHolidays);
+        var filtered = filterHolidays(sorted, currentFilter);
+        var grid = document.getElementById('holidayGrid');
+        var badge = document.getElementById('sectionBadge');
+
+        var upcomingCount = allHolidays.filter(function(h) { return getTimeDiff(h.date).isFuture; }).length;
+        badge.textContent = upcomingCount + ' 个即将到来';
+
+        if (filtered.length === 0) {
+          grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#999;">' +
+            '<div style="font-size:3rem;margin-bottom:12px;">\uD83D\uDCC5</div>' +
+            '<p>没有符合条件的节日</p></div>';
+          return;
+        }
+
+        var html = '';
+        for (var i = 0; i < filtered.length; i++) {
+          html += renderCard(filtered[i], allHolidays.indexOf(filtered[i]));
+        }
+        grid.innerHTML = html;
+      }
+
+      /* ======== Custom holiday actions ======== */
+      window.addCustomHoliday = function() {
+        var nameInput = document.getElementById('customName');
+        var dateInput = document.getElementById('customDate');
+        var name = nameInput.value.trim();
+        var date = dateInput.value;
+
+        if (!name) { showToast('请输入节日名称'); return; }
+        if (!date) { showToast('请选择日期'); return; }
+
+        // Check duplicate name
+        for (var i = 0; i < customHolidays.length; i++) {
+          if (customHolidays[i].name === name && customHolidays[i].date === date) {
+            showToast('该节日已存在');
+            return;
+          }
+        }
+
+        var newHoliday = {
+          name: name,
+          date: date,
+          emoji: selectedEmoji,
+          color: selectedColor,
+          category: 'custom'
+        };
+
+        var updated = customHolidays.concat([newHoliday]);
+        customHolidays = updated;
+        allHolidays = builtinHolidays.concat(customHolidays);
+        saveCustomHolidays();
+        nameInput.value = '';
+        render();
+        showToast('已添加「' + name + '」');
+      };
+
+      window.removeCustom = function(idx) {
+        var holiday = allHolidays[idx];
+        if (!holiday || holiday.category !== 'custom') return;
+
+        var name = holiday.name;
+        var updated = customHolidays.filter(function(h) {
+          return !(h.name === name && h.date === holiday.date);
+        });
+        customHolidays = updated;
+        allHolidays = builtinHolidays.concat(customHolidays);
+        saveCustomHolidays();
+        render();
+        showToast('已删除「' + name + '」');
+      };
+
+      /* ======== Toast ======== */
+      function showToast(msg) {
+        var existing = document.querySelector('.toast');
+        if (existing) existing.remove();
+
+        var t = document.createElement('div');
+        t.className = 'toast';
+        t.textContent = msg;
+        document.body.appendChild(t);
+        requestAnimationFrame(function() { t.classList.add('show'); });
+        setTimeout(function() {
+          t.classList.remove('show');
+          setTimeout(function() { t.remove(); }, 300);
+        }, 2000);
+      }
+
+      /* ======== Init emoji picker ======== */
+      function initEmojiPicker() {
+        var picker = document.getElementById('emojiPicker');
+        var html = '';
+        for (var i = 0; i < EMOJI_OPTIONS.length; i++) {
+          var sel = i === 0 ? ' selected' : '';
+          html += '<button class="emoji-option' + sel + '" data-emoji="' + EMOJI_OPTIONS[i] + '" type="button">' +
+            EMOJI_OPTIONS[i] + '</button>';
+        }
+        picker.innerHTML = html;
+
+        picker.addEventListener('click', function(e) {
+          var btn = e.target.closest('.emoji-option');
+          if (!btn) return;
+          picker.querySelectorAll('.emoji-option').forEach(function(b) { b.classList.remove('selected'); });
+          btn.classList.add('selected');
+          selectedEmoji = btn.getAttribute('data-emoji');
+        });
+      }
+
+      /* ======== Init color picker ======== */
+      function initColorPicker() {
+        var container = document.querySelector('.color-picker');
+        var options = container.querySelectorAll('.color-option');
+        options.forEach(function(opt) {
+          opt.addEventListener('click', function() {
+            options.forEach(function(o) { o.classList.remove('selected'); });
+            opt.classList.add('selected');
+            selectedColor = opt.getAttribute('data-color');
+          });
+        });
+      }
+
+      /* ======== Init filter tabs ======== */
+      function initFilterTabs() {
+        var tabs = document.getElementById('filterTabs');
+        tabs.addEventListener('click', function(e) {
+          var tab = e.target.closest('.filter-tab');
+          if (!tab) return;
+          tabs.querySelectorAll('.filter-tab').forEach(function(t) { t.classList.remove('active'); });
+          tab.classList.add('active');
+          currentFilter = tab.getAttribute('data-filter');
+          render();
+        });
+      }
+
+      /* ======== Bootstrap ======== */
+      initEmojiPicker();
+      initColorPicker();
+      initFilterTabs();
+      render();
+
+      // Update every second
+      setInterval(render, 1000);
+    })();
+  </script>
+</body>
+</html>

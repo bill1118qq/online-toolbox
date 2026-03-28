@@ -105,6 +105,199 @@
     init();
   }
 
+  // Auto-inject breadcrumb navigation + BreadcrumbList schema for tool pages
+  function injectBreadcrumb() {
+    if (document.querySelector('.breadcrumb-nav')) return;
+    var h1 = document.querySelector('h1');
+    if (!h1) return;
+    var pageName = h1.textContent.trim();
+    var path = window.location.pathname;
+
+    // Determine category and breadcrumb path
+    var category = '';
+    var categoryUrl = '';
+    var catMap = {
+      'json': { name: 'JSON工具', url: 'tools/json-tools.html' },
+      'base64': { name: '编码转换', url: 'tools/dev-tools.html' },
+      'hash': { name: '开发工具', url: 'tools/dev-tools.html' },
+      'aes': { name: '开发工具', url: 'tools/dev-tools.html' },
+      'uuid': { name: '开发工具', url: 'tools/dev-tools.html' },
+      'password': { name: '开发工具', url: 'tools/dev-tools.html' },
+      'regex': { name: '开发工具', url: 'tools/dev-tools.html' },
+      'cron': { name: '开发工具', url: 'tools/dev-tools.html' },
+      'jwt': { name: '开发工具', url: 'tools/dev-tools.html' },
+      'url-encoder': { name: '开发工具', url: 'tools/dev-tools.html' },
+      'html-entities': { name: '开发工具', url: 'tools/dev-tools.html' },
+      'css': { name: '开发工具', url: 'tools/dev-tools.html' },
+      'js-minifier': { name: '开发工具', url: 'tools/dev-tools.html' },
+      'html-minify': { name: '开发工具', url: 'tools/dev-tools.html' },
+      'sql': { name: '开发工具', url: 'tools/dev-tools.html' },
+      'xml': { name: '开发工具', url: 'tools/dev-tools.html' },
+      'markdown': { name: '文本工具', url: 'tools/text-tools.html' },
+      'word-counter': { name: '文本工具', url: 'tools/text-tools.html' },
+      'text-counter': { name: '文本工具', url: 'tools/text-tools.html' },
+      'text-stats': { name: '文本工具', url: 'tools/text-tools.html' },
+      'case-converter': { name: '文本工具', url: 'tools/text-tools.html' },
+      'char-frequency': { name: '文本工具', url: 'tools/text-tools.html' },
+      'word-frequency': { name: '文本工具', url: 'tools/text-tools.html' },
+      'text-diff': { name: '文本工具', url: 'tools/text-tools.html' },
+      'text-replace': { name: '文本工具', url: 'tools/text-tools.html' },
+      'text-unique': { name: '文本工具', url: 'tools/text-tools.html' },
+      'pinyin': { name: '文本工具', url: 'tools/text-tools.html' },
+      'simplified': { name: '文本工具', url: 'tools/text-tools.html' },
+      'cjk': { name: '文本工具', url: 'tools/text-tools.html' },
+      'punctuation': { name: '文本工具', url: 'tools/text-tools.html' },
+      'lorem': { name: '文本工具', url: 'tools/text-tools.html' },
+      'morse': { name: '编码转换', url: 'tools/dev-tools.html' },
+      'rot13': { name: '编码转换', url: 'tools/dev-tools.html' },
+      'unicode': { name: '开发工具', url: 'tools/dev-tools.html' },
+      'ascii': { name: '开发工具', url: 'tools/dev-tools.html' },
+      'number-base': { name: '编码转换', url: 'tools/dev-tools.html' },
+      'binary-converter': { name: '编码转换', url: 'tools/dev-tools.html' },
+      'byte-converter': { name: '编码转换', url: 'tools/dev-tools.html' },
+      'storage-converter': { name: '编码转换', url: 'tools/dev-tools.html' },
+      'unit-converter': { name: '编码转换', url: 'tools/dev-tools.html' },
+      'temperature': { name: '编码转换', url: 'tools/dev-tools.html' },
+      'color': { name: '颜色工具', url: 'tools/image-tools.html' },
+      'gradient': { name: '颜色工具', url: 'tools/image-tools.html' },
+      'box-shadow': { name: '颜色工具', url: 'tools/image-tools.html' },
+      'palette': { name: '颜色工具', url: 'tools/image-tools.html' },
+      'image': { name: '图片工具', url: 'tools/image-tools.html' },
+      'qrcode': { name: '图片工具', url: 'tools/image-tools.html' },
+      'qr-decoder': { name: '图片工具', url: 'tools/image-tools.html' },
+      'barcode': { name: '图片工具', url: 'tools/image-tools.html' },
+      'favicon': { name: '图片工具', url: 'tools/image-tools.html' },
+      'drawing': { name: '图片工具', url: 'tools/image-tools.html' },
+      'svg': { name: '图片工具', url: 'tools/image-tools.html' },
+      'wireframe': { name: '图片工具', url: 'tools/image-tools.html' },
+      'screen-color': { name: '颜色工具', url: 'tools/image-tools.html' },
+      'bmi': { name: '计算器工具', url: 'tools/calculator-tools.html' },
+      'age': { name: '计算器工具', url: 'tools/calculator-tools.html' },
+      'percentage': { name: '计算器工具', url: 'tools/calculator-tools.html' },
+      'discount': { name: '计算器工具', url: 'tools/calculator-tools.html' },
+      'loan': { name: '计算器工具', url: 'tools/calculator-tools.html' },
+      'mortgage': { name: '计算器工具', url: 'tools/calculator-tools.html' },
+      'compound': { name: '计算器工具', url: 'tools/calculator-tools.html' },
+      'tax': { name: '计算器工具', url: 'tools/calculator-tools.html' },
+      'retirement': { name: '计算器工具', url: 'tools/calculator-tools.html' },
+      'deposit': { name: '计算器工具', url: 'tools/calculator-tools.html' },
+      'gpa': { name: '计算器工具', url: 'tools/calculator-tools.html' },
+      'ideal-weight': { name: '计算器工具', url: 'tools/calculator-tools.html' },
+      'simple-calculator': { name: '计算器工具', url: 'tools/calculator-tools.html' },
+      'binary-calculator': { name: '计算器工具', url: 'tools/calculator-tools.html' },
+      'area': { name: '计算器工具', url: 'tools/calculator-tools.html' },
+      'triangle': { name: '计算器工具', url: 'tools/calculator-tools.html' },
+      'distance': { name: '计算器工具', url: 'tools/calculator-tools.html' },
+      'standard-deviation': { name: '计算器工具', url: 'tools/calculator-tools.html' },
+      'profit': { name: '计算器工具', url: 'tools/calculator-tools.html' },
+      'stock': { name: '计算器工具', url: 'tools/calculator-tools.html' },
+      'fuel': { name: '计算器工具', url: 'tools/calculator-tools.html' },
+      'electricity': { name: '计算器工具', url: 'tools/calculator-tools.html' },
+      'math-solver': { name: '计算器工具', url: 'tools/calculator-tools.html' },
+      'housing-fund': { name: '计算器工具', url: 'tools/calculator-tools.html' },
+      'social-insurance': { name: '计算器工具', url: 'tools/calculator-tools.html' },
+      'credit-card': { name: '计算器工具', url: 'tools/calculator-tools.html' },
+      'speed-test': { name: '计算器工具', url: 'tools/calculator-tools.html' },
+      'timestamp': { name: '日期时间', url: 'tools/all-tools.html' },
+      'date': { name: '日期时间', url: 'tools/all-tools.html' },
+      'countdown': { name: '日期时间', url: 'tools/all-tools.html' },
+      'stopwatch': { name: '日期时间', url: 'tools/all-tools.html' },
+      'timer': { name: '日期时间', url: 'tools/all-tools.html' },
+      'weekday': { name: '日期时间', url: 'tools/all-tools.html' },
+      'year-calc': { name: '日期时间', url: 'tools/all-tools.html' },
+      'workday': { name: '日期时间', url: 'tools/all-tools.html' },
+      'world-clock': { name: '日期时间', url: 'tools/all-tools.html' },
+      'lunar': { name: '日期时间', url: 'tools/all-tools.html' },
+      'sleep': { name: '生活工具', url: 'tools/all-tools.html' },
+      'food': { name: '生活工具', url: 'tools/all-tools.html' },
+      'exchange': { name: '生活工具', url: 'tools/all-tools.html' },
+      'phone': { name: '生活工具', url: 'tools/all-tools.html' },
+      'id-card': { name: '生活工具', url: 'tools/all-tools.html' },
+      'screen-resolution': { name: '生活工具', url: 'tools/all-tools.html' },
+      'screen-ruler': { name: '生活工具', url: 'tools/all-tools.html' },
+      'ip': { name: '开发工具', url: 'tools/dev-tools.html' },
+      'subnet': { name: '开发工具', url: 'tools/dev-tools.html' },
+      'meta-tag': { name: '开发工具', url: 'tools/dev-tools.html' },
+      'seo': { name: '开发工具', url: 'tools/dev-tools.html' },
+      'http': { name: '开发工具', url: 'tools/dev-tools.html' },
+      'emoji': { name: '趣味工具', url: 'tools/all-tools.html' },
+      'zodiac': { name: '趣味工具', url: 'tools/all-tools.html' },
+      'chinese-zodiac': { name: '趣味工具', url: 'tools/all-tools.html' },
+      'blood-type': { name: '趣味工具', url: 'tools/all-tools.html' },
+      'random-number': { name: '趣味工具', url: 'tools/all-tools.html' },
+      'rand-str': { name: '趣味工具', url: 'tools/all-tools.html' },
+      'firework': { name: '趣味工具', url: 'tools/all-tools.html' },
+      'white-noise': { name: '趣味工具', url: 'tools/all-tools.html' },
+      'typing': { name: '趣味工具', url: 'tools/all-tools.html' },
+      'counter': { name: '趣味工具', url: 'tools/all-tools.html' },
+      'text-clock': { name: '趣味工具', url: 'tools/all-tools.html' },
+      'translator': { name: '文本工具', url: 'tools/text-tools.html' },
+      'rmb': { name: '生活工具', url: 'tools/all-tools.html' },
+      'number-chinese': { name: '文本工具', url: 'tools/text-tools.html' },
+      'invisible': { name: '文本工具', url: 'tools/text-tools.html' },
+      'html-to': { name: '开发工具', url: 'tools/dev-tools.html' },
+      'csv-to': { name: '开发工具', url: 'tools/dev-tools.html' },
+      'line-counter': { name: '文本工具', url: 'tools/text-tools.html' },
+      'list-generator': { name: '文本工具', url: 'tools/text-tools.html' },
+      'number-sort': { name: '文本工具', url: 'tools/text-tools.html' },
+      'text-to-image': { name: '图片工具', url: 'tools/image-tools.html' },
+      'text-to-speech': { name: '文本工具', url: 'tools/text-tools.html' },
+      'text-wrap': { name: '文本工具', url: 'tools/text-tools.html' },
+      'text-repeater': { name: '文本工具', url: 'tools/text-tools.html' },
+      'string-length': { name: '文本工具', url: 'tools/text-tools.html' },
+      'placeholder': { name: '图片工具', url: 'tools/image-tools.html' },
+      'id-photo': { name: '图片工具', url: 'tools/image-tools.html' }
+    };
+
+    // Match tool file name to category
+    var fileName = path.split('/').pop().replace('.html', '');
+    var isEn = path.includes('/en/');
+    var prefix = isEn ? '../../' : '../../';
+    var homeUrl = isEn ? '../../index.html' : '../../index.html';
+
+    var cat = null;
+    for (var key in catMap) {
+      if (fileName.indexOf(key) === 0) {
+        cat = catMap[key];
+        break;
+      }
+    }
+
+    // Inject breadcrumb HTML
+    if (cat) {
+      var nav = document.createElement('nav');
+      nav.className = 'breadcrumb-nav';
+      nav.setAttribute('aria-label', 'Breadcrumb');
+      nav.style.cssText = 'font-size:0.85rem;color:#888;margin-bottom:8px;padding:0;';
+      nav.innerHTML = '<a href="' + prefix + 'index.html" style="color:#4361ee;text-decoration:none;">首页</a> <span style="margin:0 6px;">&rsaquo;</span> <a href="' + prefix + cat.url + '" style="color:#4361ee;text-decoration:none;">' + cat.name + '</a> <span style="margin:0 6px;">&rsaquo;</span> <span style="color:#555;">' + pageName + '</span>';
+      h1.parentNode.insertBefore(nav, h1);
+    }
+
+    // Inject BreadcrumbList JSON-LD schema
+    if (cat) {
+      var base = window.location.origin;
+      var canonical = (document.querySelector('link[rel="canonical"]') || {}).href || window.location.href;
+      var schema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {"@type": "ListItem", "position": 1, "name": "首页", "item": base + "/"},
+          {"@type": "ListItem", "position": 2, "name": cat.name, "item": base + "/" + cat.url},
+          {"@type": "ListItem", "position": 3, "name": pageName, "item": canonical}
+        ]
+      };
+      var script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.textContent = JSON.stringify(schema);
+      document.head.appendChild(script);
+    }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectBreadcrumb);
+  } else {
+    injectBreadcrumb();
+  }
+
   // Auto-inject footer with legal links (if no footer exists)
   function injectFooter() {
     if (document.querySelector('footer') || document.querySelector('.site-footer')) return;

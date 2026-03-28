@@ -6,6 +6,7 @@ Disallow: /test/
 Disallow: /node_modules/
 
 Sitemap: https://eitools.cn/sitemap.xml
+Sitemap: https://eitools.cn/sitemap-en.xml
 # Sitemap for Baidu
 User-agent: Baiduspider
 Allow: /

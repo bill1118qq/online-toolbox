@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>随机决定器 - 在线工具箱</title>
+  <meta name="description" content="免费在线随机决定器，输入选项一键随机选择，支持自定义选项、快速预设（吃什么/去哪玩/做什么）、老虎机动画和纸屑特效。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="stylesheet" href="../../css/style.css">
+  <link rel="alternate" hreflang="en" href="https://eitools.cn/src/tools/random-decision-maker.html">
+  <link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/random-decision-maker.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="随机决定器 - 在线工具箱">
+  <meta property="og:description" content="免费在线随机决定器，输入选项一键随机选择，支持自定义选项、快速预设、老虎机动画和纸屑特效。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/random-decision-maker.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/random-decision-maker.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "随机决定器是如何工作的？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "随机决定器使用浏览器内置的加密级随机数生成器（crypto.getRandomValues），从用户提供的选项列表中等概率随机选取一个结果，确保每次选择都是真正随机的。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "我的选项数据会被上传到服务器吗？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "不会。所有数据完全在您的浏览器本地处理，不会发送到任何服务器，确保您的隐私安全。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "可以添加多少个选项？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "您可以添加任意数量的选项，最少需要 2 个选项才能进行随机选择。建议不超过 50 个选项以获得最佳体验。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "随机决定器适合哪些场景？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "随机决定器适用于选择困难症、团队决策、日常选择（今天吃什么、去哪玩、看什么电影）、游戏抽签、随机分组等多种场景。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "如何使用快速预设功能？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "点击选项区域上方的快速预设按钮（吃什么、去哪玩、做什么、是/否），系统会自动填充常见选项到输入框中，您可以直接开始抽取，也可以在此基础上修改选项。"
+        }
+      }
+    ]
+  }
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js"></script>
+  <style>
+    /* ========== Fun theme variables ========== */
+    :root {
+      --fun-purple: #7c3aed;
+      --fun-pink: #ec4899;
+      --fun-orange: #f97316;
+      --fun-teal: #14b8a6;
+      --fun-yellow: #eab308;
+      --fun-blue: #3b82f6;
+      --fun-bg-gradient: linear-gradient(135deg, #fce4ec 0%, #e8eaf6 50%, #e0f7fa 100%);
+    }
+
+    .decision-tool {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    /* ========== Quick preset buttons ========== */
+    .preset-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .preset-btn {
+      padding: 8px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 24px;
+      background: white;
+      color: #555;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .preset-btn:hover {
+      border-color: var(--fun-purple);
+      color: var(--fun-purple);
+      background: #f5f3ff;
+      transform: translateY(-1px);
+    }
+
+    .preset-btn.active {
+      border-color: var(--fun-purple);
+      background: var(--fun-purple);
+      color: white;
+    }
+
+    /* ========== Options textarea ========== */
+    .options-area {
+      width: 100%;
+      min-height: 120px;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: inherit;
+      resize: vertical;
+      line-height: 1.8;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .options-area:focus {
+      outline: none;
+      border-color: var(--fun-purple);
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+    }
+
+    .options-hint {
+      font-size: 0.85rem;
+      color: #888;
+      margin-top: 6px;
+    }
+
+    /* ========== Spin button ========== */
+    .spin-section {
+      text-align: center;
+      margin: 24px 0;
+    }
+
+    .spin-btn {
+      position: relative;
+      display: inline-block;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      border: none;
+      background: linear-gradient(135deg, var(--fun-purple), var(--fun-pink));
+      color: white;
+      font-size: 1.4rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 8px 32px rgba(124, 58, 237, 0.4);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      overflow: hidden;
+    }
+
+    .spin-btn::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(
+        transparent 0deg,
+        rgba(255,255,255,0.15) 60deg,
+        transparent 120deg,
+        rgba(255,255,255,0.15) 180deg,
+        transparent 240deg,
+        rgba(255,255,255,0.15) 300deg,
+        transparent 360deg
+      );
+      animation: rotate-glow 4s linear infinite;
+    }
+
+    @keyframes rotate-glow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .spin-btn:hover:not(:disabled) {
+      transform: scale(1.08);
+      box-shadow: 0 12px 40px rgba(124, 58, 237, 0.5);
+    }
+
+    .spin-btn:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+
+    .spin-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .spin-btn-text {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .spin-btn-text .icon {
+      font-size: 2.4rem;
+      line-height: 1;
+    }
+
+    /* ========== Slot machine display ========== */
+    .slot-machine {
+      background: linear-gradient(180deg, #1a1a2e, #2d1b69);
+      border-radius: 16px;
+      padding: 20px;
+      margin: 24px 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slot-display {
+      background: #fff;
+      border-radius: 12px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      margin-bottom: 8px;
+      box-shadow: inset 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .slot-item {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #1a1a2e;
+      position: absolute;
+      transition: none;
+      white-space: nowrap;
+      padding: 0 20px;
+    }
+
+    .slot-item.spinning {
+      animation: slot-scroll 0.08s linear infinite;
+    }
+
+    @keyframes slot-scroll {
+      0% { transform: translateY(-8px); opacity: 0.5; }
+      50% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(8px); opacity: 0.5; }
+    }
+
+    .slot-result {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--fun-purple), var(--fun-pink), var(--fun-orange));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: result-bounce 0.5s ease;
+    }
+
+    @keyframes result-bounce {
+      0% { transform: scale(0.3); opacity: 0; }
+      50% { transform: scale(1.15); }
+      70% { transform: scale(0.95); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .slot-label {
+      color: rgba(255,255,255,0.6);
+      font-size: 0.85rem;
+    }
+
+    /* ========== Confetti canvas ========== */
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ========== Result card ========== */
+    .result-card {
+      text-align: center;
+      padding: 32px 24px;
+      background: var(--fun-bg-gradient);
+      border-radius: 16px;
+      margin-top: 16px;
+      display: none;
+    }
+
+    .result-card.show {
+      display: block;
+      animation: result-card-in 0.4s ease;
+    }
+
+    @keyframes result-card-in {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-card .label {
+      font-size: 1rem;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .result-card .value {
+      font-size: 2.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--fun-purple), var(--fun-pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .result-card .copy-row {
+      margin-top: 16px;
+    }
+
+    /* ========== History section ========== */
+    .history-section {
+      margin-top: 32px;
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .history-header h3 {
+      font-size: 1.1rem;
+      color: #333;
+    }
+
+    .clear-history-btn {
+      font-size: 0.85rem;
+      color: #888;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: underline;
+      transition: color 0.2s;
+    }
+
+    .clear-history-btn:hover {
+      color: #e53e3e;
+    }
+
+    .history-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      animation: history-in 0.3s ease;
+    }
+
+    @keyframes history-in {
+      from { opacity: 0; transform: translateX(-12px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .history-item .num {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: white;
+    }
+
+    .history-item:nth-child(5n+1) .num { background: var(--fun-purple); }
+    .history-item:nth-child(5n+2) .num { background: var(--fun-pink); }
+    .history-item:nth-child(5n+3) .num { background: var(--fun-orange); }
+    .history-item:nth-child(5n+4) .num { background: var(--fun-teal); }
+    .history-item:nth-child(5n) .num { background: var(--fun-blue); }
+
+    .history-item .text {
+      flex: 1;
+      font-size: 0.95rem;
+      color: #333;
+    }
+
+    .history-item .time {
+      font-size: 0.8rem;
+      color: #aaa;
+      flex-shrink: 0;
+    }
+
+    .empty-history {
+      text-align: center;
+      color: #bbb;
+      padding: 24px;
+      font-size: 0.95rem;
+    }
+
+    /* ========== Toast override for colorful theme ========== */
+    .toast.show {
+      background: linear-gradient(135deg, var(--fun-purple), var(--fun-pink));
+      color: white;
+    }
+
+    /* ========== Responsive ========== */
+    @media (max-width: 768px) {
+      .spin-btn {
+        width: 140px;
+        height: 140px;
+        font-size: 1.2rem;
+      }
+
+      .spin-btn-text .icon {
+        font-size: 2rem;
+      }
+
+      .slot-display {
+        height: 60px;
+      }
+
+      .slot-item {
+        font-size: 1.4rem;
+      }
+
+      .result-card .value {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>随机决定器</h1>
+    </div>
+
+    <div class="decision-tool">
+      <!-- Quick presets -->
+      <div class="preset-row">
+        <button class="preset-btn" onclick="loadPreset('food')">🍜 吃什么</button>
+        <button class="preset-btn" onclick="loadPreset('place')">🏖 去哪玩</button>
+        <button class="preset-btn" onclick="loadPreset('activity')">🏀 做什么</button>
+        <button class="preset-btn" onclick="loadPreset('yesno')">✅ 是/否</button>
+      </div>
+
+      <!-- Options input -->
+      <textarea id="options-input" class="options-area" placeholder="输入你的选项，每行一个...&#10;例如：&#10;火锅&#10;烤肉&#10;日料&#10;西餐" rows="6"></textarea>
+      <p class="options-hint">每行一个选项，至少输入 2 个选项即可开始</p>
+
+      <!-- Spin button -->
+      <div class="spin-section">
+        <button id="spin-btn" class="spin-btn" onclick="spin()">
+          <span class="spin-btn-text">
+            <span class="icon">&#127922;</span>
+            <span>抽一下</span>
+          </span>
+        </button>
+      </div>
+
+      <!-- Slot machine display -->
+      <div class="slot-machine">
+        <div id="slot-display" class="slot-display">
+          <span id="slot-text" class="slot-item" style="color:#bbb;">等待抽取...</span>
+        </div>
+        <span class="slot-label">命运转盘</span>
+      </div>
+
+      <!-- Result card (shown after spin) -->
+      <div id="result-card" class="result-card">
+        <p class="label">恭喜，命运的选择是</p>
+        <p id="result-value" class="value"></p>
+        <div class="copy-row">
+          <button class="btn btn-secondary" onclick="copyResult()" style="font-size:0.9rem;">复制结果</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- History -->
+    <div class="history-section">
+      <div class="history-header">
+        <h3>历史记录</h3>
+        <button id="clear-history-btn" class="clear-history-btn" onclick="clearHistory()">清空记录</button>
+      </div>
+      <ul id="history-list" class="history-list">
+        <li class="empty-history">还没有抽取记录</li>
+      </ul>
+    </div>
+  </div>
+
+  <canvas id="confetti-canvas"></canvas>
+  <div id="toast" class="toast"></div>
+
+  <div class="related-tools" style="margin-top:32px;padding:20px;background:#f8f9fa;border-radius:12px;">
+    <h3 style="margin-bottom:12px;font-size:1rem;color:#333;">相关工具推荐</h3>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;">
+      <a href="random-number.html" style="padding:6px 14px;background:white;border:1px solid #e0e0e0;border-radius:20px;text-decoration:none;color:#4361ee;font-size:0.85rem;">随机数生成</a>
+      <a href="rand-str.html" style="padding:6px 14px;background:white;border:1px solid #e0e0e0;border-radius:20px;text-decoration:none;color:#4361ee;font-size:0.85rem;">随机字符串</a>
+      <a href="love-calculator.html" style="padding:6px 14px;background:white;border:1px solid #e0e0e0;border-radius:20px;text-decoration:none;color:#4361ee;font-size:0.85rem;">爱情计算器</a>
+    </div>
+  </div>
+
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+
+  <script>
+    /* ========== State ========== */
+    var history = [];
+    var isSpinning = false;
+
+    /* ========== Presets ========== */
+    var presets = {
+      food: ['火锅', '烤肉', '日料', '披萨', '汉堡', '麻辣烫', '炸鸡', '螺蛳粉', '饺子', '拉面', '沙拉', '煲仔饭'],
+      place: ['看电影', '逛商场', '公园散步', '博物馆', '咖啡馆', '书店', '游乐园', '爬山', '海边', '密室逃脱'],
+      activity: ['看书', '运动健身', '学做饭', '画画', '写代码', '看电影', '打游戏', '听音乐', '散步', '整理房间'],
+      yesno: ['是', '否']
+    };
+
+    function loadPreset(key) {
+      var textarea = document.getElementById('options-input');
+      textarea.value = presets[key].join('\n');
+
+      // Toggle active state
+      var btns = document.querySelectorAll('.preset-btn');
+      btns.forEach(function(btn) { btn.classList.remove('active'); });
+      event.target.classList.add('active');
+    }
+
+    /* ========== Parse options ========== */
+    function parseOptions() {
+      var text = document.getElementById('options-input').value.trim();
+      if (!text) return [];
+      return text.split('\n').map(function(line) { return line.trim(); }).filter(function(line) { return line.length > 0; });
+    }
+
+    /* ========== Secure random index ========== */
+    function secureRandomIndex(length) {
+      var arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] % length;
+    }
+
+    /* ========== Slot machine animation ========== */
+    function spin() {
+      if (isSpinning) return;
+
+      var options = parseOptions();
+      if (options.length < 2) {
+        showToast('请至少输入 2 个选项');
+        return;
+      }
+
+      isSpinning = true;
+      var spinBtn = document.getElementById('spin-btn');
+      spinBtn.disabled = true;
+
+      var slotText = document.getElementById('slot-text');
+      var slotDisplay = document.getElementById('slot-display');
+      var resultCard = document.getElementById('result-card');
+      resultCard.classList.remove('show');
+
+      // Start spinning animation
+      slotText.classList.add('spinning');
+      slotText.classList.remove('slot-result');
+      slotText.style.color = '#1a1a2e';
+
+      var spinCount = 0;
+      var totalSpins = 20 + secureRandomIndex(10);
+      var delay = 50;
+
+      function animateSpin() {
+        var randomOption = options[secureRandomIndex(options.length)];
+        slotText.textContent = randomOption;
+        spinCount++;
+
+        if (spinCount < totalSpins) {
+          delay += spinCount * 2;
+          setTimeout(animateSpin, delay);
+        } else {
+          // Final result
+          finishSpin(options, slotText, resultCard);
+        }
+      }
+
+      setTimeout(animateSpin, delay);
+    }
+
+    function finishSpin(options, slotText, resultCard) {
+      var finalIndex = secureRandomIndex(options.length);
+      var result = options[finalIndex];
+
+      slotText.classList.remove('spinning');
+      slotText.textContent = result;
+      slotText.classList.add('slot-result');
+
+      // Show result card
+      document.getElementById('result-value').textContent = result;
+      resultCard.classList.add('show');
+
+      // Fire confetti
+      launchConfetti();
+
+      // Add to history
+      addToHistory(result);
+
+      // Re-enable spin button
+      var spinBtn = document.getElementById('spin-btn');
+      spinBtn.disabled = false;
+      isSpinning = false;
+    }
+
+    /* ========== Confetti animation ========== */
+    function launchConfetti() {
+      var canvas = document.getElementById('confetti-canvas');
+      var ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      var colors = ['#7c3aed', '#ec4899', '#f97316', '#14b8a6', '#eab308', '#3b82f6', '#ef4444', '#22c55e'];
+      var particles = [];
+
+      for (var i = 0; i < 120; i++) {
+        particles.push({
+          x: canvas.width * 0.5 + (Math.random() - 0.5) * 200,
+          y: canvas.height * 0.4,
+          vx: (Math.random() - 0.5) * 16,
+          vy: Math.random() * -18 - 4,
+          w: Math.random() * 10 + 4,
+          h: Math.random() * 6 + 3,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          rotationSpeed: (Math.random() - 0.5) * 12,
+          gravity: 0.35 + Math.random() * 0.15,
+          opacity: 1,
+          decay: 0.005 + Math.random() * 0.008
+        });
+      }
+
+      var frameCount = 0;
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        var alive = false;
+
+        for (var i = 0; i < particles.length; i++) {
+          var p = particles[i];
+          p.vy += p.gravity;
+          p.x += p.vx;
+          p.y += p.vy;
+          p.rotation += p.rotationSpeed;
+          p.opacity -= p.decay;
+
+          if (p.opacity <= 0) continue;
+          alive = true;
+
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, p.opacity);
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rotation * Math.PI / 180);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          ctx.restore();
+        }
+
+        frameCount++;
+        if (alive && frameCount < 300) {
+          requestAnimationFrame(draw);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    /* ========== History ========== */
+    function addToHistory(result) {
+      var now = new Date();
+      var timeStr = now.getHours().toString().padStart(2, '0') + ':' +
+                    now.getMinutes().toString().padStart(2, '0') + ':' +
+                    now.getSeconds().toString().padStart(2, '0');
+
+      var entry = { result: result, time: timeStr, num: history.length + 1 };
+      history.unshift(entry);
+
+      if (history.length > 20) history.pop();
+      renderHistory();
+    }
+
+    function renderHistory() {
+      var list = document.getElementById('history-list');
+      var clearBtn = document.getElementById('clear-history-btn');
+
+      if (history.length === 0) {
+        list.innerHTML = '<li class="empty-history">还没有抽取记录</li>';
+        clearBtn.style.display = 'none';
+        return;
+      }
+
+      clearBtn.style.display = 'inline';
+      var html = '';
+      for (var i = 0; i < history.length; i++) {
+        var item = history[i];
+        html += '<li class="history-item">' +
+                  '<span class="num">' + item.num + '</span>' +
+                  '<span class="text">' + escapeHtml(item.result) + '</span>' +
+                  '<span class="time">' + item.time + '</span>' +
+                '</li>';
+      }
+      list.innerHTML = html;
+    }
+
+    function clearHistory() {
+      history = [];
+      renderHistory();
+      showToast('历史记录已清空');
+    }
+
+    /* ========== Copy result ========== */
+    function copyResult() {
+      var text = document.getElementById('result-value').textContent;
+      if (!text) {
+        showToast('请先抽取一次');
+        return;
+      }
+      navigator.clipboard.writeText(text).then(function() {
+        showToast('已复制: ' + text);
+      }).catch(function() {
+        showToast('复制失败，请手动选择');
+      });
+    }
+
+    /* ========== Toast ========== */
+    function showToast(msg) {
+      var toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(function() { toast.classList.remove('show'); }, 2000);
+    }
+
+    /* ========== Escape HTML ========== */
+    function escapeHtml(text) {
+      var div = document.createElement('div');
+      div.appendChild(document.createTextNode(text));
+      return div.innerHTML;
+    }
+
+    /* ========== Handle window resize for confetti canvas ========== */
+    window.addEventListener('resize', function() {
+      var canvas = document.getElementById('confetti-canvas');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
+</body>
+</html>

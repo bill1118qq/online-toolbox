@@ -16,6 +16,56 @@
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"WebApplication","name":"色盲测试","description":"在线色觉检测工具","url":"https://eitools.cn/src/tools/color-blind-test.html","applicationCategory":"HealthApplication","operatingSystem":"Any"}
   </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "色盲测试的原理是什么？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "色盲测试通常基于石原色觉检测图（Ishihara Test）原理，利用不同颜色的圆点排列成数字或图形，正常色觉者可以识别出其中的数字，而色觉异常者可能看到不同的数字或完全无法识别。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "在线色盲测试准确吗？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "在线色盲测试仅供初步筛查参考，不能替代医院的专业色觉检查。测试结果受屏幕显示偏差、环境光线等因素影响，如需确诊请前往正规医院眼科进行专业检测。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "色盲和色弱有什么区别？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "色盲指完全无法分辨某些颜色，以红绿色盲最为常见；色弱则是对某些颜色的分辨能力较弱，在颜色较深或对比不明显时难以区分。色弱的程度因人而异，轻者日常生活几乎不受影响。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "做色盲测试时需要注意什么？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "做色盲测试时应确保在充足且均匀的光线下进行，与屏幕保持约50厘米的距离，不要眯眼或斜视。建议摘掉有色眼镜，使用经过校色的显示器以获得更准确的结果。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "色觉异常能治好吗？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "先天性色觉异常目前尚无有效的治疗方法，但可以通过佩戴特殊的色觉矫正眼镜来改善颜色辨别能力。后天获得性色觉异常（如白内障、视网膜病变引起）在治疗原发病后有可能得到改善或恢复。"
+        }
+      }
+    ]
+  }
+  </script>
+  <link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/color-blind-test.html">
+  <link rel="alternate" hreflang="en" href="https://eitools.cn/src/tools/color-blind-test.html?lang=en">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
   <script src="../../js/analytics.js"></script>
 </head>
@@ -79,11 +129,29 @@
         <div style="padding:24px;background:${color}11;border:2px solid ${color};border-radius:12px;text-align:center;">
           <div style="font-size:2rem;font-weight:800;color:${color};">${score} / ${tests.length}</div>
           <p style="margin-top:12px;color:#555;">${msg}</p>
-          <button class="btn btn-primary" onclick="restart()" style="margin-top:16px;">重新测试</button>
+          <div style="display:flex;gap:12px;justify-content:center;margin-top:16px;flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="restart()">重新测试</button>
+            <button class="btn btn-secondary" onclick="shareResult()">分享结果</button>
+          </div>
         </div>`;
     }
 
     function restart() { currentTest = 0; score = 0; document.getElementById('result-area').innerHTML = ''; renderTest(); }
+
+    function shareResult() {
+      const text = `我在EITools做了色盲测试，得分 ${score}/${tests.length}！快来测测你的色觉是否正常：https://eitools.cn/src/tools/color-blind-test.html`;
+      if (navigator.share) {
+        navigator.share({ title: '色盲测试结果', text: text, url: 'https://eitools.cn/src/tools/color-blind-test.html' }).catch(function() {});
+      } else if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(function() {
+          var tip = document.createElement('div');
+          tip.textContent = '结果已复制到剪贴板';
+          tip.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:8px;z-index:9999;font-size:14px;';
+          document.body.appendChild(tip);
+          setTimeout(function() { tip.remove(); }, 2000);
+        });
+      }
+    }
     renderTest();
   </script>
 <div id="share-bar"></div>

@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>爱情匹配计算器 - 在线爱情缘分测试 - 在线工具箱</title>
+  <meta name="description" content="免费在线爱情匹配计算器，输入两人的名字即可测试爱情缘分指数，查看趣味匹配结果和甜蜜关系描述，快来测测你们的缘分吧！">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <meta property="og:title" content="爱情匹配计算器 - 免费在线缘分测试">
+  <meta property="og:description" content="输入两人的名字，趣味测试爱情缘分指数，查看甜蜜匹配结果！">
+  <meta property="og:url" content="https://eitools.cn/src/tools/love-calculator.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/love-calculator.html">
+  <link rel="alternate" hreflang="en" href="https://eitools.cn/en/src/tools/love-calculator.html">
+  <link rel="alternate" hreflang="zh-CN" href="https://eitools.cn/src/tools/love-calculator.html">
+  <link rel="alternate" hreflang="x-default" href="https://eitools.cn/src/tools/love-calculator.html">
+  <link rel="stylesheet" href="../../css/style.css">
+  <meta property="og:type" content="website">
+  <style>
+    :root {
+      --love-primary: #e84393;
+      --love-secondary: #ff6b6b;
+      --love-accent: #ee5a24;
+      --love-light: #ffeef8;
+      --love-gradient: linear-gradient(135deg, #ff6b6b, #ee5a24, #e84393);
+    }
+
+    .love-container { position: relative; overflow: hidden; }
+
+    /* Floating hearts background */
+    .hearts-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .floating-heart {
+      position: absolute;
+      bottom: -30px;
+      color: var(--love-secondary);
+      opacity: 0;
+      animation: floatUp var(--duration) var(--delay) infinite;
+      font-size: var(--size);
+    }
+
+    @keyframes floatUp {
+      0% {
+        opacity: 0;
+        transform: translateY(0) rotate(0deg) scale(0.5);
+      }
+      10% {
+        opacity: 0.6;
+      }
+      50% {
+        opacity: 0.3;
+        transform: translateY(-50vh) rotate(15deg) scale(1);
+      }
+      90% {
+        opacity: 0.1;
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-100vh) rotate(-10deg) scale(0.7);
+      }
+    }
+
+    /* Intro text */
+    .love-intro {
+      color: #666;
+      margin-bottom: 24px;
+      text-align: center;
+      font-size: 1.05rem;
+    }
+
+    /* Form */
+    .love-form {
+      max-width: 480px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .love-form .form-group {
+      margin-bottom: 20px;
+    }
+
+    .love-form label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .love-form input[type="text"] {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #ffc0d6;
+      border-radius: 12px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      box-sizing: border-box;
+      background: #fff;
+    }
+
+    .love-form input[type="text"]:focus {
+      border-color: var(--love-primary);
+      box-shadow: 0 0 0 3px rgba(232, 67, 147, 0.15);
+    }
+
+    .love-form input[type="text"]::placeholder {
+      color: #c4a0b0;
+    }
+
+    /* Heart divider */
+    .heart-divider {
+      text-align: center;
+      margin: 4px 0 20px;
+      font-size: 1.5rem;
+      color: var(--love-secondary);
+      animation: heartbeat 1.5s ease-in-out infinite;
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.2); }
+      30% { transform: scale(1); }
+      45% { transform: scale(1.15); }
+    }
+
+    /* Calculate button */
+    .love-btn {
+      width: 100%;
+      padding: 14px;
+      font-size: 1.1rem;
+      background: var(--love-gradient);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .love-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(232, 67, 147, 0.35);
+    }
+
+    .love-btn:active {
+      transform: translateY(0);
+    }
+
+    .love-btn.calculating {
+      pointer-events: none;
+      animation: btnPulse 0.6s ease-in-out infinite;
+    }
+
+    @keyframes btnPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .love-btn .btn-text { transition: opacity 0.3s; }
+    .love-btn.calculating .btn-text { opacity: 0; }
+    .love-btn .btn-loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 1.3rem;
+    }
+    .love-btn.calculating .btn-loading { opacity: 1; }
+
+    /* Result area */
+    .love-result {
+      margin-top: 32px;
+      text-align: center;
+    }
+
+    .love-result .error {
+      color: #e03131;
+      font-size: 0.95rem;
+    }
+
+    /* Result card */
+    .result-card {
+      background: var(--love-gradient);
+      border-radius: 20px;
+      padding: 32px 24px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(232, 67, 147, 0.3);
+      animation: cardAppear 0.6s ease-out;
+    }
+
+    @keyframes cardAppear {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .result-card .card-decoration {
+      position: absolute;
+      top: -20px;
+      right: -20px;
+      font-size: 100px;
+      opacity: 0.12;
+      pointer-events: none;
+    }
+
+    .result-card .card-decoration-bottom {
+      position: absolute;
+      bottom: -20px;
+      left: -20px;
+      font-size: 80px;
+      opacity: 0.12;
+      pointer-events: none;
+      transform: scaleX(-1);
+    }
+
+    .result-names {
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+      opacity: 0.95;
+      letter-spacing: 1px;
+    }
+
+    .result-names span {
+      font-weight: 700;
+    }
+
+    /* Circular progress */
+    .score-circle {
+      width: 160px;
+      height: 160px;
+      margin: 0 auto 20px;
+      position: relative;
+    }
+
+    .score-circle svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .score-circle .circle-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.2);
+      stroke-width: 8;
+    }
+
+    .score-circle .circle-progress {
+      fill: none;
+      stroke: #fff;
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 408;
+      stroke-dashoffset: 408;
+      transition: stroke-dashoffset 1.5s ease-out;
+    }
+
+    .score-value {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.8rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .score-value .percent {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .result-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin: 16px 0 8px;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .result-desc {
+      font-size: 1rem;
+      opacity: 0.9;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    /* Share button */
+    .share-result-btn {
+      display: inline-block;
+      padding: 10px 28px;
+      background: rgba(255, 255, 255, 0.25);
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      border-radius: 25px;
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      backdrop-filter: blur(4px);
+    }
+
+    .share-result-btn:hover {
+      background: rgba(255, 255, 255, 0.4);
+      border-color: rgba(255, 255, 255, 0.8);
+      transform: translateY(-1px);
+    }
+
+    /* Burst hearts animation on result */
+    .burst-hearts {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    .burst-heart {
+      position: absolute;
+      font-size: 1.2rem;
+      animation: burstAnim 1.2s ease-out forwards;
+      color: var(--love-secondary);
+    }
+
+    @keyframes burstAnim {
+      0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(0.5) rotate(0deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(var(--tx), var(--ty)) scale(1.2) rotate(var(--tr));
+      }
+    }
+
+    /* FAQ / reference section */
+    .love-ref {
+      margin-top: 40px;
+      padding: 24px;
+      background: var(--love-light);
+      border-radius: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .love-ref h2 {
+      font-size: 1.1rem;
+      margin-bottom: 16px;
+      color: var(--love-primary);
+    }
+
+    .love-ref .faq-item {
+      margin-bottom: 16px;
+    }
+
+    .love-ref .faq-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .love-ref .faq-q {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 4px;
+    }
+
+    .love-ref .faq-a {
+      color: #666;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .love-ref .related-tools {
+      margin-top: 24px;
+      padding: 16px;
+      background: #fff;
+      border-radius: 12px;
+    }
+
+    .love-ref .related-tools h3 {
+      font-size: 0.95rem;
+      margin: 0 0 12px;
+      color: #333;
+    }
+
+    .love-ref .related-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .love-ref .related-link {
+      padding: 6px 14px;
+      background: var(--love-light);
+      border: 1px solid #f0c0d8;
+      border-radius: 16px;
+      color: var(--love-primary);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: background 0.2s;
+    }
+
+    .love-ref .related-link:hover {
+      background: #ffd6eb;
+    }
+
+    .love-disclaimer {
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: #fff;
+      border-radius: 10px;
+      border-left: 3px solid var(--love-secondary);
+      font-size: 0.85rem;
+      color: #888;
+      line-height: 1.5;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .score-circle {
+        width: 130px;
+        height: 130px;
+      }
+      .score-value {
+        font-size: 2.2rem;
+      }
+      .result-card {
+        padding: 24px 16px;
+      }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"爱情匹配计算器","description":"趣味爱情缘分测试工具，输入两人名字即可计算匹配指数","url":"https://eitools.cn/src/tools/love-calculator.html","applicationCategory":"EntertainmentApplication","operatingSystem":"Any"}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"爱情匹配计算器的结果准确吗？","acceptedAnswer":{"@type":"Answer","text":"爱情匹配计算器是一个纯趣味测试工具，结果通过名字的字符编码生成，仅供娱乐参考。真正的爱情需要双方用心经营，不能由一个数字决定。"}},{"@type":"Question","name":"为什么同样的名字每次计算结果不同？","acceptedAnswer":{"@type":"Answer","text":"为了增加趣味性，计算器在名字字符编码的基础上引入了时间因素，所以同一对名字在不同时间可能会得到略有不同的结果，让每次测试都充满期待。"}},{"@type":"Question","name":"爱情匹配指数是怎么计算的？","acceptedAnswer":{"@type":"Answer","text":"匹配指数基于两人名字的字符编码进行混合运算，并结合当前时间戳进行随机调制，最终生成0到100之间的一个趣味分数。"}},{"@type":"Question","name":"100%的匹配指数代表什么？","acceptedAnswer":{"@type":"Answer","text":"100%代表系统给出的最高趣味评分「天作之合」，意味着这两个名字在当前计算中达到了最高缘分值。但这只是娱乐结果，真正的感情还是要看两个人的实际相处。"}},{"@type":"Question","name":"可以用来测试朋友或明星的名字吗？","acceptedAnswer":{"@type":"Answer","text":"当然可以！你可以输入任何两个名字进行趣味测试，比如测试自己和偶像的「缘分」，或者和朋友互相测试，增加互动乐趣。"}}]}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <!-- Floating hearts background -->
+  <div class="hearts-bg" id="heartsBg" aria-hidden="true"></div>
+
+  <div class="tool-page love-container">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>爱情匹配计算器</h1>
+    </div>
+
+    <p class="love-intro">输入你们的名字，测测缘分指数吧！</p>
+
+    <div class="love-form">
+      <div class="form-group">
+        <label for="name1">他的名字</label>
+        <input type="text" id="name1" placeholder="输入男生的名字" maxlength="20">
+      </div>
+
+      <div class="heart-divider" aria-hidden="true">&#10084;</div>
+
+      <div class="form-group">
+        <label for="name2">她的名字</label>
+        <input type="text" id="name2" placeholder="输入女生的名字" maxlength="20">
+      </div>
+
+      <button class="love-btn" id="calcBtn" onclick="calculateLove()">
+        <span class="btn-text">测测缘分</span>
+        <span class="btn-loading">&#10084;&#65039;</span>
+      </button>
+
+      <div id="result" class="love-result"></div>
+    </div>
+
+    <div class="love-ref">
+      <h2>趣味问答</h2>
+      <div class="faq-item">
+        <div class="faq-q">Q：结果准确吗？</div>
+        <div class="faq-a">A：这是一个纯趣味测试工具，结果仅供娱乐参考。真正的爱情需要双方用心经营，不能由一个数字决定。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Q：为什么同样的名字每次结果不同？</div>
+        <div class="faq-a">A：计算器在名字编码基础上引入了时间因素，让每次测试都充满期待和惊喜。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Q：匹配指数是怎么计算的？</div>
+        <div class="faq-a">A：基于两人名字的字符编码进行混合运算，并结合时间戳调制，生成 0~100 的趣味分数。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Q：可以测试朋友或明星吗？</div>
+        <div class="faq-a">A：当然可以！输入任何两个名字都可以趣味测试，和朋友们一起玩更有意思。</div>
+      </div>
+
+      <div class="love-disclaimer">
+        本工具仅供娱乐，计算结果不构成任何恋爱建议。真爱需要用心经营，而非数字定义。
+      </div>
+
+      <div class="related-tools">
+        <h3>相关工具推荐</h3>
+        <div class="related-links">
+          <a href="age-calculator.html" class="related-link">年龄计算器</a>
+          <a href="bmi-calculator.html" class="related-link">BMI计算器</a>
+          <a href="qrcode.html" class="related-link">二维码生成器</a>
+          <a href="password-generator.html" class="related-link">密码生成器</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Floating hearts background ---
+    (function initHearts() {
+      var bg = document.getElementById('heartsBg');
+      if (!bg) return;
+      var symbols = ['\u2665', '\u2764', '\u2661'];
+      for (var i = 0; i < 15; i++) {
+        var heart = document.createElement('span');
+        heart.className = 'floating-heart';
+        heart.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        heart.style.setProperty('--duration', (8 + Math.random() * 12) + 's');
+        heart.style.setProperty('--delay', (Math.random() * 10) + 's');
+        heart.style.setProperty('--size', (14 + Math.random() * 20) + 'px');
+        heart.style.left = (Math.random() * 100) + '%';
+        bg.appendChild(heart);
+      }
+    })();
+
+    // --- Score descriptions ---
+    function getScoreInfo(score) {
+      if (score >= 90) return { title: '天作之合', desc: '你们简直是命中注定的一对！无论从性格、兴趣还是默契度来看，你们都是最完美的搭配。愿你们的爱情永远甜蜜！', emoji: '\uD83C\uDF1F' };
+      if (score >= 80) return { title: '心意相通', desc: '你们之间有着极强的默契与吸引力，像两块完美契合的拼图。只要彼此珍惜，这段感情定能长久。', emoji: '\uD83C\uDF38' };
+      if (score >= 70) return { title: '缘分匪浅', desc: '你们之间有着不错的缘分基础，彼此吸引又相互欣赏。用心经营这段感情，未来可期！', emoji: '\uD83C\uDF37' };
+      if (score >= 60) return { title: '值得期待', desc: '你们的关系正在升温中，虽然还有些需要磨合的地方，但潜力十足，值得你们一起努力！', emoji: '\u2615' };
+      if (score >= 50) return { title: '半糖关系', desc: '你们的相处有甜蜜也有挑战，就像半糖奶茶一样，不太甜也不太淡。多点耐心，多些了解。', emoji: '\uD83C\uDF6B' };
+      if (score >= 40) return { title: '需要磨合', desc: '你们之间还需要更多的理解和包容。爱情不是一蹴而就的，给彼此一些时间和空间吧。', emoji: '\uD83D\uDCA1' };
+      if (score >= 30) return { title: '友谊至上', desc: '目前来看，你们更适合做朋友。但谁说朋友不能成为恋人呢？一切皆有可能！', emoji: '\uD83E\uDD1D' };
+      if (score >= 20) return { title: '有缘无分', desc: '看起来你们目前的缘分值偏低，但别灰心！爱情往往在不经意间降临，保持开放的心态吧。', emoji: '\uD83C\uDF43' };
+      return { title: '平行世界', desc: '你们可能身处完全不同的频道，但这不代表未来没有交集。宇宙很大，一切皆有可能！', emoji: '\uD83C\uDF0C' };
+    }
+
+    // --- Deterministic-ish hash from names ---
+    function hashNames(name1, name2) {
+      var combined = name1.toLowerCase().trim() + ':' + name2.toLowerCase().trim();
+      var hash = 0;
+      for (var i = 0; i < combined.length; i++) {
+        var char = combined.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+      }
+      return Math.abs(hash);
+    }
+
+    // --- Calculate love score ---
+    function computeScore(name1, name2) {
+      var base = hashNames(name1, name2);
+      // Mix in time factor for variation
+      var timeFactor = Math.floor(Date.now() / 60000);
+      var mixed = (base * 31 + timeFactor * 17 + base % 7 * 13) & 0x7FFFFFFF;
+      return mixed % 101;
+    }
+
+    // --- Burst hearts effect ---
+    function createBurstEffect() {
+      var container = document.createElement('div');
+      container.className = 'burst-hearts';
+      document.body.appendChild(container);
+      var symbols = ['\u2764\uFE0F', '\uD83D\uDC95', '\uD83D\uDC96', '\uD83D\uDC97', '\uD83D\uDC93', '\u2665'];
+      for (var i = 0; i < 20; i++) {
+        var heart = document.createElement('span');
+        heart.className = 'burst-heart';
+        heart.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        var angle = (Math.PI * 2 * i) / 20;
+        var distance = 80 + Math.random() * 120;
+        heart.style.setProperty('--tx', Math.cos(angle) * distance + 'px');
+        heart.style.setProperty('--ty', Math.sin(angle) * distance + 'px');
+        heart.style.setProperty('--tr', (Math.random() * 360) + 'deg');
+        heart.style.animationDelay = (Math.random() * 0.3) + 's';
+        container.appendChild(heart);
+      }
+      setTimeout(function() {
+        if (container.parentNode) container.parentNode.removeChild(container);
+      }, 1600);
+    }
+
+    // --- Build result card HTML ---
+    function buildResultHTML(name1, name2, score) {
+      var info = getScoreInfo(score);
+      var circumference = 2 * Math.PI * 65;
+      var offset = circumference - (score / 100) * circumference;
+
+      return '<div class="result-card" id="resultCard">' +
+        '<span class="card-decoration">\u2764\uFE0F</span>' +
+        '<span class="card-decoration-bottom">\u2764\uFE0F</span>' +
+        '<div class="result-names"><span>' + escapeHTML(name1) + '</span> &amp; <span>' + escapeHTML(name2) + '</span></div>' +
+        '<div class="score-circle">' +
+          '<svg viewBox="0 0 140 140">' +
+            '<circle class="circle-bg" cx="70" cy="70" r="65"></circle>' +
+            '<circle class="circle-progress" id="scoreProgress" cx="70" cy="70" r="65" style="stroke-dasharray:' + circumference + ';stroke-dashoffset:' + circumference + '"></circle>' +
+          '</svg>' +
+          '<div class="score-value"><span id="scoreNum">0</span><span class="percent">%</span></div>' +
+        '</div>' +
+        '<div class="result-title">' + info.emoji + ' ' + info.title + '</div>' +
+        '<div class="result-desc">' + info.desc + '</div>' +
+        '<button class="share-result-btn" onclick="shareResult(\'' + escapeAttr(name1) + '\', \'' + escapeAttr(name2) + '\', ' + score + ', \'' + info.title + '\')">分享结果</button>' +
+      '</div>';
+    }
+
+    // --- Animate score counter ---
+    function animateScore(target) {
+      var el = document.getElementById('scoreNum');
+      var progress = document.getElementById('scoreProgress');
+      if (!el || !progress) return;
+      var circumference = 2 * Math.PI * 65;
+      var offset = circumference - (target / 100) * circumference;
+      var current = 0;
+      var step = Math.max(1, Math.floor(target / 60));
+      var timer = setInterval(function() {
+        current += step;
+        if (current >= target) {
+          current = target;
+          clearInterval(timer);
+        }
+        el.textContent = current;
+        progress.style.strokeDashoffset = circumference - (current / 100) * circumference;
+      }, 25);
+    }
+
+    // --- Share result ---
+    function shareResult(name1, name2, score, title) {
+      var text = name1 + ' & ' + name2 + ' 的爱情匹配指数是 ' + score + '%！' + title + ' 快来测测你们的缘分吧~ ' + 'https://eitools.cn/src/tools/love-calculator.html';
+
+      if (navigator.share) {
+        navigator.share({
+          title: '爱情匹配计算器 - ' + title,
+          text: text,
+          url: 'https://eitools.cn/src/tools/love-calculator.html'
+        }).catch(function() {
+          fallbackCopy(text);
+        });
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function() {
+          showToast('结果已复制到剪贴板，快去分享吧！');
+        }).catch(function() {
+          showToast('复制失败，请手动分享');
+        });
+      } else {
+        showToast('当前浏览器不支持自动分享，请手动复制');
+      }
+    }
+
+    // --- Toast ---
+    function showToast(msg) {
+      var existing = document.querySelector('.toast');
+      if (existing) existing.parentNode.removeChild(existing);
+      var toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = msg;
+      document.body.appendChild(toast);
+      setTimeout(function() {
+        if (toast.parentNode) toast.parentNode.removeChild(toast);
+      }, 2000);
+    }
+
+    // --- Escape HTML ---
+    function escapeHTML(str) {
+      var div = document.createElement('div');
+      div.appendChild(document.createTextNode(str));
+      return div.innerHTML;
+    }
+
+    function escapeAttr(str) {
+      return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    }
+
+    // --- Main calculate function ---
+    function calculateLove() {
+      var name1 = document.getElementById('name1').value.trim();
+      var name2 = document.getElementById('name2').value.trim();
+      var resultDiv = document.getElementById('result');
+      var btn = document.getElementById('calcBtn');
+
+      if (!name1 || !name2) {
+        resultDiv.innerHTML = '<p class="error">请输入两个人的名字哦~</p>';
+        return;
+      }
+
+      if (name1 === name2) {
+        resultDiv.innerHTML = '<p class="error">请输入两个不同的名字哦~</p>';
+        return;
+      }
+
+      // Show calculating state
+      btn.classList.add('calculating');
+      resultDiv.innerHTML = '';
+
+      // Simulate calculation delay for fun
+      setTimeout(function() {
+        btn.classList.remove('calculating');
+        var score = computeScore(name1, name2);
+        resultDiv.innerHTML = buildResultHTML(name1, name2, score);
+
+        // Animate score after render
+        requestAnimationFrame(function() {
+          animateScore(score);
+        });
+
+        // Burst hearts effect
+        createBurstEffect();
+      }, 1200);
+    }
+
+    // --- Enter key support ---
+    document.getElementById('name1').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') document.getElementById('name2').focus();
+    });
+    document.getElementById('name2').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') calculateLove();
+    });
+  </script>
+  <div id="share-bar"></div>
+  <script src="../../js/share.js"></script>
+</body>
+</html>
