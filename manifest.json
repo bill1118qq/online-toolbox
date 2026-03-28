@@ -3,7 +3,7 @@
   "short_name": "EITools",
   "description": "146+ 免费在线工具，包括JSON格式化、图片压缩、计算器、编码转换等",
   "start_url": "/",
-  "display": "standalone",
+  "display": "browser",
   "background_color": "#f0f2f5",
   "theme_color": "#4361ee",
   "orientation": "any",
