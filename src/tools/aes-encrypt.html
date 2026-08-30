@@ -143,7 +143,19 @@
   </div>
 
   <div id="toast" class="toast"></div>
-  <div id="share-bar"></div>
+  <section id="tool-guide" style="max-width:960px;margin:8px auto 0;padding:24px 20px;background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);font-size:15px;line-height:1.8;color:#333;">
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">AES 加密解密是什么？</h2>
+<p style="margin:0 0 8px;">免费在线AES加密解密工具，支持AES-256-CBC和AES-256-GCM模式，使用PBKDF2密钥派生，纯浏览器端处理，零数据传输，保障安全。适合开发者日常调试、编码和数据处理场景。本工具完全免费、无需注册，所有处理均在浏览器本地完成，不会上传您的任何数据。</p>
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">AES 加密解密使用方法</h2>
+<ol style="margin:0 0 8px;padding-left:22px;"><li>在输入框中粘贴或输入您要处理的内容。</li><li>点击「加密」按钮执行操作。</li><li>结果将显示在下方结果区域，可一键复制。</li></ol>
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">常见问题</h2>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：AES加密安全吗？</strong><p style="margin:4px 0 0;">AES（高级加密标准）是目前最广泛使用的对称加密算法之一，被美国政府、军方及全球企业采用。本工具使用AES-256（256位密钥），是最高安全级别的AES加密，配合PBKDF2密钥派生函数，能有效抵抗暴力破解攻击。</p></div>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：我的数据会被上传到服务器吗？</strong><p style="margin:4px 0 0;">不会。本工具使用浏览器原生Web Crypto API进行加密解密运算，所有数据完全在您的设备本地处理，不会通过网络传输到任何服务器。您可以断开网络后仍能正常使用本工具。</p></div>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：AES-CBC和AES-GCM有什么区别？</strong><p style="margin:4px 0 0;">AES-CBC（密码分组链接模式）是一种经典的加密模式，需要单独的初始化向量(IV)。AES-GCM（伽罗瓦/计数器模式）是认证加密模式，除了加密外还提供数据完整性验证，推荐优先使用GCM模式。</p></div>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：加密后的密文可以跨平台解密吗？</strong><p style="margin:4px 0 0;">可以。本工具输出的加密结果使用Base64编码，包含完整的IV和Salt信息。只需知道密码，在任何支持AES-256的平台上（如OpenSSL、Python、Node.js等）均可正确解密。</p></div>
+</section>
+<div class="related-tools" style="margin-top:24px;padding:20px;background:#f8f9fa;border-radius:8px;"><h3 style="margin:0 0 10px;">相关工具推荐</h3><div style="display:flex;flex-wrap:wrap;gap:10px;"><a href="json-formatter.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">JSON格式化</a><a href="base64.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">Base64编解码</a><a href="qrcode.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">二维码生成</a><a href="color-picker.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">颜色选择器</a></div></div>
+<div id="share-bar"></div>
   <script src="../../js/share.js"></script>
 
   <script>
