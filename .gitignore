@@ -1,2 +1,3 @@
 .vercel
 node_modules/\ntest/\npackage.json\npackage-lock.json\n.DS_Store
+test-results/

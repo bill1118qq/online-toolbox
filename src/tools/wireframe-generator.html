@@ -438,7 +438,11 @@
       // Update code
       var fullCode = '<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>线框图页面</title>\n  <style>\n    * { margin: 0; padding: 0; box-sizing: border-box; }\n    body { font-family: -apple-system, sans-serif; color: #333; }\n    .btn-primary { padding: 10px 24px; background: ' + primary + '; color: #fff; border: none; border-radius: 6px; cursor: pointer; }\n    a { color: #4361ee; text-decoration: none; }\n  </style>\n<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
   <script src="../../js/analytics.js"></script>
-</head>\n<body>\n' + codeParts.join('\n\n') + '\n</body>\n</html>';
+</head>\n<body>\n' + codeParts.join('\n\n') + '\n<!-- AdSense（统一配置于 js/ads-config.js，未配置时零请求） -->
+<div id="ad-inpage-1" style="max-width:960px;margin:24px auto;text-align:center;min-height:0;"></div>
+<script src="../../js/ads-config.js"></script>
+<script src="../../js/ads.js"></script>
+</body>\n</html>';
 
       document.getElementById('codeOutput').textContent = fullCode;
     }
