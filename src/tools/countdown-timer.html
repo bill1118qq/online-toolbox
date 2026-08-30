@@ -148,9 +148,9 @@
 
       clearInterval(timerInterval);
       timerInterval = setInterval(function() {
-        remainingSeconds++;
-        if (isCountdown && remainingSeconds >= totalSeconds) {
-          remainingSeconds = totalSeconds;
+        remainingSeconds--;
+        if (isCountdown && remainingSeconds <= 0) {
+          remainingSeconds = 0;
           pauseTimer();
           state = 'finished';
           document.getElementById('display').className = 'timer-display finished';

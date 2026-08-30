@@ -42,8 +42,8 @@
         return;
       }
       try {
-        const header = JSON.parse(atob(parts[0].replace(/-/g,'+').replace(/_/g,'/')));
-        const payload = JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/')));
+        const header = JSON.parse(b64UrlDecode(parts[0]));
+        const payload = JSON.parse(b64UrlDecode(parts[1]));
         const now = Math.floor(Date.now()/1000);
         const isExpired = payload.exp && payload.exp < now;
         const expDate = payload.exp ? new Date(payload.exp * 1000) : null;
@@ -79,6 +79,14 @@
       if (seconds < 3600) return Math.floor(seconds/60) + '分' + (seconds%60) + '秒';
       if (seconds < 86400) return Math.floor(seconds/3600) + '小时' + Math.floor((seconds%3600)/60) + '分';
       return Math.floor(seconds/86400) + '天' + Math.floor((seconds%86400)/3600) + '小时';
+    }
+    function b64UrlDecode(s) {
+      const b64 = s.replace(/-/g, '+').replace(/_/g, '/');
+      const padded = b64.length % 4 ? b64 + '='.repeat(4 - (b64.length % 4)) : b64;
+      const binary = atob(padded);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      return new TextDecoder('utf-8').decode(bytes);
     }
     function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
     decode();

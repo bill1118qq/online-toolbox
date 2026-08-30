@@ -547,7 +547,7 @@
 
   <script>
     /* ========== State ========== */
-    var history = [];
+    var historyList = [];
     var isSpinning = false;
 
     /* ========== Presets ========== */
@@ -642,13 +642,13 @@
       // Fire confetti
       launchConfetti();
 
-      // Add to history
-      addToHistory(result);
-
-      // Re-enable spin button
+      // Re-enable spin button & reset spinning state before history update
       var spinBtn = document.getElementById('spin-btn');
       spinBtn.disabled = false;
       isSpinning = false;
+
+      // Add to history
+      addToHistory(result);
     }
 
     /* ========== Confetti animation ========== */
@@ -721,10 +721,10 @@
                     now.getMinutes().toString().padStart(2, '0') + ':' +
                     now.getSeconds().toString().padStart(2, '0');
 
-      var entry = { result: result, time: timeStr, num: history.length + 1 };
-      history.unshift(entry);
+      var entry = { result: result, time: timeStr, num: historyList.length + 1 };
+      historyList.unshift(entry);
 
-      if (history.length > 20) history.pop();
+      if (historyList.length > 20) historyList.pop();
       renderHistory();
     }
 
@@ -732,7 +732,7 @@
       var list = document.getElementById('history-list');
       var clearBtn = document.getElementById('clear-history-btn');
 
-      if (history.length === 0) {
+      if (historyList.length === 0) {
         list.innerHTML = '<li class="empty-history">还没有抽取记录</li>';
         clearBtn.style.display = 'none';
         return;
@@ -740,8 +740,8 @@
 
       clearBtn.style.display = 'inline';
       var html = '';
-      for (var i = 0; i < history.length; i++) {
-        var item = history[i];
+      for (var i = 0; i < historyList.length; i++) {
+        var item = historyList[i];
         html += '<li class="history-item">' +
                   '<span class="num">' + item.num + '</span>' +
                   '<span class="text">' + escapeHtml(item.result) + '</span>' +
@@ -752,7 +752,7 @@
     }
 
     function clearHistory() {
-      history = [];
+      historyList = [];
       renderHistory();
       showToast('历史记录已清空');
     }

@@ -444,9 +444,7 @@
         showToast('请先生成标签');
         return;
       }
-      var headContent = '<head>\n  ' + code.split('\n').join('\n  ') + '\n<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
-  <script src="../../js/analytics.js?v=20260831"></script>
-</head>';
+      var headContent = '<head>\n  ' + code.split('\n').join('\n  ') + '\n  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>\n  <script src="../../js/analytics.js?v=20260831"></script>\n</head>';
       navigator.clipboard.writeText(headContent).then(function() {
         showToast('已复制 &lt;head&gt; 内容到剪贴板');
       }).catch(function() {

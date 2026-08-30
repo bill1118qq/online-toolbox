@@ -52,6 +52,21 @@
   <div id="toast" class="toast"></div>
 
   <script>
+    // 覆盖 qrcode-generator 的 stringToBytes：按 UTF-8 编码中文，避免 c&0xFF 截断
+    qrcode.stringToBytes = function(s) {
+      var b = [];
+      for (var i = 0; i < s.length; i++) {
+        var c = s.charCodeAt(i);
+        if (c <= 0x7f) b.push(c);
+        else if (c <= 0x7ff) {
+          b.push(0xc0 | (c >> 6), 0x80 | (c & 63));
+        } else {
+          b.push(0xe0 | (c >> 12), 0x80 | ((c >> 6) & 63), 0x80 | (c & 63));
+        }
+      }
+      return b;
+    };
+
     const qrInput = document.getElementById('qrInput');
     const qrCanvas = document.getElementById('qrCanvas');
 

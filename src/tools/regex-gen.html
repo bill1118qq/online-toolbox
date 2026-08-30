@@ -76,9 +76,12 @@
       { name: 'UUID', regex: '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$', desc: 'UUID格式', category: '字符串', test: '550e8400-e29b-41d4-a716-446655440000' },
     ];
 
+    let currentRegexData = regexData;
+
     function renderRegex(data) {
+      currentRegexData = data;
       const container = document.getElementById('regexList');
-      container.innerHTML = data.map(item => `
+      container.innerHTML = data.map((item, i) => `
         <div class="regex-item" style="background:white;border:1px solid #eee;border-radius:10px;padding:14px;margin-bottom:10px;">
           <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
             <div>
@@ -87,33 +90,43 @@
             </div>
             <span style="background:#f0f2f5;padding:2px 8px;border-radius:10px;font-size:0.75rem;color:#666;">${item.category}</span>
           </div>
-          <div style="background:#1a1a2e;padding:10px;border-radius:6px;font-family:monospace;font-size:0.85rem;color:#4ade80;margin:8px 0;overflow-x:auto;cursor:pointer;" onclick="copyRegex('${item.regex.replace(/'/g, "\\'")}', this)">
+          <div style="background:#1a1a2e;padding:10px;border-radius:6px;font-family:monospace;font-size:0.85rem;color:#4ade80;margin:8px 0;overflow-x:auto;cursor:pointer;" onclick="copyRegex(${i}, this)">
             ${item.regex} <span style="color:#666;font-size:0.75rem;">点击复制</span>
           </div>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
             <span style="font-size:0.85rem;color:#666;">测试: ${item.test}</span>
-            <button class="btn btn-secondary" style="padding:4px 12px;font-size:0.8rem;" onclick="testRegex('${item.regex.replace(/'/g, "\\'")}', '${item.test}', this)">测试匹配</button>
+            <button class="btn btn-secondary" style="padding:4px 12px;font-size:0.8rem;" onclick="testRegex(${i}, this)">测试匹配</button>
             <span class="test-result" style="font-size:0.85rem;"></span>
           </div>
         </div>
       `).join('');
     }
 
-    function copyRegex(regex, el) {
+    function copyRegex(index, el) {
+      const regex = currentRegexData[index].regex;
       navigator.clipboard.writeText(regex).then(() => showToast('已复制正则: ' + regex));
     }
 
-    function testRegex(regex, test, btn) {
+    function testRegex(index, btn) {
+      const item = currentRegexData[index];
       const result = btn.nextElementSibling;
       try {
-        const re = new RegExp(regex);
-        const match = re.test(test);
+        const re = new RegExp(item.regex);
+        const match = re.test(item.test);
         result.style.color = match ? '#4ade80' : '#f44';
         result.textContent = match ? '✓ 匹配成功' : '✗ 不匹配';
       } catch (e) {
         result.style.color = '#f44';
         result.textContent = '正则语法错误';
       }
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      if (!toast) return;
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
     }
 
     function filterRegex() {
@@ -134,6 +147,7 @@
 
     renderRegex(regexData);
   </script>
+  <div id="toast" class="toast"></div>
 <!-- AdSense（统一配置于 js/ads-config.js，未配置时零请求） -->
 <div id="ad-inpage-1" style="max-width:960px;margin:24px auto;text-align:center;min-height:0;"></div>
 <script src="../../js/ads-config.js?v=20260831"></script>

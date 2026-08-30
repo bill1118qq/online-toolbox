@@ -289,7 +289,7 @@
           if (line) lines.push(line);
         }
 
-        var lineSpacing = lh;
+        var lineSpacing = fs * (lh / 10);
         var textHeight = lines.length * lineSpacing;
         var ch = Math.max(200, textHeight + pad * 2);
 

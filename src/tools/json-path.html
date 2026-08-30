@@ -88,36 +88,57 @@
       }
       if (current.startsWith('.')) current = current.slice(1);
       const parts = current.split(/(?<!\[[^\]]*)\./);
-      return parts.reduce((acc, part) => {
-        if (acc === undefined || acc === null) return undefined;
-        // Handle array index or wildcard
-        const arrMatch = part.match(/^(\w+)\[(.+)\]$/);
-        if (arrMatch) {
-          const key = arrMatch[1], idx = arrMatch[2];
-          const val = typeof acc === 'object' ? acc[key] : undefined;
-          if (idx === '*') return Array.isArray(val) ? val : [val];
-          const numIdx = parseInt(idx);
-          if (!isNaN(numIdx)) return Array.isArray(val) ? val[numIdx] : undefined;
-          return val;
-        }
-        // Handle filter [?(...)]
-        const filterMatch = part.match(/^(\w+)\[\?\(@\.(.+?)\)\]$/);
-        if (filterMatch) {
-          const key = filterMatch[1], cond = filterMatch[2];
-          const arr = typeof acc === 'object' ? acc[key] : undefined;
-          if (!Array.isArray(arr)) return undefined;
-          const [field, op, val] = parseFilter(cond);
-          return arr.filter(item => {
-            const v = item[field];
-            if (op === '<') return v < parseFloat(val);
-            if (op === '>') return v > parseFloat(val);
-            if (op === '==') return v == val;
-            if (op === '!=') return v != val;
-            return true;
+      return evalSegments(obj, parts);
+    }
+
+    function evalSegments(value, parts) {
+      if (parts.length === 0) return value;
+      const part = parts[0];
+      const rest = parts.slice(1);
+
+      // Handle array index or wildcard
+      const arrMatch = part.match(/^(\w+)\[(.+)\]$/);
+      if (arrMatch) {
+        const key = arrMatch[1], idx = arrMatch[2];
+        const val = (value !== null && typeof value === 'object') ? value[key] : undefined;
+        if (idx === '*') {
+          const arr = Array.isArray(val) ? val : [];
+          const merged = [];
+          arr.forEach(item => {
+            const r = evalSegments(item, rest);
+            if (Array.isArray(r)) merged.push(...r);
+            else if (r !== undefined && r !== null) merged.push(r);
           });
+          return merged;
         }
-        return typeof acc === 'object' ? acc[part] : undefined;
-      }, obj);
+        const numIdx = parseInt(idx, 10);
+        if (!isNaN(numIdx)) {
+          const next = Array.isArray(val) ? val[numIdx] : undefined;
+          return evalSegments(next, rest);
+        }
+        return evalSegments(val, rest);
+      }
+
+      // Handle filter [?(...)]
+      const filterMatch = part.match(/^(\w+)\[\?\(@\.(.+?)\)\]$/);
+      if (filterMatch) {
+        const key = filterMatch[1], cond = filterMatch[2];
+        const arr = (value !== null && typeof value === 'object') ? value[key] : undefined;
+        if (!Array.isArray(arr)) return undefined;
+        const [field, op, fval] = parseFilter(cond);
+        const filtered = arr.filter(item => {
+          const v = item[field];
+          if (op === '<') return v < parseFloat(fval);
+          if (op === '>') return v > parseFloat(fval);
+          if (op === '==') return v == fval;
+          if (op === '!=') return v != fval;
+          return true;
+        });
+        return evalSegments(filtered, rest);
+      }
+
+      const next = (value !== null && typeof value === 'object') ? value[part] : undefined;
+      return evalSegments(next, rest);
     }
 
     function deepSearch(obj, key) {

@@ -41,7 +41,7 @@
           <div><label style="font-size:0.85rem;color:#888;">性别</label><select id="uGender" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;" onchange="calc()"><option value="male">男（60岁退休）</option><option value="female-worker">女工人（50岁退休）</option><option value="female-cadre">女干部（55岁退休）</option></select></div>
           <div><label style="font-size:0.85rem;color:#888;">当前月薪（元）</label><input type="number" id="uSalary" value="10000" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;" oninput="calc()"></div>
           <div><label style="font-size:0.85rem;color:#888;">已缴费年限</label><input type="number" id="uPaid" value="5" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;" oninput="calc()"></div>
-          <div><label style="font-size:0.85rem;color:#888;">预计工资年增长率（%）</label><input type="number" id="uGrowth" value="5" step="0.5" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;" oninput="calc()"></div>
+          <div><label style="font-size:0.85rem;color:#888;">预计工资年增长率（%）</label><input type="number" id="uGrowth" value="4" step="0.5" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;" oninput="calc()"></div>
           <div><label style="font-size:0.85rem;color:#888;">当地平均工资（元/月）</label><input type="number" id="uAvgSalary" value="10000" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;" oninput="calc()"></div>
           <div><label style="font-size:0.85rem;color:#888;">个人养老金账户余额（元）</label><input type="number" id="uAccount" value="30000" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:4px;" oninput="calc()"></div>
         </div>
@@ -155,7 +155,7 @@
       var months = MONTHS[gender];
 
       // 估算退休时平均工资
-      var futureAvgSalary = avgSalary * Math.pow(1 + 0.04, yearsToRetire);
+      var futureAvgSalary = avgSalary * Math.pow(1 + growth, yearsToRetire);
       // 估算个人平均缴费指数
       var avgIndex = salary / avgSalary;
       // 基础养老金

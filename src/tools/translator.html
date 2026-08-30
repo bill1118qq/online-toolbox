@@ -78,7 +78,7 @@
     </div>
 
     <div class="btn-group" style="margin-top:16px;">
-      <button class="btn btn-primary" onclick="translate()" style="min-width:120px;">翻译</button>
+      <button class="btn btn-primary" onclick="doTranslate()" style="min-width:120px;">翻译</button>
     </div>
 
     <p style="color:#999;font-size:0.8rem;margin-top:16px;text-align:center;">使用 MyMemory 免费翻译API（每日5000字免费额度），文本会发送到第三方服务进行翻译。请勿翻译敏感信息。</p>
@@ -127,7 +127,7 @@
       document.getElementById('charCount').textContent = e.target.value.length + ' 字';
     });
 
-    async function translate() {
+    async function doTranslate() {
       const text = document.getElementById('inputText').value.trim();
       if (!text) { showToast('请输入需要翻译的文本'); return; }
 
