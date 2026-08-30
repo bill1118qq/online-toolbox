@@ -12,7 +12,7 @@
   <meta property="og:url" content="https://eitools.cn/src/tools/date-diff-calculator.html">
   <link rel="canonical" href="https://eitools.cn/src/tools/date-diff-calculator.html">
   <meta property="og:type" content="website">
-  <link rel="stylesheet" href="../../css/style.css">
+  <link rel="stylesheet" href="../../css/style.css?v=20260831">
   <style>
     .dd-intro { color: #666; margin-bottom: 20px; }
     .dd-section { margin-bottom: 32px; }
@@ -106,7 +106,7 @@
   {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"两个日期之间怎么算天数？","acceptedAnswer":{"@type":"Answer","text":"将两个日期转换为时间戳，相减后除以一天的毫秒数（86400000），再取整即可得到相差天数。例如2024年1月1日到2024年12月31日相差365天。"}},{"@type":"Question","name":"工作日怎么计算？","acceptedAnswer":{"@type":"Answer","text":"工作日计算需要排除周六和周日。一般一年约有250-252个工作日（不含法定节假日）。日期差计算器可以自动排除周末来计算工作日天数。"}},{"@type":"Question","name":"日期加减天数怎么算？","acceptedAnswer":{"@type":"Answer","text":"在原日期的基础上加上或减去指定的天数即可。JavaScript中可以使用Date对象的setDate方法，例如日期加30天：date.setDate(date.getDate() + 30)。需要注意跨月和闰年的自动处理。"}},{"@type":"Question","name":"闰年怎么判断？","acceptedAnswer":{"@type":"Answer","text":"闰年判断规则：能被4整除但不能被100整除的是闰年，能被400整除的也是闰年。例如2024年是闰年（366天），2023年不是（365天）。闰年2月有29天，平年2月有28天。"}}]}
   </script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
-  <script src="../../js/analytics.js"></script>
+  <script src="../../js/analytics.js?v=20260831"></script>
 <script>(function(){try{var t=localStorage.getItem('ei-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head>
 <body>
@@ -525,10 +525,10 @@
 </section>
 <div class="related-tools" style="margin-top:24px;padding:20px;background:#f8f9fa;border-radius:8px;"><h3 style="margin:0 0 10px;">相关工具推荐</h3><div style="display:flex;flex-wrap:wrap;gap:10px;"><a href="simple-calculator.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">在线计算器</a><a href="bmi-calculator.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">BMI计算器</a><a href="bmi-intl.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">国际BMI计算</a><a href="mortgage-calculator.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">房贷计算器</a></div></div>
 <div id="share-bar"></div>
-  <script src="../../js/share.js"></script>
+  <script src="../../js/share.js?v=20260831"></script>
 <!-- AdSense（统一配置于 js/ads-config.js，未配置时零请求） -->
 <div id="ad-inpage-1" style="max-width:960px;margin:24px auto;text-align:center;min-height:0;"></div>
-<script src="../../js/ads-config.js"></script>
-<script src="../../js/ads.js"></script>
+<script src="../../js/ads-config.js?v=20260831"></script>
+<script src="../../js/ads.js?v=20260831"></script>
 </body>
 </html>
