@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>九宫格切图 - 在线工具箱</title>
+  <meta name="description" content="一键把图片切成九宫格发朋友圈，支持任意图片本地切分，可自由调节边距与圆角，纯本地处理不上传服务器，隐私安全。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="stylesheet" href="../../css/style.css?v=20260831">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="九宫格切图 - 在线工具箱">
+  <meta property="og:description" content="一键把图片切成九宫格发朋友圈，支持任意图片本地切分，边距圆角自由调节。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/image-grid-cutter.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/image-grid-cutter.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type": "Question", "name": "九宫格切图工具会上传我的图片吗？", "acceptedAnswer": {"@type": "Answer", "text": "不会。所有切图操作都在浏览器本地 Canvas 完成，图片不会上传到任何服务器，处理全程离线，隐私安全有保障。"}},
+      {"@type": "Question", "name": "非正方形图片怎么切成九宫格？", "acceptedAnswer": {"@type": "Answer", "text": "工具会自动居中裁剪为正方形后，再均分为 3×3 九块，保证每块都是正方形，方便在朋友圈按顺序拼成完整大图。"}},
+      {"@type": "Question", "name": "切好的图片如何保存发朋友圈？", "acceptedAnswer": {"@type": "Answer", "text": "点击「下载全部」或逐张下载 9 张 PNG 图片，保存到手机相册后，在朋友圈按 1–9 顺序依次上传，即可拼接成完整大图。"}}
+    ]
+  }
+  </script>
+<script>(function(){try{var t=localStorage.getItem('ei-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js?v=20260831"></script>
+  <style>
+    .grid-preview {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .grid-item {
+      position: relative;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,.15);
+      background: #fff;
+      cursor: pointer;
+    }
+    .grid-item img { display: block; width: 100%; height: auto; }
+    .grid-item .num {
+      position: absolute;
+      top: 4px; left: 4px;
+      background: rgba(0,0,0,.55);
+      color: #fff;
+      font-size: 11px;
+      line-height: 1;
+      padding: 3px 6px;
+      border-radius: 4px;
+    }
+    #dropZone { transition: border-color .15s, background .15s; }
+    input[type="color"] { padding: 3px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>九宫格切图</h1>
+    </div>
+
+    <p style="color:#666;margin-bottom:20px;">上传图片后自动按 3×3 网格切成 9 块，可调节边距与圆角。所有处理均在本地完成，不上传服务器。</p>
+
+    <div class="form-group" id="uploadArea">
+      <label>上传图片</label>
+      <div id="dropZone" style="border:2px dashed #ccc;border-radius:12px;padding:44px;text-align:center;cursor:pointer;background:#fafafa;">
+        <p style="font-size:1.05rem;color:#666;margin:0;">拖拽图片到此处，或点击选择文件</p>
+        <p style="font-size:0.85rem;color:#999;margin:8px 0 0;">支持 JPG、PNG、WebP 格式，非方形图片自动居中裁剪</p>
+        <input type="file" id="fileInput" accept="image/*" style="display:none;">
+      </div>
+    </div>
+
+    <div id="options" style="display:none;">
+      <div class="form-group">
+        <label>边距（像素，切块四周留白）</label>
+        <input type="number" id="margin" value="8" min="0" max="60" step="1">
+      </div>
+      <div class="form-group">
+        <label>圆角（像素，0 为直角）</label>
+        <input type="number" id="radius" value="0" min="0" max="120" step="1">
+      </div>
+      <div class="form-group">
+        <label>背景 / 间隙颜色</label>
+        <input type="color" id="bgColor" value="#ffffff" style="width:90px;height:44px;">
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="doCut()">开始切图</button>
+        <button class="btn btn-primary" onclick="downloadAll()" id="downloadAllBtn" style="display:none;">下载全部（9张）</button>
+        <button class="btn btn-secondary" onclick="resetAll()">重新选择</button>
+      </div>
+    </div>
+
+    <div id="previewSection" style="display:none;margin-top:8px;">
+      <div class="grid-preview" id="gridPreview"></div>
+      <p style="color:#666;font-size:0.85rem;margin:12px 0 0;text-align:center;">点击任意一张可单独下载，或点击上方「下载全部」一次性保存 9 张。</p>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    var fileInput = document.getElementById('fileInput');
+    var dropZone = document.getElementById('dropZone');
+    var originalImage = null;
+    var blocks = [];
+    var currentName = 'image';
+
+    dropZone.addEventListener('click', function () { fileInput.click(); });
+    dropZone.addEventListener('dragover', function (e) { e.preventDefault(); dropZone.style.borderColor = '#4361ee'; });
+    dropZone.addEventListener('dragleave', function () { dropZone.style.borderColor = '#ccc'; });
+    dropZone.addEventListener('drop', function (e) {
+      e.preventDefault();
+      dropZone.style.borderColor = '#ccc';
+      if (e.dataTransfer.files.length > 0) loadImage(e.dataTransfer.files[0]);
+    });
+    fileInput.addEventListener('change', function () {
+      if (fileInput.files.length > 0) loadImage(fileInput.files[0]);
+    });
+
+    function loadImage(file) {
+      if (!file.type || file.type.indexOf('image/') !== 0) { showToast('请选择图片文件'); return; }
+      currentName = (file.name || 'image').replace(/\.[^.]+$/, '') || 'image';
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        var img = new Image();
+        img.onload = function () {
+          originalImage = img;
+          document.getElementById('uploadArea').style.display = 'none';
+          document.getElementById('options').style.display = '';
+          document.getElementById('previewSection').style.display = 'none';
+          document.getElementById('downloadAllBtn').style.display = 'none';
+          blocks = [];
+          showToast('图片已加载，设置参数后点击「开始切图」');
+        };
+        img.onerror = function () { showToast('图片加载失败，请换一张图片'); };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clampInt(v, min, max) {
+      var n = parseInt(v, 10);
+      if (isNaN(n)) return min;
+      return Math.max(min, Math.min(max, n));
+    }
+
+    function roundRect(ctx, x, y, w, h, r) {
+      r = Math.min(r, w / 2, h / 2);
+      if (r <= 0) { ctx.rect(x, y, w, h); return; }
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    }
+
+    function cutImage(img, margin, radius, bgColor) {
+      var w = img.naturalWidth || img.width;
+      var h = img.naturalHeight || img.height;
+      var S = Math.min(w, h);
+      var S3 = Math.floor(S / 3) * 3;
+      if (S3 < 3) throw new Error('图片尺寸过小');
+      var ox = Math.floor((w - S3) / 2);
+      var oy = Math.floor((h - S3) / 2);
+      var cell = S3 / 3;
+      var outSize = cell + margin * 2;
+      var result = [];
+      for (var row = 0; row < 3; row++) {
+        for (var col = 0; col < 3; col++) {
+          var c = document.createElement('canvas');
+          c.width = outSize;
+          c.height = outSize;
+          var ctx = c.getContext('2d');
+          ctx.beginPath();
+          roundRect(ctx, 0, 0, outSize, outSize, radius);
+          ctx.clip();
+          ctx.fillStyle = bgColor;
+          ctx.fillRect(0, 0, outSize, outSize);
+          var sx = ox + col * cell;
+          var sy = oy + row * cell;
+          ctx.drawImage(img, sx, sy, cell, cell, margin, margin, cell, cell);
+          result.push({ canvas: c, dataURL: c.toDataURL('image/png'), index: row * 3 + col });
+        }
+      }
+      return result;
+    }
+
+    window.doCut = function () {
+      if (!originalImage) { showToast('请先上传图片'); return; }
+      var margin = clampInt(document.getElementById('margin').value, 0, 60);
+      var radius = clampInt(document.getElementById('radius').value, 0, 200);
+      var bgColor = document.getElementById('bgColor').value || '#ffffff';
+      try {
+        blocks = cutImage(originalImage, margin, radius, bgColor);
+      } catch (err) {
+        showToast('切图失败：' + err.message);
+        return;
+      }
+      renderPreview(blocks);
+      document.getElementById('previewSection').style.display = '';
+      document.getElementById('downloadAllBtn').style.display = '';
+      showToast('切图完成，共 9 张');
+    };
+
+    function renderPreview(list) {
+      var grid = document.getElementById('gridPreview');
+      grid.innerHTML = '';
+      list.forEach(function (b) {
+        var item = document.createElement('div');
+        item.className = 'grid-item';
+        item.title = '点击下载第 ' + (b.index + 1) + ' 张';
+        var imgEl = document.createElement('img');
+        imgEl.src = b.dataURL;
+        imgEl.alt = '九宫格第' + (b.index + 1) + '块';
+        var num = document.createElement('span');
+        num.className = 'num';
+        num.textContent = b.index + 1;
+        item.appendChild(imgEl);
+        item.appendChild(num);
+        item.addEventListener('click', function () { downloadOne(b); });
+        grid.appendChild(item);
+      });
+    }
+
+    function downloadOne(b) {
+      var a = document.createElement('a');
+      a.href = b.dataURL;
+      a.download = currentName + '-九宫格-' + (b.index + 1) + '.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast('第 ' + (b.index + 1) + ' 张已下载');
+    }
+
+    window.downloadAll = function () {
+      if (!blocks.length) { showToast('请先切图'); return; }
+      var i = 0;
+      function next() {
+        if (i >= blocks.length) return;
+        var b = blocks[i];
+        var a = document.createElement('a');
+        a.href = b.dataURL;
+        a.download = currentName + '-九宫格-' + (b.index + 1) + '.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        i++;
+        setTimeout(next, 300);
+      }
+      next();
+      showToast('正在下载全部 9 张图片');
+    };
+
+    window.resetAll = function () {
+      originalImage = null;
+      blocks = [];
+      fileInput.value = '';
+      document.getElementById('uploadArea').style.display = '';
+      document.getElementById('options').style.display = 'none';
+      document.getElementById('previewSection').style.display = 'none';
+      document.getElementById('gridPreview').innerHTML = '';
+      document.getElementById('downloadAllBtn').style.display = 'none';
+    };
+
+    function showToast(msg) {
+      var toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(function () { toast.classList.remove('show'); }, 2000);
+    }
+  </script>
+<section id="tool-guide" style="max-width:960px;margin:8px auto 0;padding:24px 20px;background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);font-size:15px;line-height:1.8;color:#333;">
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">九宫格切图是什么？</h2>
+<p style="margin:0 0 8px;">九宫格切图是一款免费在线图片切分工具，一键把图片切成九宫格发朋友圈，支持任意图片本地切分，无需下载安装任何软件。无论是旅行风景照、美食打卡照、宠物萌照还是海报大图，都能快速拆成 3×3 九张正方形图片，在朋友圈拼成完整大图，让照片更有格调。本工具完全免费、无需注册，所有处理均在浏览器本地完成，不会上传您的任何数据，图片隐私安全有保障。</p>
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">九宫格切图使用方法</h2>
+<ol style="margin:0 0 8px;padding-left:22px;"><li>点击上传区域选择本地图片，或直接拖拽图片到页面。</li><li>按需调整边距与圆角参数，点击「开始切图」。</li><li>点击任意一张单独下载，或点击「下载全部」一次性保存 9 张 PNG。</li></ol>
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">常见问题</h2>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：九宫格切图会上传我的图片吗？</strong><p style="margin:4px 0 0;">不会。所有切图操作都在浏览器本地 Canvas 完成，图片不会上传到任何服务器，处理全程离线，隐私安全有保障。</p></div>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：非正方形图片如何切成九宫格？</strong><p style="margin:4px 0 0;">工具会自动居中裁剪为正方形后，再均分为 3×3 九块，保证每块都是正方形，方便在朋友圈按顺序拼成完整大图。</p></div>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：切好的图片如何发朋友圈？</strong><p style="margin:4px 0 0;">点击「下载全部」或逐张下载 9 张 PNG 图片，保存到手机相册后，在朋友圈按 1–9 顺序依次上传，即可拼接成完整大图。</p></div>
+</section>
+<div class="related-tools" style="margin-top:24px;padding:20px;background:#f8f9fa;border-radius:8px;">
+<h3 style="margin:0 0 10px;">相关工具推荐</h3><div style="display:flex;flex-wrap:wrap;gap:10px;"><a href="image-cropper.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">在线图片裁剪</a><a href="image-compressor.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">图片压缩</a><a href="image-converter.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">图片格式转换</a><a href="image-watermark.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">图片加水印</a></div></div>
+<div id="share-bar"></div>
+<script src="../../js/share.js?v=20260831"></script>
+<!-- AdSense（统一配置于 js/ads-config.js，未配置时零请求） -->
+<div id="ad-inpage-1" style="max-width:960px;margin:24px auto;text-align:center;min-height:0;"></div>
+<script src="../../js/ads-config.js?v=20260831"></script>
+<script src="../../js/ads.js?v=20260831"></script>
+</body>
+</html>

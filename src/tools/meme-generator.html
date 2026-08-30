@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>表情包生成器 - 在线工具箱</title>
+  <meta name="description" content="文字表情包制作，经典黑白梗图加字一键生成下载，上传图片或选纯色底，顶部底部黑底白字大字排版，浏览器本地处理免费导出PNG。">
+  <link rel="canonical" href="https://eitools.cn/src/tools/meme-generator.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="表情包生成器 - 在线工具箱">
+  <meta property="og:description" content="文字表情包制作，经典黑白梗图加字一键生成下载。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/meme-generator.html">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="stylesheet" href="../../css/style.css?v=20260831">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type": "Question", "name": "表情包生成器怎么用？", "acceptedAnswer": {"@type": "Answer", "text": "上传图片或选择纯白/纯黑底，在顶部、底部输入框填写文案，页面实时预览，点击下载PNG即可保存生成的表情包。"}},
+      {"@type": "Question", "name": "我的图片和文字会上传到服务器吗？", "acceptedAnswer": {"@type": "Answer", "text": "不会。所有图片与文字处理均在浏览器本地完成，不会上传到任何服务器，请放心使用。"}},
+      {"@type": "Question", "name": "不传图片可以用吗？", "acceptedAnswer": {"@type": "Answer", "text": "可以。不传图片时自动使用纯白或纯黑底色，同样支持顶部、底部黑底白字大字排版并导出PNG。"}}
+    ]
+  }
+  </script>
+<script>(function(){try{var t=localStorage.getItem('ei-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+<script src="../../js/analytics.js?v=20260831"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>表情包生成器</h1>
+    </div>
+
+    <div class="form-group">
+      <label>上传图片（可选，不传则用纯色底）</label>
+      <input type="file" id="imgInput" accept="image/*" onchange="loadImage(this.files[0])">
+    </div>
+
+    <div class="form-group">
+      <label>无图片时的背景</label>
+      <select id="bgColor" onchange="render()">
+        <option value="#ffffff">白色底</option>
+        <option value="#000000">黑色底</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>顶部文字</label>
+      <textarea id="topText" rows="2" style="min-height:64px;" oninput="render()">当你想早睡</textarea>
+    </div>
+
+    <div class="form-group">
+      <label>底部文字</label>
+      <input type="text" id="bottomText" value="手机却不肯放过你" oninput="render()">
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="downloadPNG()">下载 PNG</button>
+      <button class="btn btn-secondary" onclick="clearImage()">清除图片</button>
+    </div>
+
+    <div class="result-box" style="padding:12px;">
+      <canvas id="memeCanvas" width="600" height="600" style="max-width:100%;height:auto;border-radius:8px;display:block;margin:0 auto;"></canvas>
+      <div id="bgHint" style="text-align:center;color:#888;font-size:0.85rem;margin-top:8px;white-space:normal;">当前底图：白色底（未上传图片）</div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    var SIZE = 600;
+    var PAD_X = 16;
+    var FONT = '900 36px "PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif';
+    var userImg = null;
+
+    var canvas = document.getElementById('memeCanvas');
+    var ctx = canvas.getContext('2d');
+
+    function loadImage(file) {
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var img = new Image();
+        img.onload = function() {
+          userImg = img;
+          render();
+          showToast('图片已加载');
+        };
+        img.onerror = function() {
+          showToast('图片加载失败，请更换图片');
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearImage() {
+      userImg = null;
+      document.getElementById('imgInput').value = '';
+      render();
+    }
+
+    function updateHint() {
+      var hint = document.getElementById('bgHint');
+      if (userImg) {
+        hint.textContent = '当前底图：已上传图片';
+      } else {
+        var c = document.getElementById('bgColor').value;
+        hint.textContent = '当前底图：' + (c === '#ffffff' ? '白色底' : '黑色底') + '（未上传图片）';
+      }
+    }
+
+    function wrapText(text, maxWidth) {
+      var lines = [];
+      var paras = String(text).split('\n');
+      for (var p = 0; p < paras.length; p++) {
+        var para = paras[p];
+        if (para === '') { lines.push(''); continue; }
+        var chars = para.split('');
+        var line = '';
+        for (var i = 0; i < chars.length; i++) {
+          var test = line + chars[i];
+          if (ctx.measureText(test).width > maxWidth && line !== '') {
+            lines.push(line);
+            line = chars[i];
+          } else {
+            line = test;
+          }
+        }
+        lines.push(line);
+      }
+      return lines;
+    }
+
+    function drawTextBlock(text, position) {
+      text = (text || '').trim();
+      if (!text) return;
+      ctx.font = FONT;
+      var maxWidth = SIZE - PAD_X * 2;
+      var lines = wrapText(text, maxWidth);
+      var lineHeight = Math.round(36 * 1.35);
+      var padY = 14;
+      var blockHeight = lines.length * lineHeight + padY * 2;
+      var y = (position === 'top') ? 0 : (SIZE - blockHeight);
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, y, SIZE, blockHeight);
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      for (var i = 0; i < lines.length; i++) {
+        ctx.fillText(lines[i], SIZE / 2, y + padY + lineHeight * i + lineHeight / 2);
+      }
+    }
+
+    function render() {
+      ctx.clearRect(0, 0, SIZE, SIZE);
+      if (userImg) {
+        var scale = Math.max(SIZE / userImg.width, SIZE / userImg.height);
+        var w = userImg.width * scale;
+        var h = userImg.height * scale;
+        ctx.drawImage(userImg, (SIZE - w) / 2, (SIZE - h) / 2, w, h);
+      } else {
+        ctx.fillStyle = document.getElementById('bgColor').value;
+        ctx.fillRect(0, 0, SIZE, SIZE);
+      }
+      drawTextBlock(document.getElementById('topText').value, 'top');
+      drawTextBlock(document.getElementById('bottomText').value, 'bottom');
+      updateHint();
+    }
+
+    function downloadPNG() {
+      render();
+      var a = document.createElement('a');
+      a.download = 'meme-' + Date.now() + '.png';
+      a.href = canvas.toDataURL('image/png');
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast('表情包已生成，开始下载');
+    }
+
+    function showToast(msg) {
+      var toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(function() { toast.classList.remove('show'); }, 2000);
+    }
+
+    render();
+  </script>
+<section id="tool-guide" style="max-width:960px;margin:8px auto 0;padding:24px 20px;background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);font-size:15px;line-height:1.8;color:#333;">
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">表情包生成器是什么？</h2>
+<p style="margin:0 0 8px;">免费在线表情包生成器，文字表情包制作，经典黑白梗图加字一键生成下载。上传图片或选择纯白/纯黑底，在顶部和底部添加黑底白字的大字文案，即可实时预览并导出PNG，适合做搞笑梗图、社交配图、聊天斗图等场景。本工具完全免费、无需注册，所有处理均在浏览器本地完成，不会上传您的任何数据。</p>
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">表情包生成器使用方法</h2>
+<ol style="margin:0 0 8px;padding-left:22px;"><li>上传图片（可选），不传则自动使用纯白或纯黑底。</li><li>在顶部、底部输入框中填写文案，页面实时预览。</li><li>点击「下载 PNG」按钮，即可保存生成的表情包。</li></ol>
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">常见问题</h2>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：不传图片可以用吗？</strong><p style="margin:4px 0 0;">可以，选择纯白或纯黑底即可生成纯色底文字表情包。</p></div>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：我的图片和文字会上传到服务器吗？</strong><p style="margin:4px 0 0;">不会，所有图片与文字处理均在浏览器本地完成，不涉及任何数据上传。</p></div>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：文字太长会溢出吗？</strong><p style="margin:4px 0 0;">不会，文案会自动换行，并在顶部或底部的黑底条内居中显示。</p></div>
+</section>
+<div class="related-tools" style="margin-top:24px;padding:20px;background:#f8f9fa;border-radius:8px;">
+<h3 style="margin:0 0 10px;">相关工具推荐</h3><div style="display:flex;flex-wrap:wrap;gap:10px;"><a href="love-calculator.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">爱情匹配计算器</a><a href="random-decision-maker.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">随机决定器</a><a href="holiday-countdown.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">节日倒计时</a><a href="chinese-name-generator.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">起名助手</a></div></div>
+<div id="share-bar"></div>
+<script src="../../js/share.js?v=20260831"></script>
+<!-- AdSense（统一配置于 js/ads-config.js，未配置时零请求） -->
+<div id="ad-inpage-1" style="max-width:960px;margin:24px auto;text-align:center;min-height:0;"></div>
+<script src="../../js/ads-config.js?v=20260831"></script>
+<script src="../../js/ads.js?v=20260831"></script>
+</body>
+</html>

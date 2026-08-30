@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF合并 - 在线工具箱</title>
+  <meta name="description" content="多个PDF合并为一个文件，纯浏览器本地处理不上传。免费在线PDF合并工具，支持多文件选择与自由排序，合并后一键下载。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="stylesheet" href="../../css/style.css?v=20260831">
+  <style>
+    .file-list { display: flex; flex-direction: column; gap: 8px; margin: 8px 0 0; }
+    .file-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 8px; flex-wrap: wrap; }
+    .file-item .fi-order { width: 22px; height: 22px; border-radius: 50%; background: var(--ink); color: var(--ink-contrast); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; flex: none; }
+    .file-item .fi-name { flex: 1 1 180px; min-width: 120px; word-break: break-all; font-size: 0.92rem; color: var(--text); }
+    .file-item .fi-meta { font-size: 0.8rem; color: var(--muted); flex: none; }
+    .file-item .fi-ops { display: flex; gap: 6px; flex: none; }
+    .file-item .btn-sm { padding: 4px 10px; font-size: 0.8rem; border-radius: 6px; }
+  </style>
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="PDF合并 - 在线工具箱">
+  <meta property="og:description" content="多个PDF合并为一个文件，纯浏览器本地处理不上传，支持自由排序一键下载。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/pdf-merge.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/pdf-merge.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type": "Question", "name": "PDF合并是什么？", "acceptedAnswer": {"@type": "Answer", "text": "PDF合并是将多个PDF文件按指定顺序合并成一个PDF文件的在线工具，全程在浏览器本地完成，无需上传文件到服务器。"}},
+      {"@type": "Question", "name": "合并PDF时文件会上传到服务器吗？", "acceptedAnswer": {"@type": "Answer", "text": "不会。所有PDF文件仅在您的浏览器本地读取与合并，不上传任何服务器，关闭页面后数据即被清除，充分保护隐私。"}},
+      {"@type": "Question", "name": "合并后的PDF页面顺序如何确定？", "acceptedAnswer": {"@type": "Answer", "text": "按文件列表从上到下的顺序依次合并，您可以使用上移、下移按钮自由调整顺序后再合并。"}}
+    ]
+  }
+  </script>
+<script>(function(){try{var t=localStorage.getItem('ei-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js?v=20260831"></script>
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js" onerror="window.__pdfLibError=true;"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>PDF 合并</h1>
+    </div>
+
+    <div class="form-group">
+      <label>选择 PDF 文件（可多选）</label>
+      <div id="dropZone" style="border:2px dashed #c7c7cd;border-radius:12px;padding:40px;text-align:center;cursor:pointer;background:var(--bg-soft);" onclick="document.getElementById('fileInput').click()" ondragover="event.preventDefault();this.style.borderColor='#4361ee'" ondragleave="this.style.borderColor='#c7c7cd'" ondrop="handleDrop(event)">
+        <div style="font-size:2rem;">&#128213;</div>
+        <p style="margin:8px 0 2px;">点击或拖拽 PDF 文件到此处</p>
+        <p style="font-size:0.8rem;color:var(--muted);margin:0;">支持多选，仅接受 .pdf 文件</p>
+      </div>
+      <input type="file" id="fileInput" accept=".pdf,application/pdf" multiple style="display:none;">
+    </div>
+
+    <div class="form-group">
+      <label>文件列表（点击 &uarr;&darr; 调整合并顺序）</label>
+      <div id="fileList" class="file-list"></div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" id="mergeBtn" onclick="mergeAndDownload()">合并并下载</button>
+      <button class="btn btn-secondary" onclick="clearList()">清空列表</button>
+    </div>
+
+    <div id="resultBox" class="result-box">请先选择需要合并的 PDF 文件。</div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    var uidSeq = 0;
+    var items = []; // { file, pages, uid, loading }
+
+    var fileInput = document.getElementById('fileInput');
+    fileInput.addEventListener('change', function (e) {
+      handleFiles(e.target.files);
+      fileInput.value = '';
+    });
+
+    function handleFiles(fileList) {
+      var added = 0, skipped = 0;
+      for (var i = 0; i < fileList.length; i++) {
+        var f = fileList[i];
+        var isPdf = /\.pdf$/i.test(f.name) || f.type === 'application/pdf';
+        if (!isPdf) { skipped++; continue; }
+        items.push({ file: f, pages: null, uid: ++uidSeq, loading: false });
+        added++;
+      }
+      if (skipped) showToast('已跳过 ' + skipped + ' 个非 PDF 文件');
+      if (added) showToast('已添加 ' + added + ' 个 PDF 文件');
+      renderList();
+      refreshPageCounts();
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      var dz = document.getElementById('dropZone');
+      dz.style.borderColor = '#c7c7cd';
+      if (e.dataTransfer && e.dataTransfer.files) {
+        handleFiles(e.dataTransfer.files);
+      }
+    }
+
+    function renderList() {
+      var box = document.getElementById('fileList');
+      box.innerHTML = '';
+      if (!items.length) {
+        var empty = document.createElement('div');
+        empty.style.cssText = 'color:var(--muted);text-align:center;padding:18px;font-size:0.9rem;';
+        empty.textContent = '尚未选择文件，请点击上方区域或拖拽 PDF 文件到此处。';
+        box.appendChild(empty);
+        updateSummary();
+        return;
+      }
+      items.forEach(function (it, idx) {
+        var row = document.createElement('div');
+        row.className = 'file-item';
+        row.innerHTML =
+          '<span class="fi-order">' + (idx + 1) + '</span>' +
+          '<span class="fi-name"></span>' +
+          '<span class="fi-meta">' + fmtSize(it.file.size) + '</span>' +
+          '<span class="fi-meta" id="pages-' + it.uid + '">' + pagesLabel(it) + '</span>' +
+          '<span class="fi-ops">' +
+            '<button type="button" class="btn btn-secondary btn-sm" onclick="moveUp(' + idx + ')">&uarr; 上移</button>' +
+            '<button type="button" class="btn btn-secondary btn-sm" onclick="moveDown(' + idx + ')">&darr; 下移</button>' +
+            '<button type="button" class="btn btn-secondary btn-sm" onclick="removeFile(' + idx + ')">删除</button>' +
+          '</span>';
+        row.querySelector('.fi-name').textContent = it.file.name;
+        row.querySelector('.fi-name').title = it.file.name;
+        box.appendChild(row);
+      });
+      updateSummary();
+    }
+
+    function pagesLabel(it) {
+      if (typeof it.pages === 'number') return it.pages + ' 页';
+      if (it.pages === '读取失败') return '页数读取失败';
+      return '页数加载中…';
+    }
+
+    function refreshPageCounts() {
+      if (typeof window.PDFLib === 'undefined' || window.__pdfLibError) {
+        items.forEach(function (it) {
+          if (it.pages === null) { it.pages = '读取失败'; updatePagesLabel(it); }
+        });
+        return;
+      }
+      items.forEach(function (it) {
+        if (it.pages !== null || it.loading) return;
+        it.loading = true;
+        var uid = it.uid;
+        it.file.arrayBuffer().then(function (buf) {
+          return window.PDFLib.PDFDocument.load(buf, { ignoreEncryption: true });
+        }).then(function (doc) {
+          it.pages = doc.getPageCount();
+        }).catch(function () {
+          it.pages = '读取失败';
+        }).then(function () {
+          it.loading = false;
+          updatePagesLabel(it);
+          updateSummary();
+        });
+      });
+    }
+
+    function updatePagesLabel(it) {
+      var el = document.getElementById('pages-' + it.uid);
+      if (el) el.textContent = pagesLabel(it);
+    }
+
+    function moveUp(idx) {
+      if (idx <= 0) return;
+      var t = items[idx]; items[idx] = items[idx - 1]; items[idx - 1] = t;
+      renderList();
+    }
+    function moveDown(idx) {
+      if (idx >= items.length - 1) return;
+      var t = items[idx]; items[idx] = items[idx + 1]; items[idx + 1] = t;
+      renderList();
+    }
+    function removeFile(idx) {
+      items.splice(idx, 1);
+      renderList();
+    }
+    function clearList() {
+      items = [];
+      renderList();
+      setResult('请先选择需要合并的 PDF 文件。', false);
+    }
+
+    function updateSummary() {
+      var total = items.length;
+      if (!total) { setResult('请先选择需要合并的 PDF 文件。', false); return; }
+      var known = 0, sum = 0;
+      items.forEach(function (it) { if (typeof it.pages === 'number') { known++; sum += it.pages; } });
+      var s = '已选择 ' + total + ' 个 PDF 文件';
+      if (known === total) s += '，共 ' + sum + ' 页';
+      else if (known > 0) s += '，已识别 ' + sum + ' 页';
+      s += '。点击「合并并下载」将按列表顺序合并为一个文件。';
+      setResult(s, false);
+    }
+
+    function setResult(text, isError) {
+      var box = document.getElementById('resultBox');
+      box.textContent = text;
+      box.style.borderColor = isError ? '#dc2626' : '';
+      box.style.color = isError ? '#dc2626' : '';
+    }
+
+    function mergeAndDownload() {
+      if (!items.length) { showToast('请先添加 PDF 文件'); return; }
+      if (typeof window.PDFLib === 'undefined' || window.__pdfLibError) {
+        setResult('PDF 处理库（pdf-lib）加载失败，无法合并。请检查网络连接后刷新页面重试。', true);
+        showToast('PDF 处理库加载失败，请检查网络后重试');
+        return;
+      }
+      var btn = document.getElementById('mergeBtn');
+      btn.disabled = true;
+      btn.textContent = '合并中…';
+      showToast('正在合并，请稍候…');
+      runMerge().then(function (res) {
+        btn.disabled = false;
+        btn.textContent = '合并并下载';
+        setResult(res.msg, false);
+        showToast('合并成功，共 ' + res.pages + ' 页');
+      }).catch(function (err) {
+        btn.disabled = false;
+        btn.textContent = '合并并下载';
+        var msg = '合并失败：' + (err && err.message ? err.message : err);
+        setResult(msg, true);
+        showToast(msg);
+      });
+    }
+
+    async function runMerge() {
+      var merged = await window.PDFLib.PDFDocument.create();
+      for (var i = 0; i < items.length; i++) {
+        var buf = await items[i].file.arrayBuffer();
+        var src = await window.PDFLib.PDFDocument.load(buf, { ignoreEncryption: true });
+        var pages = await merged.copyPages(src, src.getPageIndices());
+        pages.forEach(function (p) { merged.addPage(p); });
+      }
+      var bytes = await merged.save();
+      var pageCount = merged.getPageCount();
+      downloadBlob(new Blob([bytes], { type: 'application/pdf' }), 'merged.pdf');
+      return { pages: pageCount, msg: '合并完成：' + items.length + ' 个文件 → merged.pdf，共 ' + pageCount + ' 页，已开始下载。' };
+    }
+
+    function downloadBlob(blob, name) {
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 10000);
+    }
+
+    function fmtSize(b) {
+      if (b < 1024) return b + ' B';
+      if (b < 1024 * 1024) return (b / 1024).toFixed(1) + ' KB';
+      return (b / 1024 / 1024).toFixed(2) + ' MB';
+    }
+
+    function showToast(msg) {
+      var toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(function () { toast.classList.remove('show'); }, 2000);
+    }
+
+    // 初始化摘要
+    updateSummary();
+  </script>
+<section id="tool-guide" style="max-width:960px;margin:8px auto 0;padding:24px 20px;background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);font-size:15px;line-height:1.8;color:#333;">
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">PDF合并是什么？</h2>
+<p style="margin:0 0 8px;">PDF合并是一款免费在线工具，可以将多个PDF文件按指定顺序合并为一个文件，纯浏览器本地处理不上传。适合整理合同扫描件、合并论文章节、汇总多页报表等办公与学习场景。本工具完全免费、无需注册，所有文件均在您的浏览器本地读取与合并，不会上传任何数据，关闭页面即清除。</p>
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">PDF合并使用方法</h2>
+<ol style="margin:0 0 8px;padding-left:22px;"><li>点击上方区域或拖拽，选择一个或多个 PDF 文件。</li><li>使用「上移」「下移」按钮调整合并顺序。</li><li>点击「合并并下载」，即可一键保存合并后的 PDF 文件。</li></ol>
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">常见问题</h2>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：合并PDF时文件会上传到服务器吗？</strong><p style="margin:4px 0 0;">不会。所有文件仅在您的浏览器本地读取与合并，不上传任何服务器，充分保护您的隐私。</p></div>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：合并后的页面顺序如何确定？</strong><p style="margin:4px 0 0;">按文件列表从上到下的顺序依次合并，您可以使用上移、下移按钮自由调整顺序后再合并。</p></div>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：支持加密或受保护的PDF吗？</strong><p style="margin:4px 0 0;">普通PDF均可正常合并；对于设置了打开密码、无法读取内容的加密PDF，页面会友好提示页数读取失败，此类文件可能无法合并。</p></div>
+</section>
+<div class="related-tools" style="margin-top:24px;padding:20px;background:#f8f9fa;border-radius:8px;">
+<h3 style="margin:0 0 10px;">相关工具推荐</h3><div style="display:flex;flex-wrap:wrap;gap:10px;"><a href="json-formatter.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">JSON 格式化</a><a href="base64.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">Base64 编解码</a><a href="uuid-generator.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">UUID 生成</a><a href="hash-generator.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">Hash 计算</a></div></div>
+<div id="share-bar"></div>
+<script src="../../js/share.js?v=20260831"></script>
+<!-- AdSense（统一配置于 js/ads-config.js，未配置时零请求） -->
+<div id="ad-inpage-1" style="max-width:960px;margin:24px auto;text-align:center;min-height:0;"></div>
+<script src="../../js/ads-config.js?v=20260831"></script>
+<script src="../../js/ads.js?v=20260831"></script>
+</body>
+</html>

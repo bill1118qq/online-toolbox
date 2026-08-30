@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>屏幕录制 - 在线工具箱</title>
+  <meta name="description" content="浏览器录屏工具，录制屏幕/窗口/标签页并下载webm。免费在线屏幕录制，无需安装任何软件，支持录制计时与即时预览，录屏数据完全在本地处理不上传。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="stylesheet" href="../../css/style.css?v=20260831">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="屏幕录制 - 在线工具箱">
+  <meta property="og:description" content="浏览器录屏工具，录制屏幕/窗口/标签页并下载webm，无需安装，本地处理不上传。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/screen-recorder.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/screen-recorder.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type": "Question", "name": "屏幕录制可以录制哪些内容？", "acceptedAnswer": {"@type": "Answer", "text": "支持录制整个屏幕、单个应用窗口或浏览器标签页，并可同时录制系统声音与麦克风。"}},
+      {"@type": "Question", "name": "录制完成的视频是什么格式？", "acceptedAnswer": {"@type": "Answer", "text": "输出为 webm 格式的视频文件，浏览器和主流播放器均可直接打开，也便于导入剪辑软件二次编辑。"}},
+      {"@type": "Question", "name": "录屏数据是否会上传到服务器？", "acceptedAnswer": {"@type": "Answer", "text": "不会。屏幕录制完全在浏览器本地完成，视频数据不会上传到任何服务器，关闭页面后即被释放。"}}
+    ]
+  }
+  </script>
+<script>(function(){try{var t=localStorage.getItem('ei-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js?v=20260831"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>屏幕录制</h1>
+    </div>
+
+    <div class="form-group">
+      <label>录制来源</label>
+      <p style="margin:0 0 8px;color:#666;font-size:14px;">点击「开始录制」，在浏览器弹窗中选择要录制的屏幕、窗口或标签页；如需录制声音，请勾选「分享音频」。</p>
+    </div>
+
+    <div class="form-group">
+      <label>录制状态</label>
+      <div id="stateBox" class="result-box" style="display:flex;align-items:center;gap:10px;min-height:56px;">
+        <span id="stateDot" style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#9ca3af;flex:0 0 auto;"></span>
+        <span id="stateText" style="font-size:1.05rem;font-weight:600;">空闲</span>
+        <span id="timerText" style="margin-left:auto;font-size:1.3rem;font-variant-numeric:tabular-nums;">00:00</span>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button id="startBtn" class="btn btn-primary" onclick="startRecording()">开始录制</button>
+      <button id="stopBtn" class="btn btn-secondary" onclick="stopRecording()" disabled>停止录制</button>
+      <button id="downloadBtn" class="btn btn-secondary" onclick="downloadVideo()" disabled>下载视频</button>
+    </div>
+
+    <div class="form-group">
+      <label>录制预览</label>
+      <div class="result-box">
+        <video id="preview" controls style="width:100%;max-height:380px;display:none;background:#000;"></video>
+        <div id="previewHint" style="color:#666;font-size:14px;">录制完成后，可在此预览视频并点击「下载视频」保存为 webm 文件。</div>
+      </div>
+    </div>
+
+    <div id="noticeBox" class="result-box" style="display:none;border-color:#ef4444;color:#b91c1c;"></div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    var mediaRecorder = null;
+    var recordedChunks = [];
+    var recordedBlob = null;
+    var recordedUrl = null;
+    var stream = null;
+    var timerInterval = null;
+    var startTime = 0;
+    var state = 'idle'; // idle | recording | stopped
+
+    function showToast(msg) {
+      var toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(function () { toast.classList.remove('show'); }, 2200);
+    }
+
+    function setState(s) {
+      state = s;
+      var stateText = document.getElementById('stateText');
+      var stateDot = document.getElementById('stateDot');
+      var startBtn = document.getElementById('startBtn');
+      var stopBtn = document.getElementById('stopBtn');
+      var downloadBtn = document.getElementById('downloadBtn');
+      if (s === 'idle') {
+        stateText.textContent = '空闲';
+        stateDot.style.background = '#9ca3af';
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+        downloadBtn.disabled = true;
+      } else if (s === 'recording') {
+        stateText.textContent = '录制中';
+        stateDot.style.background = '#ef4444';
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+        downloadBtn.disabled = true;
+      } else if (s === 'stopped') {
+        stateText.textContent = '已停止';
+        stateDot.style.background = '#10b981';
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+        downloadBtn.disabled = !recordedBlob;
+      }
+    }
+
+    function pad(n) { return (n < 10 ? '0' : '') + n; }
+
+    function formatTime(totalSec) {
+      var m = Math.floor(totalSec / 60);
+      var s = totalSec % 60;
+      return pad(m) + ':' + pad(s);
+    }
+
+    function startTimer() {
+      startTime = Date.now();
+      timerInterval = setInterval(function () {
+        var elapsed = Math.floor((Date.now() - startTime) / 1000);
+        document.getElementById('timerText').textContent = formatTime(elapsed);
+      }, 250);
+    }
+
+    function stopTracks() {
+      if (stream) {
+        stream.getTracks().forEach(function (t) { try { t.stop(); } catch (e) {} });
+        stream = null;
+      }
+    }
+
+    function showUnsupported(msg) {
+      var notice = document.getElementById('noticeBox');
+      var html = msg || '当前浏览器或环境不支持屏幕录制。';
+      html += '<br>请尝试：① 使用最新版 Chrome / Edge / Firefox；② 通过 HTTPS 访问本页面（file:// 或 http:// 下可能受限）；③ 若为公司电脑，请确认浏览器未禁用屏幕共享。';
+      notice.innerHTML = html;
+      notice.style.display = 'block';
+      showToast('当前环境不支持录屏');
+    }
+
+    function resetPreview() {
+      var preview = document.getElementById('preview');
+      var hint = document.getElementById('previewHint');
+      preview.style.display = 'none';
+      preview.removeAttribute('src');
+      hint.style.display = 'block';
+    }
+
+    function startRecording() {
+      var notice = document.getElementById('noticeBox');
+      notice.style.display = 'none';
+      resetPreview();
+
+      if (!navigator.mediaDevices || typeof navigator.mediaDevices.getDisplayMedia !== 'function') {
+        showUnsupported();
+        return;
+      }
+      if (!window.MediaRecorder) {
+        showUnsupported('当前浏览器不支持 MediaRecorder，无法录制 webm 视频。');
+        return;
+      }
+      attemptGetDisplay({ video: true, audio: true }, true);
+    }
+
+    function attemptGetDisplay(opts, allowFallback) {
+      navigator.mediaDevices.getDisplayMedia(opts).then(onStream).catch(function (err) {
+        if (allowFallback && opts.audio !== false && err && (err.name === 'TypeError' || err.name === 'NotSupportedError' || err.name === 'NotReadableError')) {
+          // 部分环境不支持同时录制音频，降级为仅录制画面
+          attemptGetDisplay({ video: true, audio: false }, false);
+          return;
+        }
+        handleError(err);
+      });
+    }
+
+    function onStream(s) {
+      stream = s;
+      recordedChunks = [];
+      recordedBlob = null;
+      if (recordedUrl) { URL.revokeObjectURL(recordedUrl); recordedUrl = null; }
+
+      var mimeType = '';
+      var candidates = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
+      for (var i = 0; i < candidates.length; i++) {
+        if (MediaRecorder.isTypeSupported(candidates[i])) { mimeType = candidates[i]; break; }
+      }
+      var opts = mimeType ? { mimeType: mimeType } : {};
+      mediaRecorder = new MediaRecorder(s, opts);
+
+      mediaRecorder.ondataavailable = function (e) {
+        if (e.data && e.data.size > 0) recordedChunks.push(e.data);
+      };
+      mediaRecorder.onstop = function () {
+        recordedBlob = new Blob(recordedChunks, { type: mediaRecorder.mimeType || 'video/webm' });
+        if (recordedUrl) URL.revokeObjectURL(recordedUrl);
+        recordedUrl = URL.createObjectURL(recordedBlob);
+        var preview = document.getElementById('preview');
+        var hint = document.getElementById('previewHint');
+        preview.src = recordedUrl;
+        preview.style.display = 'block';
+        hint.style.display = 'none';
+        setState('stopped');
+        showToast('录制完成，可预览或下载');
+      };
+
+      mediaRecorder.start(1000);
+      setState('recording');
+      startTimer();
+
+      // 用户在浏览器自带 UI 中点击「停止共享」时，自动结束录制
+      s.getTracks().forEach(function (track) {
+        track.addEventListener('ended', function () {
+          if (state === 'recording') stopRecording();
+        });
+      });
+    }
+
+    function handleError(err) {
+      if (err && err.name === 'NotAllowedError') {
+        showToast('已取消录制');
+        return;
+      }
+      if (err && err.name === 'NotFoundError') {
+        showToast('未找到可录制的屏幕或窗口');
+        return;
+      }
+      showToast('无法开始录制：' + (err && err.message ? err.message : '未知错误'));
+    }
+
+    function stopRecording() {
+      if (state !== 'recording' || !mediaRecorder) return;
+      if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+      try { mediaRecorder.stop(); } catch (e) { stopTracks(); }
+      stopTracks();
+    }
+
+    function downloadVideo() {
+      if (!recordedBlob || !recordedUrl) return;
+      var a = document.createElement('a');
+      a.href = recordedUrl;
+      var d = new Date();
+      var ts = d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds());
+      a.download = 'screen-recording-' + ts + '.webm';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast('已开始下载');
+    }
+
+    setState('idle');
+  </script>
+<section id="tool-guide" style="max-width:960px;margin:8px auto 0;padding:24px 20px;background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);font-size:15px;line-height:1.8;color:#333;">
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">屏幕录制是什么？</h2>
+<p style="margin:0 0 8px;">屏幕录制是一款免费的浏览器录屏工具，无需安装任何软件，即可录制整个屏幕、单个窗口或浏览器标签页，并下载为 webm 格式视频。适合录制产品演示、Bug 复现、在线课程、游戏操作、软件教程等场景。本工具完全免费、无需注册，所有录制数据均在浏览器本地处理，不会上传您的任何内容。</p>
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">屏幕录制使用方法</h2>
+<ol style="margin:0 0 8px;padding-left:22px;"><li>点击「开始录制」，在弹出的浏览器窗口中选择要录制的屏幕、窗口或标签页（如需录制声音，请勾选「分享音频」）。</li><li>点击「共享」后即开始录制，页面会实时显示计时；录制过程中随时可点击「停止录制」。</li><li>停止后即可在下方预览视频，点击「下载视频」将其保存为 webm 文件。</li></ol>
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">常见问题</h2>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：屏幕录制可以录制哪些内容？</strong><p style="margin:4px 0 0;">支持录制整个屏幕、单个应用窗口或浏览器标签页，并可同时录制系统声音与麦克风。</p></div>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：录制完成的视频是什么格式？</strong><p style="margin:4px 0 0;">输出为 webm 格式的视频文件，浏览器和主流播放器均可直接打开，也便于导入剪辑软件二次编辑。</p></div>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：录屏数据是否会上传到服务器？</strong><p style="margin:4px 0 0;">不会。屏幕录制完全在浏览器本地完成，视频数据不会上传到任何服务器，关闭页面后即被释放。</p></div>
+</section>
+<div class="related-tools" style="margin-top:24px;padding:20px;background:#f8f9fa;border-radius:8px;">
+<h3 style="margin:0 0 10px;">相关工具推荐</h3><div style="display:flex;flex-wrap:wrap;gap:10px;"><a href="screen-resolution.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">屏幕分辨率</a><a href="screen-ruler.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">屏幕标尺</a><a href="color-picker.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">颜色选择器</a><a href="speed-test.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">网速测试</a></div></div>
+<div id="share-bar"></div>
+<script src="../../js/share.js?v=20260831"></script>
+<!-- AdSense（统一配置于 js/ads-config.js，未配置时零请求） -->
+<div id="ad-inpage-1" style="max-width:960px;margin:24px auto;text-align:center;min-height:0;"></div>
+<script src="../../js/ads-config.js?v=20260831"></script>
+<script src="../../js/ads.js?v=20260831"></script>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>中国传统色 - 在线工具箱</title>
+  <meta name="description" content="中国传统色大全，胭脂黛青月白竹青等经典色卡与HEX值，点击色卡一键复制十六进制色值，设计师配色、文案取名、国风设计必备。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="stylesheet" href="../../css/style.css?v=20260831">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="中国传统色 - 在线工具箱">
+  <meta property="og:description" content="中国传统色大全，胭脂黛青月白竹青等经典色卡与HEX值，点击色卡一键复制。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/chinese-traditional-colors.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/chinese-traditional-colors.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type": "Question", "name": "中国传统色有哪些经典颜色？", "acceptedAnswer": {"@type": "Answer", "text": "中国传统色常见经典色有胭脂、朱红、绛紫、秋香、竹青、黛、天青、月白、藕荷、鸦青等，多取自矿物、植物染料与自然景物，如胭脂红、竹青绿、月白微蓝。"}},
+      {"@type": "Question", "name": "如何获取中国传统色的 HEX 色值？", "acceptedAnswer": {"@type": "Answer", "text": "在本页面直接点击任意色卡即可复制对应颜色的 HEX 值（如胭脂 #9D2933、月白 #D6ECF0），可粘贴到设计软件、CSS 或前端代码中使用。"}},
+      {"@type": "Question", "name": "使用本工具会否上传我的数据？", "acceptedAnswer": {"@type": "Answer", "text": "不会。所有色卡均为内置静态数据，搜索与复制操作完全在您的浏览器本地完成，不会向任何服务器上传您的任何数据。"}}
+    ]
+  }
+  </script>
+<script>(function(){try{var t=localStorage.getItem('ei-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js?v=20260831"></script>
+  <style>
+    .color-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 16px; }
+    .color-card { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; cursor: pointer; background: var(--card); transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s; }
+    .color-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-2); border-color: var(--border-strong); }
+    .color-card .swatch { height: 82px; }
+    .color-card .info { padding: 9px 12px 11px; }
+    .color-card .name { font-weight: 600; color: var(--text); font-size: 0.95rem; line-height: 1.3; }
+    .color-card .hex { font-family: "SF Mono", "Fira Code", monospace; font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+    .color-card .note { font-size: 0.72rem; color: var(--muted); margin-top: 5px; line-height: 1.45; }
+    .color-empty { grid-column: 1 / -1; text-align: center; color: var(--muted); padding: 32px 0; }
+  </style>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>中国传统色</h1>
+    </div>
+
+    <div class="form-group">
+      <label for="colorSearch">搜索颜色（按名称）</label>
+      <input type="text" id="colorSearch" placeholder="输入颜色名，如：胭脂、黛、月白、竹青…" oninput="filterColors()">
+    </div>
+
+    <div class="btn-group" style="margin-top:0;">
+      <button class="btn btn-secondary" onclick="clearSearch()">清空</button>
+      <span id="colorCount" style="align-self:center;color:var(--muted);font-size:0.9rem;"></span>
+    </div>
+
+    <div id="colorGrid" class="color-grid"></div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    var COLORS = [
+      { name: '胭脂', hex: '#9D2933', note: '古以红花、胭脂虫调制的红色，仕女妆点之正色' },
+      { name: '朱红', hex: '#FF4C00', note: '朱砂矿研末之色，宫墙、印章、帝王御批用色' },
+      { name: '绛紫', hex: '#8C4356', note: '深红泛紫，紫中带绛，古时常染袍服' },
+      { name: '茜色', hex: '#B13546', note: '茜草根染出的红，《诗经》「缟衣茹藘」所载' },
+      { name: '银红', hex: '#F05654', note: '银朱调和而成的浅红，明亮娇艳' },
+      { name: '桃红', hex: '#F47983', note: '桃花之色，比浅红略深、娇嫩可爱' },
+      { name: '海棠红', hex: '#DB5A6B', note: '海棠花之色，淡雅柔美' },
+      { name: '石榴红', hex: '#F20C00', note: '石榴花色，浓艳明丽的大红' },
+      { name: '枣红', hex: '#C32136', note: '成熟红枣之色，红中带褐' },
+      { name: '殷红', hex: '#82111F', note: '殷商尚赤，深红近黑' },
+      { name: '酡红', hex: '#DC3023', note: '酒后脸颊泛起的红晕之色' },
+      { name: '妃色', hex: '#ED5736', note: '妃红，相传杨贵妃所用胭脂红' },
+      { name: '品红', hex: '#F00056', note: '比大红略浅的艳红，明清染坊名色' },
+      { name: '秋香', hex: '#D9B611', note: '秋香色，桂子金黄中泛绿意' },
+      { name: '鹅黄', hex: '#FFF143', note: '雏鹅绒毛之嫩黄' },
+      { name: '杏黄', hex: '#FFA631', note: '杏果成熟之黄' },
+      { name: '缃色', hex: '#F0C239', note: '浅黄，古书绢帛之色' },
+      { name: '藤黄', hex: '#FFB61E', note: '藤本植物汁液熬制，国画传统颜料' },
+      { name: '姜黄', hex: '#E0C068', note: '姜根之黄，可作染料' },
+      { name: '琥珀', hex: '#CA6924', note: '松脂化石之棕黄' },
+      { name: '蜜合', hex: '#F3E0C3', note: '蜂蜜调和的浅黄白' },
+      { name: '栀子', hex: '#FAC03C', note: '栀子花之色' },
+      { name: '石黄', hex: '#FFC64B', note: '雄黄矿物之黄' },
+      { name: '竹青', hex: '#789262', note: '竹皮青绿，青中偏黄' },
+      { name: '竹绿', hex: '#1BA784', note: '竹叶深绿，清雅沉稳' },
+      { name: '豆绿', hex: '#9ED048', note: '嫩豆之绿' },
+      { name: '葱绿', hex: '#9ED900', note: '葱叶之嫩绿' },
+      { name: '柳绿', hex: '#AFDD22', note: '柳芽初发之嫩绿' },
+      { name: '松花绿', hex: '#057748', note: '松花粉调出的深绿' },
+      { name: '石绿', hex: '#16A951', note: '孔雀石矿物绿，青绿山水壁画主色' },
+      { name: '青碧', hex: '#48C0A3', note: '青中带碧，清澈透亮' },
+      { name: '缥色', hex: '#7FECAD', note: '浅青绿，缥碧之「缥」' },
+      { name: '艾绿', hex: '#A4E2C6', note: '艾草之浅绿' },
+      { name: '铜绿', hex: '#549688', note: '铜器生锈之绿' },
+      { name: '梧枝绿', hex: '#69A794', note: '梧桐枝干之绿' },
+      { name: '玉色', hex: '#2EDFA3', note: '美玉之青绿' },
+      { name: '天青', hex: '#88ADA6', note: '雨过天青，宋徽宗梦中之色' },
+      { name: '黛', hex: '#4A4266', note: '古代画眉的青黑颜料，远山如黛' },
+      { name: '黛蓝', hex: '#425066', note: '深蓝近黑' },
+      { name: '黛青', hex: '#45465E', note: '青黑之色' },
+      { name: '藏青', hex: '#2E4E7E', note: '深蓝，染坊名色' },
+      { name: '靛青', hex: '#177CB0', note: '蓝靛染出的青' },
+      { name: '靛蓝', hex: '#065279', note: '蓝草发酵而成的染料色' },
+      { name: '花青', hex: '#003472', note: '蓝靛花汁，国画花鸟常用颜料' },
+      { name: '群青', hex: '#4C8DAE', note: '青金石矿物蓝，珍贵颜料' },
+      { name: '石青', hex: '#1685A9', note: '蓝铜矿矿物蓝，青绿山水主色' },
+      { name: '苍色', hex: '#7397AB', note: '青灰之色，苍茫辽远' },
+      { name: '孔雀蓝', hex: '#0EB0C9', note: '孔雀羽翎之蓝' },
+      { name: '宝蓝', hex: '#4B5CC4', note: '宝石之蓝' },
+      { name: '竹月', hex: '#7F89A0', note: '竹影映月之蓝灰' },
+      { name: '月白', hex: '#D6ECF0', note: '月下泛白，微带青蓝' },
+      { name: '素白', hex: '#E0F0E9', note: '素白微青' },
+      { name: '象牙白', hex: '#FFFBF0', note: '象牙之白，微暖' },
+      { name: '霜色', hex: '#E9F1F6', note: '霜花之白，微蓝' },
+      { name: '玉白', hex: '#EDEBD8', note: '羊脂玉之白，微黄' },
+      { name: '紫棠', hex: '#56004F', note: '紫檀之色，深沉高古' },
+      { name: '藕荷', hex: '#E4C6D0', note: '藕色带紫粉' },
+      { name: '雪青', hex: '#B0A4E3', note: '雪后青紫' },
+      { name: '丁香', hex: '#CCA4E3', note: '丁香花之淡紫' },
+      { name: '酱紫', hex: '#815476', note: '酱色之紫' },
+      { name: '青莲', hex: '#8B2671', note: '青莲色，紫红' },
+      { name: '葡萄紫', hex: '#4C1F24', note: '葡萄之深紫红' },
+      { name: '玄色', hex: '#622A1D', note: '「玄」，黑中带赤' },
+      { name: '玄青', hex: '#3D3B4F', note: '深青近黑' },
+      { name: '墨色', hex: '#50616D', note: '松烟墨之灰' },
+      { name: '鸦青', hex: '#424C50', note: '乌鸦羽翎之青黑' },
+      { name: '乌黑', hex: '#725E82', note: '乌黑偏紫' },
+      { name: '猩红', hex: '#FF3300', note: '浓艳如猩血之红' },
+      { name: '粉红', hex: '#FFB3A7', note: '浅淡娇嫩之红' },
+      { name: '嫣红', hex: '#EF7A82', note: '嫣然娇艳之红' },
+      { name: '藕色', hex: '#EDD1D8', note: '藕白微红，温婉' },
+      { name: '湖蓝', hex: '#30DFF3', note: '湖水之蓝，明净' }
+    ];
+
+    function esc(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function renderColors(list) {
+      var grid = document.getElementById('colorGrid');
+      if (!list.length) {
+        grid.innerHTML = '<div class="color-empty">没有找到匹配的颜色，换个关键词试试吧。</div>';
+        return;
+      }
+      grid.innerHTML = list.map(function (c) {
+        return '<div class="color-card" onclick="copyHex(\'' + c.hex + '\')">' +
+          '<div class="swatch" style="background:' + c.hex + ';"></div>' +
+          '<div class="info">' +
+            '<div class="name">' + esc(c.name) + '</div>' +
+            '<div class="hex">' + c.hex + '</div>' +
+            '<div class="note">' + esc(c.note) + '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function filterColors() {
+      var q = document.getElementById('colorSearch').value.trim();
+      var list;
+      if (!q) {
+        list = COLORS;
+      } else {
+        var ql = q.toLowerCase();
+        list = COLORS.filter(function (c) {
+          return c.name.indexOf(q) !== -1 || c.hex.toLowerCase().indexOf(ql) !== -1 || c.note.indexOf(q) !== -1;
+        });
+      }
+      document.getElementById('colorCount').textContent = '共 ' + COLORS.length + ' 种，当前显示 ' + list.length + ' 种';
+      renderColors(list);
+    }
+
+    function clearSearch() {
+      document.getElementById('colorSearch').value = '';
+      filterColors();
+    }
+
+    function copyHex(hex) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(hex).then(function () {
+          showToast('已复制 ' + hex);
+        }, function () {
+          fallbackCopy(hex);
+        });
+      } else {
+        fallbackCopy(hex);
+      }
+    }
+
+    function fallbackCopy(text) {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+      if (ok) { showToast('已复制 ' + text); } else { showToast('复制失败，请手动选择复制'); }
+    }
+
+    function showToast(msg) {
+      var toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(function () { toast.classList.remove('show'); }, 2000);
+    }
+
+    filterColors();
+  </script>
+<section id="tool-guide" style="max-width:960px;margin:8px auto 0;padding:24px 20px;background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);font-size:15px;line-height:1.8;color:#333;">
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">中国传统色是什么？</h2>
+<p style="margin:0 0 8px;">中国传统色大全，胭脂、黛青、月白、竹青等经典色卡与 HEX 值，点击任意色卡即可一键复制十六进制色值。无论是设计师做国风配色、运营写文案取名，还是开发者挑选界面主题色，都能快速找到想要的东方色彩。本工具完全免费、无需注册，所有数据均内置在页面本地，不会上传您的任何数据。</p>
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">中国传统色使用方法</h2>
+<ol style="margin:0 0 8px;padding-left:22px;"><li>在搜索框输入颜色名称（如「胭脂」「黛」「月白」）快速定位。</li><li>浏览网格色卡，查看色块、名称、HEX 值与出处说明。</li><li>点击任意色卡即可复制 HEX 值，直接粘贴到设计稿或代码中使用。</li></ol>
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">常见问题</h2>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：中国传统色有哪些经典颜色？</strong><p style="margin:4px 0 0;">常见经典色有胭脂、朱红、绛紫、秋香、竹青、黛、天青、月白、藕荷、鸦青等，多取自矿物、植物染料与自然景物。</p></div>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：如何获取颜色的 HEX 值？</strong><p style="margin:4px 0 0;">点击任意色卡即可复制对应颜色的 HEX 值（如胭脂 #9D2933、月白 #D6ECF0），可粘贴到设计软件、CSS 或前端代码中使用。</p></div>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：使用本工具会上传我的数据吗？</strong><p style="margin:4px 0 0;">不会。所有色卡均为内置静态数据，搜索与复制操作完全在浏览器本地完成，不会向任何服务器上传您的任何数据。</p></div>
+</section>
+<div class="related-tools" style="margin-top:24px;padding:20px;background:#f8f9fa;border-radius:8px;">
+<h3 style="margin:0 0 10px;">相关工具推荐</h3><div style="display:flex;flex-wrap:wrap;gap:10px;"><a href="color-picker.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">颜色选择器</a><a href="color-converter.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">颜色转换器</a><a href="color-palette.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">调色板生成</a><a href="screen-color-picker.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">屏幕取色器</a></div></div>
+<div id="share-bar"></div>
+<script src="../../js/share.js?v=20260831"></script>
+<!-- AdSense（统一配置于 js/ads-config.js，未配置时零请求） -->
+<div id="ad-inpage-1" style="max-width:960px;margin:24px auto;text-align:center;min-height:0;"></div>
+<script src="../../js/ads-config.js?v=20260831"></script>
+<script src="../../js/ads.js?v=20260831"></script>
+</body>
+</html>

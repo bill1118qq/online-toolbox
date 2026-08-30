@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EXIF查看器 - 在线工具箱</title>
+  <meta name="description" content="免费在线EXIF查看器，查看照片EXIF信息，拍摄设备/GPS位置/拍摄时间/光圈快门ISO等参数一览，纯浏览器本地解析，不上传任何数据。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="canonical" href="https://eitools.cn/src/tools/exif-viewer.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="EXIF查看器 - 在线工具箱">
+  <meta property="og:description" content="查看照片EXIF信息，拍摄设备/GPS/时间参数一览，纯本地解析不上传。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/exif-viewer.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type": "Question", "name": "使用EXIF查看器会泄露我的照片隐私吗？", "acceptedAnswer": {"@type": "Answer", "text": "不会。照片解析完全在浏览器本地完成，文件不会被上传到任何服务器，关闭页面后数据即被清除。"}},
+      {"@type": "Question", "name": "为什么我的照片没有显示EXIF信息？", "acceptedAnswer": {"@type": "Answer", "text": "部分照片在截图、压缩或后期处理时，软件会清除EXIF数据。此时页面会提示未检测到EXIF信息，这是正常现象。"}},
+      {"@type": "Question", "name": "EXIF查看器支持哪些文件格式？", "acceptedAnswer": {"@type": "Answer", "text": "支持标准JPEG（.jpg/.jpeg）格式，可读取拍摄设备、曝光参数、拍摄时间、GPS位置等信息；PNG等格式不含EXIF的APP1数据段，暂不支持。"}}
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="../../css/style.css?v=20260831">
+  <script>(function(){try{var t=localStorage.getItem('ei-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js?v=20260831"></script>
+  <style>
+    .exif-drop { border: 2px dashed #ccc; border-radius: 12px; padding: 36px 20px; text-align: center; cursor: pointer; background: #fafafa; margin-bottom: 16px; transition: border-color .2s; }
+    .exif-drop:hover, .exif-drop.drag { border-color: #4361ee; }
+    .exif-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .exif-table td { padding: 10px 12px; border-bottom: 1px solid #eee; vertical-align: top; }
+    .exif-table td:first-child { width: 130px; color: #888; font-weight: 600; white-space: nowrap; }
+    .exif-table td:last-child { word-break: break-all; color: #1a1a1a; }
+    .exif-file { font-weight: 600; margin: 0 0 12px; color: #1a1a1a; word-break: break-all; }
+    .exif-file small { color: #999; font-weight: 400; }
+  </style>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>EXIF查看器</h1>
+    </div>
+
+    <div class="form-group">
+      <label>选择一张 JPEG 照片，读取拍摄设备 / GPS / 时间等 EXIF 信息</label>
+      <div id="dropZone" class="exif-drop">
+        <p style="font-size:1.05rem;color:#555;margin:0;">📷 拖拽照片到此处，或点击选择文件</p>
+        <p style="font-size:0.85rem;color:#999;margin:8px 0 0;">支持 JPEG（.jpg/.jpeg），所有解析均在本地完成，不上传任何数据</p>
+      </div>
+      <input type="file" id="fileInput" accept="image/jpeg,image/jpg" style="display:none;">
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">选择照片</button>
+        <button class="btn btn-secondary" onclick="resetAll()">清空</button>
+      </div>
+    </div>
+
+    <div id="resultBox" class="result-box" style="min-height:80px;">请选择一张 JPEG 照片，EXIF 信息将显示在这里。</div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    // ===== JPEG EXIF 解析器（纯 JS，感知大端/小端序，无外部依赖）=====
+
+    function showToast(msg) {
+      var toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(function () { toast.classList.remove('show'); }, 2200);
+    }
+
+    function resetAll() {
+      var rb = document.getElementById('resultBox');
+      rb.className = 'result-box';
+      rb.style.minHeight = '80px';
+      rb.style.borderColor = '';
+      rb.textContent = '请选择一张 JPEG 照片，EXIF 信息将显示在这里。';
+      document.getElementById('fileInput').value = '';
+      showToast('已清空');
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+
+    function formatSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    function readFileBuffer(file, cb, errCb) {
+      if (file.arrayBuffer) {
+        file.arrayBuffer().then(cb).catch(errCb);
+      } else {
+        var reader = new FileReader();
+        reader.onload = function (e) { cb(e.target.result); };
+        reader.onerror = errCb;
+        reader.readAsArrayBuffer(file);
+      }
+    }
+
+    function handleFiles(files) {
+      if (!files || !files.length) return;
+      var file = files[0];
+      readFileBuffer(file, function (buf) {
+        processBuffer(file, buf);
+      }, function () {
+        showResult('<p style="margin:0;">读取文件失败，请重试。</p>', true);
+      });
+    }
+
+    function showResult(html, isError) {
+      var rb = document.getElementById('resultBox');
+      rb.className = 'result-box';
+      rb.style.minHeight = '80px';
+      rb.style.borderColor = isError ? '#f44336' : '';
+      rb.innerHTML = html;
+    }
+
+    function processBuffer(file, buf) {
+      var result;
+      try {
+        result = parseExif(buf);
+      } catch (e) {
+        showResult('<p style="margin:0;">解析出错：' + escapeHtml(e.message) + '</p>', true);
+        showToast('解析出错');
+        return;
+      }
+
+      if (result.error === 'not-jpeg') {
+        showResult('<p style="margin:0;">请选择 JPEG 格式的图片（.jpg / .jpeg）。当前文件不是有效的 JPEG 图片。</p>', true);
+        showToast('不是有效的 JPEG 图片');
+        return;
+      }
+      if (result.error === 'no-exif') {
+        showResult('<p class="exif-file">' + escapeHtml(file.name) + ' <small>' + formatSize(file.size) + '</small></p>' +
+          '<p style="margin:0;color:#856404;">未检测到 EXIF 信息。该照片可能经过截图、压缩或后期处理，EXIF 数据已被移除。</p>', false);
+        showToast('未检测到 EXIF 信息');
+        return;
+      }
+
+      var html = '<p class="exif-file">' + escapeHtml(file.name) + ' <small>' + formatSize(file.size) + '</small></p>' +
+        '<table class="exif-table">' + buildRows(result) + '</table>';
+      showResult(html, false);
+      showToast('解析完成');
+    }
+
+    // ===== EXIF 解析核心 =====
+
+    function parseExif(buffer) {
+      var dv = new DataView(buffer);
+      if (buffer.byteLength < 4 || dv.getUint16(0, false) !== 0xFFD8) {
+        return { error: 'not-jpeg' };
+      }
+      var offset = 2;
+      while (offset + 4 <= buffer.byteLength) {
+        var marker = dv.getUint16(offset, false);
+        if (marker === 0xFFD9 || marker === 0xFFDA) break;              // EOI / SOS
+        if (marker === 0xFF01 || (marker >= 0xFFD0 && marker <= 0xFFD9)) break; // 无长度标记
+        var segLen = dv.getUint16(offset + 2, false);
+        if (segLen < 2) break;
+        if (marker === 0xFFE1) {
+          if (offset + 10 <= buffer.byteLength && dv.getUint32(offset + 4, false) === 0x45786966) {
+            var tiffBase = offset + 4 + 6; // 跳过 "Exif\0\0"
+            var parsed = parseTiff(dv, tiffBase);
+            if (parsed && parsed.error !== 'no-exif') return parsed;
+          }
+        }
+        offset += 2 + segLen;
+      }
+      return { error: 'no-exif' };
+    }
+
+    function parseTiff(dv, base) {
+      if (base + 8 > dv.byteLength) return { error: 'no-exif' };
+      var order = dv.getUint16(base, false);
+      var little;
+      if (order === 0x4949) little = true;        // "II" 小端序
+      else if (order === 0x4D4D) little = false;  // "MM" 大端序
+      else return { error: 'no-exif' };
+
+      if (dv.getUint16(base + 2, little) !== 0x002A) return { error: 'no-exif' };
+      var ifd0Offset = dv.getUint32(base + 4, little);
+      var tags = readIfd(dv, base, base + ifd0Offset, little);
+      if (!tags) return { error: 'no-exif' };
+
+      var out = { tags: tags, little: little, dv: dv };
+
+      if (tags[0x8825] !== undefined) {
+        var gpsPtr = readValue(dv, tags[0x8825], little);
+        if (typeof gpsPtr === 'number' && gpsPtr > 0) {
+          var gpsTags = readIfd(dv, base, base + gpsPtr, little);
+          if (gpsTags) out.gps = gpsTags;
+        }
+      }
+      return out;
+    }
+
+    function readIfd(dv, base, ifdStart, little) {
+      if (ifdStart + 2 > dv.byteLength) return null;
+      var n = dv.getUint16(ifdStart, little);
+      var tags = {};
+      for (var i = 0; i < n; i++) {
+        var entry = ifdStart + 2 + i * 12;
+        if (entry + 12 > dv.byteLength) break;
+        var tag = dv.getUint16(entry, little);
+        var type = dv.getUint16(entry + 2, little);
+        var count = dv.getUint32(entry + 4, little);
+        var valField = entry + 8;
+        var typeSize = { 1: 1, 2: 1, 3: 2, 4: 4, 5: 8, 7: 1, 9: 4, 10: 8 }[type] || 1;
+        var total = typeSize * count;
+        var valueOffset;
+        if (total > 4) {
+          valueOffset = base + dv.getUint32(valField, little);
+        } else {
+          valueOffset = valField;
+        }
+        tags[tag] = { type: type, count: count, offset: valueOffset };
+      }
+      return tags;
+    }
+
+    function readValue(dv, tag, little) {
+      var type = tag.type, count = tag.count, off = tag.offset;
+      if (type === 2) { // ASCII
+        var s = '';
+        for (var i = 0; i < count; i++) {
+          var c = dv.getUint8(off + i);
+          if (c === 0) break;
+          s += String.fromCharCode(c);
+        }
+        return s.trim();
+      }
+      if (type === 3) { // SHORT
+        if (count === 1) return dv.getUint16(off, little);
+        var a1 = [];
+        for (var j = 0; j < count; j++) a1.push(dv.getUint16(off + j * 2, little));
+        return a1;
+      }
+      if (type === 4) { // LONG
+        if (count === 1) return dv.getUint32(off, little);
+        var a2 = [];
+        for (var k = 0; k < count; k++) a2.push(dv.getUint32(off + k * 4, little));
+        return a2;
+      }
+      if (type === 5) { // RATIONAL [num, den]
+        var rat = function (o) { return [dv.getUint32(o, little), dv.getUint32(o + 4, little)]; };
+        if (count === 1) return rat(off);
+        var a3 = [];
+        for (var m = 0; m < count; m++) a3.push(rat(off + m * 8));
+        return a3;
+      }
+      if (type === 1) { // BYTE
+        if (count === 1) return dv.getUint8(off);
+        var a4 = [];
+        for (var p = 0; p < count; p++) a4.push(dv.getUint8(off + p));
+        return a4;
+      }
+      if (type === 9) { // SLONG
+        if (count === 1) return dv.getInt32(off, little);
+        return null;
+      }
+      if (type === 10) { // SRATIONAL
+        if (count === 1) return [dv.getInt32(off, little), dv.getInt32(off + 4, little)];
+        return null;
+      }
+      return null;
+    }
+
+    // ===== 值格式化 =====
+
+    function trimNum(x) {
+      return (Math.round(x * 100) / 100).toString();
+    }
+
+    function fmtExposure(rat) {
+      if (!rat || rat[1] === 0) return null;
+      var v = rat[0] / rat[1];
+      if (v >= 1) return trimNum(v) + ' 秒';
+      return '1/' + Math.round(rat[1] / rat[0]) + ' 秒';
+    }
+
+    function fmtFNumber(rat) {
+      if (!rat || rat[1] === 0) return null;
+      return 'f/' + trimNum(rat[0] / rat[1]);
+    }
+
+    function fmtFocal(rat) {
+      if (!rat || rat[1] === 0) return null;
+      return trimNum(rat[0] / rat[1]) + ' mm';
+    }
+
+    var ORIENT = {
+      1: '正常（0°）', 2: '水平翻转', 3: '旋转 180°', 4: '垂直翻转',
+      5: '顺时针旋转 90° + 水平翻转', 6: '顺时针旋转 90°',
+      7: '逆时针旋转 90° + 水平翻转', 8: '逆时针旋转 90°'
+    };
+
+    function gpsToDecimal(rationals, ref) {
+      if (!rationals || rationals.length < 3) return null;
+      var d = rationals[0][0] / rationals[0][1];
+      var m = rationals[1][0] / rationals[1][1];
+      var s = rationals[2][0] / rationals[2][1];
+      var dec = d + m / 60 + s / 3600;
+      if (ref === 'S' || ref === 'W') dec = -dec;
+      return dec;
+    }
+
+    // ===== 构建结果表格 =====
+
+    function buildRows(result) {
+      var tags = result.tags, dv = result.dv, little = result.little;
+      var rows = '';
+
+      var fields = [
+        { label: '相机制造商', tag: 0x010F, fmt: 'str' },
+        { label: '相机型号', tag: 0x0110, fmt: 'str' },
+        { label: '方向', tag: 0x0112, fmt: 'orient' },
+        { label: '拍摄时间', tag: 0x0132, fmt: 'datetime' },
+        { label: '曝光时间', tag: 0x829A, fmt: 'exposure' },
+        { label: '光圈值', tag: 0x829D, fmt: 'fnumber' },
+        { label: 'ISO 感光度', tag: 0x8827, fmt: 'iso' },
+        { label: '焦距', tag: 0x920A, fmt: 'focal' },
+        { label: '图片宽度', tag: 0xA002, fmt: 'int' },
+        { label: '图片高度', tag: 0xA003, fmt: 'int' },
+        { label: '软件', tag: 0x0131, fmt: 'str' },
+        { label: '镜头型号', tag: 0xA434, fmt: 'str' }
+      ];
+
+      for (var i = 0; i < fields.length; i++) {
+        var f = fields[i];
+        var t = tags[f.tag];
+        if (t === undefined) continue;
+        var v = readValue(dv, t, little);
+        var text = formatField(f.fmt, v);
+        if (text === null || text === '') continue;
+        rows += '<tr><td>' + f.label + '</td><td>' + escapeHtml(text) + '</td></tr>';
+      }
+
+      if (result.gps) {
+        var latRef = readValue(dv, result.gps[0x0001], little);
+        var lat = readValue(dv, result.gps[0x0002], little);
+        var lonRef = readValue(dv, result.gps[0x0003], little);
+        var lon = readValue(dv, result.gps[0x0004], little);
+        var latDec = gpsToDecimal(lat, latRef);
+        var lonDec = gpsToDecimal(lon, lonRef);
+        if (latDec !== null && lonDec !== null) {
+          var latStr = Math.abs(latDec).toFixed(6) + '° ' + (latDec >= 0 ? 'N' : 'S');
+          var lonStr = Math.abs(lonDec).toFixed(6) + '° ' + (lonDec >= 0 ? 'E' : 'W');
+          var mapLink = 'https://www.openstreetmap.org/?mlat=' + latDec + '&mlon=' + lonDec + '#map=15/' + latDec + '/' + lonDec;
+          rows += '<tr><td>GPS 位置</td><td>' + latStr + '，' + lonStr +
+            ' <a href="' + mapLink + '" target="_blank" rel="noopener" style="color:#4361ee;text-decoration:none;">在地图中查看</a></td></tr>';
+        }
+      }
+
+      return rows;
+    }
+
+    function formatField(fmt, v) {
+      if (v === null || v === undefined) return null;
+      switch (fmt) {
+        case 'str': return String(v);
+        case 'datetime': return String(v).replace(/^(\d{4}):(\d{2}):(\d{2})/, '$1-$2-$3');
+        case 'exposure': return fmtExposure(v);
+        case 'fnumber': return fmtFNumber(v);
+        case 'iso': return String(v);
+        case 'focal': return fmtFocal(v);
+        case 'orient': return (ORIENT[v] !== undefined) ? (ORIENT[v] + '（' + v + '）') : String(v);
+        case 'int': return String(v);
+      }
+      return String(v);
+    }
+
+    // ===== 事件绑定 =====
+
+    var dropZone = document.getElementById('dropZone');
+    var fileInput = document.getElementById('fileInput');
+
+    dropZone.addEventListener('click', function () { fileInput.click(); });
+    dropZone.addEventListener('dragover', function (e) { e.preventDefault(); dropZone.classList.add('drag'); });
+    dropZone.addEventListener('dragleave', function () { dropZone.classList.remove('drag'); });
+    dropZone.addEventListener('drop', function (e) {
+      e.preventDefault();
+      dropZone.classList.remove('drag');
+      handleFiles(e.dataTransfer.files);
+    });
+    fileInput.addEventListener('change', function () {
+      handleFiles(fileInput.files);
+    });
+  </script>
+<section id="tool-guide" style="max-width:960px;margin:8px auto 0;padding:24px 20px;background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);font-size:15px;line-height:1.8;color:#333;">
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">EXIF查看器是什么？</h2>
+<p style="margin:0 0 8px;">免费在线EXIF查看器，查看照片EXIF信息，拍摄设备/GPS位置/时间参数一览。它能读取JPEG照片中隐藏的拍摄数据，包括相机品牌型号、曝光时间、光圈、ISO、焦距、拍摄时间以及GPS经纬度等。无论你是摄影爱好者想复盘拍摄参数，还是普通用户想确认照片的拍摄地点与时间，都能快速得到答案。本工具完全免费、无需注册，所有解析均在浏览器本地完成，不会上传您的任何数据。</p>
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">EXIF查看器使用方法</h2>
+<ol style="margin:0 0 8px;padding-left:22px;"><li>点击「选择照片」按钮或将 JPEG 照片拖拽到上传区域。</li><li>等待本地解析完成，无需上传。</li><li>拍摄设备、曝光参数、GPS 位置等信息将以表格形式即时展示。</li></ol>
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">常见问题</h2>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：使用EXIF查看器会泄露我的照片隐私吗？</strong><p style="margin:4px 0 0;">不会。照片解析完全在浏览器本地完成，文件不会被上传到任何服务器，关闭页面后数据即被清除。</p></div>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：为什么我的照片没有显示EXIF信息？</strong><p style="margin:4px 0 0;">部分照片在截图、压缩或后期处理时，软件会清除EXIF数据。此时页面会提示未检测到EXIF信息，这是正常现象。</p></div>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：EXIF查看器支持哪些文件格式？</strong><p style="margin:4px 0 0;">支持标准JPEG（.jpg/.jpeg）格式，可读取拍摄设备、曝光参数、拍摄时间、GPS位置等信息；PNG等格式不含EXIF的APP1数据段，暂不支持。</p></div>
+</section>
+<div class="related-tools" style="margin-top:24px;padding:20px;background:#f8f9fa;border-radius:8px;">
+<h3 style="margin:0 0 10px;">相关工具推荐</h3><div style="display:flex;flex-wrap:wrap;gap:10px;"><a href="image-compressor.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">图片压缩</a><a href="image-converter.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">图片格式转换</a><a href="image-watermark.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">图片加水印</a><a href="image-base64.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">图片转 Base64</a></div></div>
+<div id="share-bar"></div>
+<script src="../../js/share.js?v=20260831"></script>
+<!-- AdSense（统一配置于 js/ads-config.js，未配置时零请求） -->
+<div id="ad-inpage-1" style="max-width:960px;margin:24px auto;text-align:center;min-height:0;"></div>
+<script src="../../js/ads-config.js?v=20260831"></script>
+<script src="../../js/ads.js?v=20260831"></script>
+</body>
+</html>

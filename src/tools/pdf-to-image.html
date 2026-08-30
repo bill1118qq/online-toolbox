@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF转图片 - 在线工具箱</title>
+  <meta name="description" content="PDF每页转PNG图片，本地转换支持导出压缩包逐张下载。免费在线PDF转图片工具，纯浏览器本地处理不上传文件，支持逐张下载与全部导出，保护隐私安全。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="stylesheet" href="../../css/style.css?v=20260831">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="PDF转图片 - 在线工具箱">
+  <meta property="og:description" content="PDF每页转PNG图片，本地转换支持导出压缩包逐张下载，纯浏览器本地处理不上传文件。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/pdf-to-image.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/pdf-to-image.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type": "Question", "name": "PDF转图片会上传我的文件吗？", "acceptedAnswer": {"@type": "Answer", "text": "不会。本工具完全在浏览器本地处理，您的PDF文件不会被上传到任何服务器，充分保障隐私安全。"}},
+      {"@type": "Question", "name": "加密的PDF可以转换吗？", "acceptedAnswer": {"@type": "Answer", "text": "需要密码才能打开的加密PDF无法直接转换，请先解除密码。扫描版（纯图片）PDF可以直接转换为PNG图片。"}},
+      {"@type": "Question", "name": "转换出来的图片清晰度如何？", "acceptedAnswer": {"@type": "Answer", "text": "本工具按2倍缩放逐页渲染，输出高清PNG图片，适合打印、归档和分享。"}}
+    ]
+  }
+  </script>
+<script>(function(){try{var t=localStorage.getItem('ei-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js?v=20260831"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>PDF转图片</h1>
+    </div>
+
+    <div class="form-group">
+      <label>选择 PDF 文件</label>
+      <input type="file" id="fileInput" accept="application/pdf">
+      <p style="margin:8px 0 0;font-size:13px;color:#888;">支持 PDF 格式，逐页转换为 PNG 图片，所有处理均在浏览器本地完成。</p>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" id="downloadAllBtn" disabled>全部下载</button>
+      <button class="btn btn-secondary" id="clearBtn">清空</button>
+    </div>
+
+    <div id="resultBox" class="result-box">上传 PDF 后自动逐页渲染预览</div>
+
+    <div id="previewGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;margin-top:16px;"></div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+  <script>
+  (function () {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+
+    var fileInput = document.getElementById('fileInput');
+    var resultBox = document.getElementById('resultBox');
+    var previewGrid = document.getElementById('previewGrid');
+    var downloadAllBtn = document.getElementById('downloadAllBtn');
+    var clearBtn = document.getElementById('clearBtn');
+    var pages = [];
+    var currentBaseName = 'pdf转图片';
+
+    fileInput.addEventListener('change', function (e) {
+      var file = e.target.files && e.target.files[0];
+      if (!file) return;
+      if (!isPdf(file)) { showToast('请选择 PDF 文件'); return; }
+      handleFile(file);
+    });
+
+    clearBtn.addEventListener('click', clearAll);
+    downloadAllBtn.addEventListener('click', downloadAll);
+
+    function isPdf(file) {
+      if (file.type === 'application/pdf') return true;
+      return /\.pdf$/i.test(file.name);
+    }
+
+    function handleFile(file) {
+      resetResult();
+      resultBox.textContent = '正在解析 PDF：' + file.name + ' …';
+      var reader = new FileReader();
+      reader.onload = function (ev) {
+        convertPdf(ev.target.result, file.name);
+      };
+      reader.onerror = function () {
+        setError('读取文件失败，请重试。');
+        showToast('读取文件失败');
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function convertPdf(data, name) {
+      currentBaseName = name.replace(/\.pdf$/i, '');
+      pdfjsLib.getDocument({ data: data }).promise.then(function (pdf) {
+        var total = pdf.numPages;
+        resultBox.textContent = '共 ' + total + ' 页，正在逐页渲染…';
+        var chain = Promise.resolve();
+        for (var i = 1; i <= total; i++) {
+          (function (pageNum) {
+            chain = chain.then(function () {
+              return pdf.getPage(pageNum).then(function (page) {
+                return renderPage(page, pageNum).then(function (entry) {
+                  pages.push(entry);
+                  addThumbnail(entry);
+                  if (pageNum === total) {
+                    resultBox.textContent = '转换完成：共 ' + total + ' 页，可逐张下载或点击「全部下载」。';
+                    downloadAllBtn.disabled = false;
+                    showToast('转换完成');
+                  } else {
+                    resultBox.textContent = '渲染中 ' + pageNum + ' / ' + total + ' …';
+                  }
+                });
+              });
+            });
+          })(i);
+        }
+        return chain;
+      }).catch(function (err) {
+        setError('无法解析该 PDF 文件，请确认文件未损坏或已加密。');
+        showToast('解析失败');
+      });
+    }
+
+    function renderPage(page, pageNum) {
+      var viewport = page.getViewport({ scale: 2 });
+      var canvas = document.createElement('canvas');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      var ctx = canvas.getContext('2d');
+      var renderTask = page.render({ canvasContext: ctx, viewport: viewport });
+      return renderTask.promise.then(function () {
+        var dataUrl = canvas.toDataURL('image/png');
+        return { dataUrl: dataUrl, pageNum: pageNum };
+      });
+    }
+
+    function addThumbnail(entry) {
+      var item = document.createElement('div');
+      item.style.cssText = 'background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:12px;text-align:center;';
+      var name = currentBaseName + '_第' + entry.pageNum + '页.png';
+      var img = document.createElement('img');
+      img.src = entry.dataUrl;
+      img.alt = '第' + entry.pageNum + '页';
+      img.style.cssText = 'max-width:100%;height:auto;border:1px solid #eee;border-radius:4px;display:block;margin:0 auto;';
+      var label = document.createElement('div');
+      label.textContent = '第 ' + entry.pageNum + ' 页';
+      label.style.cssText = 'margin-top:8px;font-size:13px;color:#666;';
+      var link = document.createElement('a');
+      link.href = entry.dataUrl;
+      link.download = name;
+      link.textContent = '下载本页';
+      link.className = 'btn btn-primary';
+      link.style.cssText = 'display:inline-block;margin-top:8px;text-decoration:none;font-size:13px;padding:6px 12px;';
+      item.appendChild(img);
+      item.appendChild(label);
+      item.appendChild(link);
+      previewGrid.appendChild(item);
+    }
+
+    function downloadAll() {
+      if (!pages.length) { showToast('暂无图片可下载'); return; }
+      pages.forEach(function (entry, idx) {
+        setTimeout(function () {
+          var a = document.createElement('a');
+          a.href = entry.dataUrl;
+          a.download = currentBaseName + '_第' + entry.pageNum + '页.png';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        }, idx * 300);
+      });
+      showToast('开始下载 ' + pages.length + ' 张图片');
+    }
+
+    function clearAll() {
+      pages = [];
+      previewGrid.innerHTML = '';
+      resultBox.textContent = '上传 PDF 后自动逐页渲染预览';
+      resultBox.style.borderColor = '';
+      downloadAllBtn.disabled = true;
+      fileInput.value = '';
+    }
+
+    function resetResult() {
+      pages = [];
+      previewGrid.innerHTML = '';
+      downloadAllBtn.disabled = true;
+      resultBox.style.borderColor = '';
+    }
+
+    function setError(msg) {
+      resultBox.textContent = msg;
+      resultBox.style.borderColor = '#e53935';
+    }
+
+    function showToast(msg) {
+      var toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(function () { toast.classList.remove('show'); }, 2000);
+    }
+  })();
+  </script>
+<section id="tool-guide" style="max-width:960px;margin:8px auto 0;padding:24px 20px;background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);font-size:15px;line-height:1.8;color:#333;">
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">PDF转图片是什么？</h2>
+<p style="margin:0 0 8px;">免费在线PDF转图片工具，可将PDF文档的每一页逐页转换为高清PNG图片，本地转换支持导出压缩包逐张下载。适合资料归档、课件截图、社交分享、图片编辑等场景。本工具完全免费、无需注册，所有处理均在浏览器本地完成，不会上传您的任何数据。</p>
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">PDF转图片使用方法</h2>
+<ol style="margin:0 0 8px;padding-left:22px;"><li>点击「选择 PDF 文件」，选取需要转换的 PDF 文档。</li><li>等待逐页自动渲染，页面下方会生成每一页的 PNG 预览缩略图。</li><li>点击缩略图下的「下载本页」逐张保存，或点击「全部下载」一次性导出所有图片。</li></ol>
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">常见问题</h2>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：PDF转图片会上传我的文件吗？</strong><p style="margin:4px 0 0;">不会。本工具完全在浏览器本地处理，您的PDF文件不会被上传到任何服务器，充分保障隐私安全。</p></div>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：加密的PDF可以转换吗？</strong><p style="margin:4px 0 0;">需要密码才能打开的加密PDF无法直接转换，请先解除密码。扫描版（纯图片）PDF可以直接转换为PNG图片。</p></div>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：转换出来的图片清晰度如何？</strong><p style="margin:4px 0 0;">本工具按2倍缩放逐页渲染，输出高清PNG图片，适合打印、归档和分享。</p></div>
+</section>
+<div class="related-tools" style="margin-top:24px;padding:20px;background:#f8f9fa;border-radius:8px;">
+<h3 style="margin:0 0 10px;">相关工具推荐</h3><div style="display:flex;flex-wrap:wrap;gap:10px;"><a href="qrcode.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">二维码生成</a><a href="image-converter.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">图片格式转换</a><a href="image-compressor.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">图片压缩</a><a href="image-watermark.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">图片加水印</a></div></div>
+<div id="share-bar"></div>
+<script src="../../js/share.js?v=20260831"></script>
+<!-- AdSense（统一配置于 js/ads-config.js，未配置时零请求） -->
+<div id="ad-inpage-1" style="max-width:960px;margin:24px auto;text-align:center;min-height:0;"></div>
+<script src="../../js/ads-config.js?v=20260831"></script>
+<script src="../../js/ads.js?v=20260831"></script>
+</body>
+</html>
