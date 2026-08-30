@@ -47,6 +47,7 @@
       <button class="btn btn-primary" onclick="encode()">Encode URI</button>
       <button class="btn btn-primary" onclick="decode()">Decode URI</button>
       <button class="btn btn-secondary" onclick="encodeComponent()">encodeURIComponent</button>
+      <button class="btn btn-secondary" onclick="encodeStrict()">Strict (%XX)</button>
       <button class="btn btn-secondary" onclick="decodeComponent()">decodeURIComponent</button>
       <button class="btn btn-secondary" onclick="copyResult()">Copy Result</button>
     </div>
@@ -78,6 +79,15 @@
       if (!text) { showToast('Please enter some text'); return; }
       document.getElementById('result').textContent = encodeURIComponent(text);
     }
+    function encodeStrict() {
+      const text = document.getElementById('input').value;
+      if (!text) { showToast('""" + ("请输入内容" if not is_en else "Please enter text") + """'); return; }
+      // RFC 3986 严格模式：把 encodeURIComponent 遗漏的 !'()*~ 一并编码
+      const out = encodeURIComponent(text).replace(/[!'()*~]/g, c => '%' + c.charCodeAt(0).toString(16).toUpperCase());
+      document.getElementById('result').textContent = out;
+      showToast('""" + ("严格编码完成" if not is_en else "Strict encode done") + """');
+    }
+
 
     function decodeComponent() {
       const text = document.getElementById('input').value;
