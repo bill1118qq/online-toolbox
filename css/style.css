@@ -866,3 +866,10 @@ input[type="range"]:focus-visible {
   .fab-btn { width: 42px; height: 42px; font-size: 1.05rem; }
   .toast { right: 14px; bottom: 76px; left: 14px; text-align: center; }
 }
+
+/* ===== 键盘导航高亮（batch2） ===== */
+.tool-card.kbd-active {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+  border-color: var(--primary);
+}

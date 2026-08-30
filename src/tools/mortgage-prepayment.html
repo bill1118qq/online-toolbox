@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>提前还款计算器 - 在线工具箱</title>
+  <meta name="description" content="免费在线房贷提前还款计算器，支持全部提前结清与部分提前还款（缩期/减月供）三种方案对比，一键计算节省利息。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="stylesheet" href="../../css/style.css">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="提前还款计算器 - 在线工具箱">
+  <meta property="og:description" content="免费在线房贷提前还款计算器，支持全部结清与部分还款（缩期/减月供）方案对比。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/mortgage-prepayment.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/mortgage-prepayment.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type": "Question", "name": "提前还款选缩期还是减月供？", "acceptedAnswer": {"@type": "Answer", "text": "如果想节省更多利息，选缩短年限（缩期）；如果想减轻月供压力，选减少月供。同样提前还款金额下，缩期方案节省的利息通常明显更多。"}},
+      {"@type": "Question", "name": "提前还款有违约金吗？", "acceptedAnswer": {"@type": "Answer", "text": "多数银行要求还款满一定期限（常见1-3年）后提前还款免违约金，具体以贷款合同约定为准。商业贷款和公积金贷款政策也不同。"}},
+      {"@type": "Question", "name": "提前还款计算器安全吗？", "acceptedAnswer": {"@type": "Answer", "text": "本工具完全在浏览器本地运行，输入的贷款信息不会上传到任何服务器。"}}
+    ]
+  }
+  </script>
+<script>(function(){try{var t=localStorage.getItem('ei-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>提前还款计算器</h1>
+    </div>
+
+    <div class="form-group">
+      <label for="loanType">还款方式</label>
+      <select id="loanType">
+        <option value="equal">等额本息</option>
+        <option value="principal">等额本金</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="totalLoan">贷款总额（万元）</label>
+      <input type="number" id="totalLoan" value="100" min="1" step="0.1">
+    </div>
+
+    <div class="form-group">
+      <label for="rate">年利率（%）</label>
+      <input type="number" id="rate" value="3.6" min="0.01" step="0.01">
+    </div>
+
+    <div class="form-group">
+      <label for="totalYears">贷款总年限（年）</label>
+      <input type="number" id="totalYears" value="30" min="1" max="50" step="1">
+    </div>
+
+    <div class="form-group">
+      <label for="paidYears">已还款月数（月）</label>
+      <input type="number" id="paidYears" value="36" min="0" step="1">
+    </div>
+
+    <div class="form-group">
+      <label for="prepayAmount">提前还款金额（万元）</label>
+      <input type="number" id="prepayAmount" value="20" min="0.1" step="0.1">
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="calcPrepay()">计算节省</button>
+      <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+    </div>
+
+    <div id="resultBox" class="result-box">填写上方信息后点击「计算节省」</div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    function fmt(n) {
+      return n.toLocaleString('zh-CN', { maximumFractionDigits: 2 });
+    }
+
+    // 等额本息月供
+    function monthlyEqual(P, r, n) {
+      if (r === 0) return P / n;
+      return P * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1);
+    }
+
+    // 计算已还期数后剩余本金（等额本息）
+    function remainEqual(P, r, n, k) {
+      var m = monthlyEqual(P, r, n);
+      var bal = P;
+      for (var i = 0; i < k; i++) {
+        var interest = bal * r;
+        bal -= (m - interest);
+      }
+      return Math.max(bal, 0);
+    }
+
+    function calcPrepay() {
+      try {
+        var type = document.getElementById('loanType').value;
+        var P = parseFloat(document.getElementById('totalLoan').value) * 10000;
+        var annual = parseFloat(document.getElementById('rate').value) / 100;
+        var years = parseInt(document.getElementById('totalYears').value);
+        var paid = parseInt(document.getElementById('paidYears').value);
+        var prepay = parseFloat(document.getElementById('prepayAmount').value) * 10000;
+
+        if (!(P > 0) || !(annual > 0) || !(years > 0) || !(prepay > 0)) {
+          throw new Error('请填写完整的贷款信息');
+        }
+        var n = years * 12;
+        var r = annual / 12;
+        if (paid >= n) throw new Error('已还款月数不能超过贷款总月数');
+
+        var remainBalance; // 当前剩余本金
+        var oldMonthly;    // 原月供（首月口径）
+        var totalMonthsLeft = n - paid;
+
+        if (type === 'equal') {
+          remainBalance = remainEqual(P, r, n, paid);
+          oldMonthly = monthlyEqual(P, r, n);
+        } else {
+          // 等额本金：月供 = 本金/n + 剩余本金*r
+          var principalPerMonth = P / n;
+          oldMonthly = principalPerMonth + P * r;
+          remainBalance = P - principalPerMonth * paid;
+        }
+        remainBalance = Math.max(remainBalance, 0);
+
+        if (prepay >= remainBalance) {
+          // 全部结清
+          var interestSavedAll = 0;
+          if (type === 'equal') {
+            // 剩余期总利息（原计划）
+            var m = monthlyEqual(P, r, n);
+            var bal = remainBalance, sumInt = 0;
+            for (var i2 = 0; i2 < totalMonthsLeft; i2++) {
+              sumInt += bal * r;
+              bal -= (m - bal * r);
+            }
+            interestSavedAll = sumInt;
+          } else {
+            var bal2 = remainBalance, sumInt2 = 0;
+            for (var i3 = 0; i3 < totalMonthsLeft; i3++) {
+              sumInt2 += bal2 * r;
+              bal2 -= principalPerMonth;
+            }
+            interestSavedAll = sumInt2;
+          }
+          document.getElementById('resultBox').innerHTML =
+            '<b>方案：全部提前结清</b><br><br>' +
+            '剩余本金：' + fmt(remainBalance) + ' 元<br>' +
+            '需一次性结清：' + fmt(remainBalance) + ' 元<br><br>' +
+            '💰 可节省剩余利息：<b style="color:#10b981;">' + fmt(interestSavedAll) + ' 元</b>';
+          showToast('计算完成');
+          return;
+        }
+
+        // 部分提前还款
+        var newBalance = remainBalance - prepay;
+        var out = '<b>当前剩余本金：</b>' + fmt(remainBalance) + ' 元<br>';
+        out += '<b>提前还款：</b>' + fmt(prepay) + ' 元 → 剩余 <b>' + fmt(newBalance) + '</b> 元<br><br>';
+
+        var savedShort = 0, savedReduce = 0;
+
+        if (type === 'equal') {
+          // 原计划剩余利息
+          var m0 = monthlyEqual(P, r, n);
+          var balA = remainBalance, intA = 0;
+          for (var i4 = 0; i4 < totalMonthsLeft; i4++) { intA += balA * r; balA -= (m0 - balA * r); }
+
+          // 方案A：减月供（期数不变）
+          var mA = monthlyEqual(newBalance, r, totalMonthsLeft);
+          var intA2 = mA * totalMonthsLeft - newBalance;
+          savedReduce = intA - intA2;
+
+          // 方案B：缩期（月供不变，求新期数）
+          var monthsB = Math.ceil(Math.log(m0 / (m0 - newBalance * r)) / Math.log(1 + r));
+          monthsB = Math.max(1, Math.min(monthsB, totalMonthsLeft));
+          var intB = m0 * monthsB - newBalance;
+          savedShort = intA - intB;
+
+          out += '<b>方案一：期限不变，减少月供</b><br>' +
+            '新月供：' + fmt(mA) + ' 元（原 ' + fmt(m0) + ' 元）<br>' +
+            '💰 节省利息：<b style="color:#10b981;">' + fmt(Math.max(savedReduce, 0)) + '</b> 元<br><br>';
+          out += '<b>方案二：月供不变，缩短年限</b><br>' +
+            '剩余期数：' + monthsB + ' 期（原 ' + totalMonthsLeft + ' 期，缩短 ' + (totalMonthsLeft - monthsB) + ' 期 ≈ ' + ((totalMonthsLeft - monthsB) / 12).toFixed(1) + ' 年）<br>' +
+            '💰 节省利息：<b style="color:#10b981;">' + fmt(Math.max(savedShort, 0)) + '</b> 元<br><br>';
+        } else {
+          // 等额本金
+          var balB0 = remainBalance, intB0 = 0;
+          for (var i5 = 0; i5 < totalMonthsLeft; i5++) { intB0 += balB0 * r; balB0 -= principalPerMonth; }
+
+          // 方案A：期数不变 → 每月本金减少
+          var newPerMonth = newBalance / totalMonthsLeft;
+          var balB1 = newBalance, intB1 = 0;
+          for (var i6 = 0; i6 < totalMonthsLeft; i6++) { intB1 += balB1 * r; balB1 -= newPerMonth; }
+          savedReduce = intB0 - intB1;
+
+          // 方案B：每月本金不变 → 缩期
+          var monthsC = Math.ceil(newBalance / principalPerMonth);
+          var balB2 = newBalance, intB2 = 0;
+          for (var i7 = 0; i7 < monthsC; i7++) { intB2 += balB2 * r; balB2 -= principalPerMonth; }
+          savedShort = intB0 - intB2;
+
+          out += '<b>方案一：期限不变，减少月供</b><br>' +
+            '新月供（首期）：' + fmt(newPerMonth + newBalance * r) + ' 元<br>' +
+            '💰 节省利息：<b style="color:#10b981;">' + fmt(Math.max(savedReduce, 0)) + '</b> 元<br><br>';
+          out += '<b>方案二：月供结构不变，缩短年限</b><br>' +
+            '剩余期数：' + monthsC + ' 期（原 ' + totalMonthsLeft + ' 期）<br>' +
+            '💰 节省利息：<b style="color:#10b981;">' + fmt(Math.max(savedShort, 0)) + '</b> 元<br><br>';
+        }
+
+        var best = savedShort >= savedReduce ? '缩短年限' : '减少月供';
+        out += '📌 建议：同等还款额下，<b>' + best + '</b>方案节省利息更多。';
+        document.getElementById('resultBox').innerHTML = out;
+        showToast('计算完成');
+      } catch (e) {
+        var rb = document.getElementById('resultBox');
+        rb.textContent = '错误: ' + e.message;
+      }
+    }
+
+    function clearAll() {
+      ['totalLoan', 'rate', 'totalYears', 'paidYears', 'prepayAmount'].forEach(function(id) {
+        document.getElementById(id).value = '';
+      });
+      document.getElementById('resultBox').textContent = '填写上方信息后点击「计算节省」';
+    }
+
+    function showToast(msg) {
+      var toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(function() { toast.classList.remove('show'); }, 2000);
+    }
+  </script>
+<section id="tool-guide" style="max-width:960px;margin:8px auto 0;padding:24px 20px;background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);font-size:15px;line-height:1.8;color:#333;">
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">提前还款计算器是什么？</h2>
+<p style="margin:0 0 8px;">免费在线房贷提前还款计算器，支持全部提前结清与部分提前还款（缩期/减月供）三种方案对比，一键计算节省利息。适合财务核算、学习作业和日常生活中的计算需求。本工具完全免费、无需注册，所有处理均在浏览器本地完成，不会上传您的任何数据。</p>
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">提前还款计算器使用方法</h2>
+<ol style="margin:0 0 8px;padding-left:22px;"><li>根据页面提示填写或选择各项参数。</li><li>点击「计算节省」按钮。</li><li>结果即时显示在页面上。</li></ol>
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">常见问题</h2>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：提前还款选缩期还是减月供？</strong><p style="margin:4px 0 0;">想省更多利息选缩短年限，想减轻月供压力选减少月供；同等金额下缩期节省的利息通常明显更多。</p></div>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：提前还款有违约金吗？</strong><p style="margin:4px 0 0;">多数银行要求还款满一定期限（常见1-3年）后免违约金，具体以贷款合同为准。</p></div>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：使用提前还款计算器会泄露我的数据吗？</strong><p style="margin:4px 0 0;">不会。所有计算都在您的浏览器本地完成，输入内容不会上传到任何服务器。</p></div>
+</section>
+<div class="related-tools" style="margin-top:24px;padding:20px;background:#f8f9fa;border-radius:8px;">
+<h3 style="margin:0 0 10px;">相关工具推荐</h3><div style="display:flex;flex-wrap:wrap;gap:10px;"><a href="mortgage-calculator.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">房贷计算器</a><a href="loan-calculator.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">贷款计算器</a><a href="compound-interest-calculator.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">复利计算器</a><a href="housing-fund-calculator.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">公积金贷款计算器</a></div></div>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+<!-- AdSense（统一配置于 js/ads-config.js，未配置时零请求） -->
+<div id="ad-inpage-1" style="max-width:960px;margin:24px auto;text-align:center;min-height:0;"></div>
+<script src="../../js/ads-config.js"></script>
+<script src="../../js/ads.js"></script>
+</body>
+</html>

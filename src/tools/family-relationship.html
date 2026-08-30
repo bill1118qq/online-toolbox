@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>亲戚称呼计算器 - 在线工具箱</title>
+  <meta name="description" content="免费在线亲戚称呼计算器，输入'爸爸的哥哥''妈妈的姐姐'等关系链，一键查询正确称呼与对方对你的称呼，春节拜年必备。">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="stylesheet" href="../../css/style.css">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="亲戚称呼计算器 - 在线工具箱">
+  <meta property="og:description" content="输入关系链一键查询亲戚称呼，春节拜年必备。">
+  <meta property="og:url" content="https://eitools.cn/src/tools/family-relationship.html">
+  <link rel="canonical" href="https://eitools.cn/src/tools/family-relationship.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type": "Question", "name": "爸爸的哥哥叫什么？", "acceptedAnswer": {"@type": "Answer", "text": "爸爸的哥哥称为伯父（口语常叫伯伯、大爷），他的妻子称为伯母。"}},
+      {"@type": "Question", "name": "妈妈的姐妹叫什么？", "acceptedAnswer": {"@type": "Answer", "text": "妈妈的姐妹称为姨母（口语常叫姨妈、阿姨），她的丈夫称为姨父。"}},
+      {"@type": "Question", "name": "堂亲和表亲怎么区分？", "acceptedAnswer": {"@type": "Answer", "text": "父亲兄弟的子女是堂亲（同姓），父亲姐妹或母亲兄弟姐妹的子女是表亲。"}}
+    ]
+  }
+  </script>
+<script>(function(){try{var t=localStorage.getItem('ei-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
+  <script src="../../js/analytics.js"></script>
+</head>
+<body>
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../../index.html" class="back-link">&larr; 返回首页</a>
+      <h1>亲戚称呼计算器</h1>
+    </div>
+
+    <div class="form-group">
+      <label>点击构建关系（最多 3 层）</label>
+      <div class="btn-group" style="margin:8px 0;">
+        <button class="btn btn-secondary" onclick="addRel('父')">爸爸</button>
+        <button class="btn btn-secondary" onclick="addRel('母')">妈妈</button>
+        <button class="btn btn-secondary" onclick="addRel('兄')">哥哥</button>
+        <button class="btn btn-secondary" onclick="addRel('弟')">弟弟</button>
+        <button class="btn btn-secondary" onclick="addRel('姐')">姐姐</button>
+        <button class="btn btn-secondary" onclick="addRel('妹')">妹妹</button>
+        <button class="btn btn-secondary" onclick="addRel('儿')">儿子</button>
+        <button class="btn btn-secondary" onclick="addRel('女')">女儿</button>
+        <button class="btn btn-secondary" onclick="addRel('夫')">丈夫</button>
+        <button class="btn btn-secondary" onclick="addRel('妻')">妻子</button>
+      </div>
+    </div>
+
+    <div id="chainBox" class="result-box" style="min-height:56px;display:flex;align-items:center;font-size:1.05rem;">我的 → （点击上方按钮，例如：爸爸 → 哥哥）</div>
+
+    <div class="btn-group">
+      <button class="btn btn-secondary" onclick="backRel()">← 退格</button>
+      <button class="btn btn-secondary" onclick="clearRel()">清空</button>
+    </div>
+
+    <div id="resultBox" class="result-box">构建关系链后自动显示称呼</div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    var LABEL = {父:'爸爸',母:'妈妈',兄:'哥哥',弟:'弟弟',姐:'姐姐',妹:'妹妹',儿:'儿子',女:'女儿',夫:'丈夫',妻:'妻子'};
+    var chain = [];
+
+    // 两层关系字典：key="边1,边2" → [我对TA, TA对我(男/女通用优先男)]
+    var D2 = {
+      '父,父':['爷爷','孙子'],'父,母':['奶奶','孙子'],
+      '父,兄':['伯父（伯伯/大爷）','侄子'],'父,弟':['叔叔','侄子'],'父,姐':['姑母（姑姑）','侄子/侄女'],'父,妹':['姑母（姑姑）','侄子/侄女'],
+      '父,兄,妻':['伯母','侄子'],'父,弟,妻':['婶婶（叔母）','侄子'],'父,姐,夫':['姑父','内侄'],'父,妹,夫':['姑父','内侄'],
+      '父,兄,子':['堂兄','堂弟'],'父,兄,女':['堂姐/堂妹','堂弟/堂兄'],'父,弟,子':['堂弟/堂兄',''],'父,弟,女':['堂妹/堂姐',''],
+      '父,姐,子':['表哥/表弟',''],'父,姐,女':['表姐/表妹',''],'父,妹,子':['表弟/表哥',''],'父,妹,女':['表妹/表姐',''],
+      '父,子':['哥哥（或自己）',''],'父,女':['姐姐（或自己）',''],
+      '母,父':['外公（姥爷）','外孙'],'母,母':['外婆（姥姥）','外孙'],
+      '母,兄':['舅舅','外甥'],'母,弟':['舅舅','外甥'],'母,姐':['姨母（姨妈）','外甥/外甥女'],'母,妹':['姨母（姨妈）','外甥/外甥女'],
+      '母,兄,妻':['舅妈','外甥'],'母,弟,妻':['舅妈','外甥'],'母,姐,夫':['姨父','外甥'],'母,妹,夫':['姨父','外甥'],
+      '母,兄,子':['表哥/表弟',''],'母,兄,女':['表姐/表妹',''],'母,姐,子':['表哥/表弟',''],'母,姐,女':['表姐/表妹',''],
+      '母,子':['哥哥（或自己）',''],'母,女':['姐姐（或自己）',''],
+      '兄,妻':['嫂子','小叔子/小姑子'],'弟,妻':['弟妹（弟媳）','大伯子/大姑子'],
+      '姐,夫':['姐夫','内弟/内妹'],'妹,夫':['妹夫','内兄/内姐'],
+      '兄,子':['侄子','伯伯/叔叔（视你性别）'],'兄,女':['侄女','伯伯/叔叔'],'弟,子':['侄子',''],'弟,女':['侄女',''],
+      '姐,子':['外甥','舅舅/姨母'],'姐,女':['外甥女','舅舅/姨母'],'妹,子':['外甥',''],'妹,女':['外甥女',''],
+      '子,妻':['儿媳','公公/婆婆'],'女,夫':['女婿','岳父/岳母'],
+      '子,子':['孙子','爷爷'],'子,女':['孙女','爷爷'],'女,子':['外孙','外公'],'女,女':['外孙女','外公'],
+      '夫,父':['公公','儿媳'],'夫,母':['婆婆','儿媳'],'妻,父':['岳父（丈人）','女婿'],'妻,母':['岳母（丈母娘）','女婿'],
+      '夫,兄':['大伯子','弟媳'],'夫,弟':['小叔子','嫂子'],'夫,姐':['大姑子','弟媳'],'夫,妹':['小姑子','嫂子'],
+      '妻,兄':['内兄（大舅子）','妹夫'],'妻,弟':['内弟（小舅子）','姐夫'],'妻,姐':['大姨子','妹夫'],'妻,妹':['小姨子','姐夫'],
+      '妻,兄,妻':['舅嫂',''],'夫,兄,妻':['妯娌','']
+    };
+    var D1 = {父:'爸爸',母:'妈妈',兄:'哥哥',弟:'弟弟',姐:'姐姐',妹:'妹妹',儿:'儿子',女:'女儿',夫:'丈夫',妻:'妻子'};
+
+    function addRel(r) {
+      if (chain.length >= 3) { showToast('最多支持 3 层关系'); return; }
+      chain.push(r);
+      render();
+    }
+    function backRel() { chain.pop(); render(); }
+    function clearRel() { chain = []; render(); }
+
+    function render() {
+      var cb = document.getElementById('chainBox');
+      var rb = document.getElementById('resultBox');
+      if (!chain.length) {
+        cb.textContent = '我的 → （点击上方按钮，例如：爸爸 → 哥哥）';
+        rb.textContent = '构建关系链后自动显示称呼';
+        return;
+      }
+      cb.textContent = '我的 → ' + chain.map(function (r) { return LABEL[r]; }).join(' 的 ');
+      var key = chain.join(',');
+      var res;
+      if (chain.length === 1) {
+        res = '称呼：' + D1[key];
+      } else if (D2[key]) {
+        res = '我称呼 TA：' + D2[key][0];
+        if (D2[key][1]) res += '\nTA 称呼我：' + D2[key][1];
+      } else {
+        res = '这个组合比较少见，常见参考：\n· 长辈优先按"父系为堂、母系为表"类推\n· 姻亲称谓一般跟随配偶（如"伯父的妻子"=伯母）\n试试更常见的组合，如：爸爸的哥哥、妈妈的姐姐、妻子的爸爸。';
+      }
+      rb.textContent = res;
+    }
+
+    function showToast(msg) {
+      var toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(function () { toast.classList.remove('show'); }, 2000);
+    }
+  </script>
+<section id="tool-guide" style="max-width:960px;margin:8px auto 0;padding:24px 20px;background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);font-size:15px;line-height:1.8;color:#333;">
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">亲戚称呼计算器是什么？</h2>
+<p style="margin:0 0 8px;">免费在线亲戚称呼计算器，输入"爸爸的哥哥""妈妈的姐姐"等关系链，一键查询正确称呼与对方对你的称呼，春节拜年必备。贴近日常生活场景，随时随地打开即用。本工具完全免费、无需注册，所有处理均在浏览器本地完成，不会上传您的任何数据。</p>
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">亲戚称呼计算器使用方法</h2>
+<ol style="margin:0 0 8px;padding-left:22px;"><li>根据页面提示填写或选择各项参数。</li><li>点击称呼按钮构建关系链。</li><li>结果即时显示在页面上。</li></ol>
+<h2 style="font-size:20px;color:#1a1a1a;margin:24px 0 10px;">常见问题</h2>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：爸爸的哥哥叫什么？</strong><p style="margin:4px 0 0;">伯父，口语常叫伯伯或大爷；他的妻子称为伯母。</p></div>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：妈妈的姐妹叫什么？</strong><p style="margin:4px 0 0;">姨母，口语常叫姨妈或阿姨；她的丈夫称为姨父。</p></div>
+<div style="margin:0 0 14px;"><strong style="color:#1a1a1a;">Q：堂亲和表亲怎么区分？</strong><p style="margin:4px 0 0;">父亲兄弟的子女是堂亲（同姓），父亲姐妹或母亲兄弟姐妹的子女是表亲。</p></div>
+</section>
+<div class="related-tools" style="margin-top:24px;padding:20px;background:#f8f9fa;border-radius:8px;">
+<h3 style="margin:0 0 10px;">相关工具推荐</h3><div style="display:flex;flex-wrap:wrap;gap:10px;"><a href="zodiac.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">生肖查询</a><a href="chinese-zodiac.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">属相计算</a><a href="lunar-calendar.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">农历查询</a><a href="countdown.html" style="padding:6px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;text-decoration:none;color:#4361ee;font-size:14px;">倒计时</a></div></div>
+<div id="share-bar"></div>
+<script src="../../js/share.js"></script>
+<!-- AdSense（统一配置于 js/ads-config.js，未配置时零请求） -->
+<div id="ad-inpage-1" style="max-width:960px;margin:24px auto;text-align:center;min-height:0;"></div>
+<script src="../../js/ads-config.js"></script>
+<script src="../../js/ads.js"></script>
+</body>
+</html>

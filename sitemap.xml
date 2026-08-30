@@ -610,4 +610,16 @@
 <url><loc>https://eitools.cn/shareable-content/calculator-widget.html</loc><priority>0.7</priority></url>
 <url><loc>https://eitools.cn/shareable-content/qr-code-generator-widget.html</loc><priority>0.7</priority></url>
 <url><loc>https://eitools.cn/shareable-content/seo-report-widget.html</loc><priority>0.8</priority></url>
+  <url>
+    <loc>https://eitools.cn/src/tools/mortgage-prepayment.html</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://eitools.cn/src/tools/family-relationship.html</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
