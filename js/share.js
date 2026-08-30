@@ -1,5 +1,7 @@
-// Google Analytics
+// Google Analytics（防重复加载：首页已有 gtag 时跳过）
 (function(){
+  if (window.__EI_GA_LOADED) return;
+  window.__EI_GA_LOADED = true;
   var s = document.createElement('script');
   s.src = 'https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG';
   s.async = true;
@@ -108,6 +110,8 @@
   // Auto-inject breadcrumb navigation + BreadcrumbList schema for tool pages
   function injectBreadcrumb() {
     if (document.querySelector('.breadcrumb-nav')) return;
+    // 仅工具页注入面包屑（首页/分类页跳过）
+    if (window.location.pathname.indexOf('/src/tools/') === -1) return;
     var h1 = document.querySelector('h1');
     if (!h1) return;
     var pageName = h1.textContent.trim();
@@ -329,5 +333,125 @@
     document.addEventListener('DOMContentLoaded', injectFooter);
   } else {
     injectFooter();
+  }
+})();
+
+/* ============================================================
+   EITools 增强模块（批次1 追加）：主题切换 / 最近使用 / 收藏 / FAB
+   ============================================================ */
+(function () {
+  'use strict';
+  var THEME_KEY = 'ei-theme', RECENT_KEY = 'ei-recent', FAV_KEY = 'ei-favs';
+  function ls(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  /* ---- 主题 ---- */
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    lsSet(THEME_KEY, t);
+    var btn = document.getElementById('fab-theme');
+    if (btn) btn.textContent = t === 'dark' ? '☀️' : '🌙';
+  }
+  window.__eiToggleTheme = function () {
+    var cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    applyTheme(cur === 'dark' ? 'light' : 'dark');
+  };
+
+  /* ---- 最近使用（仅工具页记录） ---- */
+  function isToolPage() { return window.location.pathname.indexOf('/src/tools/') !== -1; }
+  function recordRecent() {
+    if (!isToolPage()) return;
+    var h1 = document.querySelector('h1');
+    var name = h1 ? h1.textContent.trim() : document.title.split('-')[0].trim();
+    var file = window.location.pathname.split('/').pop();
+    var list = [];
+    try { list = JSON.parse(ls(RECENT_KEY) || '[]'); } catch (e) { list = []; }
+    list = list.filter(function (x) { return x && x.file !== file; });
+    list.unshift({ file: file, name: name, link: window.location.pathname });
+    if (list.length > 12) list = list.slice(0, 12);
+    lsSet(RECENT_KEY, JSON.stringify(list));
+  }
+
+  /* ---- 收藏 ---- */
+  function getFavs() { try { return JSON.parse(ls(FAV_KEY) || '[]'); } catch (e) { return []; } }
+  function setFavs(f) { lsSet(FAV_KEY, JSON.stringify(f)); }
+  window.__eiIsFav = function () {
+    var file = window.location.pathname.split('/').pop();
+    return getFavs().some(function (x) { return x.file === file; });
+  };
+  window.__eiToggleFav = function () {
+    var h1 = document.querySelector('h1');
+    var name = h1 ? h1.textContent.trim() : document.title.split('-')[0].trim();
+    var file = window.location.pathname.split('/').pop();
+    var favs = getFavs();
+    var existed = favs.some(function (x) { return x.file === file; });
+    if (existed) {
+      favs = favs.filter(function (x) { return x.file !== file; });
+    } else {
+      favs.unshift({ file: file, name: name, link: window.location.pathname });
+      if (favs.length > 24) favs = favs.slice(0, 24);
+    }
+    setFavs(favs);
+    return !existed; // 返回最新收藏状态
+  };
+
+  /* ---- FAB 悬浮按钮组 ---- */
+  function injectFab() {
+    if (document.querySelector('.fab-group')) return;
+    var group = document.createElement('div');
+    group.className = 'fab-group';
+
+    // 主题按钮
+    var themeBtn = document.createElement('button');
+    themeBtn.id = 'fab-theme';
+    themeBtn.className = 'fab-btn';
+    themeBtn.setAttribute('aria-label', '切换深色/浅色主题');
+    themeBtn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';
+    themeBtn.onclick = window.__eiToggleTheme;
+
+    // 收藏按钮（仅工具页）
+    if (isToolPage()) {
+      var favBtn = document.createElement('button');
+      favBtn.id = 'fab-fav';
+      favBtn.className = 'fab-btn';
+      favBtn.setAttribute('aria-label', '收藏此工具');
+      favBtn.textContent = window.__eiIsFav() ? '⭐' : '☆';
+      favBtn.onclick = function () {
+        var favNow = window.__eiToggleFav();
+        favBtn.textContent = favNow ? '⭐' : '☆';
+      };
+      group.appendChild(favBtn);
+    }
+
+    // 返回顶部按钮
+    var topBtn = document.createElement('button');
+    topBtn.id = 'fab-top';
+    topBtn.className = 'fab-btn fab-hidden';
+    topBtn.setAttribute('aria-label', '返回顶部');
+    topBtn.textContent = '↑';
+    topBtn.onclick = function () { window.scrollTo({ top: 0, behavior: 'smooth' }); };
+    window.addEventListener('scroll', function () {
+      if (window.scrollY > 600) topBtn.classList.remove('fab-hidden');
+      else topBtn.classList.add('fab-hidden');
+    }, { passive: true });
+
+    group.appendChild(themeBtn);
+    group.appendChild(topBtn);
+    document.body.appendChild(group);
+  }
+
+  function init() {
+    // 主题初始化（head 内联脚本已防闪烁，这里兜底）
+    var t = ls(THEME_KEY);
+    if (t && document.documentElement.getAttribute('data-theme') !== t) {
+      document.documentElement.setAttribute('data-theme', t);
+    }
+    recordRecent();
+    injectFab();
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
   }
 })();

@@ -188,6 +188,7 @@
   </script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-HHMQZC85HG"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-HHMQZC85HG');</script>
+<script>(function(){try{var t=localStorage.getItem('ei-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head>
 <body>
   <div id="ad-top-banner" style="display:none;"></div>
@@ -197,6 +198,11 @@
       <div style="float:right;margin-top:10px;"><a href="/" style="color:#fff;text-decoration:none;margin-right:16px;font-size:0.9rem;">&#x4E2D;&#x6587;</a> <span style="font-size:0.9rem;color:rgba(255,255,255,0.7);">English</span></div>
       <h1 class="logo">EITools</h1>
       <p class="tagline">Free Online Tools - No Installation, Works in Your Browser</p>
+      <div class="hero-badges">
+        <span class="hero-badge">🧰 <b>163</b> Tools</span>
+        <span class="hero-badge">🔒 Data <b>Never Leaves</b> Your Browser</span>
+        <span class="hero-badge">⚡ <b>100%</b> Free</span>
+      </div>
     </div>
   </header>
 
@@ -218,8 +224,7 @@
     </div>
   </div>
 
-<div style="max-width:1200px;margin:16px auto 0;padding:0 20px 4px;">
-    <h1 style="font-size:1.6rem;font-weight:700;color:#1a1a1a;margin:0 0 8px;">EITools Free Online Toolbox</h1>
+<div class="home-intro">
     <p style="font-size:0.95rem;line-height:1.8;color:#555;margin:0;">
       Free online toolbox with 150+ useful tools for developers, writers, students, and everyday users.
       Every tool runs locally in your browser — no registration, no installation, and your data never leaves your device.
@@ -227,7 +232,15 @@
     </p>
   </div>
   <main class="container">
-    <div class="no-results" id="no-results" style="display:none;">
+<section id="recent-section" style="display:none;">
+      <h2 class="section-title">🕘 Recently Used</h2>
+      <div class="chip-row" id="recent-row"></div>
+    </section>
+    <section id="fav-section" style="display:none;">
+      <h2 class="section-title">⭐ My Favorites</h2>
+      <div class="chip-row" id="fav-row"></div>
+    </section>
+      <div class="no-results" id="no-results" style="display:none;">
       <div class="no-results-icon">&#x1F50D;</div>
       <p>No matching tools found</p>
       <p class="no-results-hint">Try different keywords, or <button id="clear-search-btn" class="link-btn">clear search</button></p>
@@ -235,905 +248,905 @@
     <div class="tools-grid" id="tools-grid">
 
       <!-- Developer Tools -->
-      <a href="src/tools/json-formatter.html" class="tool-card">
+      <a href="src/tools/json-formatter.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">{ }</div>
         <h2>JSON Formatter</h2>
         <p>Beautify, minify, and validate JSON</p>
       </a>
 
-      <a href="src/tools/base64.html" class="tool-card">
+      <a href="src/tools/base64.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">B64</div>
         <h2>Base64 Encode/Decode</h2>
         <p>Convert text to/from Base64</p>
       </a>
 
-      <a href="src/tools/qrcode.html" class="tool-card">
+      <a href="src/tools/qrcode.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">QR</div>
         <h2>QR Code Generator</h2>
         <p>Generate QR codes from text or URLs</p>
       </a>
 
-      <a href="src/tools/color-picker.html" class="tool-card">
+      <a href="src/tools/color-picker.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">CLR</div>
         <h2>Color Picker</h2>
         <p>HEX/RGB/HSL color conversion</p>
       </a>
 
-      <a href="src/tools/markdown-live.html" class="tool-card">
+      <a href="src/tools/markdown-live.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">MD</div>
         <h2>Markdown Editor</h2>
         <p>Live preview Markdown editor</p>
       </a>
 
-      <a href="src/tools/timestamp.html" class="tool-card">
+      <a href="src/tools/timestamp.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">TS</div>
         <h2>Timestamp Converter</h2>
         <p>Unix timestamp and date conversion</p>
       </a>
 
-      <a href="src/tools/uuid-generator.html" class="tool-card">
+      <a href="src/tools/uuid-generator.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">UID</div>
         <h2>UUID Generator</h2>
         <p>Generate random UUID/GUID, batch mode</p>
       </a>
 
-      <a href="src/tools/url-encoder.html" class="tool-card">
+      <a href="src/tools/url-encoder.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">URL</div>
         <h2>URL Encoder/Decoder</h2>
         <p>URL percent encoding and decoding</p>
       </a>
 
-      <a href="src/tools/password-generator.html" class="tool-card">
+      <a href="src/tools/password-generator.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">KEY</div>
         <h2>Password Generator</h2>
         <p>Generate secure random passwords</p>
       </a>
 
-      <a href="src/tools/regex-tester.html" class="tool-card">
+      <a href="src/tools/regex-tester.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">.*</div>
         <h2>Regex Tester</h2>
         <p>Real-time regex matching with templates</p>
       </a>
 
-      <a href="src/tools/text-diff.html" class="tool-card">
+      <a href="src/tools/text-diff.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">DIFF</div>
         <h2>Text Diff</h2>
         <p>Compare two texts line by line</p>
       </a>
 
-      <a href="src/tools/lorem-ipsum.html" class="tool-card">
+      <a href="src/tools/lorem-ipsum.html" class="tool-card" data-cat="text">
         <div class="tool-icon">LP</div>
         <h2>Lorem Ipsum Generator</h2>
         <p>Generate placeholder text</p>
       </a>
 
-      <a href="src/tools/hash-generator.html" class="tool-card">
+      <a href="src/tools/hash-generator.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">#H</div>
         <h2>Hash Generator</h2>
         <p>MD5/SHA-1/SHA-256/SHA-512</p>
       </a>
 
-      <a href="src/tools/case-converter.html" class="tool-card">
+      <a href="src/tools/case-converter.html" class="tool-card" data-cat="text">
         <div class="tool-icon">Aa</div>
         <h2>Case Converter</h2>
         <p>Upper/lower, camelCase, snake_case</p>
       </a>
 
-      <a href="src/tools/number-base-extended.html" class="tool-card">
+      <a href="src/tools/number-base-extended.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">N&gt;</div>
         <h2>Number Base Converter</h2>
         <p>Binary/octal/decimal/hex conversion</p>
       </a>
 
-      <a href="src/tools/html-entities.html" class="tool-card">
+      <a href="src/tools/html-entities.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">&lt;/&gt;</div>
         <h2>HTML Entities</h2>
         <p>Encode/decode HTML special characters</p>
       </a>
 
-      <a href="src/tools/text-unique.html" class="tool-card">
+      <a href="src/tools/text-unique.html" class="tool-card" data-cat="text">
         <div class="tool-icon">1x</div>
         <h2>Text Unique</h2>
         <p>Remove duplicates, sort, count</p>
       </a>
 
-      <a href="src/tools/ip-lookup.html" class="tool-card">
+      <a href="src/tools/ip-lookup.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">IP</div>
         <h2>IP Lookup</h2>
         <p>Check your IP and geo location</p>
       </a>
 
-      <a href="src/tools/ascii-table.html" class="tool-card">
+      <a href="src/tools/ascii-table.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">ASC</div>
         <h2>ASCII Table</h2>
         <p>Complete ASCII character reference</p>
       </a>
 
-      <a href="src/tools/subnet-calculator.html" class="tool-card">
+      <a href="src/tools/subnet-calculator.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">NET</div>
         <h2>Subnet Calculator</h2>
         <p>IP subnet mask calculation</p>
       </a>
 
-      <a href="src/tools/css-gradient-generator.html" class="tool-card">
+      <a href="src/tools/css-gradient-generator.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">GR</div>
         <h2>CSS Gradient Generator</h2>
         <p>Visual CSS gradient code editor</p>
       </a>
 
-      <a href="src/tools/byte-converter.html" class="tool-card">
+      <a href="src/tools/byte-converter.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">B</div>
         <h2>Byte Converter</h2>
         <p>KB/MB/GB/TB conversion</p>
       </a>
 
-      <a href="src/tools/rot13-cipher.html" class="tool-card">
+      <a href="src/tools/rot13-cipher.html" class="tool-card" data-cat="text">
         <div class="tool-icon">[E]</div>
         <h2>Text Encrypt/Decrypt</h2>
         <p>ROT13/Caesar/Base64/Morse</p>
       </a>
 
-      <a href="src/tools/random-number.html" class="tool-card">
+      <a href="src/tools/random-number.html" class="tool-card" data-cat="life">
         <div class="tool-icon">RND</div>
         <h2>Random Number</h2>
         <p>Custom range and count</p>
       </a>
 
-      <a href="src/tools/placeholder-image.html" class="tool-card">
+      <a href="src/tools/placeholder-image.html" class="tool-card" data-cat="image">
         <div class="tool-icon">IMG</div>
         <h2>Placeholder Image</h2>
         <p>Custom size and color SVG placeholders</p>
       </a>
 
-      <a href="src/tools/json-path.html" class="tool-card">
+      <a href="src/tools/json-path.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">JP</div>
         <h2>JSON Path</h2>
         <p>Test JSONPath expressions online</p>
       </a>
 
-      <a href="src/tools/morse-code.html" class="tool-card">
+      <a href="src/tools/morse-code.html" class="tool-card" data-cat="text">
         <div class="tool-icon">MC</div>
         <h2>Morse Code</h2>
         <p>Text to Morse code conversion</p>
       </a>
 
-      <a href="src/tools/screen-resolution.html" class="tool-card">
+      <a href="src/tools/screen-resolution.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">RES</div>
         <h2>Screen Resolution</h2>
         <p>View current resolution and device info</p>
       </a>
 
-      <a href="src/tools/weekday-calc.html" class="tool-card">
+      <a href="src/tools/weekday-calc.html" class="tool-card" data-cat="life">
         <div class="tool-icon">WK</div>
         <h2>Weekday Calculator</h2>
         <p>Find weekday for any date</p>
       </a>
 
-      <a href="src/tools/char-frequency.html" class="tool-card">
+      <a href="src/tools/char-frequency.html" class="tool-card" data-cat="text">
         <div class="tool-icon">FQ</div>
         <h2>Char Frequency</h2>
         <p>Count character occurrences</p>
       </a>
 
-      <a href="src/tools/color-converter.html" class="tool-card">
+      <a href="src/tools/color-converter.html" class="tool-card" data-cat="image">
         <div class="tool-icon">CLR</div>
         <h2>Color Converter</h2>
         <p>RGB/HSL/HEX/CMYK conversion</p>
       </a>
 
-      <a href="src/tools/color-blind-test.html" class="tool-card">
+      <a href="src/tools/color-blind-test.html" class="tool-card" data-cat="life">
         <div class="tool-icon">CBT</div>
         <h2>Color Blind Test</h2>
         <p>Online color vision test</p>
       </a>
 
-      <a href="src/tools/box-shadow-generator.html" class="tool-card">
+      <a href="src/tools/box-shadow-generator.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">SH</div>
         <h2>Box Shadow Generator</h2>
         <p>Visual CSS box-shadow code generator</p>
       </a>
 
-      <a href="src/tools/css-formatter.html" class="tool-card">
+      <a href="src/tools/css-formatter.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">CSS</div>
         <h2>CSS Formatter</h2>
         <p>Beautify/minify CSS code</p>
       </a>
 
-      <a href="src/tools/css-unit-converter.html" class="tool-card">
+      <a href="src/tools/css-unit-converter.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">U</div>
         <h2>CSS Unit Converter</h2>
         <p>px/rem/em/pt/vw conversion</p>
       </a>
 
-      <a href="src/tools/speed-test.html" class="tool-card">
+      <a href="src/tools/speed-test.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">SPD</div>
         <h2>Speed Test</h2>
         <p>Download/upload speed test</p>
       </a>
 
-      <a href="src/tools/invisible-char.html" class="tool-card">
+      <a href="src/tools/invisible-char.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">INV</div>
         <h2>Invisible Characters</h2>
         <p>Detect zero-width/control characters</p>
       </a>
 
-      <a href="src/tools/json-diff.html" class="tool-card">
+      <a href="src/tools/json-diff.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">JDF</div>
         <h2>JSON Diff</h2>
         <p>Compare JSON differences with highlighting</p>
       </a>
 
-      <a href="src/tools/xml-formatter.html" class="tool-card">
+      <a href="src/tools/xml-formatter.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">XML</div>
         <h2>XML Formatter</h2>
         <p>Beautify/minify XML to JSON</p>
       </a>
 
-      <a href="src/tools/sql-formatter.html" class="tool-card">
+      <a href="src/tools/sql-formatter.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">SQL</div>
         <h2>SQL Formatter</h2>
         <p>SQL beautify/minify with highlighting</p>
       </a>
 
-      <a href="src/tools/unicode-search.html" class="tool-card">
+      <a href="src/tools/unicode-search.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">U+</div>
         <h2>Unicode Search</h2>
         <p>Search characters and code points</p>
       </a>
 
-      <a href="src/tools/binary-converter.html" class="tool-card">
+      <a href="src/tools/binary-converter.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">BIN</div>
         <h2>Binary Converter</h2>
         <p>Text to binary and multi-base conversion</p>
       </a>
 
-      <a href="src/tools/binary-calculator.html" class="tool-card">
+      <a href="src/tools/binary-calculator.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">BIC</div>
         <h2>Binary Calculator</h2>
         <p>Binary operations and bitwise math</p>
       </a>
 
-      <a href="src/tools/ip-converter.html" class="tool-card">
+      <a href="src/tools/ip-converter.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">IPC</div>
         <h2>IP Converter</h2>
         <p>IP/integer/CIDR conversion</p>
       </a>
 
-      <a href="src/tools/jwt-decoder.html" class="tool-card">
+      <a href="src/tools/jwt-decoder.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">JWT</div>
         <h2>JWT Decoder</h2>
         <p>Decode and inspect JWT tokens</p>
       </a>
 
-      <a href="src/tools/csv-to-markdown.html" class="tool-card">
+      <a href="src/tools/csv-to-markdown.html" class="tool-card" data-cat="text">
         <div class="tool-icon">MDT</div>
         <h2>CSV to Markdown</h2>
         <p>Convert CSV to Markdown table format</p>
       </a>
 
-      <a href="src/tools/screen-color-picker.html" class="tool-card">
+      <a href="src/tools/screen-color-picker.html" class="tool-card" data-cat="image">
         <div class="tool-icon">SCP</div>
         <h2>Screen Color Picker</h2>
         <p>Pick colors from screen or images</p>
       </a>
 
-      <a href="src/tools/color-contrast.html" class="tool-card">
+      <a href="src/tools/color-contrast.html" class="tool-card" data-cat="image">
         <div class="tool-icon">ACC</div>
         <h2>Color Contrast Checker</h2>
         <p>WCAG accessibility contrast check</p>
       </a>
 
-      <a href="src/tools/http-header.html" class="tool-card">
+      <a href="src/tools/http-header.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">HTTP</div>
         <h2>HTTP Status Codes</h2>
         <p>HTTP status code reference and search</p>
       </a>
 
-      <a href="src/tools/html-to-markdown.html" class="tool-card">
+      <a href="src/tools/html-to-markdown.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">H2M</div>
         <h2>HTML to Markdown</h2>
         <p>Convert HTML to Markdown format</p>
       </a>
 
-      <a href="src/tools/barcode-generator.html" class="tool-card">
+      <a href="src/tools/barcode-generator.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">BAR</div>
         <h2>Barcode Generator</h2>
         <p>Code128/EAN/UPC barcode generation</p>
       </a>
 
-      <a href="src/tools/firework-generator.html" class="tool-card">
+      <a href="src/tools/firework-generator.html" class="tool-card" data-cat="life">
         <div class="tool-icon">&#x1F386;</div>
         <h2>Firework Generator</h2>
         <p>Custom firework HTML code generator</p>
       </a>
 
-      <a href="src/tools/html-preview.html" class="tool-card">
+      <a href="src/tools/html-preview.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">HTM</div>
         <h2>HTML Preview</h2>
         <p>Live edit and preview HTML/CSS/JS</p>
       </a>
 
-      <a href="src/tools/translator.html" class="tool-card">
+      <a href="src/tools/translator.html" class="tool-card" data-cat="text">
         <div class="tool-icon">&#x1F310;</div>
         <h2>Translator</h2>
         <p>Multi-language text translation</p>
       </a>
 
-      <a href="src/tools/distance-calculator.html" class="tool-card">
+      <a href="src/tools/distance-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">KM</div>
         <h2>Distance Calculator</h2>
         <p>Calculate distance from coordinates</p>
       </a>
 
-      <a href="src/tools/storage-converter.html" class="tool-card">
+      <a href="src/tools/storage-converter.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">ST</div>
         <h2>Storage Converter</h2>
         <p>KB/MB/GB/TB/PB conversion</p>
       </a>
 
-      <a href="src/tools/credit-card-validator.html" class="tool-card">
+      <a href="src/tools/credit-card-validator.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">&#x1F4B3;</div>
         <h2>Credit Card Validator</h2>
         <p>Luhn algorithm card validation</p>
       </a>
 
-      <a href="src/tools/ip-calc.html" class="tool-card">
+      <a href="src/tools/ip-calc.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">&#x1F310;</div>
         <h2>IP Calculator</h2>
         <p>Subnet calculation and CIDR conversion</p>
       </a>
 
-      <a href="src/tools/regex-gen.html" class="tool-card">
+      <a href="src/tools/regex-gen.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">&#x1F50D;</div>
         <h2>Regex Generator</h2>
         <p>Common regex patterns reference</p>
       </a>
 
-      <a href="src/tools/json-editor.html" class="tool-card">
+      <a href="src/tools/json-editor.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">&#x1F4DD;</div>
         <h2>JSON Editor</h2>
         <p>Visual JSON editor with tree view</p>
       </a>
 
-      <a href="src/tools/svg-optimizer.html" class="tool-card">
+      <a href="src/tools/svg-optimizer.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">&#x1F5BC;</div>
         <h2>SVG Optimizer</h2>
         <p>Remove comments and compress SVG</p>
       </a>
 
-      <a href="src/tools/js-minifier.html" class="tool-card">
+      <a href="src/tools/js-minifier.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">JS</div>
         <h2>JS Minifier</h2>
         <p>JavaScript code minification</p>
       </a>
 
-      <a href="src/tools/meta-tag-generator.html" class="tool-card">
+      <a href="src/tools/meta-tag-generator.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">META</div>
         <h2>Meta Tag Generator</h2>
         <p>SEO Meta and Open Graph tags</p>
       </a>
 
-      <a href="src/tools/screen-ruler.html" class="tool-card">
+      <a href="src/tools/screen-ruler.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">&#x1F4CF;</div>
         <h2>Screen Ruler</h2>
         <p>Online pixel distance measurement</p>
       </a>
 
-      <a href="src/tools/svg-editor.html" class="tool-card">
+      <a href="src/tools/svg-editor.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">SVG</div>
         <h2>SVG Editor</h2>
         <p>Online SVG code editor and preview</p>
       </a>
 
-      <a href="src/tools/wireframe-generator.html" class="tool-card">
+      <a href="src/tools/wireframe-generator.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">WF</div>
         <h2>Wireframe Generator</h2>
         <p>Quick web wireframe prototyping</p>
       </a>
 
-      <a href="src/tools/aes-encrypt.html" class="tool-card">
+      <a href="src/tools/aes-encrypt.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">AES</div>
         <h2>AES Encrypt/Decrypt</h2>
         <p>AES-256 symmetric encryption tool</p>
       </a>
 
-      <a href="src/tools/seo-checker.html" class="tool-card">
+      <a href="src/tools/seo-checker.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">SEO</div>
         <h2>SEO Checker</h2>
         <p>SEO score and optimization tips</p>
       </a>
 
-      <a href="src/tools/html-minify.html" class="tool-card">
+      <a href="src/tools/html-minify.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">&#x1F4DD;</div>
         <h2>HTML Minify</h2>
         <p>Remove whitespace and compress HTML</p>
       </a>
 
-      <a href="src/tools/css-minify.html" class="tool-card">
+      <a href="src/tools/css-minify.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">&#x2702;</div>
         <h2>CSS Minify</h2>
         <p>CSS compression and formatting</p>
       </a>
 
-      <a href="src/tools/json-minify.html" class="tool-card">
+      <a href="src/tools/json-minify.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">&#x1F4E6;</div>
         <h2>JSON Minify</h2>
         <p>JSON compress/format/validate</p>
       </a>
 
-      <a href="src/tools/line-counter.html" class="tool-card">
+      <a href="src/tools/line-counter.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">SCI</div>
         <h2>Scientific Calculator</h2>
         <p>Math operations with history</p>
       </a>
 
-      <a href="src/tools/json-to-csv.html" class="tool-card">
+      <a href="src/tools/json-to-csv.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">CSV</div>
         <h2>JSON to CSV</h2>
         <p>Convert JSON arrays to tables</p>
       </a>
 
-      <a href="src/tools/qr-decoder.html" class="tool-card">
+      <a href="src/tools/qr-decoder.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">QRD</div>
         <h2>QR Code Decoder</h2>
         <p>Upload and decode QR code images</p>
       </a>
 
-      <a href="src/tools/json-to-yaml.html" class="tool-card">
+      <a href="src/tools/json-to-yaml.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">YML</div>
         <h2>JSON to YAML</h2>
         <p>Convert between JSON and YAML</p>
       </a>
 
-      <a href="src/tools/json-validator.html" class="tool-card">
+      <a href="src/tools/json-validator.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">JV</div>
         <h2>JSON Validator</h2>
         <p>Validate JSON syntax with error info</p>
       </a>
 
-      <a href="src/tools/json-pretty.html" class="tool-card">
+      <a href="src/tools/json-pretty.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">&#x1F4CA;</div>
         <h2>JSON to Table</h2>
         <p>Convert JSON arrays to tables</p>
       </a>
 
-      <a href="src/tools/cron-generator.html" class="tool-card">
+      <a href="src/tools/cron-generator.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">CR</div>
         <h2>Cron Generator</h2>
         <p>Visual Cron expression builder</p>
       </a>
 
       <!-- Text Tools -->
-      <a href="src/tools/word-counter.html" class="tool-card">
+      <a href="src/tools/word-counter.html" class="tool-card" data-cat="text">
         <div class="tool-icon">WC</div>
         <h2>Word Counter</h2>
         <p>Count words, characters, paragraphs</p>
       </a>
 
-      <a href="src/tools/text-counter-enhanced.html" class="tool-card">
+      <a href="src/tools/text-counter-enhanced.html" class="tool-card" data-cat="text">
         <div class="tool-icon">WC+</div>
         <h2>Text Counter Enhanced</h2>
         <p>Word count, reading time, stats</p>
       </a>
 
-      <a href="src/tools/text-repeater.html" class="tool-card">
+      <a href="src/tools/text-repeater.html" class="tool-card" data-cat="text">
         <div class="tool-icon">RPT</div>
         <h2>Text Repeater</h2>
         <p>Repeat text with custom separator</p>
       </a>
 
-      <a href="src/tools/text-replace.html" class="tool-card">
+      <a href="src/tools/text-replace.html" class="tool-card" data-cat="text">
         <div class="tool-icon">REP</div>
         <h2>Text Replace</h2>
         <p>Batch find and replace with regex</p>
       </a>
 
-      <a href="src/tools/rand-str.html" class="tool-card">
+      <a href="src/tools/rand-str.html" class="tool-card" data-cat="text">
         <div class="tool-icon">RND</div>
         <h2>Random String</h2>
         <p>Generate random codes and tokens</p>
       </a>
 
-      <a href="src/tools/text-to-speech.html" class="tool-card">
+      <a href="src/tools/text-to-speech.html" class="tool-card" data-cat="text">
         <div class="tool-icon">SP</div>
         <h2>Text to Speech</h2>
         <p>Online text-to-speech, multilingual</p>
       </a>
 
-      <a href="src/tools/text-to-image.html" class="tool-card">
+      <a href="src/tools/text-to-image.html" class="tool-card" data-cat="text">
         <div class="tool-icon">TI</div>
         <h2>Text to Image</h2>
         <p>Generate beautiful share images</p>
       </a>
 
-      <a href="src/tools/cjk-separator.html" class="tool-card">
+      <a href="src/tools/cjk-separator.html" class="tool-card" data-cat="text">
         <div class="tool-icon">CJK</div>
         <h2>CJK Word Separator</h2>
         <p>Split CJK text by character/word</p>
       </a>
 
-      <a href="src/tools/word-frequency.html" class="tool-card">
+      <a href="src/tools/word-frequency.html" class="tool-card" data-cat="text">
         <div class="tool-icon">WF</div>
         <h2>Word Frequency</h2>
         <p>Analyze and export word frequencies</p>
       </a>
 
-      <a href="src/tools/text-wrap.html" class="tool-card">
+      <a href="src/tools/text-wrap.html" class="tool-card" data-cat="text">
         <div class="tool-icon">WRAP</div>
         <h2>Text Wrap</h2>
         <p>Text formatting and auto-wrapping</p>
       </a>
 
-      <a href="src/tools/text-stats.html" class="tool-card">
+      <a href="src/tools/text-stats.html" class="tool-card" data-cat="text">
         <div class="tool-icon">&#x1F4CA;</div>
         <h2>Text Stats</h2>
         <p>Word count, reading time statistics</p>
       </a>
 
-      <a href="src/tools/punctuation.html" class="tool-card">
+      <a href="src/tools/punctuation.html" class="tool-card" data-cat="text">
         <div class="tool-icon">&#x270F;</div>
         <h2>Punctuation Counter</h2>
         <p>Count and convert punctuation marks</p>
       </a>
 
-      <a href="src/tools/string-length.html" class="tool-card">
+      <a href="src/tools/string-length.html" class="tool-card" data-cat="text">
         <div class="tool-icon">LEN</div>
         <h2>String Length</h2>
         <p>Character and byte count</p>
       </a>
 
-      <a href="src/tools/text-clock.html" class="tool-card">
+      <a href="src/tools/text-clock.html" class="tool-card" data-cat="text">
         <div class="tool-icon">CLK</div>
         <h2>Text Clock</h2>
         <p>Display time as elegant text</p>
       </a>
 
-      <a href="src/tools/ascii-art.html" class="tool-card">
+      <a href="src/tools/ascii-art.html" class="tool-card" data-cat="text">
         <div class="tool-icon">ART</div>
         <h2>ASCII Art</h2>
         <p>Convert text to ASCII art</p>
       </a>
 
-      <a href="src/tools/emoji-picker.html" class="tool-card">
+      <a href="src/tools/emoji-picker.html" class="tool-card" data-cat="text">
         <div class="tool-icon">EM</div>
         <h2>Emoji Picker</h2>
         <p>1000+ emojis, click to copy</p>
       </a>
 
       <!-- Image Tools -->
-      <a href="src/tools/image-compressor.html" class="tool-card">
+      <a href="src/tools/image-compressor.html" class="tool-card" data-cat="image">
         <div class="tool-icon">IMG</div>
         <h2>Image Compressor</h2>
         <p>Compress images locally, no upload</p>
       </a>
 
-      <a href="src/tools/image-converter.html" class="tool-card">
+      <a href="src/tools/image-converter.html" class="tool-card" data-cat="image">
         <div class="tool-icon">IC</div>
         <h2>Image Converter</h2>
         <p>PNG/JPG/WebP format conversion</p>
       </a>
 
-      <a href="src/tools/image-watermark.html" class="tool-card">
+      <a href="src/tools/image-watermark.html" class="tool-card" data-cat="image">
         <div class="tool-icon">WM</div>
         <h2>Image Watermark</h2>
         <p>Add text watermark to images</p>
       </a>
 
-      <a href="src/tools/favicon-generator.html" class="tool-card">
+      <a href="src/tools/favicon-generator.html" class="tool-card" data-cat="image">
         <div class="tool-icon">FI</div>
         <h2>Favicon Generator</h2>
         <p>Multi-size favicon generation</p>
       </a>
 
-      <a href="src/tools/image-base64.html" class="tool-card">
+      <a href="src/tools/image-base64.html" class="tool-card" data-cat="image">
         <div class="tool-icon">B64</div>
         <h2>Image to Base64</h2>
         <p>Encode images to Base64 / decode</p>
       </a>
 
-      <a href="src/tools/drawing-board.html" class="tool-card">
+      <a href="src/tools/drawing-board.html" class="tool-card" data-cat="image">
         <div class="tool-icon">ART</div>
         <h2>Drawing Board</h2>
         <p>Draw with brush, shapes, and text</p>
       </a>
 
-      <a href="src/tools/color-palette.html" class="tool-card">
+      <a href="src/tools/color-palette.html" class="tool-card" data-cat="image">
         <div class="tool-icon">PL</div>
         <h2>Color Palette</h2>
         <p>Complementary and analogous colors</p>
       </a>
 
-      <a href="src/tools/random-color.html" class="tool-card">
+      <a href="src/tools/random-color.html" class="tool-card" data-cat="image">
         <div class="tool-icon">&#x1F3A8;</div>
         <h2>Random Color</h2>
         <p>Generate random colors and palettes</p>
       </a>
 
-      <a href="src/tools/id-photo.html" class="tool-card">
+      <a href="src/tools/id-photo.html" class="tool-card" data-cat="image">
         <div class="tool-icon">ID</div>
         <h2>ID Photo Maker</h2>
         <p>Standard ID photo with background</p>
       </a>
 
-      <a href="src/tools/image-cropper.html" class="tool-card">
+      <a href="src/tools/image-cropper.html" class="tool-card" data-cat="image">
         <div class="tool-icon">CR</div>
         <h2>Image Cropper</h2>
         <p>Free crop and preset ratio cropping</p>
       </a>
 
-      <a href="src/tools/color-palette-generator.html" class="tool-card">
+      <a href="src/tools/color-palette-generator.html" class="tool-card" data-cat="image">
         <div class="tool-icon">CP</div>
         <h2>Color Palette Generator</h2>
         <p>Auto-generate harmonious color schemes</p>
       </a>
 
       <!-- Calculator Tools -->
-      <a href="src/tools/simple-calculator.html" class="tool-card">
+      <a href="src/tools/simple-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">CAL</div>
         <h2>Online Calculator</h2>
         <p>Basic arithmetic with keyboard support</p>
       </a>
 
-      <a href="src/tools/bmi-calculator.html" class="tool-card">
+      <a href="src/tools/bmi-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">BMI</div>
         <h2>BMI Calculator</h2>
         <p>Body mass index health assessment</p>
       </a>
 
-      <a href="src/tools/mortgage-calculator.html" class="tool-card">
+      <a href="src/tools/mortgage-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">MTG</div>
         <h2>Mortgage Calculator</h2>
         <p>Fixed/rate mortgage payment calculator</p>
       </a>
 
-      <a href="src/tools/age-calculator.html" class="tool-card">
+      <a href="src/tools/age-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">AGE</div>
         <h2>Age Calculator</h2>
         <p>Calculate exact age and birthday countdown</p>
       </a>
 
-      <a href="src/tools/tax-calculator.html" class="tool-card">
+      <a href="src/tools/tax-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">TAX</div>
         <h2>Tax Calculator</h2>
         <p>Income tax and take-home pay</p>
       </a>
 
-      <a href="src/tools/percentage-calculator.html" class="tool-card">
+      <a href="src/tools/percentage-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">%</div>
         <h2>Percentage Calculator</h2>
         <p>Various percentage calculations</p>
       </a>
 
-      <a href="src/tools/discount-calculator.html" class="tool-card">
+      <a href="src/tools/discount-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">SALE</div>
         <h2>Discount Calculator</h2>
         <p>Discount and multi-item comparison</p>
       </a>
 
-      <a href="src/tools/compound-interest-calculator.html" class="tool-card">
+      <a href="src/tools/compound-interest-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">CI</div>
         <h2>Compound Interest Calculator</h2>
         <p>Investment returns and growth curves</p>
       </a>
 
-      <a href="src/tools/date-diff-calculator.html" class="tool-card">
+      <a href="src/tools/date-diff-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">DATE</div>
         <h2>Date Diff Calculator</h2>
         <p>Days between, workdays, countdown</p>
       </a>
 
-      <a href="src/tools/fuel-calculator.html" class="tool-card">
+      <a href="src/tools/fuel-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">FUEL</div>
         <h2>Fuel Calculator</h2>
         <p>Fuel consumption and cost per 100km</p>
       </a>
 
-      <a href="src/tools/area-calculator.html" class="tool-card">
+      <a href="src/tools/area-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">m&sup2;</div>
         <h2>Area Calculator</h2>
         <p>Sq meters, acres, hectares conversion</p>
       </a>
 
-      <a href="src/tools/loan-calculator.html" class="tool-card">
+      <a href="src/tools/loan-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">LOAN</div>
         <h2>Loan Calculator</h2>
         <p>Equal payment / equal principal</p>
       </a>
 
-      <a href="src/tools/profit-calculator.html" class="tool-card">
+      <a href="src/tools/profit-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">PROF</div>
         <h2>Profit Calculator</h2>
         <p>Profit margin and markup rate</p>
       </a>
 
-      <a href="src/tools/gpa-calculator.html" class="tool-card">
+      <a href="src/tools/gpa-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">GPA</div>
         <h2>GPA Calculator</h2>
         <p>4.0/5.0 grading scale support</p>
       </a>
 
-      <a href="src/tools/standard-deviation.html" class="tool-card">
+      <a href="src/tools/standard-deviation.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">SD</div>
         <h2>Standard Deviation</h2>
         <p>Variance, standard deviation, median</p>
       </a>
 
-      <a href="src/tools/electricity-calculator.html" class="tool-card">
+      <a href="src/tools/electricity-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">ELEC</div>
         <h2>Electricity Calculator</h2>
         <p>Tiered electricity billing</p>
       </a>
 
-      <a href="src/tools/housing-fund-calculator.html" class="tool-card">
+      <a href="src/tools/housing-fund-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">HF</div>
         <h2>Housing Fund Calculator</h2>
         <p>Housing fund monthly payment</p>
       </a>
 
-      <a href="src/tools/social-insurance-calculator.html" class="tool-card">
+      <a href="src/tools/social-insurance-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">SI</div>
         <h2>Social Insurance Calculator</h2>
         <p>Social insurance contribution details</p>
       </a>
 
-      <a href="src/tools/deposit-calculator.html" class="tool-card">
+      <a href="src/tools/deposit-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">&#x1F3E6;</div>
         <h2>Deposit Calculator</h2>
         <p>Savings and fixed deposit interest</p>
       </a>
 
-      <a href="src/tools/retirement-calculator.html" class="tool-card">
+      <a href="src/tools/retirement-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">RET</div>
         <h2>Retirement Calculator</h2>
         <p>Pension and retirement planning</p>
       </a>
 
-      <a href="src/tools/math-solver.html" class="tool-card">
+      <a href="src/tools/math-solver.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">MATH</div>
         <h2>Math Solver</h2>
         <p>Equations, Pythagorean, trigonometry</p>
       </a>
 
-      <a href="src/tools/triangle-calculator.html" class="tool-card">
+      <a href="src/tools/triangle-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">&Delta;</div>
         <h2>Triangle Calculator</h2>
         <p>Area, perimeter, angles calculation</p>
       </a>
 
-      <a href="src/tools/number-sort.html" class="tool-card">
+      <a href="src/tools/number-sort.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">SRT</div>
         <h2>Number Sort</h2>
         <p>Sort, deduplicate, and count numbers</p>
       </a>
 
-      <a href="src/tools/counter.html" class="tool-card">
+      <a href="src/tools/counter.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">+/-</div>
         <h2>Counter</h2>
         <p>Click counter with save history</p>
       </a>
 
-      <a href="src/tools/unit-converter.html" class="tool-card">
+      <a href="src/tools/unit-converter.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">LEN</div>
         <h2>Unit Converter</h2>
         <p>Length, weight, volume conversion</p>
       </a>
 
-      <a href="src/tools/temperature-converter.html" class="tool-card">
+      <a href="src/tools/temperature-converter.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">TMP</div>
         <h2>Temperature Converter</h2>
         <p>Celsius/Fahrenheit/Kelvin conversion</p>
       </a>
 
       <!-- Life Tools -->
-      <a href="src/tools/world-clock.html" class="tool-card">
+      <a href="src/tools/world-clock.html" class="tool-card" data-cat="life">
         <div class="tool-icon">CLK</div>
         <h2>World Clock</h2>
         <p>20+ city real-time timezone display</p>
       </a>
 
-      <a href="src/tools/blood-type-calculator.html" class="tool-card">
+      <a href="src/tools/blood-type-calculator.html" class="tool-card" data-cat="life">
         <div class="tool-icon">BL</div>
         <h2>Blood Type Calculator</h2>
         <p>Predict child blood type from parents</p>
       </a>
 
-      <a href="src/tools/zodiac.html" class="tool-card">
+      <a href="src/tools/zodiac.html" class="tool-card" data-cat="life">
         <div class="tool-icon">ZD</div>
         <h2>Zodiac Calculator</h2>
         <p>Find zodiac sign from birthday</p>
       </a>
 
-      <a href="src/tools/sleep-calculator.html" class="tool-card">
+      <a href="src/tools/sleep-calculator.html" class="tool-card" data-cat="life">
         <div class="tool-icon">ZZZ</div>
         <h2>Sleep Calculator</h2>
         <p>Sleep cycles and optimal wake time</p>
       </a>
 
-      <a href="src/tools/workday-calculator.html" class="tool-card">
+      <a href="src/tools/workday-calculator.html" class="tool-card" data-cat="life">
         <div class="tool-icon">WD</div>
         <h2>Workday Calculator</h2>
         <p>Calculate workdays excluding weekends</p>
       </a>
 
-      <a href="src/tools/countdown-timer.html" class="tool-card">
+      <a href="src/tools/countdown-timer.html" class="tool-card" data-cat="life">
         <div class="tool-icon">CD</div>
         <h2>Countdown Timer</h2>
         <p>Custom countdown with fullscreen</p>
       </a>
 
-      <a href="src/tools/days-between.html" class="tool-card">
+      <a href="src/tools/days-between.html" class="tool-card" data-cat="life">
         <div class="tool-icon">D+</div>
         <h2>Days Between</h2>
         <p>Date difference and elapsed time</p>
       </a>
 
-      <a href="src/tools/date-calculator.html" class="tool-card">
+      <a href="src/tools/date-calculator.html" class="tool-card" data-cat="life">
         <div class="tool-icon">D+</div>
         <h2>Date Calculator</h2>
         <p>Add/subtract days from dates</p>
       </a>
 
-      <a href="src/tools/countdown-day.html" class="tool-card">
+      <a href="src/tools/countdown-day.html" class="tool-card" data-cat="life">
         <div class="tool-icon">&#x1F4C5;</div>
         <h2>Countdown Day</h2>
         <p>Countdown to important dates</p>
       </a>
 
-      <a href="src/tools/food-calorie.html" class="tool-card">
+      <a href="src/tools/food-calorie.html" class="tool-card" data-cat="life">
         <div class="tool-icon">KCAL</div>
         <h2>Food Calorie Lookup</h2>
         <p>Calorie search and daily intake</p>
       </a>
 
-      <a href="src/tools/ideal-weight.html" class="tool-card">
+      <a href="src/tools/ideal-weight.html" class="tool-card" data-cat="life">
         <div class="tool-icon">WT</div>
         <h2>Ideal Weight Calculator</h2>
         <p>Multiple formula-based weight calculation</p>
       </a>
 
-      <a href="src/tools/typing-speed.html" class="tool-card">
+      <a href="src/tools/typing-speed.html" class="tool-card" data-cat="life">
         <div class="tool-icon">TYP</div>
         <h2>Typing Speed Test</h2>
         <p>WPM typing speed test</p>
       </a>
 
-      <a href="src/tools/timer.html" class="tool-card">
+      <a href="src/tools/timer.html" class="tool-card" data-cat="life">
         <div class="tool-icon">&#x1F345;</div>
         <h2>Pomodoro Timer</h2>
         <p>Pomodoro focus timer</p>
       </a>
 
-      <a href="src/tools/stopwatch.html" class="tool-card">
+      <a href="src/tools/stopwatch.html" class="tool-card" data-cat="life">
         <div class="tool-icon">&#x23F1;</div>
         <h2>Stopwatch</h2>
         <p>Millisecond precision with lap timer</p>
       </a>
 
-      <a href="src/tools/exchange-rate.html" class="tool-card">
+      <a href="src/tools/exchange-rate.html" class="tool-card" data-cat="life">
         <div class="tool-icon">&#x1F4B1;</div>
         <h2>Exchange Rate</h2>
         <p>Multi-currency conversion</p>
       </a>
 
-      <a href="src/tools/stock-return.html" class="tool-card">
+      <a href="src/tools/stock-return.html" class="tool-card" data-cat="life">
         <div class="tool-icon">&#x1F4C8;</div>
         <h2>Stock Return</h2>
         <p>Portfolio return and annualized yield</p>
       </a>
 
-      <a href="src/tools/list-generator.html" class="tool-card">
+      <a href="src/tools/list-generator.html" class="tool-card" data-cat="life">
         <div class="tool-icon">RND</div>
         <h2>Random List</h2>
         <p>Random sort, pick, and group</p>
       </a>
 
-      <a href="src/tools/weekday-calc.html" class="tool-card">
+      <a href="src/tools/weekday-calc.html" class="tool-card" data-cat="life">
         <div class="tool-icon">WK</div>
         <h2>Weekday Calculator</h2>
         <p>Find weekday for any date</p>
       </a>
 
-      <a href="src/tools/year-calculator.html" class="tool-card">
+      <a href="src/tools/year-calculator.html" class="tool-card" data-cat="life">
         <div class="tool-icon">YR</div>
         <h2>Year Calculator</h2>
         <p>Year difference and day count</p>
@@ -1354,5 +1367,7 @@
     initFromUrl();
   })();
   </script>
+  <script src="../js/share.js"></script>
+  <script src="../js/site.js"></script>
 </body>
 </html>

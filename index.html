@@ -213,6 +213,7 @@
     ]
   }
   </script>
+<script>(function(){try{var t=localStorage.getItem('ei-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head>
 <body>
   <!-- 顶部广告位（暂未启用） -->
@@ -222,6 +223,11 @@
     <div class="container">
       <h1 class="logo">在线工具箱</h1>
       <p class="tagline">免费实用在线工具，无需安装，打开即用</p>
+      <div class="hero-badges">
+        <span class="hero-badge">🧰 <b>163</b> 款工具</span>
+        <span class="hero-badge">🔒 数据<b>不出浏览器</b></span>
+        <span class="hero-badge">⚡ <b>100%</b> 免费</span>
+      </div>
     </div>
   </header>
 
@@ -243,8 +249,7 @@
     </div>
   </div>
 
-<div style="max-width:1200px;margin:16px auto 0;padding:0 20px 4px;">
-    <h1 style="font-size:1.6rem;font-weight:700;color:#1a1a1a;margin:0 0 8px;">EITools 在线工具箱</h1>
+<div class="home-intro">
     <p style="font-size:0.95rem;line-height:1.8;color:#555;margin:0;">
       免费在线工具箱，提供 150+ 款实用工具，涵盖开发者工具、文本处理、计算器、图片工具和日常生活工具。
       所有工具均在浏览器本地运行，无需注册、无需安装，输入的数据不会上传到任何服务器，打开网页即可使用。
@@ -252,7 +257,15 @@
     </p>
   </div>
   <main class="container">
-    <div class="no-results" id="no-results" style="display:none;">
+<section id="recent-section" style="display:none;">
+      <h2 class="section-title">🕘 最近使用</h2>
+      <div class="chip-row" id="recent-row"></div>
+    </section>
+    <section id="fav-section" style="display:none;">
+      <h2 class="section-title">⭐ 我的收藏</h2>
+      <div class="chip-row" id="fav-row"></div>
+    </section>
+      <div class="no-results" id="no-results" style="display:none;">
       <div class="no-results-icon">🔍</div>
       <p>没有找到匹配的工具</p>
       <p class="no-results-hint">试试其他关键词，或 <button id="clear-search-btn" class="link-btn">清除搜索</button></p>
@@ -261,958 +274,958 @@
       <a href="tools/all-tools.html" style="color:#4361ee;text-decoration:none;font-size:0.9rem;font-weight:500;">查看全部 159+ 工具 &rarr;</a>
     </div>
     <div class="tools-grid" id="tools-grid">
-      <a href="src/tools/json-formatter.html" class="tool-card">
+      <a href="src/tools/json-formatter.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">{ }</div>
         <h2>JSON 格式化</h2>
         <p>美化、压缩、校验 JSON 数据</p>
       </a>
 
-      <a href="src/tools/base64.html" class="tool-card">
+      <a href="src/tools/base64.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">B64</div>
         <h2>Base64 编解码</h2>
         <p>文本与 Base64 互相转换</p>
       </a>
 
-      <a href="src/tools/qrcode.html" class="tool-card">
+      <a href="src/tools/qrcode.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">QR</div>
         <h2>二维码生成</h2>
         <p>输入文字或链接生成二维码</p>
       </a>
 
-      <a href="src/tools/image-compressor.html" class="tool-card">
+      <a href="src/tools/image-compressor.html" class="tool-card" data-cat="image">
         <div class="tool-icon">IMG</div>
         <h2>图片压缩</h2>
         <p>本地压缩图片，不上传服务器</p>
       </a>
 
-      <a href="src/tools/color-picker.html" class="tool-card">
+      <a href="src/tools/color-picker.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">CLR</div>
         <h2>颜色选择器</h2>
         <p>HEX/RGB/HSL 颜色转换工具</p>
       </a>
 
-      <a href="src/tools/markdown-live.html" class="tool-card">
+      <a href="src/tools/markdown-live.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">MD</div>
         <h2>Markdown 编辑器</h2>
         <p>实时预览的 Markdown 编辑器</p>
       </a>
 
-      <a href="src/tools/timestamp.html" class="tool-card">
+      <a href="src/tools/timestamp.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">TS</div>
         <h2>时间戳转换</h2>
         <p>Unix 时间戳与日期互转</p>
       </a>
 
-      <a href="src/tools/word-counter.html" class="tool-card">
+      <a href="src/tools/word-counter.html" class="tool-card" data-cat="text">
         <div class="tool-icon">WC</div>
         <h2>字数统计</h2>
         <p>统计文本字数、字符数、段落数</p>
       </a>
 
-      <a href="src/tools/uuid-generator.html" class="tool-card">
+      <a href="src/tools/uuid-generator.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">UID</div>
         <h2>UUID 生成器</h2>
         <p>生成随机 UUID/GUID，批量生成</p>
       </a>
 
-      <a href="src/tools/url-encoder.html" class="tool-card">
+      <a href="src/tools/url-encoder.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">URL</div>
         <h2>URL 编解码</h2>
         <p>URL 百分号编码与解码转换</p>
       </a>
 
-      <a href="src/tools/password-generator.html" class="tool-card">
+      <a href="src/tools/password-generator.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">KEY</div>
         <h2>密码生成器</h2>
         <p>生成安全随机密码，自定义强度</p>
       </a>
 
-      <a href="src/tools/regex-tester.html" class="tool-card">
+      <a href="src/tools/regex-tester.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">.*</div>
         <h2>正则表达式测试</h2>
         <p>实时匹配高亮，内置常用模板</p>
       </a>
 
-      <a href="src/tools/text-diff.html" class="tool-card">
+      <a href="src/tools/text-diff.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">DIFF</div>
         <h2>文本差异对比</h2>
         <p>逐行对比两段文本差异</p>
       </a>
 
-      <a href="src/tools/lorem-ipsum.html" class="tool-card">
+      <a href="src/tools/lorem-ipsum.html" class="tool-card" data-cat="text">
         <div class="tool-icon">LP</div>
         <h2>Lorem Ipsum</h2>
         <p>生成占位文本，支持中文</p>
       </a>
 
-      <a href="src/tools/hash-generator.html" class="tool-card">
+      <a href="src/tools/hash-generator.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">#H</div>
         <h2>Hash 计算器</h2>
         <p>MD5/SHA-1/SHA-256/SHA-512</p>
       </a>
 
-      <a href="src/tools/case-converter.html" class="tool-card">
+      <a href="src/tools/case-converter.html" class="tool-card" data-cat="text">
         <div class="tool-icon">Aa</div>
         <h2>大小写转换</h2>
         <p>英文大小写、驼峰、蛇形命名</p>
       </a>
 
-      <a href="src/tools/number-base-extended.html" class="tool-card">
+      <a href="src/tools/number-base-extended.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">N&gt;</div>
         <h2>进制转换</h2>
         <p>二八十六进制互转/自定义进制</p>
       </a>
 
-      <a href="src/tools/html-entities.html" class="tool-card">
+      <a href="src/tools/html-entities.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">&lt;/&gt;</div>
         <h2>HTML 实体编解码</h2>
         <p>HTML 特殊字符与实体互转</p>
       </a>
 
-      <a href="src/tools/text-unique.html" class="tool-card">
+      <a href="src/tools/text-unique.html" class="tool-card" data-cat="text">
         <div class="tool-icon">1x</div>
         <h2>文本去重</h2>
         <p>去重/排序/统计重复</p>
       </a>
 
-      <a href="src/tools/pinyin-converter.html" class="tool-card">
+      <a href="src/tools/pinyin-converter.html" class="tool-card" data-cat="text">
         <div class="tool-icon">拼</div>
         <h2>汉字转拼音</h2>
         <p>中文汉字转拼音，声调标注</p>
       </a>
 
-      <a href="src/tools/simplified-traditional.html" class="tool-card">
+      <a href="src/tools/simplified-traditional.html" class="tool-card" data-cat="text">
         <div class="tool-icon">简繁</div>
         <h2>简繁体转换</h2>
         <p>简体中文与繁体中文互转</p>
       </a>
 
-      <a href="src/tools/ip-lookup.html" class="tool-card">
+      <a href="src/tools/ip-lookup.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">IP</div>
         <h2>IP 地址查询</h2>
         <p>查询本机IP、IP归属地信息</p>
       </a>
 
-      <a href="src/tools/ascii-table.html" class="tool-card">
+      <a href="src/tools/ascii-table.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">ASC</div>
         <h2>ASCII 码表</h2>
         <p>完整 ASCII 字符对照查询</p>
       </a>
 
-      <a href="src/tools/subnet-calculator.html" class="tool-card">
+      <a href="src/tools/subnet-calculator.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">NET</div>
         <h2>子网计算器</h2>
         <p>IP子网掩码计算与划分</p>
       </a>
 
-      <a href="src/tools/css-gradient-generator.html" class="tool-card">
+      <a href="src/tools/css-gradient-generator.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">GR</div>
         <h2>CSS 渐变生成器</h2>
         <p>可视化编辑 CSS 渐变代码</p>
       </a>
 
-      <a href="src/tools/byte-converter.html" class="tool-card">
+      <a href="src/tools/byte-converter.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">B</div>
         <h2>字节单位转换</h2>
         <p>KB/MB/GB/TB 互相转换</p>
       </a>
 
-      <a href="src/tools/date-calculator.html" class="tool-card">
+      <a href="src/tools/date-calculator.html" class="tool-card" data-cat="life">
         <div class="tool-icon">D+</div>
         <h2>日期计算器</h2>
         <p>计算日期差、加减天数</p>
       </a>
 
-      <a href="src/tools/rot13-cipher.html" class="tool-card">
+      <a href="src/tools/rot13-cipher.html" class="tool-card" data-cat="text">
         <div class="tool-icon">[E]</div>
         <h2>文本加密解密</h2>
         <p>ROT13/凯撒/Base64/摩尔斯码</p>
       </a>
 
-      <a href="src/tools/random-number.html" class="tool-card">
+      <a href="src/tools/random-number.html" class="tool-card" data-cat="life">
         <div class="tool-icon">RND</div>
         <h2>随机数生成器</h2>
         <p>自定义范围和个数</p>
       </a>
 
-      <a href="src/tools/placeholder-image.html" class="tool-card">
+      <a href="src/tools/placeholder-image.html" class="tool-card" data-cat="image">
         <div class="tool-icon">IMG</div>
         <h2>占位图生成器</h2>
         <p>SVG占位图，自定义尺寸颜色</p>
       </a>
 
-      <a href="src/tools/bmi-calculator.html" class="tool-card">
+      <a href="src/tools/bmi-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">BMI</div>
         <h2>BMI 计算器</h2>
         <p>身体质量指数，健康体重评估</p>
       </a>
 
-      <a href="src/tools/mortgage-calculator.html" class="tool-card">
+      <a href="src/tools/mortgage-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">房贷</div>
         <h2>房贷计算器</h2>
         <p>等额本息/等额本金月供计算</p>
       </a>
 
-      <a href="src/tools/age-calculator.html" class="tool-card">
+      <a href="src/tools/age-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">AGE</div>
         <h2>年龄计算器</h2>
         <p>精确计算年龄、天数、生日倒计时</p>
       </a>
 
-      <a href="src/tools/unit-converter.html" class="tool-card">
+      <a href="src/tools/unit-converter.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">LEN</div>
         <h2>长度单位换算</h2>
         <p>厘米/米/英尺/英寸等互转</p>
       </a>
 
-      <a href="src/tools/temperature-converter.html" class="tool-card">
+      <a href="src/tools/temperature-converter.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">TMP</div>
         <h2>温度换算</h2>
         <p>摄氏度/华氏度/开尔文互转</p>
       </a>
 
-      <a href="src/tools/tax-calculator.html" class="tool-card">
+      <a href="src/tools/tax-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">税</div>
         <h2>个税计算器</h2>
         <p>五险一金、个税、到手工资计算</p>
       </a>
 
-      <a href="src/tools/percentage-calculator.html" class="tool-card">
+      <a href="src/tools/percentage-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">%</div>
         <h2>百分比计算器</h2>
         <p>多种百分比计算，增减变化</p>
       </a>
 
-      <a href="src/tools/discount-calculator.html" class="tool-card">
+      <a href="src/tools/discount-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">折</div>
         <h2>折扣计算器</h2>
         <p>打折优惠计算，多商品对比</p>
       </a>
 
-      <a href="src/tools/compound-interest-calculator.html" class="tool-card">
+      <a href="src/tools/compound-interest-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">复</div>
         <h2>复利计算器</h2>
         <p>投资收益计算，定投增长曲线</p>
       </a>
 
-      <a href="src/tools/date-diff-calculator.html" class="tool-card">
+      <a href="src/tools/date-diff-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">日</div>
         <h2>日期差计算器</h2>
         <p>天数间隔、工作日、倒计时</p>
       </a>
 
-      <a href="src/tools/fuel-calculator.html" class="tool-card">
+      <a href="src/tools/fuel-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">油</div>
         <h2>油耗计算器</h2>
         <p>百公里油耗、油费计算</p>
       </a>
 
-      <a href="src/tools/area-calculator.html" class="tool-card">
+      <a href="src/tools/area-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">m²</div>
         <h2>面积计算器</h2>
         <p>平方米/亩/公顷/英亩互转</p>
       </a>
 
-      <a href="src/tools/cron-generator.html" class="tool-card">
+      <a href="src/tools/cron-generator.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">CR</div>
         <h2>Cron 生成器</h2>
         <p>可视化生成Cron定时表达式</p>
       </a>
 
-      <a href="src/tools/countdown-timer.html" class="tool-card">
+      <a href="src/tools/countdown-timer.html" class="tool-card" data-cat="life">
         <div class="tool-icon">CD</div>
         <h2>倒计时器</h2>
         <p>自定义时长/正计时/全屏</p>
       </a>
 
-      <a href="src/tools/simple-calculator.html" class="tool-card">
+      <a href="src/tools/simple-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">CAL</div>
         <h2>在线计算器</h2>
         <p>加减乘除，键盘快捷操作</p>
       </a>
 
-      <a href="src/tools/world-clock.html" class="tool-card">
+      <a href="src/tools/world-clock.html" class="tool-card" data-cat="life">
         <div class="tool-icon">CLK</div>
         <h2>世界时钟</h2>
         <p>20+城市实时时间查询</p>
       </a>
 
-      <a href="src/tools/blood-type-calculator.html" class="tool-card">
+      <a href="src/tools/blood-type-calculator.html" class="tool-card" data-cat="life">
         <div class="tool-icon">BL</div>
         <h2>血型遗传计算</h2>
         <p>预测孩子可能的血型</p>
       </a>
 
-      <a href="src/tools/lunar-calendar.html" class="tool-card">
+      <a href="src/tools/lunar-calendar.html" class="tool-card" data-cat="life">
         <div class="tool-icon">历</div>
         <h2>万年历</h2>
         <p>农历查询、节假日、黄历</p>
       </a>
 
-      <a href="src/tools/color-blind-test.html" class="tool-card">
+      <a href="src/tools/color-blind-test.html" class="tool-card" data-cat="life">
         <div class="tool-icon">色</div>
         <h2>色盲测试</h2>
         <p>在线色觉检测，石原色盲测试</p>
       </a>
 
-      <a href="src/tools/box-shadow-generator.html" class="tool-card">
+      <a href="src/tools/box-shadow-generator.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">SH</div>
         <h2>Box Shadow 生成</h2>
         <p>可视化CSS阴影代码生成</p>
       </a>
 
-      <a href="src/tools/phone-lookup.html" class="tool-card">
+      <a href="src/tools/phone-lookup.html" class="tool-card" data-cat="life">
         <div class="tool-icon">TEL</div>
         <h2>手机号归属地</h2>
         <p>查询运营商和归属省份</p>
       </a>
 
-      <a href="src/tools/json-path.html" class="tool-card">
+      <a href="src/tools/json-path.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">JP</div>
         <h2>JSON Path 查询</h2>
         <p>在线JSONPath表达式测试</p>
       </a>
 
-      <a href="src/tools/rmb-uppercase.html" class="tool-card">
+      <a href="src/tools/rmb-uppercase.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">¥</div>
         <h2>人民币大写</h2>
         <p>金额转财务大写，银行合同用</p>
       </a>
 
-      <a href="src/tools/morse-code.html" class="tool-card">
+      <a href="src/tools/morse-code.html" class="tool-card" data-cat="text">
         <div class="tool-icon">MC</div>
         <h2>摩尔斯电码</h2>
         <p>文本与Morse Code双向转换</p>
       </a>
 
-      <a href="src/tools/screen-resolution.html" class="tool-card">
+      <a href="src/tools/screen-resolution.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">RES</div>
         <h2>屏幕分辨率</h2>
         <p>查看当前分辨率和设备对照</p>
       </a>
 
-      <a href="src/tools/weekday-calc.html" class="tool-card">
+      <a href="src/tools/weekday-calc.html" class="tool-card" data-cat="life">
         <div class="tool-icon">WK</div>
         <h2>星期计算器</h2>
         <p>日期查星期/工作日统计</p>
       </a>
 
-      <a href="src/tools/char-frequency.html" class="tool-card">
+      <a href="src/tools/char-frequency.html" class="tool-card" data-cat="text">
         <div class="tool-icon">FQ</div>
         <h2>字符频率统计</h2>
         <p>统计每个字符出现次数</p>
       </a>
 
-      <a href="src/tools/color-converter.html" class="tool-card">
+      <a href="src/tools/color-converter.html" class="tool-card" data-cat="image">
         <div class="tool-icon">CLR</div>
         <h2>颜色转换器</h2>
         <p>RGB/HSL/HEX/CMYK互转</p>
       </a>
 
-      <a href="src/tools/text-counter-enhanced.html" class="tool-card">
+      <a href="src/tools/text-counter-enhanced.html" class="tool-card" data-cat="text">
         <div class="tool-icon">WC+</div>
         <h2>文本统计增强</h2>
         <p>字数/阅读时间/中英文统计</p>
       </a>
 
-      <a href="src/tools/image-converter.html" class="tool-card">
+      <a href="src/tools/image-converter.html" class="tool-card" data-cat="image">
         <div class="tool-icon">IC</div>
         <h2>图片格式转换</h2>
         <p>PNG/JPG/WebP 格式互转</p>
       </a>
 
-      <a href="src/tools/image-watermark.html" class="tool-card">
+      <a href="src/tools/image-watermark.html" class="tool-card" data-cat="image">
         <div class="tool-icon">WM</div>
         <h2>图片加水印</h2>
         <p>文字水印、平铺、自定义样式</p>
       </a>
 
-      <a href="src/tools/favicon-generator.html" class="tool-card">
+      <a href="src/tools/favicon-generator.html" class="tool-card" data-cat="image">
         <div class="tool-icon">FI</div>
         <h2>Favicon 生成</h2>
         <p>多尺寸网站图标一键生成</p>
       </a>
 
-      <a href="src/tools/text-to-speech.html" class="tool-card">
+      <a href="src/tools/text-to-speech.html" class="tool-card" data-cat="text">
         <div class="tool-icon">SP</div>
         <h2>文字转语音</h2>
         <p>在线朗读，多语种支持</p>
       </a>
 
-      <a href="src/tools/qr-decoder.html" class="tool-card">
+      <a href="src/tools/qr-decoder.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">QRD</div>
         <h2>二维码识别</h2>
         <p>上传二维码图片解码内容</p>
       </a>
 
-      <a href="src/tools/drawing-board.html" class="tool-card">
+      <a href="src/tools/drawing-board.html" class="tool-card" data-cat="image">
         <div class="tool-icon">ART</div>
         <h2>在线画板</h2>
         <p>画笔/形状/文字，可下载</p>
       </a>
 
-      <a href="src/tools/json-to-csv.html" class="tool-card">
+      <a href="src/tools/json-to-csv.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">CSV</div>
         <h2>JSON 转 CSV</h2>
         <p>JSON数组转表格，支持嵌套</p>
       </a>
 
-      <a href="src/tools/id-card-validator.html" class="tool-card">
+      <a href="src/tools/id-card-validator.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">ID</div>
         <h2>身份证校验</h2>
         <p>验证格式，提取出生日期性别</p>
       </a>
 
-      <a href="src/tools/emoji-picker.html" class="tool-card">
+      <a href="src/tools/emoji-picker.html" class="tool-card" data-cat="text">
         <div class="tool-icon">EM</div>
         <h2>Emoji 大全</h2>
         <p>1000+表情符号，点击复制</p>
       </a>
 
-      <a href="src/tools/css-formatter.html" class="tool-card">
+      <a href="src/tools/css-formatter.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">CSS</div>
         <h2>CSS 格式化</h2>
         <p>美化/压缩CSS代码</p>
       </a>
 
-      <a href="src/tools/color-palette.html" class="tool-card">
+      <a href="src/tools/color-palette.html" class="tool-card" data-cat="image">
         <div class="tool-icon">PL</div>
         <h2>调色板生成</h2>
         <p>互补色/类似色配色方案</p>
       </a>
 
-      <a href="src/tools/math-solver.html" class="tool-card">
+      <a href="src/tools/math-solver.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">MATH</div>
         <h2>数学公式</h2>
         <p>方程/勾股定理/三角函数</p>
       </a>
 
-      <a href="src/tools/number-chinese.html" class="tool-card">
+      <a href="src/tools/number-chinese.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">中</div>
         <h2>数字转中文</h2>
         <p>大写/小写/金额大写</p>
       </a>
 
-      <a href="src/tools/json-validator.html" class="tool-card">
+      <a href="src/tools/json-validator.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">JV</div>
         <h2>JSON 校验</h2>
         <p>格式验证，错误定位</p>
       </a>
 
-      <a href="src/tools/css-unit-converter.html" class="tool-card">
+      <a href="src/tools/css-unit-converter.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">U</div>
         <h2>CSS 单位转换</h2>
         <p>px/rem/em/pt/vw互转</p>
       </a>
 
-      <a href="src/tools/speed-test.html" class="tool-card">
+      <a href="src/tools/speed-test.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">SPD</div>
         <h2>网速测试</h2>
         <p>下载/上传速度检测</p>
       </a>
 
-      <a href="src/tools/text-repeater.html" class="tool-card">
+      <a href="src/tools/text-repeater.html" class="tool-card" data-cat="text">
         <div class="tool-icon">RPT</div>
         <h2>文本重复生成</h2>
         <p>设置次数和分隔符</p>
       </a>
 
-      <a href="src/tools/invisible-char.html" class="tool-card">
+      <a href="src/tools/invisible-char.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">INV</div>
         <h2>隐藏字符检测</h2>
         <p>零宽字符/控制字符查找</p>
       </a>
 
-      <a href="src/tools/image-base64.html" class="tool-card">
+      <a href="src/tools/image-base64.html" class="tool-card" data-cat="image">
         <div class="tool-icon">B64</div>
         <h2>图片转 Base64</h2>
         <p>图片编码/Base64解码</p>
       </a>
 
-      <a href="src/tools/zodiac.html" class="tool-card">
+      <a href="src/tools/zodiac.html" class="tool-card" data-cat="life">
         <div class="tool-icon">ZD</div>
         <h2>星座生肖查询</h2>
         <p>输入生日查星座和生肖</p>
       </a>
 
-      <a href="src/tools/sleep-calculator.html" class="tool-card">
+      <a href="src/tools/sleep-calculator.html" class="tool-card" data-cat="life">
         <div class="tool-icon">ZZZ</div>
         <h2>睡眠计算器</h2>
         <p>睡眠周期/最佳起床时间</p>
       </a>
 
-      <a href="src/tools/workday-calculator.html" class="tool-card">
+      <a href="src/tools/workday-calculator.html" class="tool-card" data-cat="life">
         <div class="tool-icon">WD</div>
         <h2>工作日计算</h2>
         <p>排除周末算工作日</p>
       </a>
 
-      <a href="src/tools/cjk-separator.html" class="tool-card">
+      <a href="src/tools/cjk-separator.html" class="tool-card" data-cat="text">
         <div class="tool-icon">CJK</div>
         <h2>中文分词</h2>
         <p>按字/词分割中文文本</p>
       </a>
 
-      <a href="src/tools/days-between.html" class="tool-card">
+      <a href="src/tools/days-between.html" class="tool-card" data-cat="life">
         <div class="tool-icon">D+</div>
         <h2>天数计算器</h2>
         <p>日期差/正计时/倒计时</p>
       </a>
 
-      <a href="src/tools/json-diff.html" class="tool-card">
+      <a href="src/tools/json-diff.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">JDF</div>
         <h2>JSON 比对</h2>
         <p>JSON差异对比高亮</p>
       </a>
 
-      <a href="src/tools/xml-formatter.html" class="tool-card">
+      <a href="src/tools/xml-formatter.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">XML</div>
         <h2>XML 格式化</h2>
         <p>美化/压缩/XML转JSON</p>
       </a>
 
-      <a href="src/tools/sql-formatter.html" class="tool-card">
+      <a href="src/tools/sql-formatter.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">SQL</div>
         <h2>SQL 格式化</h2>
         <p>SQL美化/压缩高亮</p>
       </a>
 
-      <a href="src/tools/unicode-search.html" class="tool-card">
+      <a href="src/tools/unicode-search.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">U+</div>
         <h2>Unicode 查询</h2>
         <p>字符搜索/编码转换</p>
       </a>
 
-      <a href="src/tools/binary-converter.html" class="tool-card">
+      <a href="src/tools/binary-converter.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">BIN</div>
         <h2>二进制转换</h2>
         <p>文本转二进制/多进制</p>
       </a>
 
-      <a href="src/tools/word-frequency.html" class="tool-card">
+      <a href="src/tools/word-frequency.html" class="tool-card" data-cat="text">
         <div class="tool-icon">WF</div>
         <h2>词频统计</h2>
         <p>中英文词频分析导出</p>
       </a>
 
-      <a href="src/tools/binary-calculator.html" class="tool-card">
+      <a href="src/tools/binary-calculator.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">BIC</div>
         <h2>二进制计算器</h2>
         <p>二进制运算/位运算</p>
       </a>
 
-      <a href="src/tools/triangle-calculator.html" class="tool-card">
+      <a href="src/tools/triangle-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">△</div>
         <h2>三角形计算器</h2>
         <p>面积/周长/角度计算</p>
       </a>
 
-      <a href="src/tools/loan-calculator.html" class="tool-card">
+      <a href="src/tools/loan-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">贷款</div>
         <h2>贷款计算器</h2>
         <p>等额本息/等额本金</p>
       </a>
 
-      <a href="src/tools/list-generator.html" class="tool-card">
+      <a href="src/tools/list-generator.html" class="tool-card" data-cat="life">
         <div class="tool-icon">RND</div>
         <h2>随机列表</h2>
         <p>随机排序/抽取/分组</p>
       </a>
 
-      <a href="src/tools/gpa-calculator.html" class="tool-card">
+      <a href="src/tools/gpa-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">GPA</div>
         <h2>GPA 计算器</h2>
         <p>4.0/5.0/百分制</p>
       </a>
 
-      <a href="src/tools/timer.html" class="tool-card">
+      <a href="src/tools/timer.html" class="tool-card" data-cat="life">
         <div class="tool-icon">🍅</div>
         <h2>番茄钟</h2>
         <p>Pomodoro专注计时</p>
       </a>
 
-      <a href="src/tools/number-sort.html" class="tool-card">
+      <a href="src/tools/number-sort.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">SRT</div>
         <h2>数字排序</h2>
         <p>升序降序/去重/统计</p>
       </a>
 
-      <a href="src/tools/text-replace.html" class="tool-card">
+      <a href="src/tools/text-replace.html" class="tool-card" data-cat="text">
         <div class="tool-icon">REP</div>
         <h2>文本替换</h2>
         <p>批量查找替换/正则</p>
       </a>
 
-      <a href="src/tools/ip-converter.html" class="tool-card">
+      <a href="src/tools/ip-converter.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">IPC</div>
         <h2>IP 转换</h2>
         <p>IP/整数/CIDR互转</p>
       </a>
 
-      <a href="src/tools/jwt-decoder.html" class="tool-card">
+      <a href="src/tools/jwt-decoder.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">JWT</div>
         <h2>JWT 解析</h2>
         <p>解码Token查看内容</p>
       </a>
 
-      <a href="src/tools/csv-to-markdown.html" class="tool-card">
+      <a href="src/tools/csv-to-markdown.html" class="tool-card" data-cat="text">
         <div class="tool-icon">MDT</div>
         <h2>CSV转Markdown</h2>
         <p>CSV转MD表格格式</p>
       </a>
 
-      <a href="src/tools/year-calculator.html" class="tool-card">
+      <a href="src/tools/year-calculator.html" class="tool-card" data-cat="life">
         <div class="tool-icon">YR</div>
         <h2>年份计算器</h2>
         <p>年份差/天数计算</p>
       </a>
 
-      <a href="src/tools/profit-calculator.html" class="tool-card">
+      <a href="src/tools/profit-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">利润</div>
         <h2>利润计算器</h2>
         <p>利润率/毛利率/加价率</p>
       </a>
 
-      <a href="src/tools/typing-speed.html" class="tool-card">
+      <a href="src/tools/typing-speed.html" class="tool-card" data-cat="life">
         <div class="tool-icon">TYP</div>
         <h2>打字速度测试</h2>
         <p>WPM/中文打字测速</p>
       </a>
 
-      <a href="src/tools/screen-color-picker.html" class="tool-card">
+      <a href="src/tools/screen-color-picker.html" class="tool-card" data-cat="image">
         <div class="tool-icon">SCP</div>
         <h2>屏幕取色器</h2>
         <p>像素颜色提取/图片取色</p>
       </a>
 
-      <a href="src/tools/color-contrast.html" class="tool-card">
+      <a href="src/tools/color-contrast.html" class="tool-card" data-cat="image">
         <div class="tool-icon">ACC</div>
         <h2>对比度检测</h2>
         <p>WCAG无障碍检查</p>
       </a>
 
-      <a href="src/tools/http-header.html" class="tool-card">
+      <a href="src/tools/http-header.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">HTTP</div>
         <h2>HTTP 状态码大全</h2>
         <p>状态码查询/分类筛选</p>
       </a>
 
-      <a href="src/tools/electricity-calculator.html" class="tool-card">
+      <a href="src/tools/electricity-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">电</div>
         <h2>电费计算器</h2>
         <p>阶梯电价计算</p>
       </a>
 
-      <a href="src/tools/housing-fund-calculator.html" class="tool-card">
+      <a href="src/tools/housing-fund-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">公积金</div>
         <h2>公积金贷款</h2>
         <p>公积金月供/组合贷</p>
       </a>
 
-      <a href="src/tools/standard-deviation.html" class="tool-card">
+      <a href="src/tools/standard-deviation.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">SD</div>
         <h2>标准差计算</h2>
         <p>方差/标准差/中位数</p>
       </a>
 
-      <a href="src/tools/html-to-markdown.html" class="tool-card">
+      <a href="src/tools/html-to-markdown.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">H2M</div>
         <h2>HTML转Markdown</h2>
         <p>HTML代码转MD格式</p>
       </a>
 
-      <a href="src/tools/barcode-generator.html" class="tool-card">
+      <a href="src/tools/barcode-generator.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">BAR</div>
         <h2>条形码生成</h2>
         <p>Code128/EAN/UPC</p>
       </a>
 
-      <a href="src/tools/exchange-rate.html" class="tool-card">
+      <a href="src/tools/exchange-rate.html" class="tool-card" data-cat="life">
         <div class="tool-icon">💱</div>
         <h2>汇率换算</h2>
         <p>人民币/美元/欧元等货币互转</p>
       </a>
 
-      <a href="src/tools/stock-return.html" class="tool-card">
+      <a href="src/tools/stock-return.html" class="tool-card" data-cat="life">
         <div class="tool-icon">📈</div>
         <h2>股票收益率</h2>
         <p>持仓盈亏/年化收益/定投计算</p>
       </a>
 
-      <a href="src/tools/firework-generator.html" class="tool-card">
+      <a href="src/tools/firework-generator.html" class="tool-card" data-cat="life">
         <div class="tool-icon">🎆</div>
         <h2>烟花代码生成</h2>
         <p>自定义特效，一键复制HTML代码</p>
       </a>
 
-      <a href="src/tools/white-noise.html" class="tool-card">
+      <a href="src/tools/white-noise.html" class="tool-card" data-cat="life">
         <div class="tool-icon">🎵</div>
         <h2>白噪音生成</h2>
         <p>雨声/海浪/风声，助眠专注</p>
       </a>
 
-      <a href="src/tools/love-calculator.html" class="tool-card">
+      <a href="src/tools/love-calculator.html" class="tool-card" data-cat="fun">
         <div class="tool-icon">💕</div>
         <h2>爱情匹配计算器</h2>
         <p>输入名字测缘分指数</p>
       </a>
 
-      <a href="src/tools/random-decision-maker.html" class="tool-card">
+      <a href="src/tools/random-decision-maker.html" class="tool-card" data-cat="fun">
         <div class="tool-icon">🎰</div>
         <h2>随机决定器</h2>
         <p>选择困难？让命运决定</p>
       </a>
 
-      <a href="src/tools/holiday-countdown.html" class="tool-card">
+      <a href="src/tools/holiday-countdown.html" class="tool-card" data-cat="fun">
         <div class="tool-icon">🎉</div>
         <h2>节日倒计时</h2>
         <p>中外节日放假倒计时</p>
       </a>
 
-      <a href="src/tools/chinese-name-generator.html" class="tool-card">
+      <a href="src/tools/chinese-name-generator.html" class="tool-card" data-cat="fun">
         <div class="tool-icon">📝</div>
         <h2>起名助手</h2>
         <p>中文姓名生成与释义</p>
       </a>
 
-      <a href="src/tools/chinese-zodiac.html" class="tool-card">
+      <a href="src/tools/chinese-zodiac.html" class="tool-card" data-cat="life">
         <div class="tool-icon">生肖</div>
         <h2>生肖查询</h2>
         <p>出生年份查属相/天干地支</p>
       </a>
 
-      <a href="src/tools/stopwatch.html" class="tool-card">
+      <a href="src/tools/stopwatch.html" class="tool-card" data-cat="life">
         <div class="tool-icon">⏱</div>
         <h2>秒表计时器</h2>
         <p>精确到毫秒，分段计时</p>
       </a>
 
-      <a href="src/tools/html-preview.html" class="tool-card">
+      <a href="src/tools/html-preview.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">HTM</div>
         <h2>HTML 预览</h2>
         <p>实时编辑预览HTML/CSS/JS</p>
       </a>
 
-      <a href="src/tools/food-calorie.html" class="tool-card">
+      <a href="src/tools/food-calorie.html" class="tool-card" data-cat="life">
         <div class="tool-icon">KCAL</div>
         <h2>食物热量</h2>
         <p>热量查询/每日需求/饮食记录</p>
       </a>
 
-      <a href="src/tools/translator.html" class="tool-card">
+      <a href="src/tools/translator.html" class="tool-card" data-cat="text">
         <div class="tool-icon">翻译</div>
         <h2>在线翻译</h2>
         <p>中英日韩法德多语言互译</p>
       </a>
 
-      <a href="src/tools/ideal-weight.html" class="tool-card">
+      <a href="src/tools/ideal-weight.html" class="tool-card" data-cat="life">
         <div class="tool-icon">WT</div>
         <h2>理想体重</h2>
         <p>多种公式计算标准体重</p>
       </a>
 
-      <a href="src/tools/counter.html" class="tool-card">
+      <a href="src/tools/counter.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">+/-</div>
         <h2>在线计数器</h2>
         <p>点击计数/加减/保存记录</p>
       </a>
 
-      <a href="src/tools/distance-calculator.html" class="tool-card">
+      <a href="src/tools/distance-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">KM</div>
         <h2>距离计算器</h2>
         <p>坐标距离/经纬度距离</p>
       </a>
 
-      <a href="src/tools/storage-converter.html" class="tool-card">
+      <a href="src/tools/storage-converter.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">ST</div>
         <h2>存储单位换算</h2>
         <p>KB/MB/GB/TB/PB互转</p>
       </a>
 
-      <a href="src/tools/text-clock.html" class="tool-card">
+      <a href="src/tools/text-clock.html" class="tool-card" data-cat="text">
         <div class="tool-icon">CLK</div>
         <h2>文字时钟</h2>
         <p>时间以优美文字显示</p>
       </a>
 
-      <a href="src/tools/ascii-art.html" class="tool-card">
+      <a href="src/tools/ascii-art.html" class="tool-card" data-cat="text">
         <div class="tool-icon">ART</div>
         <h2>ASCII 艺术字</h2>
         <p>文字转ASCII Art字符画</p>
       </a>
 
-      <a href="src/tools/social-insurance-calculator.html" class="tool-card">
+      <a href="src/tools/social-insurance-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">社保</div>
         <h2>五险一金计算器</h2>
         <p>社保公积金缴纳明细计算</p>
       </a>
 
-      <a href="src/tools/deposit-calculator.html" class="tool-card">
+      <a href="src/tools/deposit-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">🏦</div>
         <h2>存款利息计算</h2>
         <p>活期定期利息计算/利率对比</p>
       </a>
 
-      <a href="src/tools/countdown-day.html" class="tool-card">
+      <a href="src/tools/countdown-day.html" class="tool-card" data-cat="life">
         <div class="tool-icon">📅</div>
         <h2>倒数日计算</h2>
         <p>纪念日/考试/生日倒计时</p>
       </a>
 
-      <a href="src/tools/retirement-calculator.html" class="tool-card">
+      <a href="src/tools/retirement-calculator.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">养老金</div>
         <h2>退休金计算器</h2>
         <p>城镇职工/城乡居民养老金估算</p>
       </a>
 
-      <a href="src/tools/text-wrap.html" class="tool-card">
+      <a href="src/tools/text-wrap.html" class="tool-card" data-cat="text">
         <div class="tool-icon">排版</div>
         <h2>文本排版工具</h2>
         <p>中文排版美化/缩进/去空行</p>
       </a>
 
-      <a href="src/tools/json-to-yaml.html" class="tool-card">
+      <a href="src/tools/json-to-yaml.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">YML</div>
         <h2>JSON转YAML</h2>
         <p>JSON/YAML格式互转</p>
       </a>
 
-      <a href="src/tools/line-counter.html" class="tool-card">
+      <a href="src/tools/line-counter.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">SCI</div>
         <h2>科学计算器</h2>
         <p>四则运算/括号/开方/百分比/历史</p>
       </a>
 
-      <a href="src/tools/rand-str.html" class="tool-card">
+      <a href="src/tools/rand-str.html" class="tool-card" data-cat="text">
         <div class="tool-icon">RND</div>
         <h2>随机字符串</h2>
         <p>随机码/订单号/验证码/邀请码</p>
       </a>
 
-      <a href="src/tools/seo-checker.html" class="tool-card">
+      <a href="src/tools/seo-checker.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">SEO</div>
         <h2>网页SEO检测</h2>
         <p>SEO要素评分与优化建议</p>
       </a>
 
-      <a href="src/tools/bmi-intl.html" class="tool-card">
+      <a href="src/tools/bmi-intl.html" class="tool-card" data-cat="calc">
         <div class="tool-icon">BMI</div>
         <h2>国际BMI计算</h2>
         <p>WHO/中国双标准体重指数</p>
       </a>
 
-      <a href="src/tools/string-length.html" class="tool-card">
+      <a href="src/tools/string-length.html" class="tool-card" data-cat="text">
         <div class="tool-icon">LEN</div>
         <h2>字符串长度</h2>
         <p>字符数/字节数/中英统计</p>
       </a>
 
-      <a href="src/tools/json-minify.html" class="tool-card">
+      <a href="src/tools/json-minify.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">📦</div>
         <h2>JSON压缩美化</h2>
         <p>JSON压缩/格式化/验证</p>
       </a>
-      <a href="src/tools/html-minify.html" class="tool-card">
+      <a href="src/tools/html-minify.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">🗜️</div>
         <h2>HTML压缩工具</h2>
         <p>去除HTML空格注释压缩体积</p>
       </a>
-      <a href="src/tools/css-minify.html" class="tool-card">
+      <a href="src/tools/css-minify.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">✂️</div>
         <h2>CSS压缩美化</h2>
         <p>CSS压缩/格式化工具</p>
       </a>
-      <a href="src/tools/credit-card-validator.html" class="tool-card">
+      <a href="src/tools/credit-card-validator.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">💳</div>
         <h2>信用卡号验证</h2>
         <p>Luhn算法验证/识别卡组织</p>
       </a>
-      <a href="src/tools/ip-calc.html" class="tool-card">
+      <a href="src/tools/ip-calc.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">🌐</div>
         <h2>IP地址计算器</h2>
         <p>子网计算/CIDR转换</p>
       </a>
-      <a href="src/tools/regex-gen.html" class="tool-card">
+      <a href="src/tools/regex-gen.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">🔍</div>
         <h2>正则表达式大全</h2>
         <p>常用正则速查/搜索/复制</p>
       </a>
-      <a href="src/tools/text-stats.html" class="tool-card">
+      <a href="src/tools/text-stats.html" class="tool-card" data-cat="text">
         <div class="tool-icon">📊</div>
         <h2>文本统计工具</h2>
         <p>字数/词数/阅读时间统计</p>
       </a>
-      <a href="src/tools/punctuation.html" class="tool-card">
+      <a href="src/tools/punctuation.html" class="tool-card" data-cat="text">
         <div class="tool-icon">✏️</div>
         <h2>中英文标点转换</h2>
         <p>中英标点/全角半角转换</p>
       </a>
-      <a href="src/tools/json-editor.html" class="tool-card">
+      <a href="src/tools/json-editor.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">📝</div>
         <h2>JSON编辑器</h2>
         <p>可视化编辑/树形结构查看</p>
       </a>
-      <a href="src/tools/svg-optimizer.html" class="tool-card">
+      <a href="src/tools/svg-optimizer.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">🖼️</div>
         <h2>SVG优化压缩</h2>
         <p>去除注释/压缩SVG体积</p>
       </a>
-      <a href="src/tools/random-color.html" class="tool-card">
+      <a href="src/tools/random-color.html" class="tool-card" data-cat="image">
         <div class="tool-icon">🎨</div>
         <h2>随机颜色生成器</h2>
         <p>配色方案/渐变色生成</p>
       </a>
-      <a href="src/tools/json-pretty.html" class="tool-card">
+      <a href="src/tools/json-pretty.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">📊</div>
         <h2>JSON转表格</h2>
         <p>JSON数组转表格/导出CSV</p>
       </a>
-      <a href="src/tools/js-minifier.html" class="tool-card">
+      <a href="src/tools/js-minifier.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">JS</div>
         <h2>JavaScript 压缩</h2>
         <p>JS代码压缩/格式化/混淆</p>
       </a>
-      <a href="src/tools/meta-tag-generator.html" class="tool-card">
+      <a href="src/tools/meta-tag-generator.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">META</div>
         <h2>Meta 标签生成</h2>
         <p>SEO Meta标签/Open Graph生成</p>
       </a>
-      <a href="src/tools/screen-ruler.html" class="tool-card">
+      <a href="src/tools/screen-ruler.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">📏</div>
         <h2>屏幕标尺</h2>
         <p>在线像素距离测量工具</p>
       </a>
-      <a href="src/tools/svg-editor.html" class="tool-card">
+      <a href="src/tools/svg-editor.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">SVG</div>
         <h2>SVG 编辑器</h2>
         <p>在线SVG代码编辑与预览</p>
       </a>
-      <a href="src/tools/wireframe-generator.html" class="tool-card">
+      <a href="src/tools/wireframe-generator.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">WF</div>
         <h2>线框图生成</h2>
         <p>快速创建网页线框原型</p>
       </a>
-      <a href="src/tools/id-photo.html" class="tool-card">
+      <a href="src/tools/id-photo.html" class="tool-card" data-cat="image">
         <div class="tool-icon">ID</div>
         <h2>证件照制作</h2>
         <p>标准证件照换底色裁剪</p>
       </a>
-      <a href="src/tools/text-to-image.html" class="tool-card">
+      <a href="src/tools/text-to-image.html" class="tool-card" data-cat="text">
         <div class="tool-icon">TI</div>
         <h2>文字转图片</h2>
         <p>文字生成精美分享图片</p>
       </a>
-      <a href="src/tools/aes-encrypt.html" class="tool-card">
+      <a href="src/tools/aes-encrypt.html" class="tool-card" data-cat="dev">
         <div class="tool-icon">AES</div>
         <h2>AES 加密解密</h2>
         <p>AES-256对称加密解密工具</p>
       </a>
-      <a href="src/tools/color-palette-generator.html" class="tool-card">
+      <a href="src/tools/color-palette-generator.html" class="tool-card" data-cat="image">
         <div class="tool-icon">CP</div>
         <h2>配色方案生成器</h2>
         <p>自动生成和谐配色方案</p>
       </a>
-      <a href="src/tools/image-cropper.html" class="tool-card">
+      <a href="src/tools/image-cropper.html" class="tool-card" data-cat="image">
         <div class="tool-icon">CR</div>
         <h2>在线图片裁剪</h2>
         <p>自由裁剪和预设比例裁剪</p>
@@ -1577,5 +1590,7 @@
     initFromUrl();
   })();
   </script>
+  <script src="js/share.js"></script>
+  <script src="js/site.js"></script>
 </body>
 </html>
