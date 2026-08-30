@@ -1,0 +1,203 @@
+# EITools 在线工具箱
+
+> 免费中文在线工具箱：173 个工具，全部在浏览器本地运行，无需注册、无需安装、数据不上传服务器。网址 https://eitools.cn
+
+EITools (eitools.cn) 提供 173 个免费在线工具，覆盖计算器、开发工具、文本处理、图片处理、生活工具和趣味工具六大类。所有工具均在浏览器端本地完成计算，不传输用户数据到服务器。
+
+## 计算器
+
+- [年龄计算器](https://eitools.cn/src/tools/age-calculator.html): 年龄计算器在线工具，免费使用，本地运行
+- [面积计算器](https://eitools.cn/src/tools/area-calculator.html): 面积计算器在线工具，免费使用，本地运行
+- [BMI计算器](https://eitools.cn/src/tools/bmi-calculator.html): BMI计算器在线工具，免费使用，本地运行
+- [国际BMI计算](https://eitools.cn/src/tools/bmi-intl.html): 国际BMI计算在线工具，免费使用，本地运行
+- [字节单位转换](https://eitools.cn/src/tools/byte-converter.html): 字节单位转换在线工具，免费使用，本地运行
+- [复利计算器](https://eitools.cn/src/tools/compound-interest-calculator.html): 复利计算器在线工具，免费使用，本地运行
+- [在线计数器](https://eitools.cn/src/tools/counter.html): 在线计数器在线工具，免费使用，本地运行
+- [日期差计算器](https://eitools.cn/src/tools/date-diff-calculator.html): 日期差计算器在线工具，免费使用，本地运行
+- [存款利息计算](https://eitools.cn/src/tools/deposit-calculator.html): 存款利息计算在线工具，免费使用，本地运行
+- [折扣计算器](https://eitools.cn/src/tools/discount-calculator.html): 折扣计算器在线工具，免费使用，本地运行
+- [距离计算器](https://eitools.cn/src/tools/distance-calculator.html): 距离计算器在线工具，免费使用，本地运行
+- [电费计算器](https://eitools.cn/src/tools/electricity-calculator.html): 电费计算器在线工具，免费使用，本地运行
+- [油耗计算器](https://eitools.cn/src/tools/fuel-calculator.html): 油耗计算器在线工具，免费使用，本地运行
+- [GPA计算器](https://eitools.cn/src/tools/gpa-calculator.html): GPA计算器在线工具，免费使用，本地运行
+- [公积金贷款计算器](https://eitools.cn/src/tools/housing-fund-calculator.html): 公积金贷款计算器在线工具，免费使用，本地运行
+- [贷款计算器](https://eitools.cn/src/tools/loan-calculator.html): 贷款计算器在线工具，免费使用，本地运行
+- [数学公式计算器](https://eitools.cn/src/tools/math-solver.html): 数学公式计算器在线工具，免费使用，本地运行
+- [房贷计算器](https://eitools.cn/src/tools/mortgage-calculator.html): 房贷计算器在线工具，免费使用，本地运行
+- [数字转中文](https://eitools.cn/src/tools/number-chinese.html): 数字转中文在线工具，免费使用，本地运行
+- [数字排序](https://eitools.cn/src/tools/number-sort.html): 数字排序在线工具，免费使用，本地运行
+- [百分比计算器](https://eitools.cn/src/tools/percentage-calculator.html): 百分比计算器在线工具，免费使用，本地运行
+- [利润计算器](https://eitools.cn/src/tools/profit-calculator.html): 利润计算器在线工具，免费使用，本地运行
+- [退休金计算器](https://eitools.cn/src/tools/retirement-calculator.html): 退休金计算器在线工具，免费使用，本地运行
+- [人民币大写转换](https://eitools.cn/src/tools/rmb-uppercase.html): 人民币大写转换在线工具，免费使用，本地运行
+- [科学计算器](https://eitools.cn/src/tools/simple-calculator.html): 科学计算器在线工具，免费使用，本地运行
+- [五险一金计算器](https://eitools.cn/src/tools/social-insurance-calculator.html): 五险一金计算器在线工具，免费使用，本地运行
+- [标准差计算器](https://eitools.cn/src/tools/standard-deviation.html): 标准差计算器在线工具，免费使用，本地运行
+- [存储单位换算](https://eitools.cn/src/tools/storage-converter.html): 存储单位换算在线工具，免费使用，本地运行
+- [个税计算器](https://eitools.cn/src/tools/tax-calculator.html): 个税计算器在线工具，免费使用，本地运行
+- [温度换算](https://eitools.cn/src/tools/temperature-converter.html): 温度换算在线工具，免费使用，本地运行
+- [三角形计算器](https://eitools.cn/src/tools/triangle-calculator.html): 三角形计算器在线工具，免费使用，本地运行
+- [长度单位换算](https://eitools.cn/src/tools/unit-converter.html): 长度单位换算在线工具，免费使用，本地运行
+
+## 开发工具
+
+- [AES加密解密](https://eitools.cn/src/tools/aes-encrypt.html): AES加密解密在线工具，免费使用，本地运行
+- [ASCII码表](https://eitools.cn/src/tools/ascii-table.html): ASCII码表在线工具，免费使用，本地运行
+- [条形码生成器](https://eitools.cn/src/tools/barcode-generator.html): 条形码生成器在线工具，免费使用，本地运行
+- [Base64编解码](https://eitools.cn/src/tools/base64.html): Base64编解码在线工具，免费使用，本地运行
+- [二进制计算器](https://eitools.cn/src/tools/binary-calculator.html): 二进制计算器在线工具，免费使用，本地运行
+- [二进制转换](https://eitools.cn/src/tools/binary-converter.html): 二进制转换在线工具，免费使用，本地运行
+- [CSS Box Shadow生成器](https://eitools.cn/src/tools/box-shadow-generator.html): CSS Box Shadow生成器在线工具，免费使用，本地运行
+- [颜色选择器](https://eitools.cn/src/tools/color-picker.html): 颜色选择器在线工具，免费使用，本地运行
+- [信用卡号验证](https://eitools.cn/src/tools/credit-card-validator.html): 信用卡号验证在线工具，免费使用，本地运行
+- [Cron表达式生成器](https://eitools.cn/src/tools/cron-generator.html): Cron表达式生成器在线工具，免费使用，本地运行
+- [CSS格式化](https://eitools.cn/src/tools/css-formatter.html): CSS格式化在线工具，免费使用，本地运行
+- [CSS渐变生成器](https://eitools.cn/src/tools/css-gradient-generator.html): CSS渐变生成器在线工具，免费使用，本地运行
+- [CSS压缩美化](https://eitools.cn/src/tools/css-minify.html): CSS压缩美化在线工具，免费使用，本地运行
+- [CSS单位转换](https://eitools.cn/src/tools/css-unit-converter.html): CSS单位转换在线工具，免费使用，本地运行
+- [Hash计算器](https://eitools.cn/src/tools/hash-generator.html): Hash计算器在线工具，免费使用，本地运行
+- [HTML实体编解码](https://eitools.cn/src/tools/html-entities.html): HTML实体编解码在线工具，免费使用，本地运行
+- [HTML压缩工具](https://eitools.cn/src/tools/html-minify.html): HTML压缩工具在线工具，免费使用，本地运行
+- [HTML在线预览](https://eitools.cn/src/tools/html-preview.html): HTML在线预览在线工具，免费使用，本地运行
+- [HTML转Markdown](https://eitools.cn/src/tools/html-to-markdown.html): HTML转Markdown在线工具，免费使用，本地运行
+- [HTTP状态码大全](https://eitools.cn/src/tools/http-header.html): HTTP状态码大全在线工具，免费使用，本地运行
+- [身份证校验](https://eitools.cn/src/tools/id-card-validator.html): 身份证校验在线工具，免费使用，本地运行
+- [隐藏字符检测](https://eitools.cn/src/tools/invisible-char.html): 隐藏字符检测在线工具，免费使用，本地运行
+- [IP地址计算器](https://eitools.cn/src/tools/ip-calc.html): IP地址计算器在线工具，免费使用，本地运行
+- [IP地址转换](https://eitools.cn/src/tools/ip-converter.html): IP地址转换在线工具，免费使用，本地运行
+- [IP地址查询](https://eitools.cn/src/tools/ip-lookup.html): IP地址查询在线工具，免费使用，本地运行
+- [JavaScript压缩](https://eitools.cn/src/tools/js-minifier.html): JavaScript压缩在线工具，免费使用，本地运行
+- [JSON比对](https://eitools.cn/src/tools/json-diff.html): JSON比对在线工具，免费使用，本地运行
+- [JSON编辑器](https://eitools.cn/src/tools/json-editor.html): JSON编辑器在线工具，免费使用，本地运行
+- [JSON格式化](https://eitools.cn/src/tools/json-formatter.html): JSON格式化在线工具，免费使用，本地运行
+- [JSON压缩美化](https://eitools.cn/src/tools/json-minify.html): JSON压缩美化在线工具，免费使用，本地运行
+- [JSON Path查询](https://eitools.cn/src/tools/json-path.html): JSON Path查询在线工具，免费使用，本地运行
+- [JSON转表格](https://eitools.cn/src/tools/json-pretty.html): JSON转表格在线工具，免费使用，本地运行
+- [JSON转CSV](https://eitools.cn/src/tools/json-to-csv.html): JSON转CSV在线工具，免费使用，本地运行
+- [JSON转YAML](https://eitools.cn/src/tools/json-to-yaml.html): JSON转YAML在线工具，免费使用，本地运行
+- [JSON校验器](https://eitools.cn/src/tools/json-validator.html): JSON校验器在线工具，免费使用，本地运行
+- [JWT解析器](https://eitools.cn/src/tools/jwt-decoder.html): JWT解析器在线工具，免费使用，本地运行
+- [line-counter](https://eitools.cn/src/tools/line-counter.html): line-counter在线工具，免费使用，本地运行
+- [Markdown编辑器](https://eitools.cn/src/tools/markdown-live.html): Markdown编辑器在线工具，免费使用，本地运行
+- [Meta标签生成](https://eitools.cn/src/tools/meta-tag-generator.html): Meta标签生成在线工具，免费使用，本地运行
+- [进制转换器](https://eitools.cn/src/tools/number-base-extended.html): 进制转换器在线工具，免费使用，本地运行
+- [密码生成器](https://eitools.cn/src/tools/password-generator.html): 密码生成器在线工具，免费使用，本地运行
+- [pdf-merge](https://eitools.cn/src/tools/pdf-merge.html): pdf-merge在线工具，免费使用，本地运行
+- [二维码识别](https://eitools.cn/src/tools/qr-decoder.html): 二维码识别在线工具，免费使用，本地运行
+- [二维码生成](https://eitools.cn/src/tools/qrcode.html): 二维码生成在线工具，免费使用，本地运行
+- [正则表达式大全](https://eitools.cn/src/tools/regex-gen.html): 正则表达式大全在线工具，免费使用，本地运行
+- [正则表达式测试](https://eitools.cn/src/tools/regex-tester.html): 正则表达式测试在线工具，免费使用，本地运行
+- [screen-recorder](https://eitools.cn/src/tools/screen-recorder.html): screen-recorder在线工具，免费使用，本地运行
+- [屏幕分辨率查询](https://eitools.cn/src/tools/screen-resolution.html): 屏幕分辨率查询在线工具，免费使用，本地运行
+- [屏幕标尺](https://eitools.cn/src/tools/screen-ruler.html): 屏幕标尺在线工具，免费使用，本地运行
+- [网页SEO检测](https://eitools.cn/src/tools/seo-checker.html): 网页SEO检测在线工具，免费使用，本地运行
+- [网速测试](https://eitools.cn/src/tools/speed-test.html): 网速测试在线工具，免费使用，本地运行
+- [SQL格式化](https://eitools.cn/src/tools/sql-formatter.html): SQL格式化在线工具，免费使用，本地运行
+- [子网计算器](https://eitools.cn/src/tools/subnet-calculator.html): 子网计算器在线工具，免费使用，本地运行
+- [SVG编辑器](https://eitools.cn/src/tools/svg-editor.html): SVG编辑器在线工具，免费使用，本地运行
+- [SVG优化压缩](https://eitools.cn/src/tools/svg-optimizer.html): SVG优化压缩在线工具，免费使用，本地运行
+- [文本差异对比](https://eitools.cn/src/tools/text-diff.html): 文本差异对比在线工具，免费使用，本地运行
+- [时间戳转换](https://eitools.cn/src/tools/timestamp.html): 时间戳转换在线工具，免费使用，本地运行
+- [Unicode查询](https://eitools.cn/src/tools/unicode-search.html): Unicode查询在线工具，免费使用，本地运行
+- [URL编解码](https://eitools.cn/src/tools/url-encoder.html): URL编解码在线工具，免费使用，本地运行
+- [UUID生成器](https://eitools.cn/src/tools/uuid-generator.html): UUID生成器在线工具，免费使用，本地运行
+- [线框图生成](https://eitools.cn/src/tools/wireframe-generator.html): 线框图生成在线工具，免费使用，本地运行
+- [XML格式化](https://eitools.cn/src/tools/xml-formatter.html): XML格式化在线工具，免费使用，本地运行
+
+## 文本工具
+
+- [ASCII艺术字](https://eitools.cn/src/tools/ascii-art.html): ASCII艺术字在线工具，免费使用，本地运行
+- [大小写转换](https://eitools.cn/src/tools/case-converter.html): 大小写转换在线工具，免费使用，本地运行
+- [字符频率统计](https://eitools.cn/src/tools/char-frequency.html): 字符频率统计在线工具，免费使用，本地运行
+- [中文分词](https://eitools.cn/src/tools/cjk-separator.html): 中文分词在线工具，免费使用，本地运行
+- [CSV转Markdown](https://eitools.cn/src/tools/csv-to-markdown.html): CSV转Markdown在线工具，免费使用，本地运行
+- [Emoji大全](https://eitools.cn/src/tools/emoji-picker.html): Emoji大全在线工具，免费使用，本地运行
+- [Lorem Ipsum生成器](https://eitools.cn/src/tools/lorem-ipsum.html): Lorem Ipsum生成器在线工具，免费使用，本地运行
+- [摩尔斯电码转换](https://eitools.cn/src/tools/morse-code.html): 摩尔斯电码转换在线工具，免费使用，本地运行
+- [汉字转拼音](https://eitools.cn/src/tools/pinyin-converter.html): 汉字转拼音在线工具，免费使用，本地运行
+- [中英文标点转换](https://eitools.cn/src/tools/punctuation.html): 中英文标点转换在线工具，免费使用，本地运行
+- [随机字符串生成](https://eitools.cn/src/tools/rand-str.html): 随机字符串生成在线工具，免费使用，本地运行
+- [文本加密解密](https://eitools.cn/src/tools/rot13-cipher.html): 文本加密解密在线工具，免费使用，本地运行
+- [简繁体转换](https://eitools.cn/src/tools/simplified-traditional.html): 简繁体转换在线工具，免费使用，本地运行
+- [字符串长度计算](https://eitools.cn/src/tools/string-length.html): 字符串长度计算在线工具，免费使用，本地运行
+- [文字时钟](https://eitools.cn/src/tools/text-clock.html): 文字时钟在线工具，免费使用，本地运行
+- [文本统计增强版](https://eitools.cn/src/tools/text-counter-enhanced.html): 文本统计增强版在线工具，免费使用，本地运行
+- [文本重复生成器](https://eitools.cn/src/tools/text-repeater.html): 文本重复生成器在线工具，免费使用，本地运行
+- [文本替换](https://eitools.cn/src/tools/text-replace.html): 文本替换在线工具，免费使用，本地运行
+- [文本统计工具](https://eitools.cn/src/tools/text-stats.html): 文本统计工具在线工具，免费使用，本地运行
+- [文字转图片](https://eitools.cn/src/tools/text-to-image.html): 文字转图片在线工具，免费使用，本地运行
+- [文字转语音](https://eitools.cn/src/tools/text-to-speech.html): 文字转语音在线工具，免费使用，本地运行
+- [文本去重排序](https://eitools.cn/src/tools/text-unique.html): 文本去重排序在线工具，免费使用，本地运行
+- [文本排版工具](https://eitools.cn/src/tools/text-wrap.html): 文本排版工具在线工具，免费使用，本地运行
+- [在线翻译](https://eitools.cn/src/tools/translator.html): 在线翻译在线工具，免费使用，本地运行
+- [字数统计](https://eitools.cn/src/tools/word-counter.html): 字数统计在线工具，免费使用，本地运行
+- [词频统计](https://eitools.cn/src/tools/word-frequency.html): 词频统计在线工具，免费使用，本地运行
+
+## 图片工具
+
+- [chinese-traditional-colors](https://eitools.cn/src/tools/chinese-traditional-colors.html): chinese-traditional-colors在线工具，免费使用，本地运行
+- [对比度检测](https://eitools.cn/src/tools/color-contrast.html): 对比度检测在线工具，免费使用，本地运行
+- [颜色转换器](https://eitools.cn/src/tools/color-converter.html): 颜色转换器在线工具，免费使用，本地运行
+- [调色板生成](https://eitools.cn/src/tools/color-palette.html): 调色板生成在线工具，免费使用，本地运行
+- [配色方案生成器](https://eitools.cn/src/tools/color-palette-generator.html): 配色方案生成器在线工具，免费使用，本地运行
+- [在线画板](https://eitools.cn/src/tools/drawing-board.html): 在线画板在线工具，免费使用，本地运行
+- [exif-viewer](https://eitools.cn/src/tools/exif-viewer.html): exif-viewer在线工具，免费使用，本地运行
+- [Favicon生成器](https://eitools.cn/src/tools/favicon-generator.html): Favicon生成器在线工具，免费使用，本地运行
+- [证件照制作](https://eitools.cn/src/tools/id-photo.html): 证件照制作在线工具，免费使用，本地运行
+- [图片转Base64](https://eitools.cn/src/tools/image-base64.html): 图片转Base64在线工具，免费使用，本地运行
+- [图片压缩](https://eitools.cn/src/tools/image-compressor.html): 图片压缩在线工具，免费使用，本地运行
+- [图片格式转换](https://eitools.cn/src/tools/image-converter.html): 图片格式转换在线工具，免费使用，本地运行
+- [在线图片裁剪](https://eitools.cn/src/tools/image-cropper.html): 在线图片裁剪在线工具，免费使用，本地运行
+- [image-grid-cutter](https://eitools.cn/src/tools/image-grid-cutter.html): image-grid-cutter在线工具，免费使用，本地运行
+- [图片加水印](https://eitools.cn/src/tools/image-watermark.html): 图片加水印在线工具，免费使用，本地运行
+- [pdf-to-image](https://eitools.cn/src/tools/pdf-to-image.html): pdf-to-image在线工具，免费使用，本地运行
+- [占位图生成器](https://eitools.cn/src/tools/placeholder-image.html): 占位图生成器在线工具，免费使用，本地运行
+- [随机颜色生成器](https://eitools.cn/src/tools/random-color.html): 随机颜色生成器在线工具，免费使用，本地运行
+- [屏幕取色器](https://eitools.cn/src/tools/screen-color-picker.html): 屏幕取色器在线工具，免费使用，本地运行
+
+## 生活工具
+
+- [血型遗传计算器](https://eitools.cn/src/tools/blood-type-calculator.html): 血型遗传计算器在线工具，免费使用，本地运行
+- [calendar](https://eitools.cn/src/tools/calendar.html): calendar在线工具，免费使用，本地运行
+- [生肖查询](https://eitools.cn/src/tools/chinese-zodiac.html): 生肖查询在线工具，免费使用，本地运行
+- [色盲测试](https://eitools.cn/src/tools/color-blind-test.html): 色盲测试在线工具，免费使用，本地运行
+- [倒数日计算](https://eitools.cn/src/tools/countdown-day.html): 倒数日计算在线工具，免费使用，本地运行
+- [倒计时器](https://eitools.cn/src/tools/countdown-timer.html): 倒计时器在线工具，免费使用，本地运行
+- [日期计算器](https://eitools.cn/src/tools/date-calculator.html): 日期计算器在线工具，免费使用，本地运行
+- [天数计算器](https://eitools.cn/src/tools/days-between.html): 天数计算器在线工具，免费使用，本地运行
+- [汇率换算](https://eitools.cn/src/tools/exchange-rate.html): 汇率换算在线工具，免费使用，本地运行
+- [family-relationship](https://eitools.cn/src/tools/family-relationship.html): family-relationship在线工具，免费使用，本地运行
+- [烟花代码生成](https://eitools.cn/src/tools/firework-generator.html): 烟花代码生成在线工具，免费使用，本地运行
+- [食物热量查询](https://eitools.cn/src/tools/food-calorie.html): 食物热量查询在线工具，免费使用，本地运行
+- [理想体重计算](https://eitools.cn/src/tools/ideal-weight.html): 理想体重计算在线工具，免费使用，本地运行
+- [随机列表生成](https://eitools.cn/src/tools/list-generator.html): 随机列表生成在线工具，免费使用，本地运行
+- [万年历农历查询](https://eitools.cn/src/tools/lunar-calendar.html): 万年历农历查询在线工具，免费使用，本地运行
+- [手机号归属地查询](https://eitools.cn/src/tools/phone-lookup.html): 手机号归属地查询在线工具，免费使用，本地运行
+- [随机数生成器](https://eitools.cn/src/tools/random-number.html): 随机数生成器在线工具，免费使用，本地运行
+- [睡眠计算器](https://eitools.cn/src/tools/sleep-calculator.html): 睡眠计算器在线工具，免费使用，本地运行
+- [股票收益率计算](https://eitools.cn/src/tools/stock-return.html): 股票收益率计算在线工具，免费使用，本地运行
+- [秒表计时器](https://eitools.cn/src/tools/stopwatch.html): 秒表计时器在线工具，免费使用，本地运行
+- [番茄钟](https://eitools.cn/src/tools/timer.html): 番茄钟在线工具，免费使用，本地运行
+- [打字速度测试](https://eitools.cn/src/tools/typing-speed.html): 打字速度测试在线工具，免费使用，本地运行
+- [星期计算器](https://eitools.cn/src/tools/weekday-calc.html): 星期计算器在线工具，免费使用，本地运行
+- [白噪音生成器](https://eitools.cn/src/tools/white-noise.html): 白噪音生成器在线工具，免费使用，本地运行
+- [工作日计算器](https://eitools.cn/src/tools/workday-calculator.html): 工作日计算器在线工具，免费使用，本地运行
+- [世界时钟](https://eitools.cn/src/tools/world-clock.html): 世界时钟在线工具，免费使用，本地运行
+- [年份计算器](https://eitools.cn/src/tools/year-calculator.html): 年份计算器在线工具，免费使用，本地运行
+- [星座生肖查询](https://eitools.cn/src/tools/zodiac.html): 星座生肖查询在线工具，免费使用，本地运行
+
+## 趣味工具
+
+- [起名助手](https://eitools.cn/src/tools/chinese-name-generator.html): 起名助手在线工具，免费使用，本地运行
+- [节日倒计时](https://eitools.cn/src/tools/holiday-countdown.html): 节日倒计时在线工具，免费使用，本地运行
+- [爱情匹配计算器](https://eitools.cn/src/tools/love-calculator.html): 爱情匹配计算器在线工具，免费使用，本地运行
+- [随机决定器](https://eitools.cn/src/tools/random-decision-maker.html): 随机决定器在线工具，免费使用，本地运行
+
+## 使用教程
+
+- [全部教程](https://eitools.cn/tools/all-tools.html): 工具大全页含全部 173 个工具入口
+
+## 关于
+
+- 隐私政策: https://eitools.cn/privacy.html
+- 所有工具免登录、免费、本地处理数据
